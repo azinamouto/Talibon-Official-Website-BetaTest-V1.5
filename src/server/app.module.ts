@@ -67,38 +67,10 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
   ],
 })
 export class AppModule implements NestModule {
-  async configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer) {
     // Apply security headers & cache control to all routes
     consumer
       .apply(SecurityHeadersMiddleware, CacheControlMiddleware)
       .forRoutes({ path: "*", method: RequestMethod.ALL });
-
-    if (process.env.NODE_ENV !== "production") {
-      const { createServer: createViteServer } = await import("vite");
-      const vite = await createViteServer({
-        server: { middlewareMode: true },
-        appType: "spa",
-      });
-      consumer
-        .apply(vite.middlewares)
-        .exclude({ path: "api/(.*)", method: RequestMethod.ALL })
-        .forRoutes({ path: "*", method: RequestMethod.ALL });
-    } else {
-      const distPath = path.join(process.cwd(), "dist");
-      consumer
-        .apply(express.static(distPath))
-        .forRoutes({ path: "*", method: RequestMethod.ALL });
-      
-      // Serve index.html for SPA fallback
-      consumer
-        .apply((req: express.Request, res: express.Response, next: express.NextFunction) => {
-          if (!req.path.startsWith("/api")) {
-            res.sendFile(path.join(distPath, "index.html"));
-          } else {
-            next();
-          }
-        })
-        .forRoutes({ path: "*", method: RequestMethod.ALL });
-    }
   }
 }

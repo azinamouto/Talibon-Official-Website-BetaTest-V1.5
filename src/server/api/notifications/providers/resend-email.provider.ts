@@ -50,6 +50,8 @@ export class ResendEmailProvider implements EmailProvider {
 
     console.log(`[EMAIL_PROVIDER] Dispatching via Resend API -> To: ${maskedTo}, From: ${formattedFrom}, Subject: "${options.subject}"`);
 
+
+
     const payload: Record<string, any> = {
       from: formattedFrom,
       to: [options.to],

@@ -25,9 +25,34 @@ async function bootstrap() {
     })
   );
 
+  // In local/standalone runtime, serve the SPA (Vite in dev, static dist in prod)
+  if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
+    app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+      if (req.url && (req.url.startsWith("/api") || req.url.startsWith("/api/"))) {
+        return next();
+      }
+      vite.middlewares(req, res, next);
+    });
+  } else {
+    const path = await import("path");
+    const distPath = path.join(process.cwd(), "dist");
+    app.use(express.static(distPath));
+    app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+      if (req.url && (req.url.startsWith("/api") || req.url.startsWith("/api/"))) {
+        return next();
+      }
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+  }
+
   // Enable CORS with safe configurations
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       // Allow requests with no origin (e.g. mobile apps, curl, same-origin SPA)
       if (!origin) return callback(null, true);
 
@@ -42,6 +67,7 @@ async function bootstrap() {
         origin.includes("127.0.0.1") ||
         origin.includes("run.app") ||
         origin.includes("ai.studio") ||
+        origin.includes("vercel.app") ||
         process.env.NODE_ENV !== "production"
       ) {
         return callback(null, true);

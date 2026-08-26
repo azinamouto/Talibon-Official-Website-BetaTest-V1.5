@@ -4,12 +4,18 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "tsx src/server/main.ts",
-    "build": "vite build && tsc -p tsconfig.server.json && node -e \"import fs from 'node:fs'; fs.writeFileSync('dist/server/package.json', JSON.stringify({type:'commonjs'}));\" && esbuild src/server/serverless.ts --bundle --platform=node --target=node20 --format=esm --outfile=api/index.js --packages=external",
-    "start": "node dist/server/main.js",
-    "preview": "vite preview",
-    "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "build": "npm run build:frontend && npm run build:backend",
+    "start:backend": "npm run start --prefix backend",
+    "preview:frontend": "npm run preview --prefix frontend",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:backend": "npm run lint --prefix backend",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "install:all": "npm install && npm install --prefix frontend && npm install --prefix backend",
+    "clean": "npx rimraf dist backend/dist frontend/dist"
   },
   "dependencies": {
     "@google/genai": "^1.50.0",

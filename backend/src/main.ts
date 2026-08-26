@@ -9,7 +9,7 @@ import * as express from "express";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("Bootstrap");
-  const PORT = 3000;
+  const PORT = parseInt(process.env.PORT || "3000", 10);
 
   // Payload size limits DoS protection
   app.use(express.json({ limit: "10mb" }));

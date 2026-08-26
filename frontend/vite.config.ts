@@ -5,15 +5,19 @@ import {defineConfig, loadEnv} from 'vite';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
-  const supabaseUrl = env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
-  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+
+  // Backend API URL for the dev server proxy.
+  // In production the frontend is served by the same origin as the API (Vercel/Cloud Run),
+  // so no proxy is needed. In development, the frontend (port 5173) proxies /api/* to
+  // the NestJS backend (port 3000).
+  const apiUrl = env.VITE_API_URL || 'http://localhost:3000';
 
   return {
     plugins: [react(), tailwindcss()],
     define: {
+      // Gemini API key is NOT a VITE_ variable so Vite won't expose it automatically.
+      // Injecting here preserves the existing behaviour — review before production.
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || process.env.GEMINI_API_KEY),
-      'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(supabaseUrl),
-      'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(supabaseAnonKey),
     },
     resolve: {
       alias: {
@@ -21,9 +25,17 @@ export default defineConfig(({mode}) => {
       },
     },
     server: {
+      port: 5173,
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
+      proxy: {
+        // Proxy all /api/* requests to the NestJS backend during development.
+        '/api': {
+          target: apiUrl,
+          changeOrigin: true,
+          // Do not rewrite the path — NestJS controllers are registered under /api/*
+        },
+      },
     },
   };
 });

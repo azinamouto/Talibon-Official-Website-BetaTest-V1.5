@@ -10,20 +10,20 @@ var __decorateClass = (decorators, target, key, kind) => {
 };
 var __decorateParam = (index, decorator) => (target, key) => decorator(target, key, index);
 
-// src/server/serverless.ts
+// src/serverless.ts
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 
-// src/server/app.module.ts
+// src/app.module.ts
 import { Module as Module3, RequestMethod } from "@nestjs/common";
 import { APP_GUARD, APP_FILTER } from "@nestjs/core";
 import * as path from "path";
 import * as express from "express";
 
-// src/server/api/about/about.controller.ts
+// src/api/about/about.controller.ts
 import { Controller, Get, Inject } from "@nestjs/common";
 
-// src/server/api/about/about.service.ts
+// src/api/about/about.service.ts
 import { Injectable } from "@nestjs/common";
 import { createClient } from "@supabase/supabase-js";
 function getSupabaseClient() {
@@ -401,7 +401,7 @@ AboutService = __decorateClass([
   Injectable()
 ], AboutService);
 
-// src/server/api/about/about.controller.ts
+// src/api/about/about.controller.ts
 var AboutController = class {
   constructor(aboutService) {
     this.aboutService = aboutService;
@@ -484,10 +484,10 @@ AboutController = __decorateClass([
   __decorateParam(0, Inject(AboutService))
 ], AboutController);
 
-// src/server/api/executive/executive.controller.ts
+// src/api/executive/executive.controller.ts
 import { Controller as Controller2, Get as Get2, Inject as Inject2 } from "@nestjs/common";
 
-// src/server/api/executive/executive.service.ts
+// src/api/executive/executive.service.ts
 import { Injectable as Injectable2 } from "@nestjs/common";
 var ExecutiveService = class {
   getMandate() {
@@ -852,7 +852,7 @@ ExecutiveService = __decorateClass([
   Injectable2()
 ], ExecutiveService);
 
-// src/server/api/executive/executive.controller.ts
+// src/api/executive/executive.controller.ts
 var ExecutiveController = class {
   constructor(executiveService) {
     this.executiveService = executiveService;
@@ -893,10 +893,10 @@ ExecutiveController = __decorateClass([
   __decorateParam(0, Inject2(ExecutiveService))
 ], ExecutiveController);
 
-// src/server/api/legislative/legislative.controller.ts
+// src/api/legislative/legislative.controller.ts
 import { Controller as Controller3, Get as Get3, Inject as Inject3 } from "@nestjs/common";
 
-// src/server/api/legislative/legislative.service.ts
+// src/api/legislative/legislative.service.ts
 import { Injectable as Injectable3 } from "@nestjs/common";
 var LegislativeService = class {
   getMandate() {
@@ -927,7 +927,7 @@ LegislativeService = __decorateClass([
   Injectable3()
 ], LegislativeService);
 
-// src/server/api/legislative/legislative.controller.ts
+// src/api/legislative/legislative.controller.ts
 var LegislativeController = class {
   constructor(legislativeService) {
     this.legislativeService = legislativeService;
@@ -962,10 +962,10 @@ LegislativeController = __decorateClass([
   __decorateParam(0, Inject3(LegislativeService))
 ], LegislativeController);
 
-// src/server/api/news/news.controller.ts
+// src/api/news/news.controller.ts
 import { Controller as Controller4, Get as Get4, Inject as Inject4 } from "@nestjs/common";
 
-// src/server/api/news/news.service.ts
+// src/api/news/news.service.ts
 import { Injectable as Injectable4 } from "@nestjs/common";
 var NewsService = class {
   getArticles() {
@@ -1031,7 +1031,7 @@ NewsService = __decorateClass([
   Injectable4()
 ], NewsService);
 
-// src/server/api/news/news.controller.ts
+// src/api/news/news.controller.ts
 var NewsController = class {
   constructor(newsService) {
     this.newsService = newsService;
@@ -1090,10 +1090,10 @@ NewsController = __decorateClass([
   __decorateParam(0, Inject4(NewsService))
 ], NewsController);
 
-// src/server/api/transparency/transparency.controller.ts
+// src/api/transparency/transparency.controller.ts
 import { Controller as Controller5, Get as Get5, Inject as Inject5 } from "@nestjs/common";
 
-// src/server/api/transparency/transparency.service.ts
+// src/api/transparency/transparency.service.ts
 import { Injectable as Injectable5 } from "@nestjs/common";
 var TransparencyService = class {
   getCitizenCharter() {
@@ -1160,7 +1160,7 @@ TransparencyService = __decorateClass([
   Injectable5()
 ], TransparencyService);
 
-// src/server/api/transparency/transparency.controller.ts
+// src/api/transparency/transparency.controller.ts
 var TransparencyController = class {
   constructor(transparencyService) {
     this.transparencyService = transparencyService;
@@ -1231,10 +1231,10 @@ TransparencyController = __decorateClass([
   __decorateParam(0, Inject5(TransparencyService))
 ], TransparencyController);
 
-// src/server/api/tourism/tourism.controller.ts
+// src/api/tourism/tourism.controller.ts
 import { Controller as Controller6, Get as Get6, Inject as Inject6 } from "@nestjs/common";
 
-// src/server/api/tourism/tourism.service.ts
+// src/api/tourism/tourism.service.ts
 import { Injectable as Injectable6 } from "@nestjs/common";
 var TourismService = class {
   getSpots() {
@@ -1261,7 +1261,7 @@ TourismService = __decorateClass([
   Injectable6()
 ], TourismService);
 
-// src/server/api/tourism/tourism.controller.ts
+// src/api/tourism/tourism.controller.ts
 var TourismController = class {
   constructor(tourismService) {
     this.tourismService = tourismService;
@@ -1290,7 +1290,7 @@ TourismController = __decorateClass([
   __decorateParam(0, Inject6(TourismService))
 ], TourismController);
 
-// src/server/api/forms/forms.controller.ts
+// src/api/forms/forms.controller.ts
 import {
   Controller as Controller7,
   Get as Get7,
@@ -1302,15 +1302,15 @@ import {
   BadRequestException as BadRequestException2
 } from "@nestjs/common";
 
-// src/server/api/forms/forms.service.ts
+// src/api/forms/forms.service.ts
 import { Injectable as Injectable9, BadRequestException, Inject as Inject8 } from "@nestjs/common";
 
-// src/server/supabase.service.ts
+// src/supabase.service.ts
 import { Injectable as Injectable7, InternalServerErrorException } from "@nestjs/common";
 import { createClient as createClient2 } from "@supabase/supabase-js";
 var SupabaseService = class {
+  supabase = null;
   constructor() {
-    this.supabase = null;
     let rawUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const hasUrl = !!rawUrl && rawUrl.length > 5;
@@ -1360,14 +1360,17 @@ SupabaseService = __decorateClass([
   Injectable7()
 ], SupabaseService);
 
-// src/server/api/notifications/email-notification.service.ts
+// src/api/notifications/email-notification.service.ts
 import { Injectable as Injectable8, Inject as Inject7, Logger } from "@nestjs/common";
 
-// src/server/api/notifications/providers/resend-email.provider.ts
+// src/api/notifications/providers/resend-email.provider.ts
 import axios from "axios";
 var ResendEmailProvider = class {
+  name = "Resend";
+  apiKey;
+  defaultFrom;
+  defaultFromName;
   constructor() {
-    this.name = "Resend";
     this.apiKey = (process.env.RESEND_API_KEY || "").trim();
     this.defaultFrom = (process.env.EMAIL_FROM_ADDRESS || "onboarding@resend.dev").trim();
     this.defaultFromName = (process.env.EMAIL_FROM_NAME || "Digital Talibon").trim();
@@ -1469,11 +1472,9 @@ var ResendEmailProvider = class {
   }
 };
 
-// src/server/api/notifications/providers/console-email.provider.ts
+// src/api/notifications/providers/console-email.provider.ts
 var ConsoleEmailProvider = class {
-  constructor() {
-    this.name = "Console (Development Simulator)";
-  }
+  name = "Console (Development Simulator)";
   isConfigured() {
     return true;
   }
@@ -1491,7 +1492,7 @@ var ConsoleEmailProvider = class {
   }
 };
 
-// src/server/api/notifications/email-templates.ts
+// src/api/notifications/email-templates.ts
 function escapeHtml(unsafe) {
   if (!unsafe) return "";
   return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -2179,13 +2180,11 @@ Track: ${trackUrl}`;
   return { subject, html: wrapLayout(bodyHtml, preheader), text: bodyText };
 }
 
-// src/server/api/notifications/email-notification.service.ts
+// src/api/notifications/email-notification.service.ts
 var EmailNotificationService = class {
   // Dedup / Idempotency tracker
   constructor(supabaseService) {
     this.supabaseService = supabaseService;
-    this.logger = new Logger("EmailNotification");
-    this.recentNotifications = /* @__PURE__ */ new Map();
     const resend = new ResendEmailProvider();
     if (resend.isConfigured()) {
       this.provider = resend;
@@ -2203,6 +2202,9 @@ var EmailNotificationService = class {
       }
     }, 10 * 60 * 1e3);
   }
+  logger = new Logger("EmailNotification");
+  provider;
+  recentNotifications = /* @__PURE__ */ new Map();
   /**
    * Helper to mask email address in logs
    */
@@ -2454,14 +2456,14 @@ EmailNotificationService = __decorateClass([
   __decorateParam(0, Inject7(SupabaseService))
 ], EmailNotificationService);
 
-// src/server/api/forms/forms.service.ts
+// src/api/forms/forms.service.ts
 var FormsService = class {
   constructor(supabaseService, emailNotificationService) {
     this.supabaseService = supabaseService;
     this.emailNotificationService = emailNotificationService;
-    this.requests = [];
     this.loadFromSupabase();
   }
+  requests = [];
   async loadFromSupabase() {
     try {
       const client = this.supabaseService.getClient();
@@ -2931,7 +2933,7 @@ FormsService = __decorateClass([
   __decorateParam(1, Inject8(EmailNotificationService))
 ], FormsService);
 
-// src/server/security/rate-limiter.guard.ts
+// src/security/rate-limiter.guard.ts
 import {
   Injectable as Injectable10,
   HttpException,
@@ -2954,9 +2956,9 @@ var RateLimit = (category) => SetMetadata(RATE_LIMIT_KEY, category);
 var RateLimiterGuard = class {
   constructor(reflector) {
     this.reflector = reflector;
-    this.tracker = /* @__PURE__ */ new Map();
     setInterval(() => this.cleanup(), 5 * 60 * 1e3);
   }
+  tracker = /* @__PURE__ */ new Map();
   canActivate(context) {
     const http = context.switchToHttp();
     const req = http.getRequest();
@@ -3014,7 +3016,7 @@ RateLimiterGuard = __decorateClass([
   __decorateParam(0, Inject9(Reflector))
 ], RateLimiterGuard);
 
-// src/server/security/auth.guard.ts
+// src/security/auth.guard.ts
 import {
   Injectable as Injectable11,
   UnauthorizedException,
@@ -3093,7 +3095,7 @@ AuthGuard = __decorateClass([
   __decorateParam(1, Inject10(SupabaseService))
 ], AuthGuard);
 
-// src/server/api/forms/forms.controller.ts
+// src/api/forms/forms.controller.ts
 var FormsController = class {
   constructor(formsService) {
     this.formsService = formsService;
@@ -3190,21 +3192,19 @@ FormsController = __decorateClass([
   __decorateParam(0, Inject11(FormsService))
 ], FormsController);
 
-// src/server/api/payments/payments.module.ts
+// src/api/payments/payments.module.ts
 import { Module } from "@nestjs/common";
 
-// src/server/api/payments/payments.controller.ts
+// src/api/payments/payments.controller.ts
 import { Controller as Controller8, Post as Post2, Body as Body2, Req, Inject as Inject12 } from "@nestjs/common";
 
-// src/server/api/payments/payments.service.ts
+// src/api/payments/payments.service.ts
 import { Injectable as Injectable12, InternalServerErrorException as InternalServerErrorException2, BadRequestException as BadRequestException3 } from "@nestjs/common";
 import { Xendit } from "xendit-node";
 var MIN_AMOUNT = 1;
 var MAX_AMOUNT = 1e6;
 var PaymentsService = class {
-  constructor() {
-    this.xenditClient = null;
-  }
+  xenditClient = null;
   get client() {
     if (!this.xenditClient) {
       const secretKey = process.env.XENDIT_SECRET_KEY;
@@ -3275,7 +3275,7 @@ PaymentsService = __decorateClass([
   Injectable12()
 ], PaymentsService);
 
-// src/server/api/payments/payments.controller.ts
+// src/api/payments/payments.controller.ts
 var PaymentsController = class {
   constructor(paymentsService) {
     this.paymentsService = paymentsService;
@@ -3304,7 +3304,7 @@ PaymentsController = __decorateClass([
   __decorateParam(0, Inject12(PaymentsService))
 ], PaymentsController);
 
-// src/server/api/payments/payments.module.ts
+// src/api/payments/payments.module.ts
 var PaymentsModule = class {
 };
 PaymentsModule = __decorateClass([
@@ -3315,7 +3315,7 @@ PaymentsModule = __decorateClass([
   })
 ], PaymentsModule);
 
-// src/server/api/notifications/notification.module.ts
+// src/api/notifications/notification.module.ts
 import { Module as Module2 } from "@nestjs/common";
 var NotificationsModule = class {
 };
@@ -3326,7 +3326,7 @@ NotificationsModule = __decorateClass([
   })
 ], NotificationsModule);
 
-// src/server/security/security-headers.middleware.ts
+// src/security/security-headers.middleware.ts
 import { Injectable as Injectable13 } from "@nestjs/common";
 var SecurityHeadersMiddleware = class {
   use(req, res, next) {
@@ -3339,6 +3339,7 @@ var SecurityHeadersMiddleware = class {
     }
     const csp = [
       "default-src 'self'",
+      "media-src 'self' data: blob: https: http: https://talibon.gov.ph https://*.talibon.gov.ph",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://connect.facebook.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
@@ -3357,7 +3358,7 @@ SecurityHeadersMiddleware = __decorateClass([
   Injectable13()
 ], SecurityHeadersMiddleware);
 
-// src/server/security/cache-control.middleware.ts
+// src/security/cache-control.middleware.ts
 import { Injectable as Injectable14 } from "@nestjs/common";
 var CacheControlMiddleware = class {
   use(req, res, next) {
@@ -3376,7 +3377,7 @@ CacheControlMiddleware = __decorateClass([
   Injectable14()
 ], CacheControlMiddleware);
 
-// src/server/security/all-exceptions.filter.ts
+// src/security/all-exceptions.filter.ts
 import {
   HttpException as HttpException2,
   HttpStatus as HttpStatus2,
@@ -3384,9 +3385,7 @@ import {
 } from "@nestjs/common";
 import { Injectable as Injectable15 } from "@nestjs/common";
 var AllExceptionsFilter = class {
-  constructor() {
-    this.logger = new Logger2("SecurityExceptionsFilter");
-  }
+  logger = new Logger2("SecurityExceptionsFilter");
   catch(exception, host) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -3425,7 +3424,7 @@ AllExceptionsFilter = __decorateClass([
   Injectable15()
 ], AllExceptionsFilter);
 
-// src/server/app.module.ts
+// src/app.module.ts
 var AppModule = class {
   async configure(consumer) {
     consumer.apply(SecurityHeadersMiddleware, CacheControlMiddleware).forRoutes({ path: "*", method: RequestMethod.ALL });
@@ -3489,7 +3488,7 @@ AppModule = __decorateClass([
   })
 ], AppModule);
 
-// src/server/serverless.ts
+// src/serverless.ts
 import { ValidationPipe } from "@nestjs/common";
 import express2 from "express";
 import { ExpressAdapter } from "@nestjs/platform-express";

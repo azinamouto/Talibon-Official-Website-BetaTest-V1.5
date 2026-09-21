@@ -64,11 +64,10 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
   ],
 })
 export class AppModule implements NestModule {
-  async configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer) {
     // Apply security headers & cache control to all routes
     consumer
-      .apply(SecurityHeadersMiddleware, CacheControlMiddleware, AuditMiddleware)
-      .forRoutes({ path: "{*path}", method: RequestMethod.ALL });
-
+      .apply(SecurityHeadersMiddleware, CacheControlMiddleware)
+      .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }

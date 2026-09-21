@@ -36,10 +36,13 @@ import { UsersController } from './api/admin/users.controller';
 import { UsersService } from './api/admin/users.service';
 import { SearchController } from './api/search/search.controller';
 import { SearchService } from './api/search/search.service';
+import { ChatController } from './api/chat/chat.controller';
+import { ChatService } from './api/chat/chat.service';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
   controllers: [
+    ChatController,
     SearchController,
     ReportsController,
     UsersController,
@@ -55,6 +58,7 @@ import { SearchService } from './api/search/search.service';
     FormsController,
   ],
   providers: [
+    ChatService,
     SearchService,
     ReportsService,
     UsersService,

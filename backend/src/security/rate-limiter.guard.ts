@@ -17,7 +17,8 @@ export enum RateLimitCategory {
   TRACKING = "TRACKING",
   ADMIN_MUTATION = "ADMIN_MUTATION",
   FILE_UPLOAD = "FILE_UPLOAD",
-  PAYMENT = "PAYMENT"
+  PAYMENT = "PAYMENT",
+  AI_CHAT = "AI_CHAT"
 }
 
 interface RateLimitConfig {
@@ -32,7 +33,8 @@ const CATEGORY_LIMITS: Record<RateLimitCategory, RateLimitConfig> = {
   [RateLimitCategory.TRACKING]: { max: 20, windowMs: 60 * 1000 },
   [RateLimitCategory.ADMIN_MUTATION]: { max: 30, windowMs: 60 * 1000 },
   [RateLimitCategory.FILE_UPLOAD]: { max: 10, windowMs: 60 * 1000 },
-  [RateLimitCategory.PAYMENT]: { max: 10, windowMs: 60 * 1000 }
+  [RateLimitCategory.PAYMENT]: { max: 10, windowMs: 60 * 1000 },
+  [RateLimitCategory.AI_CHAT]: { max: 10, windowMs: 60 * 1000 }
 };
 
 export const RATE_LIMIT_KEY = "rate_limit_category";

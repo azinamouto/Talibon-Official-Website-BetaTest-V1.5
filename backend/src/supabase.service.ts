@@ -49,6 +49,15 @@ export class SupabaseService {
     }
   }
 
+  createAuthClient() {
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
+    if (!url || !key) throw new InternalServerErrorException('Authentication is not configured.');
+    return createClient(url, key, {
+      auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+    });
+  }
+
   getClient() {
     if (!this.supabase) {
       throw new InternalServerErrorException(

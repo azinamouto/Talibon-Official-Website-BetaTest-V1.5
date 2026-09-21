@@ -1,7 +1,8 @@
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from "@nestjs/common";
 import { APP_GUARD, APP_FILTER } from "@nestjs/core";
-import * as path from "path";
-import * as express from "express";
+import { AuditMiddleware } from "./security/audit.middleware";
+import { AuthController } from "./api/auth/auth.controller";
+import { AuthService } from "./api/auth/auth.service";
 
 import { AboutController } from "./api/about/about.controller";
 import { AboutService } from "./api/about/about.service";
@@ -18,10 +19,7 @@ import { TourismService } from "./api/tourism/tourism.service";
 import { FormsController } from "./api/forms/forms.controller";
 import { FormsService } from "./api/forms/forms.service";
 import { PaymentsModule } from "./api/payments/payments.module";
-import { PaymentsController } from "./api/payments/payments.controller";
-import { PaymentsService } from "./api/payments/payments.service";
 import { NotificationsModule } from "./api/notifications/notification.module";
-import { EmailNotificationService } from "./api/notifications/email-notification.service";
 import { SupabaseService } from "./supabase.service";
 import { RateLimiterGuard } from "./security/rate-limiter.guard";
 import { AuthGuard } from "./security/auth.guard";
@@ -39,11 +37,10 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
     TransparencyController,
     TourismController,
     FormsController,
-    PaymentsController,
+    AuthController,
   ],
   providers: [
     SupabaseService,
-    EmailNotificationService,
     AboutService,
     ExecutiveService,
     LegislativeService,
@@ -51,7 +48,7 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
     TransparencyService,
     TourismService,
     FormsService,
-    PaymentsService,
+    AuthService,
     {
       provide: APP_GUARD,
       useClass: RateLimiterGuard

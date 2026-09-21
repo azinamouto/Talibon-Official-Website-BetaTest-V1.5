@@ -21,6 +21,12 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
       res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     }
 
+    if (req.path.startsWith('/api/')) {
+      res.setHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
+      next();
+      return;
+    }
+
     // Content Security Policy
     const csp = [
       "default-src 'self'",

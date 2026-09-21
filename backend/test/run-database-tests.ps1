@@ -1,0 +1,57 @@
+param([switch]$Advisors)
+$ErrorActionPreference = 'Stop'
+$repo = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+$pgBin = Split-Path (Get-Command psql -ErrorAction Stop).Source
+$scratch = Join-Path ([IO.Path]::GetTempPath()) ('talgov-phase1-' + [guid]::NewGuid().ToString('N'))
+$pgData = Join-Path $scratch 'data'
+New-Item -ItemType Directory -Path $scratch | Out-Null
+$listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, 0)
+$listener.Start()
+$port = $listener.LocalEndpoint.Port
+$listener.Stop()
+$started = $false
+
+function Invoke-SqlFile([string]$database, [string]$relativePath) {
+  # Windows PowerShell represents native stderr notices as errors; psql's exit
+  # status with ON_ERROR_STOP is the authority for SQL success/failure.
+  $ErrorActionPreference = 'Continue'
+  & (Join-Path $pgBin 'psql.exe') -X -h 127.0.0.1 -p $port -U postgres -d $database `
+    -v ON_ERROR_STOP=1 -1 -f (Join-Path $repo $relativePath) *> (Join-Path $scratch ($database + '-last.log'))
+  if ($LASTEXITCODE -ne 0) { throw "SQL failed: $relativePath. Inspect $scratch/$database-last.log" }
+}
+
+try {
+  & (Join-Path $pgBin 'initdb.exe') -D $pgData -U postgres -A trust --no-locale --encoding=UTF8 --no-sync *> (Join-Path $scratch 'init.log')
+  if ($LASTEXITCODE -ne 0) { throw "initdb failed. Inspect $scratch/init.log" }
+  & (Join-Path $pgBin 'pg_ctl.exe') -D $pgData -l (Join-Path $scratch 'server.log') -o "-h 127.0.0.1 -p $port" -w start
+  if ($LASTEXITCODE -ne 0) { throw 'Local PostgreSQL startup failed.' }
+  $started = $true
+  foreach ($database in @('phase1_fresh', 'phase1_canonical', 'phase1_v4')) {
+    & (Join-Path $pgBin 'createdb.exe') -h 127.0.0.1 -p $port -U postgres $database
+    if ($LASTEXITCODE -ne 0) { throw 'Could not create disposable database.' }
+    Invoke-SqlFile $database 'backend/test/supabase-stubs.sql'
+    if ($database -eq 'phase1_fresh') {
+      foreach ($migration in (Get-ChildItem (Join-Path $repo 'supabase/migrations') -Filter '*.sql' | Sort-Object Name)) {
+        Invoke-SqlFile $database ('supabase/migrations/' + $migration.Name)
+      }
+    } elseif ($database -eq 'phase1_canonical') {
+      Invoke-SqlFile $database 'DATABASE/PHASE1_SETUP.sql'
+    } else {
+      Invoke-SqlFile $database 'supabase/legacy-migrations/20260803000000_v4_enterprise_municipal_core.sql'
+      Invoke-SqlFile $database 'supabase/legacy-migrations/20260804000000_v4_production_bootstrap.sql'
+      Invoke-SqlFile $database 'supabase/legacy-migrations/20260920075951_phase1_backend_security.sql'
+    }
+    Invoke-SqlFile $database 'backend/test/database-security.sql'
+    Invoke-SqlFile $database 'supabase/legacy-migrations/20260920075951_phase1_backend_security.sql'
+    Invoke-SqlFile $database 'backend/test/database-security.sql'
+    Write-Output "PASS: $database security assertions and migration reapplication"
+    if ($Advisors) {
+      & npx --yes supabase db advisors --db-url "postgresql://postgres@127.0.0.1:$port/${database}?sslmode=disable" --type security --level warn --fail-on warn
+      if ($LASTEXITCODE -ne 0) { throw "Security advisors failed for $database" }
+    }
+  }
+} finally {
+  if ($started) { & (Join-Path $pgBin 'pg_ctl.exe') -D $pgData -m fast -w stop }
+  Write-Output "Disposable PostgreSQL files and logs retained at $scratch"
+}
+

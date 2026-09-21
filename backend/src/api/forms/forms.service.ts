@@ -510,7 +510,7 @@ export class FormsService {
           const { data: ticketRes, error: ticketErr } = await client
             .from("certificate_requests")
             .select("*")
-            .or(`ticket_id.ilike.${code},ticket_id.eq.${code}`)
+            .eq("ticket_id", code)
             .maybeSingle();
 
           if (ticketRes) {
@@ -524,7 +524,7 @@ export class FormsService {
           const { data: codeRes, error: codeErr } = await client
             .from("certificate_requests")
             .select("*")
-            .or(`tracking_code.ilike.${code},tracking_code.eq.${code}`)
+            .eq("tracking_code", code)
             .maybeSingle();
 
           if (codeRes) {

@@ -30,6 +30,8 @@ export interface DispatchNotificationResult {
 export class EmailNotificationService {
   private readonly logger = new Logger("EmailNotification");
   private provider: EmailProvider;
+  private readonly cleanupTimer: ReturnType<typeof setInterval>;
+  onModuleDestroy() { clearInterval(this.cleanupTimer); }
   private recentNotifications: Map<string, number> = new Map(); // Dedup / Idempotency tracker
 
   constructor(@Inject(SupabaseService) private readonly supabaseService: SupabaseService) {
@@ -43,7 +45,7 @@ export class EmailNotificationService {
     }
 
     // Periodically clean stale idempotency records (every 10 minutes)
-    setInterval(() => {
+    this.cleanupTimer = setInterval(() => {
       const now = Date.now();
       for (const [key, time] of this.recentNotifications.entries()) {
         if (now - time > 15 * 60 * 1000) {
@@ -51,6 +53,7 @@ export class EmailNotificationService {
         }
       }
     }, 10 * 60 * 1000);
+    this.cleanupTimer.unref();
   }
 
   /**

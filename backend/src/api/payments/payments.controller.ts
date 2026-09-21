@@ -1,3 +1,4 @@
+import { Public } from "../../security/auth.guard";
 import { Controller, Post, Body, Req, Inject } from "@nestjs/common";
 import { PaymentsService } from "./payments.service";
 import { CreateCheckoutSessionDto } from "./dto/checkout-session.dto";
@@ -8,6 +9,7 @@ import type { Request } from "express";
 export class PaymentsController {
   constructor(@Inject(PaymentsService) private readonly paymentsService: PaymentsService) {}
 
+  @Public()
   @Post("create-checkout-session")
   @RateLimit(RateLimitCategory.PAYMENT)
   async createCheckoutSession(

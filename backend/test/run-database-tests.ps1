@@ -53,6 +53,8 @@ try {
       Invoke-SqlFile $database 'backend/test/forms-security.sql'
       Invoke-SqlFile $database 'backend/test/admin-reports.sql'
       Get-Content (Join-Path $scratch ($database + '-last.log')) | Select-String 'REPORT BENCHMARK'
+      Invoke-SqlFile $database 'backend/test/admin-users.sql'
+      Write-Output "PASS: $database Sprint 4 reports, user authorization, audit rollback and deactivation RLS"
       Write-Output "PASS: $database Sprint 3 ownership, transactional outbox and retry assertions"
       Write-Output "PASS: $database Sprint 2 content schema and RLS assertions"
     } else {

@@ -41,3 +41,16 @@ there is deliberately no direct browser SELECT grant for their private records.
       confirmation settings and staging auth flow results.
 
 Review status: pending human FE sign-off. Do not merge until it is recorded in the PR.
+
+## Sprint 4 admin APIs
+
+The two Sprint 4 migrations add report indexes and bounded backend-only exports,
+then profile versions, transactional user mutations, an append-only admin audit
+ledger, and restrictive active-account policies. Apply them after the Sprint 3
+chain. No production database changes are performed by the tests.
+
+See [admin API contracts](../backend/docs/admin-api.md) and the
+[role/permission matrix](../backend/docs/admin-rbac.md). The database test runner
+checks both fresh canonical and canonical upgrade paths, inserts 100,000 synthetic
+rows per report source, and verifies audit rollback and deactivation enforcement.
+Archived V4 remains covered only by its Sprint 1 regressions.

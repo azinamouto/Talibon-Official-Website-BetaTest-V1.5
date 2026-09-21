@@ -1,6 +1,7 @@
 require('reflect-metadata');
 const { Reflector } = require('@nestjs/core');
 const { AuthGuard, Public, Roles } = require('../dist/security/auth.guard');
+const { Permissions } = require('../dist/security/permissions');
 const id = '11111111-1111-4111-8111-111111111111';
 const token = `header.${Buffer.from(JSON.stringify({ session_id: id })).toString('base64url')}.signature`;
 
@@ -16,6 +17,20 @@ function fixture({ role = 'guest', verified = false, deleted = null, active = tr
   const context = { getHandler: () => Controller.prototype.route, getClass: () => Controller, switchToHttp: () => ({ getRequest: () => request }) };
   return { guard: new AuthGuard(new Reflector(), { getClient: () => client }), context, request, client, Controller };
 }
+
+test.each(['guest','citizen','staff','editor','barangay_admin','department_admin','unknown','constructor'])('denies dashboard permission to %s even with forged metadata', async role => {
+  const f = fixture({ role, verified: true });
+  Public()(f.Controller); Permissions('reports:read')(f.Controller);
+  await expect(f.guard.canActivate(f.context)).rejects.toMatchObject({ status: 403 });
+});
+
+test.each(['admin','municipal_admin','super_admin'])('verified %s can read reports but role assignment is super-admin only', async role => {
+  const f = fixture({ role, verified: true }); Permissions('reports:read')(f.Controller);
+  expect(await f.guard.canActivate(f.context)).toBe(true);
+  Permissions('users:roles')(f.Controller);
+  if (role === 'super_admin') expect(await f.guard.canActivate(f.context)).toBe(true);
+  else await expect(f.guard.canActivate(f.context)).rejects.toMatchObject({ status: 403 });
+});
 
 test('public endpoints skip authentication, but role metadata overrides Public', async () => {
   const f = fixture(); Public()(f.Controller);

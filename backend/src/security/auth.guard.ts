@@ -11,6 +11,7 @@ import {
 import { Reflector } from "@nestjs/core";
 import { SupabaseService } from "../supabase.service";
 import { AuthenticatedRequest } from './authenticated-request';
+import { hasPermissions, Permission, PERMISSIONS_KEY } from './permissions';
 
 export const IS_PUBLIC_KEY = "isPublic";
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
@@ -44,8 +45,9 @@ export class AuthGuard implements CanActivate {
       context.getClass()
     ]);
 
-    // If public and no specific roles or requireAuth needed, pass
-    if (isPublic && !requiredRoles && !requireAuth) {
+    const permissions = this.reflector.getAllAndOverride<Permission[]>(PERMISSIONS_KEY, [context.getHandler(), context.getClass()]);
+    // Authorization metadata always takes precedence over public access.
+    if (isPublic && !requiredRoles && !requireAuth && !permissions) {
       return true;
     }
 
@@ -92,6 +94,10 @@ export class AuthGuard implements CanActivate {
       req.user = data.user;
       req.profile = profile;
       req.accessToken = token;
+
+      if (permissions && (profile.is_verified !== true || !hasPermissions(profile.role, permissions))) {
+        throw new ForbiddenException('Access denied. Required permissions are missing.');
+      }
 
       // Role authorization check if roles specified
       if (requiredRoles && requiredRoles.length > 0) {

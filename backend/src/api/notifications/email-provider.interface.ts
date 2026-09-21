@@ -1,4 +1,5 @@
 export interface SendEmailOptions {
+  idempotencyKey?: string;
   to: string;
   subject: string;
   html: string;

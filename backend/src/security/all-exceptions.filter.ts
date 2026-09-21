@@ -55,6 +55,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // Sanitize response body to avoid leaking internal DB/stack trace details in 500 errors
     let clientMessage = message;
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      errorType = "Internal Server Error";
       clientMessage = "An internal server error occurred. Please contact the administrator if this persists.";
     }
 

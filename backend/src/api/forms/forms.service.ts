@@ -1,615 +1,83 @@
-import { Injectable, BadRequestException, Inject } from "@nestjs/common";
-import { SupabaseService } from "../../supabase.service";
-import { EmailNotificationService } from "../notifications/email-notification.service";
+import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
+import { SupabaseService } from '../../supabase.service';
+import { CreateCertificateRequestDto } from './dto/certificate-request.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
+import { ListSubmissionsDto } from './dto/list-submissions.dto';
 
-export interface CertificateRequestPayload {
-  id?: string;
-  ticketId?: string;
-  documentType: string;
-  barangay: string;
-  fullName: string;
-  email: string;
-  mobileNumber: string;
-  purpose: string;
-  attachments?: string[];
-  submittedAt?: string;
-  status?: string;
-  history?: {
-    id?: string;
-    status: string;
-    remarks: string | null;
-    createdAt: string;
-  }[];
+interface RequestRow {
+  id: string; ticket_id: string; user_id: string; document_type: string; barangay_id: string;
+  full_name: string; email: string; mobile_number: string; purpose: string; attachments: string[];
+  details: Record<string, unknown>; status: string; version: number; submitted_at: string; updated_at: string;
+  workflow_history?: { id: string; status: string; remarks: string; created_at: string }[];
 }
-
+const columns = 'id,ticket_id,user_id,document_type,barangay_id,full_name,email,mobile_number,purpose,attachments,details,status,version,submitted_at,updated_at';
 @Injectable()
 export class FormsService {
-  private requests: CertificateRequestPayload[] = [];
+  constructor(@Inject(SupabaseService) private readonly supabase: SupabaseService) {}
 
-  constructor(
-    @Inject(SupabaseService) private readonly supabaseService: SupabaseService,
-    @Inject(EmailNotificationService) private readonly emailNotificationService: EmailNotificationService
-  ) {
-    // Try fetching from Supabase if connected
-    this.loadFromSupabase();
+  private check(error: { code?: string } | null) {
+    if (!error) return;
+    if (['23503', '23514', '22P02'].includes(error.code ?? '')) throw new BadRequestException('Invalid submission data or barangay.');
+    if (error.code === '23505') throw new ConflictException('Submission already exists.');
+    throw new ServiceUnavailableException('Submission storage is unavailable.');
   }
-
-  private async loadFromSupabase() {
-    try {
-      const client = this.supabaseService.getClient();
-      if (client) {
-        const { data, error } = await client
-          .from("certificate_requests")
-          .select("*");
-        if (!error && data && data.length > 0) {
-          this.requests = data.map(item => ({
-            id: item.id,
-            ticketId: item.ticket_id || item.ticketId,
-            documentType: item.document_type || item.documentType,
-            barangay: item.barangay_id || item.barangay || "Poblacion",
-            fullName: item.full_name || item.fullName,
-            email: item.email,
-            mobileNumber: item.mobile_number || item.mobileNumber,
-            purpose: item.purpose,
-            attachments: item.attachments || [],
-            submittedAt: item.submitted_at || item.submittedAt,
-            status: item.status || "Submitted"
-          }));
-          console.log(`[FormsService] Successfully loaded ${this.requests.length} requests from Supabase.`);
-        }
-      }
-    } catch (err) {
-      console.log("[FormsService] Supabase not connected or table 'certificate_requests' does not exist yet. Using local in-memory storage.");
-    }
-  }
-
-  async getAllRequests(): Promise<CertificateRequestPayload[]> {
-    try {
-      const client = this.supabaseService.getClient();
-      if (client) {
-        const { data, error } = await client
-          .from("certificate_requests")
-          .select("*")
-          .order("submitted_at", { ascending: false });
-
-        if (!error && data) {
-          return data.map(item => ({
-            id: item.id,
-            ticketId: item.ticket_id || item.ticketId,
-            documentType: item.document_type || item.documentType,
-            barangay: item.barangay_id || item.barangay || "Poblacion",
-            fullName: item.full_name || item.fullName,
-            email: item.email,
-            mobileNumber: item.mobile_number || item.mobileNumber,
-            purpose: item.purpose,
-            attachments: item.attachments || [],
-            submittedAt: item.submitted_at || item.submittedAt,
-            status: item.status || "Submitted"
-          }));
-        }
-      }
-    } catch (err) {
-      console.error("[FormsService] Failed to fetch all requests from Supabase, returning memory cached:", err);
-    }
-    return this.requests;
-  }
-
-  async updateRequestStatus(
-    requestId: string,
-    status: string,
-    remarks: string,
-    notifyCitizen: boolean = true,
-    saveTimeline: boolean = true,
-    notifyEmail: boolean = true,
-    requirements?: string[]
-  ): Promise<boolean> {
-    try {
-      const client = this.supabaseService.getClient();
-      if (client) {
-        // Map UI status to DB status
-        let dbStatus = "Submitted";
-        const upper = status.toUpperCase();
-        if (upper === "SUBMITTED") {
-          dbStatus = "Submitted";
-        } else if (upper === "ASSIGNED TO DEPARTMENT" || upper === "ASSIGNED") {
-          dbStatus = "Assigned";
-        } else if (upper === "UNDER REVIEW" || upper === "PROCESSING") {
-          dbStatus = "Processing";
-        } else if (upper === "ADDITIONAL REQUIREMENTS NEEDED" || upper === "RETURNED" || upper === "RETURN") {
-          dbStatus = "Returned";
-        } else if (upper === "APPROVED") {
-          dbStatus = "Approved";
-        } else if (upper === "PREPARING DOCUMENT" || upper === "PREPARING") {
-          dbStatus = "Approved"; // same DB status as Approved
-        } else if (upper === "READY FOR CLAIM" || upper === "READY") {
-          dbStatus = "Completed";
-        } else if (upper === "CLAIMED / COMPLETED" || upper === "CLAIMED" || upper === "COMPLETED") {
-          dbStatus = "Completed"; // same DB status as Completed
-        } else if (upper === "REJECTED") {
-          dbStatus = "Rejected";
-        }
-
-        // Get current request to check its current DB status and retrieve citizen data
-        console.log(`[FORMS_API] FormsService.updateRequestStatus started for ID: ${requestId}, Target DB Status: "${dbStatus}"`);
-        const { data: currentReq, error: fetchError } = await client
-          .from("certificate_requests")
-          .select("id, ticket_id, document_type, full_name, email, mobile_number, barangay_id, status")
-          .eq("id", requestId)
-          .maybeSingle();
-
-        if (fetchError) {
-          console.warn(`[FORMS_API] Warning fetching request ${requestId}:`, fetchError.message);
-        }
-
-        const currentDbStatus = currentReq?.status || "";
-        console.log(`[FORMS_API] Current DB Status for ${requestId}: "${currentDbStatus}" -> Transitioning to "${dbStatus}"`);
-
-        if (currentDbStatus === dbStatus) {
-          // If DB status is the same, trigger won't run. Manually insert history if requested
-          if (saveTimeline) {
-            try {
-              await client.from("service_request_history").insert({
-                request_id: requestId,
-                status: dbStatus,
-                remarks: remarks || `Status updated in portal: ${status}`
-              });
-              console.log(`[FORMS_API] Manual service_request_history inserted (status unchanged at "${dbStatus}")`);
-            } catch (histErr: any) {
-              console.warn("[FORMS_API] Failed to insert service_request_history:", histErr.message || histErr);
-            }
-          }
-        } else {
-          // Perform direct table update first
-          let updateSuccess = false;
-          const now = new Date().toISOString();
-
-          try {
-            const { error: srError } = await client
-              .from("service_requests")
-              .update({ status: dbStatus, updated_at: now })
-              .eq("id", requestId);
-
-            if (!srError) {
-              updateSuccess = true;
-              console.log(`[FORMS_API] Database update SUCCESS via public.service_requests for ID: ${requestId}`);
-            } else {
-              const { error: crError } = await client
-                .from("certificate_requests")
-                .update({ status: dbStatus })
-                .eq("id", requestId);
-
-              if (!crError) {
-                updateSuccess = true;
-                console.log(`[FORMS_API] Database update SUCCESS via public.certificate_requests for ID: ${requestId}`);
-              }
-            }
-          } catch (updateErr) {
-            console.warn("[FORMS_API] Direct table update exception:", updateErr);
-          }
-
-          if (updateSuccess) {
-            if (saveTimeline) {
-              try {
-                await client.from("service_request_history").insert({
-                  request_id: requestId,
-                  status: dbStatus,
-                  remarks: remarks || `Status updated via Admin Dashboard: ${status}`
-                });
-                console.log(`[FORMS_API] service_request_history entry created for ID: ${requestId}`);
-              } catch (histErr: any) {
-                console.warn("[FORMS_API] service_request_history insert warning:", histErr?.message || histErr);
-              }
-            }
-          } else {
-            // Fallback to RPC if direct table update failed
-            try {
-              await client.rpc("update_request_status", {
-                p_request_id: requestId,
-                p_status: dbStatus,
-                p_remarks: remarks || `Status updated via Admin Dashboard: ${status}`
-              });
-              console.log(`[FORMS_API] Database update SUCCESS via RPC update_request_status for ID: ${requestId}`);
-            } catch (rpcErr) {
-              console.warn("[FORMS_API] RPC update_request_status failed:", rpcErr);
-            }
-          }
-        }
-
-        // Update local memory list
-        const found = this.requests.find(r => r.id === requestId);
-        if (found) {
-          found.status = status;
-        }
-
-        // Handle Email Notification
-        if (notifyEmail) {
-          if (currentReq?.email) {
-            console.log(`[FORMS_API] Triggering EmailNotificationService for Ticket: ${currentReq.ticket_id || requestId}`);
-            const reqDataForEmail = {
-              id: currentReq.id || requestId,
-              ticketId: currentReq.ticket_id || found?.ticketId || "TLB-REQUEST",
-              documentType: currentReq.document_type || found?.documentType || "Certificate Request",
-              fullName: currentReq.full_name || found?.fullName || "Citizen",
-              email: currentReq.email,
-              mobileNumber: currentReq.mobile_number,
-              barangay: currentReq.barangay_id,
-              status: status
-            };
-
-            const isReqs = ["RETURNED", "ADDITIONAL REQUIREMENTS NEEDED", "ADDITIONAL_REQUIREMENTS"].includes(upper);
-            if (isReqs) {
-              this.emailNotificationService
-                .sendAdditionalRequirements(reqDataForEmail, remarks, requirements)
-                .catch((e: unknown) => console.warn("[FORMS_API] Email notification error (additional reqs):", e));
-            } else {
-              this.emailNotificationService
-                .sendStatusUpdate(reqDataForEmail, status, remarks)
-                .catch((e: unknown) => console.warn("[FORMS_API] Email notification error (status update):", e));
-            }
-          } else {
-            console.log(`[FORMS_API] Email notification skipped: Citizen email is ABSENT for request ${requestId}`);
-          }
-        } else {
-          console.log(`[FORMS_API] Email notification skipped: notifyEmail flag is set to false`);
-        }
-
-        // In-app Notification Creation
-        if (notifyCitizen && currentReq) {
-          const citizenEmail = currentReq.email;
-          const ticketId = currentReq.ticket_id;
-          const docType = currentReq.document_type;
-
-          if (citizenEmail) {
-            // Find the profile of the citizen using email
-            const { data: citizenProfile } = await client
-              .from("profiles")
-              .select("id")
-              .eq("email", citizenEmail)
-              .maybeSingle();
-
-            if (citizenProfile) {
-              // Build citizen-friendly title and message matching the specs
-              let notifTitle = `Status Update: ${status}`;
-              let notifMsg = `Your application for ${docType} (Ticket: ${ticketId}) is now ${status}.`;
-
-              if (upper === "SUBMITTED") {
-                notifTitle = "✅ Application Submitted";
-                notifMsg = `Your ${docType} application has been received successfully. We will notify you whenever your application progresses. [Ticket: ${ticketId}]`;
-              } else if (upper === "ASSIGNED TO DEPARTMENT" || upper === "ASSIGNED") {
-                notifTitle = "📂 Assigned to Department";
-                notifMsg = `Your application has been assigned to: Municipal Engineering Office. Our staff has begun reviewing your request. [Ticket: ${ticketId}]`;
-              } else if (upper === "UNDER REVIEW" || upper === "PROCESSING") {
-                notifTitle = "🔍 Under Review";
-                notifMsg = `Your application is currently being reviewed. No action is required at this time. [Ticket: ${ticketId}]`;
-              } else if (upper === "ADDITIONAL REQUIREMENTS NEEDED" || upper === "RETURNED" || upper === "RETURN") {
-                notifTitle = "⚠ Additional Requirements Required";
-                notifMsg = `Please submit a clearer copy of your Valid ID. Remarks from Staff: "${remarks || "No remarks provided"}". Please return to your request and upload the required document. [Ticket: ${ticketId}]`;
-              } else if (upper === "APPROVED") {
-                notifTitle = "✅ Approved";
-                notifMsg = `Your application has been approved. The municipality is now preparing your official document. [Ticket: ${ticketId}]`;
-              } else if (upper === "PREPARING DOCUMENT" || upper === "PREPARING") {
-                notifTitle = "🖨 Preparing Document";
-                notifMsg = `Your document is currently being prepared and signed. You will receive another notification once it is ready for pickup. [Ticket: ${ticketId}]`;
-              } else if (upper === "READY FOR CLAIM" || upper === "READY") {
-                notifTitle = "🏛 Ready for Claim";
-                notifMsg = `Your request has been processed successfully. Please visit: Municipality of Talibon. Bring: • Tracking Number (${ticketId}) • Valid Government ID • Required payment (if applicable). Office Hours: Monday-Friday 8:00 AM - 5:00 PM. Location: Treasury Office. [Ticket: ${ticketId}]`;
-              } else if (upper === "CLAIMED / COMPLETED" || upper === "CLAIMED" || upper === "COMPLETED") {
-                notifTitle = "🎉 Transaction Completed";
-                notifMsg = `Your document has been successfully claimed. Thank you for using Talibon Digital Core. [Ticket: ${ticketId}]`;
-              } else if (upper === "REJECTED") {
-                notifTitle = "❌ Request Rejected";
-                notifMsg = `Verification declined. Remarks: "${remarks || "Incomplete details"}". Please submit a new claim with valid files. [Ticket: ${ticketId}]`;
-              }
-
-              // Insert into public.notifications with try-catch fallback
-              try {
-                await client.from("notifications").insert({
-                  title: notifTitle,
-                  message: notifMsg,
-                  category: "Workflow Updates",
-                  user_id: citizenProfile.id,
-                  action_url: `/e-services?track=${ticketId}`
-                });
-              } catch (notifErr: any) {
-                console.warn("[FormsService] Failed to insert notification (table may not exist):", notifErr.message || notifErr);
-              }
-            }
-          }
-        }
-
-        return true;
-      }
-    } catch (err) {
-      console.error("[FormsService] Failed to update request status in Supabase:", err);
-    }
-
-    // In-memory fallback
-    const found = this.requests.find(r => r.id === requestId);
-    if (found) {
-      found.status = status;
-      if (notifyEmail && found.email) {
-        this.emailNotificationService
-          .sendStatusUpdate(
-            {
-              id: found.id || requestId,
-              ticketId: found.ticketId || "TLB-REQUEST",
-              documentType: found.documentType,
-              fullName: found.fullName,
-              email: found.email,
-              mobileNumber: found.mobileNumber,
-              barangay: found.barangay,
-              status: status
-            },
-            status,
-            remarks
-          )
-          .catch((e: unknown) => console.warn("[FormsService] Email notification error (in-memory):", e));
-      }
-      return true;
-    }
-    return false;
-  }
-
-  async submitRequest(payload: CertificateRequestPayload): Promise<CertificateRequestPayload> {
-    // Validation
-    if (!payload.documentType || !payload.barangay || !payload.fullName || !payload.email || !payload.mobileNumber || !payload.purpose) {
-      throw new BadRequestException("All required fields must be provided.");
-    }
-
-    let ticketId = `TLB-2026-${String(this.requests.length + 1).padStart(4, "0")}`;
-    let dbStatus = "Submitted";
-    let submittedAt = new Date().toISOString();
-    let requestId = "mock-" + Math.random().toString(36).substring(2, 9);
-
-    const barangayId = payload.barangay.toLowerCase().replace(/\s+/g, "_");
-
-    // Store in Supabase if database is available
-    let success = false;
-    try {
-      const client = this.supabaseService.getClient();
-      if (client) {
-        // Try direct insert first as it is standard and matches our inspected schema
-        const generatedId = `TAL-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${String(Math.floor(Math.random() * 8999) + 1000)}`;
-        
-        console.log("[FormsService] Attempting direct insert into certificate_requests with column 'barangay'");
-        const { data, error } = await client.from("certificate_requests").insert({
-          ticket_id: generatedId,
-          document_type: payload.documentType,
-          barangay: payload.barangay, // Live DB has 'barangay' column
-          full_name: payload.fullName,
-          email: payload.email,
-          mobile_number: payload.mobileNumber,
-          purpose: payload.purpose,
-          attachments: payload.attachments || [],
-          status: "Submitted"
-        }).select().maybeSingle();
-
-        if (!error && data) {
-          const requestData = data as any;
-          ticketId = requestData.ticket_id || generatedId;
-          dbStatus = requestData.status || dbStatus;
-          submittedAt = requestData.submitted_at || requestData.created_at || submittedAt;
-          requestId = requestData.id || requestId;
-          success = true;
-          console.log("[FormsService] Direct insert succeeded!");
-        } else {
-          if (error) {
-            console.warn("[FormsService] Direct insert with 'barangay' column failed, trying 'barangay_id' column fallback", error.message);
-          }
-          // Try with barangay_id instead
-          const { data: fallbackData, error: fallbackError } = await client.from("certificate_requests").insert({
-            ticket_id: generatedId,
-            document_type: payload.documentType,
-            barangay_id: barangayId,
-            full_name: payload.fullName,
-            email: payload.email,
-            mobile_number: payload.mobileNumber,
-            purpose: payload.purpose,
-            attachments: payload.attachments || [],
-            status: "Submitted"
-          }).select().maybeSingle();
-
-          if (!fallbackError && fallbackData) {
-            const requestData = fallbackData as any;
-            ticketId = requestData.ticket_id || generatedId;
-            dbStatus = requestData.status || dbStatus;
-            submittedAt = requestData.submitted_at || requestData.created_at || submittedAt;
-            requestId = requestData.id || requestId;
-            success = true;
-            console.log("[FormsService] Fallback direct insert with 'barangay_id' succeeded!");
-          } else if (fallbackError) {
-            throw fallbackError;
-          }
-        }
-      }
-    } catch (err: any) {
-      console.warn("[FormsService] Direct insert failed, attempting RPC fallback:", err.message || err);
-      try {
-        const client = this.supabaseService.getClient();
-        if (client) {
-          const { data, error } = await client.rpc("submit_certificate_request", {
-            p_document_type: payload.documentType,
-            p_barangay_id: barangayId,
-            p_full_name: payload.fullName,
-            p_email: payload.email,
-            p_mobile_number: payload.mobileNumber,
-            p_purpose: payload.purpose,
-            p_attachments: payload.attachments || []
-          });
-
-          if (error) throw error;
-
-          if (data) {
-            const requestData = data as any;
-            ticketId = requestData.ticket_id || ticketId;
-            dbStatus = requestData.status || dbStatus;
-            submittedAt = requestData.submitted_at || requestData.created_at || submittedAt;
-            requestId = requestData.id || requestId;
-            success = true;
-            console.log("[FormsService] RPC submit succeeded!");
-          }
-        }
-      } catch (rpcErr: any) {
-        console.warn("[FormsService] RPC fallback failed as well:", rpcErr.message || rpcErr);
-      }
-    }
-
-    const newRequest: CertificateRequestPayload = {
-      id: requestId,
-      ticketId,
-      documentType: payload.documentType,
-      barangay: payload.barangay,
-      fullName: payload.fullName,
-      email: payload.email,
-      mobileNumber: payload.mobileNumber,
-      purpose: payload.purpose,
-      attachments: payload.attachments || [],
-      submittedAt,
-      status: dbStatus
+  private present(row: RequestRow) {
+    return {
+      id: row.id, ticketId: row.ticket_id, documentType: row.document_type, barangay: row.barangay_id,
+      fullName: row.full_name, email: row.email, mobileNumber: row.mobile_number, purpose: row.purpose,
+      attachments: row.attachments, details: row.details, status: row.status, version: row.version,
+      submittedAt: row.submitted_at, updatedAt: row.updated_at,
+      history: row.workflow_history?.map(h => ({ id: h.id, status: h.status, remarks: h.remarks, createdAt: h.created_at })),
     };
-
-    // Store in memory
-    this.requests.unshift(newRequest);
-
-    // Dispatch asynchronous submission email notification
-    if (newRequest.email) {
-      this.emailNotificationService
-        .sendRequestSubmitted({
-          id: newRequest.id,
-          ticketId: newRequest.ticketId || "TLB-REQUEST",
-          documentType: newRequest.documentType,
-          fullName: newRequest.fullName,
-          email: newRequest.email,
-          mobileNumber: newRequest.mobileNumber,
-          barangay: newRequest.barangay,
-          status: newRequest.status,
-          submittedAt: newRequest.submittedAt
-        })
-        .catch((e: unknown) => console.warn("[FormsService] Submission email dispatch error:", e));
+  }
+  async submitRequest(dto: CreateCertificateRequestDto, user: { id: string; email?: string }) {
+    if (!user.email || dto.email.toLowerCase() !== user.email.toLowerCase()) {
+      throw new BadRequestException('Use the email address of your signed-in account.');
     }
-
-    return newRequest;
+    const { data, error } = await this.supabase.getClient().from('certificate_requests').insert({
+      ticket_id: `TAL-${randomUUID()}`, user_id: user.id, document_type: dto.documentType,
+      barangay_id: dto.barangay, full_name: dto.fullName, email: user.email,
+      mobile_number: dto.mobileNumber, purpose: dto.purpose, attachments: dto.attachments ?? [],
+      details: dto.details, status: 'Submitted',
+    }).select(columns).single();
+    this.check(error);
+    if (!data) throw new ServiceUnavailableException('Submission was not saved.');
+    return this.present(data as RequestRow);
   }
-
-  async getRequestStatus(ticketId: string): Promise<CertificateRequestPayload | null> {
-    const code = ticketId ? ticketId.trim() : "";
-    if (!code) return null;
-
-    try {
-      const client = this.supabaseService.getClient();
-      if (client) {
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(code);
-        let data: any = null;
-
-        if (isUuid) {
-          const { data: idRes } = await client.from("certificate_requests").select("*").eq("id", code).maybeSingle();
-          if (idRes) data = idRes;
-        }
-
-        if (!data) {
-          const { data: ticketRes, error: ticketErr } = await client
-            .from("certificate_requests")
-            .select("*")
-            .eq("ticket_id", code)
-            .maybeSingle();
-
-          if (ticketRes) {
-            data = ticketRes;
-          } else if (ticketErr) {
-            console.warn("[FormsService] Query error searching ticket_id on certificate_requests:", ticketErr.message);
-          }
-        }
-
-        if (!data) {
-          const { data: codeRes, error: codeErr } = await client
-            .from("certificate_requests")
-            .select("*")
-            .eq("tracking_code", code)
-            .maybeSingle();
-
-          if (codeRes) {
-            data = codeRes;
-          } else if (codeErr) {
-            console.warn("[FormsService] Query error searching tracking_code on certificate_requests:", codeErr.message);
-          }
-        }
-
-        if (data) {
-          // Fetch status history chronological timeline
-          let historyData: any[] = [];
-          try {
-            const { data: srh, error: histError } = await client
-              .from("service_request_history")
-              .select("*")
-              .eq("request_id", data.id)
-              .order("created_at", { ascending: true });
-            
-            if (!histError && srh && srh.length > 0) {
-              historyData = srh;
-            }
-          } catch (histErr: any) {
-            console.warn("[FormsService] Could not fetch service_request_history from Supabase:", histErr?.message || histErr);
-          }
-
-          return {
-            id: data.id,
-            ticketId: data.ticket_id || data.tracking_code || data.ticketId || data.id,
-            documentType: data.document_type || data.documentType || "Certificate Request",
-            barangay: data.barangay_id || data.barangay || "Poblacion",
-            fullName: data.full_name || data.fullName,
-            email: data.email,
-            mobileNumber: data.mobile_number || data.mobileNumber,
-            purpose: data.purpose,
-            attachments: data.attachments || [],
-            submittedAt: data.submitted_at || data.created_at,
-            status: data.status || "Submitted",
-            history: (historyData || []).map(h => ({
-              id: h.id,
-              status: h.status,
-              remarks: h.remarks,
-              createdAt: h.created_at
-            }))
-          };
-        }
-      }
-    } catch (err) {
-      console.error("[FormsService] Failed to lookup request status from Supabase:", err);
+  async list(query: ListSubmissionsDto, userId?: string) {
+    let builder = this.supabase.getClient().from('certificate_requests').select(columns, { count: 'exact' }).is('deleted_at', null);
+    if (userId) builder = builder.eq('user_id', userId);
+    const { data, error, count } = await builder.order('submitted_at', { ascending: false }).order('id', { ascending: false })
+      .range((query.page - 1) * query.limit, query.page * query.limit - 1);
+    this.check(error);
+    return { data: (data as RequestRow[] ?? []).map(row => this.present(row)), pagination: { page: query.page, limit: query.limit, total: count ?? 0 } };
+  }
+  // The administrative list is only exposed through a verified staff route.
+  async getAllRequests(query = new ListSubmissionsDto()) { return this.list(query); }
+  async getRequestStatus(code: string, userId?: string) {
+    const field = /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(code) ? 'id' : 'ticket_id';
+    let query = this.supabase.getClient().from('certificate_requests')
+      .select(`${columns},workflow_history(id,status,remarks,created_at)`).eq(field, code).is('deleted_at', null);
+    if (userId) query = query.eq('user_id', userId);
+    const { data, error } = await query.order('created_at', { referencedTable: 'workflow_history', ascending: true }).maybeSingle();
+    this.check(error);
+    if (!data) throw new NotFoundException('Submission not found.');
+    return this.present(data as RequestRow);
+  }
+  async updateRequestStatus(id: string, dto: UpdateStatusDto, actorId: string) {
+    const { data, error } = await this.supabase.getClient().from('certificate_requests')
+      .update({ status: dto.status, status_remarks: dto.remarks ?? '', status_actor_id: actorId, version: dto.version + 1 })
+      .eq('id', id).eq('version', dto.version).is('deleted_at', null).select(columns).maybeSingle();
+    this.check(error);
+    if (!data) {
+      await this.getRequestStatus(id);
+      throw new ConflictException('Submission changed. Refresh before updating its status.');
     }
-
-    const found = this.requests.find(
-      r => r.ticketId?.trim().toUpperCase() === ticketId.trim().toUpperCase() || 
-           r.id?.trim() === ticketId.trim()
-    );
-    return found || null;
+    return { success: true, request: this.present(data as RequestRow) };
   }
-
-  getBusinessPermits() {
-    return [
-      { id: 1, title: "Business Permit Application Form", url: "#" },
-      { id: 2, title: "Business Permit Renewal Form", url: "#" },
-    ];
-  }
-
-  getBuildingPermits() {
-    return [
-      { id: 1, title: "Building Permit Application Form", url: "#" },
-      { id: 2, title: "Electrical Permit Form", url: "#" },
-      { id: 3, title: "Plumbing Permit Form", url: "#" },
-    ];
-  }
-
-  getZoningClearance() {
-    return [
-      { id: 1, title: "Zoning Clearance Application Form", url: "#" },
-    ];
-  }
-
-  getDownloadable() {
-    return [
-      ...this.getBusinessPermits(),
-      ...this.getBuildingPermits(),
-      ...this.getZoningClearance(),
-    ];
-  }
+  getBusinessPermits() { return [{ id: 1, title: 'Business Permit Application Form', url: '#' }, { id: 2, title: 'Business Permit Renewal Form', url: '#' }]; }
+  getBuildingPermits() { return [{ id: 1, title: 'Building Permit Application Form', url: '#' }, { id: 2, title: 'Electrical Permit Form', url: '#' }, { id: 3, title: 'Plumbing Permit Form', url: '#' }]; }
+  getZoningClearance() { return [{ id: 1, title: 'Zoning Clearance Application Form', url: '#' }]; }
+  getDownloadable() { return [...this.getBusinessPermits(), ...this.getBuildingPermits(), ...this.getZoningClearance()]; }
 }
-

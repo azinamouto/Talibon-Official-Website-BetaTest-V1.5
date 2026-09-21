@@ -17,8 +17,7 @@ export class SupabaseService {
     );
 
     if (!rawUrl || !supabaseKey) {
-      console.warn("[SUPABASE_SERVER] Warning: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY. Backend services requiring Supabase will fail.");
-      return;
+      throw new Error("Missing backend Supabase configuration.");
     }
 
     const sanitizeUrl = (url: string): string => {
@@ -45,7 +44,7 @@ export class SupabaseService {
         }
       });
     } catch (error) {
-      console.error("[Supabase Server] Initialization error:", error);
+      throw new Error("Invalid backend Supabase configuration.");
     }
   }
 

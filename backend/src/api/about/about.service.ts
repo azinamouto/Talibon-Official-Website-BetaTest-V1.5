@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 function getSupabaseClient(): SupabaseClient | null {
-  const rawUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "https://iuzupzknnuimfyzcdtxl.supabase.co";
-  const rawKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!rawKey) return null;
+  const rawUrl = process.env.SUPABASE_URL;
+  const rawKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!rawUrl || !rawKey) throw new Error("Missing backend Supabase configuration.");
 
   let url = rawUrl.trim();
   if (url.endsWith("/rest/v1/")) url = url.slice(0, -9);
@@ -12,9 +12,9 @@ function getSupabaseClient(): SupabaseClient | null {
   if (url.endsWith("/")) url = url.slice(0, -1);
 
   try {
-    return createClient(url, rawKey);
+    return createClient(url, rawKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
   } catch {
-    return null;
+    throw new Error("Invalid backend Supabase configuration.");
   }
 }
 

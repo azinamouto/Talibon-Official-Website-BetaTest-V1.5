@@ -4,6 +4,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "notifications:work": "node dist/api/notifications/email-worker.js",
     "dev": "npm run build:tsc && node dist/main.js",
     "build": "npm run build:tsc",
     "build:tsc": "tsc -p tsconfig.json && node --input-type=commonjs -e \"require('node:fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))\"",

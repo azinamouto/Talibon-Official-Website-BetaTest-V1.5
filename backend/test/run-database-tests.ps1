@@ -31,7 +31,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Could not create disposable database.' }
     Invoke-SqlFile $database 'backend/test/supabase-stubs.sql'
     if ($database -eq 'phase1_fresh') {
-      foreach ($migration in (Get-ChildItem (Join-Path $repo 'supabase/migrations') -Filter '*.sql' | Sort-Object Name)) {
+      foreach ($migration in (Get-ChildItem (Join-Path $repo 'supabase/migrations') -Filter '*sprint1*.sql' | Sort-Object Name)) {
         Invoke-SqlFile $database ('supabase/migrations/' + $migration.Name)
       }
     } elseif ($database -eq 'phase1_canonical') {
@@ -45,6 +45,19 @@ try {
     Invoke-SqlFile $database 'supabase/legacy-migrations/20260920075951_phase1_backend_security.sql'
     Invoke-SqlFile $database 'backend/test/database-security.sql'
     Write-Output "PASS: $database security assertions and migration reapplication"
+    if ($database -ne 'phase1_v4') {
+      foreach ($migration in (Get-ChildItem (Join-Path $repo 'supabase/migrations') -Filter '*.sql' | Where-Object Name -NotLike '*sprint1*' | Sort-Object Name)) {
+        Invoke-SqlFile $database ('supabase/migrations/' + $migration.Name)
+      }
+      Invoke-SqlFile $database 'backend/test/content-security.sql'
+      Invoke-SqlFile $database 'backend/test/forms-security.sql'
+      Write-Output "PASS: $database Sprint 3 ownership, transactional outbox and retry assertions"
+      Write-Output "PASS: $database Sprint 2 content schema and RLS assertions"
+    } else {
+      # Historical V4 has municipal_services, UUID departments and different enums.
+      # It is retained here only for the existing Sprint 1 security regression.
+      Write-Output 'INFO: Sprint 2 requires canonical schema; archived V4 needs schema reconciliation first.'
+    }
     if ($Advisors) {
       & npx --yes supabase db advisors --db-url "postgresql://postgres@127.0.0.1:$port/${database}?sslmode=disable" --type security --level warn --fail-on warn
       if ($LASTEXITCODE -ne 0) { throw "Security advisors failed for $database" }

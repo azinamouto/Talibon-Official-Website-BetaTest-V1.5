@@ -9,6 +9,9 @@
 **Status:** Active Development
 **Target:** Production Deployment
 
+Backend API contracts: [Sprint 2 pages, news and services](backend/SPRINT2_API.md).
+The running backend serves Swagger at `/api/docs` and OpenAPI at `/api/openapi.json`.
+
 ---
 
 ## 1. Project Overview

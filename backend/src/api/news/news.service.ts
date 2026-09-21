@@ -1,12 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { ContentService } from '../content/content.service';
+import { ListContentDto } from '../content/content.dto';
 
 @Injectable()
 export class NewsService {
-  getArticles() {
-    return [
-      { id: 1, title: "Talibon Celebrates Seafood Festival", date: "2024-03-20", image: "https://picsum.photos/seed/news1/800/600" },
-      { id: 2, title: "New Infrastructure Project Launched", date: "2024-03-15", image: "https://picsum.photos/seed/news2/800/600" },
-    ];
+  constructor(@Inject(ContentService) private readonly content: ContentService) {}
+
+  async getArticles() {
+    const result = await this.content.list('news', Object.assign(new ListContentDto(), { category: 'ARTICLE' }));
+    return result.data.map(row => ({ ...row, image: row.image_url }));
   }
 
   getAdvisories() {
@@ -36,10 +38,8 @@ export class NewsService {
     };
   }
 
-  getUpdates() {
-    return [
-      { id: 1, title: "LGU Update: New Health Protocols", date: "2024-03-10" },
-    ];
+  async getUpdates() {
+    return (await this.content.list('news', Object.assign(new ListContentDto(), { category: 'UPDATE' }))).data;
   }
 
   getGallery() {

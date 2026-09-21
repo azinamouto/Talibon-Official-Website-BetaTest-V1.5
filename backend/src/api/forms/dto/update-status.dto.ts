@@ -1,46 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsBoolean,
-  IsArray,
-  MaxLength,
-  ArrayMaxSize
-} from "class-validator";
-
+import { IsIn, IsInt, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+export const REQUEST_STATUSES = ['Submitted', 'Assigned', 'Processing', 'Returned', 'Approved', 'Rejected', 'Completed', 'Archived'];
 export class UpdateStatusDto {
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(50)
-  @ApiProperty({ type: String })
-  status!: string;
-
-  @IsString()
-  @IsOptional()
-  @MaxLength(1000)
-  @ApiPropertyOptional({ type: String })
-  remarks?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiPropertyOptional({ type: Boolean })
-  notifyCitizen?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiPropertyOptional({ type: Boolean })
-  notifyEmail?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiPropertyOptional({ type: Boolean })
-  saveTimeline?: boolean;
-
-  @IsOptional()
-  @IsArray()
-  @ArrayMaxSize(20)
-  @IsString({ each: true })
-  @ApiPropertyOptional({ type: [String] })
-  requirements?: string[];
+  @ApiProperty({ enum: REQUEST_STATUSES }) @IsIn(REQUEST_STATUSES) status!: string;
+  @ApiProperty({ description: 'Version returned by the last read; stale updates return 409.' })
+  @IsInt() @Min(1) version!: number;
+  @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(1000) remarks?: string;
 }

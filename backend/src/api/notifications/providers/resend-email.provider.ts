@@ -1,134 +1,26 @@
-import axios from "axios";
-import { EmailProvider, SendEmailOptions, SendEmailResult } from "../email-provider.interface";
-
+import axios from 'axios';
+import { EmailProvider, SendEmailOptions, SendEmailResult } from '../email-provider.interface';
 export class ResendEmailProvider implements EmailProvider {
-  name = "Resend";
-
-  private apiKey: string;
-  private defaultFrom: string;
-  private defaultFromName: string;
-
-  constructor() {
-    this.apiKey = (process.env.RESEND_API_KEY || "").trim();
-    this.defaultFrom = (process.env.EMAIL_FROM_ADDRESS || "onboarding@resend.dev").trim();
-    this.defaultFromName = (process.env.EMAIL_FROM_NAME || "Digital Talibon").trim();
-
-    // Safe environment presence check (never logs secret values)
-    const hasKey = !!this.apiKey && this.apiKey.length > 5;
-    console.log(
-      `[EMAIL_PROVIDER] Resend Provider initialized. RESEND_API_KEY: ${hasKey ? "PRESENT" : "MISSING"}, EMAIL_FROM_ADDRESS: ${this.defaultFrom ? "PRESENT" : "MISSING"} (${this.defaultFrom}), EMAIL_FROM_NAME: ${this.defaultFromName ? "PRESENT" : "MISSING"}`
-    );
-  }
-
-  isConfigured(): boolean {
-    return !!this.apiKey && this.apiKey.length > 5;
-  }
-
-  /**
-   * Helper to mask email address in logs
-   */
-  private maskEmail(email: string): string {
-    if (!email || !email.includes("@")) return "invalid-email";
-    const [user, domain] = email.split("@");
-    if (user.length <= 2) return `${user[0]}*@${domain}`;
-    return `${user[0]}${"*".repeat(Math.max(1, user.length - 2))}${user[user.length - 1]}@${domain}`;
-  }
-
+  name = 'Resend';
+  private readonly apiKey = (process.env.RESEND_API_KEY || '').trim();
+  private readonly fromAddress = (process.env.EMAIL_FROM_ADDRESS || '').trim();
+  private readonly fromName = (process.env.EMAIL_FROM_NAME || 'Digital Talibon').trim();
+  isConfigured() { return this.apiKey.length > 5 && this.fromAddress.includes('@'); }
   async sendEmail(options: SendEmailOptions): Promise<SendEmailResult> {
-    if (!this.isConfigured()) {
-      console.warn("[EMAIL_PROVIDER] Send aborted: RESEND_API_KEY is MISSING in environment variables.");
-      return {
-        success: false,
-        error: "RESEND_API_KEY is not configured in server environment variables."
-      };
-    }
-
-    const fromAddress = options.from || this.defaultFrom;
-    const fromName = options.fromName || this.defaultFromName;
-    const formattedFrom = `${fromName} <${fromAddress}>`;
-    const maskedTo = this.maskEmail(options.to);
-
-    console.log(`[EMAIL_PROVIDER] Dispatching via Resend API -> To: ${maskedTo}, From: ${formattedFrom}, Subject: "${options.subject}"`);
-
-    const payload: Record<string, any> = {
-      from: formattedFrom,
-      to: [options.to],
-      subject: options.subject,
-      html: options.html,
-      text: options.text
-    };
-
-    if (options.replyTo) {
-      payload.reply_to = options.replyTo;
-    }
-
-    if (options.tags) {
-      payload.tags = Object.entries(options.tags).map(([name, value]) => ({ name, value }));
-    }
-
+    if (!this.isConfigured()) return { success: false, error: 'provider_not_configured' };
     try {
-      const response = await axios.post("https://api.resend.com/emails", payload, {
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          "Content-Type": "application/json"
-        },
-        timeout: 10000
-      });
-
-      if (response.status >= 200 && response.status < 300 && response.data?.id) {
-        const messageId = response.data.id;
-        console.log(`[EMAIL_PROVIDER] Resend delivery SUCCESS. Message ID: ${messageId}, Status Code: ${response.status}`);
-        return {
-          success: true,
-          messageId
-        };
-      }
-
-      console.warn(`[EMAIL_PROVIDER] Resend returned unexpected HTTP status ${response.status}:`, response.data);
-      return {
-        success: false,
-        error: `Unexpected provider response status: ${response.status}`
-      };
-    } catch (err: any) {
-      const status = err.response?.status;
-      const responseData = err.response?.data;
-      const resendErrorName = responseData?.name || "error";
-      const resendErrorMessage = responseData?.message || err.message || "Unknown error";
-
-      if (status === 401) {
-        console.error(`[EMAIL_PROVIDER] Resend HTTP 401 Unauthorized: Invalid or revoked RESEND_API_KEY.`);
-      } else if (status === 403 || status === 400 || status === 422) {
-        const isSandboxError =
-          resendErrorMessage.toLowerCase().includes("testing emails") ||
-          resendErrorMessage.toLowerCase().includes("verify a domain") ||
-          resendErrorMessage.toLowerCase().includes("domain");
-
-        if (isSandboxError) {
-          const domain = fromAddress.includes("@") ? fromAddress.split("@")[1] : "talibon.gov.ph";
-          console.error(
-            `[EMAIL_PROVIDER] Resend Domain/Sandbox Error: Cannot deliver to citizen (${maskedTo}). ` +
-            `Sender address "${fromAddress}" requires domain verification in Resend. ` +
-            `Action Required: Add and verify the domain "${domain}" at https://resend.com/domains (with SPF & DKIM DNS records). ` +
-            `Provider message: "${resendErrorMessage}"`
-          );
-        } else {
-          console.error(
-            `[EMAIL_PROVIDER] Resend HTTP ${status} Error: ${resendErrorName} - ${resendErrorMessage}`
-          );
-        }
-      } else if (status === 429) {
-        console.error(`[EMAIL_PROVIDER] Resend HTTP 429 Rate Limit Exceeded: ${resendErrorMessage}`);
-      } else if (status >= 500) {
-        console.error(`[EMAIL_PROVIDER] Resend HTTP ${status} Provider Server Error: ${resendErrorMessage}`);
-      } else {
-        console.error(`[EMAIL_PROVIDER] Resend Network/Connection Error: ${err.message}`);
-      }
-
-      return {
-        success: false,
-        error: `[${resendErrorName}] ${resendErrorMessage}`
-      };
+      const response = await axios.post('https://api.resend.com/emails', {
+        from: `${this.fromName} <${this.fromAddress}>`, to: [options.to],
+        subject: options.subject, html: options.html, text: options.text,
+      }, { headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json',
+        ...(options.idempotencyKey ? { 'Idempotency-Key': options.idempotencyKey } : {}),
+      }, timeout: 10000 });
+      if (typeof response.data?.id === 'string') return { success: true, messageId: response.data.id };
+      return { success: false, error: 'provider_invalid_response' };
+    } catch (error: unknown) {
+      // Provider bodies can contain addresses or credentials; store only a safe code.
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      return { success: false, error: status ? `provider_http_${status}` : 'provider_network_error' };
     }
   }
 }
-

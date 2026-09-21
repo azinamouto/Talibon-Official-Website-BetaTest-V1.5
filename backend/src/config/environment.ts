@@ -1,6 +1,14 @@
 /** Validate configuration without printing secret values. */
 export function validateEnvironment(env: Record<string, unknown>) {
   const fail = (key: string): never => { throw new Error(`Invalid or missing environment variable: ${key}`); };
+  for (const key of Object.keys(env)) {
+    if (/^VITE_.*(SECRET|SERVICE_ROLE|PRIVATE|PASSWORD|ADMIN)/i.test(key)) {
+      throw new Error('Private environment variables must not use the VITE_ prefix.');
+    }
+  }
+  for (const key of ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']) {
+    if (!String(env[key] ?? '').trim() || /your[_-]|placeholder/i.test(String(env[key]))) fail(key);
+  }
   const mode = env.NODE_ENV ?? 'development';
   if (!['development', 'test', 'production'].includes(String(mode))) fail('NODE_ENV');
   const port = Number(env.PORT ?? 3000);

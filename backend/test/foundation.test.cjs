@@ -137,9 +137,9 @@ test('profile roles override stale claims and require verification', async () =>
   assert.doesNotMatch(await res.text(), /private database/);
   profileError = null;
 });
-test('public tracking exposes status without applicant or staff notes', async () => {
+test('tracking requires authentication and exposes no applicant data anonymously', async () => {
   const res = await request('/api/forms/certificate/T-1');
-  assert.equal(res.status, 200);
+  assert.equal(res.status, 401);
   assert.doesNotMatch(await res.text(), /Secret|private|PII|remarks/);
 });
 test('logout invalidates an otherwise verified access token at the API', async () => {

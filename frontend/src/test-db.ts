@@ -1,6 +1,7 @@
 import axios from "axios";
+import { validateEnvironment } from "./lib/envValidator";
 import * as dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: new URL('../.env', import.meta.url) });
 
 const sanitizeUrl = (url: string): string => {
   let trimmed = url.trim();
@@ -17,11 +18,12 @@ const sanitizeUrl = (url: string): string => {
 };
 
 async function run() {
-  const rawUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const rawUrl = process.env.VITE_SUPABASE_URL;
+  const key = process.env.VITE_SUPABASE_ANON_KEY;
   
-  if (!rawUrl || !key) {
-    console.error("Missing credentials");
+  if (!validateEnvironment(process.env).isValid || !rawUrl || !key) {
+    console.error("Invalid public Supabase configuration.");
+    process.exitCode = 1;
     return;
   }
 
@@ -30,6 +32,7 @@ async function run() {
   try {
     const response = await axios({
       method: "GET",
+      timeout: 15000,
       url: `${url}/rest/v1/`,
       headers: {
         "apikey": key,
@@ -41,7 +44,8 @@ async function run() {
     const rpcs = Object.keys(response.data.paths || {}).filter(p => p.startsWith("/rpc/"));
     console.log("Available RPCs in Supabase database:", rpcs);
   } catch (err: any) {
-    console.error("OpenAPI request failed:", err.message);
+    console.error("OpenAPI request failed.");
+    process.exitCode = 1;
   }
 }
 

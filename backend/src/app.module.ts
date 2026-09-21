@@ -26,6 +26,10 @@ import { RateLimiterGuard } from "./security/rate-limiter.guard";
 import { AuthGuard } from "./security/auth.guard";
 import { CacheControlMiddleware } from "./security/cache-control.middleware";
 import { AllExceptionsFilter } from "./security/all-exceptions.filter";
+import { ContentService } from './api/content/content.service';
+import { PageContentController } from './api/content/pages.controller';
+import { NewsContentController } from './api/content/news.controller';
+import { ServiceContentController } from './api/content/services.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
@@ -34,6 +38,9 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
     ExecutiveController,
     LegislativeController,
     NewsController,
+    PageContentController,
+    NewsContentController,
+    ServiceContentController,
     TransparencyController,
     TourismController,
     FormsController,
@@ -44,6 +51,7 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
     ExecutiveService,
     LegislativeService,
     NewsService,
+    ContentService,
     TransparencyService,
     TourismService,
     FormsService,

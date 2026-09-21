@@ -34,10 +34,13 @@ import { ReportsController } from './api/admin/reports.controller';
 import { ReportsService } from './api/admin/reports.service';
 import { UsersController } from './api/admin/users.controller';
 import { UsersService } from './api/admin/users.service';
+import { SearchController } from './api/search/search.controller';
+import { SearchService } from './api/search/search.service';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
   controllers: [
+    SearchController,
     ReportsController,
     UsersController,
     AboutController,
@@ -52,6 +55,7 @@ import { UsersService } from './api/admin/users.service';
     FormsController,
   ],
   providers: [
+    SearchService,
     ReportsService,
     UsersService,
     SupabaseService,

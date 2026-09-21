@@ -32,6 +32,15 @@ test.each(['admin','municipal_admin','super_admin'])('verified %s can read repor
   else await expect(f.guard.canActivate(f.context)).rejects.toMatchObject({ status: 403 });
 });
 
+test('the same verified token loses dashboard access immediately after role change or deactivation', async () => {
+  const f=fixture({role:'admin',verified:true}); Permissions('reports:read')(f.Controller);
+  expect(await f.guard.canActivate(f.context)).toBe(true);
+  f.request.profile.role='citizen';
+  await expect(f.guard.canActivate(f.context)).rejects.toMatchObject({status:403});
+  f.request.profile.role='admin'; f.request.profile.deleted_at='2026-09-21';
+  await expect(f.guard.canActivate(f.context)).rejects.toMatchObject({status:403});
+});
+
 test('public endpoints skip authentication, but role metadata overrides Public', async () => {
   const f = fixture(); Public()(f.Controller);
   expect(await f.guard.canActivate(f.context)).toBe(true);

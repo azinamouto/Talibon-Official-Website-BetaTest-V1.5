@@ -21,13 +21,14 @@ applied without comparing the actual schema. No remote migration history was cha
 | Content | news, events, tourism_spots, dynamic_pages and related CMS tables | Published/active, nondeleted rows public; verified municipal admins/editors can edit |
 | Form submissions | certificate_requests -> workflow_history | Private; verified municipal admins/staff read; writes through trusted API |
 | Payments | payments.request_id -> certificate_requests.id | Verified municipal admins read; server writes only |
-| Notifications | notifications.user_id -> auth.users | Own rows only; client can change only is_read |
+| Notifications | notifications.user_id -> profiles.id -> auth.users | Own rows only; client can change only is_read |
 | Audit | security_audit_events.actor_id -> auth.users | Server writes; verified municipal admins read |
 
 Reviewed in code: RLS on public tables, restricted column grants, protected role
 lookup, fixed definer search paths, revoked privileged RPCs, invoker views,
 and ownership checks for storage. The database security suite exercises anonymous,
-citizen, staff and admin access, escalation attempts, and revoked sessions.
+citizen and admin access, escalation attempts, and revoked sessions. Backend guard
+tests also cover restricted roles and profile verification.
 Citizens retrieve private request/payment data through authorized API endpoints;
 there is deliberately no direct browser SELECT grant for their private records.
 

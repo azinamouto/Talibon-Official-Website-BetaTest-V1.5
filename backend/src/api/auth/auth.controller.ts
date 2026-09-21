@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, Inject, Post, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, RefreshDto } from './auth.dto';
+import { LoginDto, RefreshDto, SignupDto } from './auth.dto';
 import { Public } from '../../security/auth.guard';
 import { RateLimit, RateLimitCategory } from '../../security/rate-limiter.guard';
 import type { AuthenticatedRequest } from '../../security/authenticated-request';
@@ -11,6 +11,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @RateLimit(RateLimitCategory.AUTHENTICATION)
 export class AuthController {
   constructor(@Inject(AuthService) private readonly auth: AuthService) {}
+
+  @Public()
+  @Post('signup')
+  signup(@Body() dto: SignupDto) { return this.auth.signup(dto); }
 
   @Public()
   @Post('login')

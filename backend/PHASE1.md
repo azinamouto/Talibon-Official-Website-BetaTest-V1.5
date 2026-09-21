@@ -84,6 +84,7 @@ exact `ALLOWED_ORIGINS`. Localhost is accepted automatically only outside produc
 
 | Endpoint | Request | HTTP 200 response |
 | --- | --- | --- |
+| `POST /api/auth/signup` | `{ email, password, full_name }` | HTTP 201: `{ success: true, data: { session, user, confirmation_required } }` |
 | `POST /api/auth/login` | `{ email, password }` | `{ success: true, data: { session, user } }` |
 | `POST /api/auth/refresh` | `{ refresh_token }` | `{ success: true, data: { session, user } }` |
 | `GET /api/auth/me` | Bearer token | `{ success: true, data: { user: { id, email }, profile } }` |
@@ -92,8 +93,25 @@ exact `ALLOWED_ORIGINS`. Localhost is accepted automatically only outside produc
 Use `Authorization: Bearer <access_token>`. Login/refresh create isolated,
 nonpersistent Auth clients. Consume the rotated refresh token returned by refresh.
 The API sets no cookies. Existing Supabase access tokens work after migration.
-Signup, confirmation, and recovery remain Supabase Auth flows; configure redirect
-allowlists and email delivery during frontend integration.
+Signup uses Supabase Auth with an isolated public-key client. Passwords must be
+12–1024 characters; full_name must contain non-whitespace text and be at most 100
+characters. Role/verification fields and arbitrary metadata are rejected. The
+canonical database trigger assigns `guest`, unverified; trusted staff provision
+higher roles. Never infer permissions from editable user metadata.
+
+When `confirmation_required` is true, session is null: show an email-confirmation
+message, then log in after confirmation. Never assume signup means authenticated.
+Duplicate-account behavior follows Supabase's anti-enumeration settings. Configure
+email templates, Site URL and redirect allowlists in S1-INT-01; confirmation and
+recovery remain Supabase Auth flows. Projects with CAPTCHA enabled must complete
+the CAPTCHA integration before using this signup endpoint.
+
+For staging handoff: sign up a disposable account, confirm its email, log in, call
+`/api/auth/me`, refresh and replace both stored tokens, log out with the current
+access token, then verify `/api/auth/me` rejects that token. Check an unverified
+account cannot read `/api/forms/certificate`. Record project, date and result in
+the PR without credentials or tokens. No configured project was available for this
+live check during implementation, so S1-BE-03 live verification remains pending.
 
 Logout revokes the current session. The API verifies each JWT and checks
 `auth.sessions`, so revoked sessions immediately stop working here. Direct

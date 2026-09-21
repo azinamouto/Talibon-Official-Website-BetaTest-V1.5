@@ -30,10 +30,13 @@ import { ContentService } from './api/content/content.service';
 import { PageContentController } from './api/content/pages.controller';
 import { NewsContentController } from './api/content/news.controller';
 import { ServiceContentController } from './api/content/services.controller';
+import { ReportsController } from './api/admin/reports.controller';
+import { ReportsService } from './api/admin/reports.service';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
   controllers: [
+    ReportsController,
     AboutController,
     ExecutiveController,
     LegislativeController,
@@ -46,6 +49,7 @@ import { ServiceContentController } from './api/content/services.controller';
     FormsController,
   ],
   providers: [
+    ReportsService,
     SupabaseService,
     AboutService,
     ExecutiveService,

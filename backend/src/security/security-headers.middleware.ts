@@ -17,10 +17,16 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
     res.setHeader("X-Frame-Options", "SAMEORIGIN");
 
     // Strict Transport Security (HSTS) when on HTTPS
-    if (req.secure || req.headers["x-forwarded-proto"] === "https") {
+    if (req.secure) {
       res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     }
 
+    if (req.path === '/api/docs' || req.path.startsWith('/api/docs/')) {
+      res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'");
+      res.setHeader('Cache-Control', 'no-store');
+      next();
+      return;
+    }
     if (req.path.startsWith('/api/')) {
       res.setHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
       next();

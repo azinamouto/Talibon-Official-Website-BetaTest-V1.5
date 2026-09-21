@@ -1,0 +1,36 @@
+name: Backend checks
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+  database:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate PostgreSQL tools
+        shell: pwsh
+        run: |
+          $pg = Get-ChildItem 'C:/Program Files/PostgreSQL/*/bin/psql.exe' | Sort-Object FullName -Descending | Select-Object -First 1
+          if (!$pg) { throw 'PostgreSQL tools are required' }
+          Split-Path $pg.FullName | Out-File -FilePath $env:GITHUB_PATH -Append
+      - name: Replay migrations and verify RLS
+        shell: pwsh
+        run: ./backend/test/run-database-tests.ps1

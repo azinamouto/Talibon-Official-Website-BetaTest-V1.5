@@ -76,7 +76,7 @@ export class AuthGuard implements CanActivate {
       try {
         sessionId = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString()).session_id;
       } catch { throw new UnauthorizedException('Invalid session.'); }
-      if (typeof sessionId !== 'string' || !/^[0-9a-f-]{36}$/i.test(sessionId)) {
+      if (typeof sessionId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
         throw new UnauthorizedException('Invalid session.');
       }
       const { data: active, error: sessionError } = await client.rpc('is_api_session_active', {

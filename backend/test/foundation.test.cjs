@@ -75,6 +75,30 @@ test('production CORS uses exact origins, not hostname substrings', () => {
   assert.equal(isAllowedOrigin('https://talibon.gov.ph'), true);
   for (const origin of ['https://localhost.evil.test', 'https://evil-vercel.app', 'http://localhost:5173', 'https://talibon.gov.ph.evil.test']) assert.equal(isAllowedOrigin(origin), false);
 });
+test('Swagger is reachable and exposes validated request fields', async () => {
+  const ui = await request('/api/docs/');
+  assert.equal(ui.status, 200);
+  assert.match(await ui.text(), /swagger-ui/);
+  assert.match(ui.headers.get('content-security-policy'), /script-src 'self'/);
+  const res = await request('/api/openapi.json');
+  assert.equal(res.status, 200);
+  const spec = await res.json();
+  assert.ok(spec.paths['/api/auth/login'].post);
+  assert.ok(spec.components.schemas.LoginDto.properties.email);
+});
+test('API defaults to v1 and rejects unsupported versions', async () => {
+  const res = await fetch(base + '/api/default', { headers: { 'X-API-Version': '2' } });
+  assert.equal(res.status, 404);
+  assert.match(res.headers.get('vary'), /X-API-Version/);
+  assert.equal((await fetch(base + '/api/default', { headers: { 'X-API-Version': '1' } })).status, 401);
+});
+test('CORS permits version header only for an allowed origin', async () => {
+  for (const [origin, allowed] of [['https://talibon.gov.ph', true], ['https://evil.test', false]]) {
+    const res = await fetch(base + '/api/auth/login', { method: 'OPTIONS', headers: { Origin: origin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'X-API-Version,Content-Type' } });
+    assert.equal(res.headers.get('access-control-allow-origin'), allowed ? origin : null);
+    if (allowed) assert.match(res.headers.get('access-control-allow-headers'), /X-API-Version/);
+  }
+});
 test('unmarked routes require auth, and errors cannot be publicly cached', async () => {
   const res = await request('/api/default');
   assert.equal(res.status, 401);

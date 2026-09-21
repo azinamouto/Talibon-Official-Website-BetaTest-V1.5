@@ -14,12 +14,14 @@ import { CreateCertificateRequestDto } from "./dto/certificate-request.dto";
 import { UpdateStatusDto } from "./dto/update-status.dto";
 import { RateLimit, RateLimitCategory } from "../../security/rate-limiter.guard";
 import { Public, Roles, RequireAuth } from "../../security/auth.guard";
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller("api/forms")
 export class FormsController {
   constructor(@Inject(FormsService) private readonly formsService: FormsService) {}
 
   @Get("certificate")
+  @ApiBearerAuth()
   @RateLimit(RateLimitCategory.ADMIN_MUTATION)
   @RequireAuth()
   @Roles("admin", "super_admin", "municipal_admin", "staff")
@@ -55,6 +57,7 @@ export class FormsController {
   }
 
   @Put("certificate/:id/status")
+  @ApiBearerAuth()
   @RateLimit(RateLimitCategory.ADMIN_MUTATION)
   @RequireAuth()
   @Roles("admin", "super_admin", "municipal_admin", "staff")

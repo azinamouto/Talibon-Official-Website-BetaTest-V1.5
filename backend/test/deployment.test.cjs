@@ -4,8 +4,10 @@ const { createServer } = require('node:http');
 
 test('deployment entry boots concurrently and retains DTO metadata', async () => {
   process.env.NODE_ENV = 'production';
-  delete process.env.SUPABASE_URL;
-  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_URL = 'http://127.0.0.1:1';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-key';
+  process.env.SUPABASE_PUBLISHABLE_KEY = 'test-public-key';
+  process.env.ALLOWED_ORIGINS = 'https://talibon.gov.ph';
   delete process.env.RESEND_API_KEY;
   const { default: handler } = await import('../../api/index.js');
   const server = createServer((req, res) => {

@@ -2,6 +2,27 @@
 
 Backend-only implementation. Frontend source files are unchanged.
 
+## Sprint 1 API contract and CI (S1-BE-02 / S1-BE-04)
+
+Swagger UI: `/api/docs/`. Generated OpenAPI JSON: `/api/openapi.json`.
+Documentation is public and contains schemas only, never environment values.
+Send `X-API-Version: 1`; omitting it selects v1 for existing frontend clients.
+Unsupported versions return 404. Responses vary on the version header.
+Future breaking versions use Nest's `@Version()` decorator with the same header.
+DTOs reject unknown fields; errors retain the standard envelope documented below.
+
+ConfigModule loads `backend/.env` (root invocation) or `.env` (backend invocation).
+Process environment values take precedence. Production startup rejects missing
+Supabase credentials, missing/invalid CORS origins, invalid ports, and mock mode.
+Local development can still serve static endpoints without Supabase credentials.
+Auth has a dedicated module; payments and notifications retain their modules.
+
+Every GitHub PR runs backend ESLint, TypeScript checks, Jest, HTTP/deployment tests,
+and a separate PostgreSQL migration/RLS job. Run `npm run lint --prefix backend`
+and `npm test --prefix backend` locally before pushing. Database job has no hosted
+credentials and uses disposable databases only. CI status must pass before merge;
+repository branch protection must be configured by the repository owner.
+
 ## Verification
 
 From the repository root:
@@ -63,6 +84,7 @@ exact `ALLOWED_ORIGINS`. Localhost is accepted automatically only outside produc
 
 | Endpoint | Request | HTTP 200 response |
 | --- | --- | --- |
+| `POST /api/auth/signup` | `{ email, password, full_name }` | HTTP 201: `{ success: true, data: { session, user, confirmation_required } }` |
 | `POST /api/auth/login` | `{ email, password }` | `{ success: true, data: { session, user } }` |
 | `POST /api/auth/refresh` | `{ refresh_token }` | `{ success: true, data: { session, user } }` |
 | `GET /api/auth/me` | Bearer token | `{ success: true, data: { user: { id, email }, profile } }` |
@@ -71,8 +93,25 @@ exact `ALLOWED_ORIGINS`. Localhost is accepted automatically only outside produc
 Use `Authorization: Bearer <access_token>`. Login/refresh create isolated,
 nonpersistent Auth clients. Consume the rotated refresh token returned by refresh.
 The API sets no cookies. Existing Supabase access tokens work after migration.
-Signup, confirmation, and recovery remain Supabase Auth flows; configure redirect
-allowlists and email delivery during frontend integration.
+Signup uses Supabase Auth with an isolated public-key client. Passwords must be
+12–1024 characters; full_name must contain non-whitespace text and be at most 100
+characters. Role/verification fields and arbitrary metadata are rejected. The
+canonical database trigger assigns `guest`, unverified; trusted staff provision
+higher roles. Never infer permissions from editable user metadata.
+
+When `confirmation_required` is true, session is null: show an email-confirmation
+message, then log in after confirmation. Never assume signup means authenticated.
+Duplicate-account behavior follows Supabase's anti-enumeration settings. Configure
+email templates, Site URL and redirect allowlists in S1-INT-01; confirmation and
+recovery remain Supabase Auth flows. Projects with CAPTCHA enabled must complete
+the CAPTCHA integration before using this signup endpoint.
+
+For staging handoff: sign up a disposable account, confirm its email, log in, call
+`/api/auth/me`, refresh and replace both stored tokens, log out with the current
+access token, then verify `/api/auth/me` rejects that token. Check an unverified
+account cannot read `/api/forms/certificate`. Record project, date and result in
+the PR without credentials or tokens. No configured project was available for this
+live check during implementation, so S1-BE-03 live verification remains pending.
 
 Logout revokes the current session. The API verifies each JWT and checks
 `auth.sessions`, so revoked sessions immediately stop working here. Direct

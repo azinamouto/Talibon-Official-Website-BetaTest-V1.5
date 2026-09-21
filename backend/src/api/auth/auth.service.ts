@@ -1,10 +1,29 @@
-import { Inject, Injectable, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, Inject, Injectable, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 import { SupabaseService } from '../../supabase.service';
-import { LoginDto } from './auth.dto';
+import { LoginDto, SignupDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(@Inject(SupabaseService) private readonly supabase: SupabaseService) {}
+
+  async signup(dto: SignupDto) {
+    const { data, error } = await this.supabase.createAuthClient().auth.signUp({
+      email: dto.email,
+      password: dto.password,
+      options: { data: { full_name: dto.full_name.trim() } },
+    });
+    if (error) {
+      if (error.status === 429) throw new HttpException('Please retry registration later.', 429);
+      if (error.status >= 500) throw new ServiceUnavailableException('Registration is temporarily unavailable.');
+      // Never forward provider messages that may disclose account existence.
+      throw new BadRequestException('Unable to register with the supplied details.');
+    }
+    return { success: true, data: {
+      session: data.session,
+      user: data.user,
+      confirmation_required: !data.session,
+    } };
+  }
 
   async login(dto: LoginDto) {
     const { data, error } = await this.supabase.createAuthClient().auth.signInWithPassword(dto);

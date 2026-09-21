@@ -32,11 +32,14 @@ import { NewsContentController } from './api/content/news.controller';
 import { ServiceContentController } from './api/content/services.controller';
 import { ReportsController } from './api/admin/reports.controller';
 import { ReportsService } from './api/admin/reports.service';
+import { UsersController } from './api/admin/users.controller';
+import { UsersService } from './api/admin/users.service';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
   controllers: [
     ReportsController,
+    UsersController,
     AboutController,
     ExecutiveController,
     LegislativeController,
@@ -50,6 +53,7 @@ import { ReportsService } from './api/admin/reports.service';
   ],
   providers: [
     ReportsService,
+    UsersService,
     SupabaseService,
     AboutService,
     ExecutiveService,

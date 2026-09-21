@@ -10,6 +10,8 @@
 **Target:** Production Deployment
 
 Backend API contracts: [Sprint 2 pages, news and services](backend/SPRINT2_API.md).
+Sprint 4: [admin reports and user management](backend/docs/admin-api.md),
+[role and permission matrix](backend/docs/admin-rbac.md).
 The running backend serves Swagger at `/api/docs` and OpenAPI at `/api/openapi.json`.
 
 ---

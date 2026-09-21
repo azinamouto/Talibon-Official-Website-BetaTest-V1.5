@@ -46,9 +46,14 @@ interface ClientRecord {
 export class RateLimiterGuard implements CanActivate {
   private tracker: Map<string, ClientRecord> = new Map();
 
+  private readonly cleanupTimer: ReturnType<typeof setInterval>;
+
+  onModuleDestroy() { clearInterval(this.cleanupTimer); }
+
   constructor(@Inject(Reflector) private reflector: Reflector) {
     // Periodic cleanup of stale tracking records every 5 minutes
-    setInterval(() => this.cleanup(), 5 * 60 * 1000);
+    this.cleanupTimer = setInterval(() => this.cleanup(), 5 * 60 * 1000);
+    this.cleanupTimer.unref();
   }
 
   canActivate(context: ExecutionContext): boolean {
@@ -71,7 +76,6 @@ export class RateLimiterGuard implements CanActivate {
     // Determine client IP accurately
     const clientIp = (
       req.ip ||
-      (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
       req.socket?.remoteAddress ||
       "unknown"
     ).toString().trim();
@@ -82,6 +86,12 @@ export class RateLimiterGuard implements CanActivate {
 
     let record = this.tracker.get(trackerKey);
     if (!record) {
+      if (this.tracker.size >= 10000) {
+        this.cleanup();
+        if (this.tracker.size >= 10000) {
+          throw new HttpException('Rate limiter capacity reached. Please retry later.', 503);
+        }
+      }
       record = { timestamps: [] };
       this.tracker.set(trackerKey, record);
     }

@@ -4,7 +4,9 @@ import { LoginDto, RefreshDto } from './auth.dto';
 import { Public } from '../../security/auth.guard';
 import { RateLimit, RateLimitCategory } from '../../security/rate-limiter.guard';
 import type { AuthenticatedRequest } from '../../security/authenticated-request';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Authentication')
 @Controller('api/auth')
 @RateLimit(RateLimitCategory.AUTHENTICATION)
 export class AuthController {
@@ -21,11 +23,13 @@ export class AuthController {
   refresh(@Body() dto: RefreshDto) { return this.auth.refresh(dto.refresh_token); }
 
   @Get('me')
+  @ApiBearerAuth()
   me(@Req() req: AuthenticatedRequest) {
     return { success: true, data: { user: { id: req.user.id, email: req.user.email }, profile: req.profile } };
   }
 
   @Post('logout')
+  @ApiBearerAuth()
   @HttpCode(200)
   logout(@Req() req: AuthenticatedRequest) { return this.auth.logout(req.accessToken); }
 }

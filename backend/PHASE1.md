@@ -2,6 +2,27 @@
 
 Backend-only implementation. Frontend source files are unchanged.
 
+## Sprint 1 API contract and CI (S1-BE-02 / S1-BE-04)
+
+Swagger UI: `/api/docs/`. Generated OpenAPI JSON: `/api/openapi.json`.
+Documentation is public and contains schemas only, never environment values.
+Send `X-API-Version: 1`; omitting it selects v1 for existing frontend clients.
+Unsupported versions return 404. Responses vary on the version header.
+Future breaking versions use Nest's `@Version()` decorator with the same header.
+DTOs reject unknown fields; errors retain the standard envelope documented below.
+
+ConfigModule loads `backend/.env` (root invocation) or `.env` (backend invocation).
+Process environment values take precedence. Production startup rejects missing
+Supabase credentials, missing/invalid CORS origins, invalid ports, and mock mode.
+Local development can still serve static endpoints without Supabase credentials.
+Auth has a dedicated module; payments and notifications retain their modules.
+
+Every GitHub PR runs backend ESLint, TypeScript checks, Jest, HTTP/deployment tests,
+and a separate PostgreSQL migration/RLS job. Run `npm run lint --prefix backend`
+and `npm test --prefix backend` locally before pushing. Database job has no hosted
+credentials and uses disposable databases only. CI status must pass before merge;
+repository branch protection must be configured by the repository owner.
+
 ## Verification
 
 From the repository root:

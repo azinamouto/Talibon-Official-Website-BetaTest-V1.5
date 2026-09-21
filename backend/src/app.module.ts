@@ -1,8 +1,9 @@
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from "@nestjs/common";
 import { APP_GUARD, APP_FILTER } from "@nestjs/core";
 import { AuditMiddleware } from "./security/audit.middleware";
-import { AuthController } from "./api/auth/auth.controller";
-import { AuthService } from "./api/auth/auth.service";
+import { AuthModule } from "./api/auth/auth.module";
+import { ConfigModule } from '@nestjs/config';
+import { validateEnvironment } from './config/environment';
 
 import { AboutController } from "./api/about/about.controller";
 import { AboutService } from "./api/about/about.service";
@@ -23,12 +24,11 @@ import { NotificationsModule } from "./api/notifications/notification.module";
 import { SupabaseService } from "./supabase.service";
 import { RateLimiterGuard } from "./security/rate-limiter.guard";
 import { AuthGuard } from "./security/auth.guard";
-import { SecurityHeadersMiddleware } from "./security/security-headers.middleware";
 import { CacheControlMiddleware } from "./security/cache-control.middleware";
 import { AllExceptionsFilter } from "./security/all-exceptions.filter";
 
 @Module({
-  imports: [PaymentsModule, NotificationsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
   controllers: [
     AboutController,
     ExecutiveController,
@@ -37,7 +37,6 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
     TransparencyController,
     TourismController,
     FormsController,
-    AuthController,
   ],
   providers: [
     SupabaseService,
@@ -48,7 +47,6 @@ import { AllExceptionsFilter } from "./security/all-exceptions.filter";
     TransparencyService,
     TourismService,
     FormsService,
-    AuthService,
     {
       provide: APP_GUARD,
       useClass: RateLimiterGuard
@@ -67,7 +65,7 @@ export class AppModule implements NestModule {
   async configure(consumer: MiddlewareConsumer) {
     // Apply security headers & cache control to all routes
     consumer
-      .apply(SecurityHeadersMiddleware, CacheControlMiddleware, AuditMiddleware)
+      .apply(CacheControlMiddleware, AuditMiddleware)
       .forRoutes({ path: "{*path}", method: RequestMethod.ALL });
 
   }

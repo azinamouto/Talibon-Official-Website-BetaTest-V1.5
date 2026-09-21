@@ -5,11 +5,12 @@ import {
   UnauthorizedException,
   ForbiddenException,
   SetMetadata,
+  ServiceUnavailableException,
   Inject
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { Request } from "express";
 import { SupabaseService } from "../supabase.service";
+import { AuthenticatedRequest } from './authenticated-request';
 
 export const IS_PUBLIC_KEY = "isPublic";
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
@@ -48,13 +49,8 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // If route doesn't require auth/roles explicitly, pass by default
-    if (!requireAuth && !requiredRoles) {
-      return true;
-    }
-
     const http = context.switchToHttp();
-    const req = http.getRequest<Request>();
+    const req = http.getRequest<AuthenticatedRequest>();
     const authHeader = req.headers["authorization"];
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -74,28 +70,40 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException("Invalid or expired authentication token.");
       }
 
-      (req as any).user = data.user;
+      // Decode only after Auth has verified the token. Session existence makes logout
+      // effective immediately at this API, even while the access JWT is unexpired.
+      let sessionId: string;
+      try {
+        sessionId = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString()).session_id;
+      } catch { throw new UnauthorizedException('Invalid session.'); }
+      if (typeof sessionId !== 'string' || !/^[0-9a-f-]{36}$/i.test(sessionId)) {
+        throw new UnauthorizedException('Invalid session.');
+      }
+      const { data: active, error: sessionError } = await client.rpc('is_api_session_active', {
+        p_session_id: sessionId, p_user_id: data.user.id,
+      });
+      if (sessionError) throw new ServiceUnavailableException('Session verification is unavailable.');
+      if (!active) throw new UnauthorizedException('Session has ended.');
+
+      const { data: profile, error: profileError } = await client
+        .from('profiles').select('role,is_verified,deleted_at').eq('id', data.user.id).maybeSingle();
+      if (profileError) throw new ServiceUnavailableException('Authorization is unavailable.');
+      if (!profile || profile.deleted_at) throw new ForbiddenException('Account is unavailable.');
+      req.user = data.user;
+      req.profile = profile;
+      req.accessToken = token;
 
       // Role authorization check if roles specified
       if (requiredRoles && requiredRoles.length > 0) {
-        const userId = data.user.id;
-        const { data: profile } = await client
-          .from("profiles")
-          .select("role")
-          .eq("id", userId)
-          .maybeSingle();
-
-        const userRole = profile?.role || data.user.app_metadata?.role || "citizen";
-
-        const hasRole = requiredRoles.some(r => r.toLowerCase() === userRole.toLowerCase());
+        const hasRole = profile.is_verified === true && requiredRoles.includes(profile.role);
         if (!hasRole) {
           throw new ForbiddenException("Access denied. Required administrative privileges are missing.");
         }
       }
 
       return true;
-    } catch (err: any) {
-      if (err instanceof ForbiddenException || err instanceof UnauthorizedException) {
+    } catch (err: unknown) {
+      if (err instanceof ForbiddenException || err instanceof UnauthorizedException || err instanceof ServiceUnavailableException) {
         throw err;
       }
       throw new UnauthorizedException("Authentication token verification failed.");

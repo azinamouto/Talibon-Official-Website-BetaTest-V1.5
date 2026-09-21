@@ -26,18 +26,23 @@ try {
   & (Join-Path $pgBin 'pg_ctl.exe') -D $pgData -l (Join-Path $scratch 'server.log') -o "-h 127.0.0.1 -p $port" -w start
   if ($LASTEXITCODE -ne 0) { throw 'Local PostgreSQL startup failed.' }
   $started = $true
-  foreach ($database in @('phase1_canonical', 'phase1_v4')) {
+  foreach ($database in @('phase1_fresh', 'phase1_canonical', 'phase1_v4')) {
     & (Join-Path $pgBin 'createdb.exe') -h 127.0.0.1 -p $port -U postgres $database
     if ($LASTEXITCODE -ne 0) { throw 'Could not create disposable database.' }
     Invoke-SqlFile $database 'backend/test/supabase-stubs.sql'
-    if ($database -eq 'phase1_canonical') {
+    if ($database -eq 'phase1_fresh') {
+      foreach ($migration in (Get-ChildItem (Join-Path $repo 'supabase/migrations') -Filter '*.sql' | Sort-Object Name)) {
+        Invoke-SqlFile $database ('supabase/migrations/' + $migration.Name)
+      }
+    } elseif ($database -eq 'phase1_canonical') {
       Invoke-SqlFile $database 'DATABASE/PHASE1_SETUP.sql'
     } else {
-      Invoke-SqlFile $database 'supabase/migrations/20260803000000_v4_enterprise_municipal_core.sql'
-      Invoke-SqlFile $database 'supabase/migrations/20260804000000_v4_production_bootstrap.sql'
-      Invoke-SqlFile $database 'supabase/migrations/20260920075951_phase1_backend_security.sql'
+      Invoke-SqlFile $database 'supabase/legacy-migrations/20260803000000_v4_enterprise_municipal_core.sql'
+      Invoke-SqlFile $database 'supabase/legacy-migrations/20260804000000_v4_production_bootstrap.sql'
+      Invoke-SqlFile $database 'supabase/legacy-migrations/20260920075951_phase1_backend_security.sql'
     }
-    Invoke-SqlFile $database 'supabase/migrations/20260920075951_phase1_backend_security.sql'
+    Invoke-SqlFile $database 'backend/test/database-security.sql'
+    Invoke-SqlFile $database 'supabase/legacy-migrations/20260920075951_phase1_backend_security.sql'
     Invoke-SqlFile $database 'backend/test/database-security.sql'
     Write-Output "PASS: $database security assertions and migration reapplication"
     if ($Advisors) {

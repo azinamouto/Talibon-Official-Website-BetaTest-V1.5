@@ -30,8 +30,9 @@ the actual API entry and checks validation, middleware, and concurrent startup.
 The repository contains incompatible historical layouts. The documented canonical
 baseline is `DATABASE/PRODUCTION_SETUP.sql`, with text lookup keys and the
 `certificate_requests` table used by existing services. V4 uses UUID lookup keys
-and a compatibility view. Do not replay V3/V4 over the canonical baseline or run
-`supabase db reset` against this mixed historical migration directory.
+and a compatibility view. Historical migrations now live in `supabase/legacy-migrations`.
+The active `supabase/migrations` chain contains the canonical hardened baseline and
+is tested on an empty database. See `supabase/README.md` for review and adoption steps.
 
 For a **fresh, empty Supabase project**, run `DATABASE/PHASE1_SETUP.sql` using psql.
 It applies the canonical baseline and hardening atomically. Its `\ir` directives
@@ -39,7 +40,7 @@ are psql syntax, not SQL Editor syntax. The original baseline alone is not the
 hardened provisioning path.
 
 For an **existing canonical or V4 database**, apply only
-`supabase/migrations/20260920075951_phase1_backend_security.sql` transactionally,
+`supabase/legacy-migrations/20260920075951_phase1_backend_security.sql` transactionally,
 after verifying migration history in staging. Both layouts and reapplication are
 tested. Do not run old bootstrap scripts afterward: they recreate permissive rules.
 Review custom policies first: this migration intentionally replaces public-table

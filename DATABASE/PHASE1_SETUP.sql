@@ -3,5 +3,5 @@
 \set ON_ERROR_STOP on
 BEGIN;
 \ir PRODUCTION_SETUP.sql
-\ir ../supabase/migrations/20260920075951_phase1_backend_security.sql
+\ir ../supabase/legacy-migrations/20260920075951_phase1_backend_security.sql
 COMMIT;

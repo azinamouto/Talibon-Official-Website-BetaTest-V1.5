@@ -2,6 +2,8 @@
 
 Reviewed 2026-09-27 from `bdd8942`. Parent: [#55](https://github.com/rynzz22/Talibon-Official-Website-BetaTest-V1.5/issues/55).
 
+Both branches subsequently integrate `main` at `0442bd6`. Remote CI exposed an inherited middleware registration regression there (missing import, lost audit registration and old Express wildcard). Both branches restore audit/cache middleware with `{*path}`; headers already run in `configureApp`. Backend lint and full tests pass again after integration. See [#84](https://github.com/rynzz22/Talibon-Official-Website-BetaTest-V1.5/issues/84).
+
 ## Result
 
 Auth, RBAC, input validation and checkout regression checks pass locally. No critical dependency advisories were reported. **Payment webhook acceptance remains blocked by [S3-BE-02 / #31](https://github.com/rynzz22/Talibon-Official-Website-BetaTest-V1.5/issues/31): no webhook handler or verified settlement flow exists. Do not close #55 or approve production payment settlement based on these results.**

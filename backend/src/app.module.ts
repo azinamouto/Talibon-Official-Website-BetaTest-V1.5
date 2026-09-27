@@ -86,11 +86,10 @@ import { ChatService } from './api/chat/chat.service';
   ],
 })
 export class AppModule implements NestModule {
-  async configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer) {
     // Apply security headers & cache control to all routes
     consumer
       .apply(CacheControlMiddleware, AuditMiddleware)
       .forRoutes({ path: "{*path}", method: RequestMethod.ALL });
-
   }
 }

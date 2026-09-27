@@ -19,8 +19,21 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
+      - run: npm audit --audit-level=critical
       - run: npm run lint
       - run: npm test
+  dependency-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ['.', 'frontend']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm audit --audit-level=critical
+        working-directory: ${{ matrix.directory }}
   database:
     runs-on: windows-latest
     steps:

@@ -3,7 +3,7 @@ import {
   IsString,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
+  ValidateIf,
   IsUrl,
   Min,
   Max,
@@ -17,20 +17,22 @@ export class CreateCheckoutSessionDto {
   @ApiProperty({ type: String })
   itemName!: string;
 
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
   @Max(1000000)
   @ApiProperty({ type: Number })
   amount!: number;
 
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsString()
+  @IsUrl({ protocols: ['https', 'http'], require_protocol: true, require_tld: false })
   @MaxLength(500)
   @ApiPropertyOptional({ type: String })
   successUrl?: string;
 
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsString()
+  @IsUrl({ protocols: ['https', 'http'], require_protocol: true, require_tld: false })
   @MaxLength(500)
   @ApiPropertyOptional({ type: String })
   cancelUrl?: string;

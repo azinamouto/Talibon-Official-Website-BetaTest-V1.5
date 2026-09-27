@@ -1,4 +1,5 @@
-import { Injectable, InternalServerErrorException, BadRequestException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, BadRequestException, ServiceUnavailableException, Logger } from "@nestjs/common";
+import { randomUUID } from 'node:crypto';
 import { Xendit } from "xendit-node";
 import { CreateInvoiceRequest } from "xendit-node/invoice/models/CreateInvoiceRequest";
 
@@ -8,6 +9,28 @@ const MAX_AMOUNT = 1_000_000;
 @Injectable()
 export class PaymentsService {
   private xenditClient: Xendit | null = null;
+  private readonly logger = new Logger(PaymentsService.name);
+
+  private returnUrl(value: string | undefined, path: string): string {
+    let configured: URL;
+    try {
+      configured = new URL(process.env.PAYMENT_RETURN_ORIGIN || '');
+      const localHttp = process.env.NODE_ENV !== 'production' && configured.protocol === 'http:' &&
+        ['localhost', '127.0.0.1', '[::1]'].includes(configured.hostname);
+      if ((configured.protocol !== 'https:' && !localHttp) || configured.username || configured.password ||
+          configured.pathname !== '/' || configured.search || configured.hash) throw new Error();
+    } catch {
+      throw new ServiceUnavailableException('Payment return origin is not configured.');
+    }
+    if (value === undefined) return new URL(path, configured.origin).href;
+    try {
+      const target = new URL(value);
+      if (target.origin !== configured.origin || target.username || target.password) throw new Error();
+      return target.href;
+    } catch {
+      throw new BadRequestException('Payment return URL must use the configured website origin.');
+    }
+  }
 
   private get client() {
     if (!this.xenditClient) {
@@ -25,8 +48,8 @@ export class PaymentsService {
   async createCheckoutSession(
     itemName: string,
     amount: number,
-    successUrl: string,
-    cancelUrl: string
+    successUrl?: string,
+    cancelUrl?: string
   ) {
     if (!itemName || typeof itemName !== "string" || itemName.trim().length === 0) {
       throw new BadRequestException("Item name is required.");
@@ -39,7 +62,9 @@ export class PaymentsService {
     }
 
     const roundedAmount = Math.round(amount * 100) / 100;
-    const externalId = `talibon-pay-${Date.now()}`;
+    const externalId = `talibon-pay-${randomUUID()}`;
+    const successRedirectUrl = this.returnUrl(successUrl, '/payment/success');
+    const failureRedirectUrl = this.returnUrl(cancelUrl, '/payment/cancel');
 
     try {
       const invoiceRequest: CreateInvoiceRequest = {
@@ -47,8 +72,8 @@ export class PaymentsService {
         amount: roundedAmount,
         currency: "PHP",
         description: itemName.trim().slice(0, 200),
-        successRedirectUrl: successUrl,
-        failureRedirectUrl: cancelUrl,
+        successRedirectUrl,
+        failureRedirectUrl,
         items: [
           {
             name: itemName.trim().slice(0, 200),
@@ -71,15 +96,16 @@ export class PaymentsService {
         sessionId: response.id as string,
         url: response.invoiceUrl as string,
       };
-    } catch (error: any) {
-      console.error("[Xendit] Error:", error?.response?.data || error);
+    } catch (error: unknown) {
+      // SDK errors may contain credentials, request bodies and customer details.
+      this.logger.error('Payment invoice creation failed.');
 
       if (error instanceof BadRequestException || error instanceof InternalServerErrorException) {
         throw error;
       }
 
       // Handle Xendit specific errors
-      if (error?.status === 401) {
+      if (error && typeof error === 'object' && 'status' in error && error.status === 401) {
         throw new InternalServerErrorException(
           "Xendit authentication failed. Please verify your API key."
         );

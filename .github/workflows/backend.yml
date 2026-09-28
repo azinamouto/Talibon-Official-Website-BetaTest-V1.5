@@ -34,3 +34,6 @@ jobs:
       - name: Replay migrations and verify RLS
         shell: pwsh
         run: ./backend/test/run-database-tests.ps1
+      - name: Rehearse launch backup and restore in a disposable cluster
+        shell: pwsh
+        run: ./backend/test/rehearse-launch-rollback.ps1

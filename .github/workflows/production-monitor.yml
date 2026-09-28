@@ -1,0 +1,28 @@
+name: Production health monitor
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7-57/5 * * * *'
+permissions:
+  contents: read
+concurrency:
+  group: production-health-monitor
+  cancel-in-progress: false
+jobs:
+  monitor:
+    # Enable only after the owner confirms targets and receives a staging test alert.
+    if: vars.PRODUCTION_MONITOR_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    environment: production-monitoring
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check uptime, database readiness and latency; alert on failure
+        env:
+          MONITOR_API_ORIGIN: ${{ vars.MONITOR_API_ORIGIN }}
+          MONITOR_MAX_LATENCY_MS: ${{ vars.MONITOR_MAX_LATENCY_MS }}
+          MONITOR_ALERT_WEBHOOK: ${{ secrets.MONITOR_ALERT_WEBHOOK }}
+        run: node scripts/monitor-production.mjs

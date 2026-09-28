@@ -8,6 +8,7 @@ export class CacheControlMiddleware implements NestMiddleware {
 
     // Sensitive, citizen-specific, certificate, tracking, or payment endpoints MUST NOT be publicly cached
     if (
+      path.startsWith("/api/health") ||
       path.startsWith("/api/forms/certificate") ||
       path.startsWith("/api/auth") ||
       !!req.headers.authorization ||

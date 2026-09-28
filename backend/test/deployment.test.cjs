@@ -19,6 +19,13 @@ test('deployment entry boots concurrently and retains DTO metadata', async () =>
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   try {
     const base = `http://127.0.0.1:${server.address().port}`;
+    const live = await fetch(base + '/api/health');
+    assert.equal(live.status, 200);
+    assert.deepEqual(await live.json(), { status: 'ok' });
+    assert.match(live.headers.get('cache-control'), /no-store/);
+    const ready = await fetch(base + '/api/health/ready');
+    assert.equal(ready.status, 503, 'unreachable database must fail readiness');
+    assert.match(ready.headers.get('cache-control'), /no-store/);
     const responses = await Promise.all([1, 2].map(() => fetch(base + '/api/auth/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: 'bad', password: '', role: 'admin' }),

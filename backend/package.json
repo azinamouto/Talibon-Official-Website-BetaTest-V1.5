@@ -34,10 +34,15 @@
     "stripe": "^22.0.2",
     "xendit-node": "^7.0.0"
   },
+  "overrides": {
+    "@nestjs/swagger": {
+      "js-yaml": "5.4.2"
+    }
+  },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.4",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.12",
     "eslint": "9.39.5",
     "jest": "30.5.2",
     "tsx": "^4.19.2",

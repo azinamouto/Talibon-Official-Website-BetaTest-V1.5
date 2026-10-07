@@ -48,6 +48,13 @@ export function configureApp(app: INestApplication) {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-API-Version'],
     exposedHeaders: ['X-Request-Id', 'Retry-After'],
   });
+  SwaggerModule.setup('api/docs', app, () => createApiDocument(app), {
+    jsonDocumentUrl: 'api/openapi.json',
+    swaggerOptions: { persistAuthorization: false },
+  });
+}
+
+export function createApiDocument(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('Talibon Municipal API')
     .setDescription('Send X-API-Version: 1 (default when omitted). Bearer tokens are Supabase access tokens. Errors contain success, statusCode, error, message, timestamp and requestId.')
@@ -55,8 +62,5 @@ export function configureApp(app: INestApplication) {
     .addBearerAuth()
     .addGlobalParameters({ in: 'header', name: 'X-API-Version', required: false, schema: { type: 'string', enum: ['1'], default: '1' } })
     .build();
-  SwaggerModule.setup('api/docs', app, () => SwaggerModule.createDocument(app, config), {
-    jsonDocumentUrl: 'api/openapi.json',
-    swaggerOptions: { persistAuthorization: false },
-  });
+  return SwaggerModule.createDocument(app, config);
 }

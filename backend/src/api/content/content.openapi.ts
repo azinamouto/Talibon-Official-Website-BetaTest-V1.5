@@ -18,16 +18,16 @@ export function ContentResponse(kind: ContentKind, operation: 'list' | 'read' | 
   const example = {
     id: '11111111-1111-4111-8111-111111111111', slug: 'municipal-information',
     status: CONTENT[kind].visible, created_at: '2026-09-21T00:00:00.000Z', updated_at: '2026-09-21T00:00:00.000Z',
-    ...(kind === 'services' ? { name: 'Municipal information', description: 'Service details.', office_responsible: 'mayor', requirements: [], processing_time: '3 to 5 business days', fees: 'None' }
-      : { title: 'Municipal information', content: 'Information about Talibon.', ...(kind === 'news' ? { summary: 'Municipal update.', category: 'UPDATE', date: '2026-09-21' } : {}) }),
+    ...(kind === 'services' ? { name: 'Municipal information', description: 'Service details.', office_responsible: 'mayor', requirements: [], processing_time: '3 to 5 business days', fees: 'None', purpose: null, office_hours: 'Monday to Friday, 8:00 AM - 5:00 PM', contact_info: null, physical_address: null, downloadable_forms: [] }
+      : { title: 'Municipal information', content: 'Information about Talibon.', ...(kind === 'news' ? { summary: 'Municipal update.', category: 'UPDATE', date: '2026-09-21', image_url: null, file_url: null, author: null } : {}) }),
   };
   const properties = Object.fromEntries(CONTENT[kind].fields.split(',').map(field => [field,
     field === 'requirements' ? { type: 'array' as const, items: { type: 'string' as const } }
       : field === 'downloadable_forms' ? { type: 'array' as const, items: { type: 'object' as const, additionalProperties: true } }
       : { type: 'string' as const, nullable: ['image_url', 'file_url', 'author', 'purpose', 'contact_info', 'physical_address'].includes(field) },
   ]));
-  const item = { type: 'object' as const, properties };
-  const pagination = { type: 'object' as const, properties: Object.fromEntries(['page', 'limit', 'total', 'totalPages'].map(key => [key, { type: 'integer' as const }])) };
+  const item = { type: 'object' as const, required: Object.keys(properties), properties };
+  const pagination = { type: 'object' as const, required: ['page', 'limit', 'total', 'totalPages'], properties: Object.fromEntries(['page', 'limit', 'total', 'totalPages'].map(key => [key, { type: 'integer' as const }])) };
   return ApiResponse({
     status: operation === 'create' ? 201 : operation === 'delete' ? 204 : 200,
     headers: {
@@ -36,7 +36,7 @@ export function ContentResponse(kind: ContentKind, operation: 'list' | 'read' | 
     },
     description: operation === 'delete' ? 'Soft deleted; no response body.' : 'Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.',
     ...(operation === 'delete' ? {} : { schema: {
-      type: 'object', properties: { data: operation === 'list' ? { type: 'array', items: item } : item,
+      type: 'object', required: operation === 'list' ? ['data', 'pagination'] : ['data'], properties: { data: operation === 'list' ? { type: 'array', items: item } : item,
         ...(operation === 'list' ? { pagination } : {}) },
       example: operation === 'list' ? { data: [example], pagination: { page: 1, limit: 20, total: 1, totalPages: 1 } } : { data: example },
     } }),

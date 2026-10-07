@@ -1,9 +1,8 @@
 import { Public } from "../../security/auth.guard";
-import { Controller, Post, Body, Req, Inject } from "@nestjs/common";
+import { Controller, Post, Body, Inject } from "@nestjs/common";
 import { PaymentsService } from "./payments.service";
 import { CreateCheckoutSessionDto } from "./dto/checkout-session.dto";
 import { RateLimit, RateLimitCategory } from "../../security/rate-limiter.guard";
-import type { Request } from "express";
 
 @Controller("api/payments")
 export class PaymentsController {
@@ -13,19 +12,9 @@ export class PaymentsController {
   @Post("create-checkout-session")
   @RateLimit(RateLimitCategory.PAYMENT)
   async createCheckoutSession(
-    @Body() dto: CreateCheckoutSessionDto,
-    @Req() req: Request
+    @Body() dto: CreateCheckoutSessionDto
   ) {
-    const protocol = req.protocol;
-    const host = req.get("host");
-    const baseUrl = `${protocol}://${host}`;
-
-    const {
-      itemName,
-      amount,
-      successUrl = `${baseUrl}/payment/success`,
-      cancelUrl = `${baseUrl}/payment/cancel`
-    } = dto;
+    const { itemName, amount, successUrl, cancelUrl } = dto;
 
     return this.paymentsService.createCheckoutSession(itemName, amount, successUrl, cancelUrl);
   }

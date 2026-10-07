@@ -24,7 +24,48 @@ Entry Points:
 --------------------------------------------------------------------------------
 
 A. SupabaseService (src/server/supabase.service.ts)
---------------------------------------------------
+---------------------------Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 11.
+
+Acceptance criteria
+
+Integration tests for all public and admin endpoints
+
+Auth and role cases covered
+
+Tests run in CI
+Ticket ID: S6-BE-02. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Auth, RBAC, input-validation and payment webhook checks
+
+No critical vulnerabilities open
+
+Findings tracked as issues
+Ticket ID: S6-BE-03. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Load test plan and results
+
+API response time under 200ms on key endpoints
+
+Bottlenecks logged and fixed or ticketed
+Ticket ID: S6-BE-04. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+-----------------------
 Role: Managed administrative access to the Supabase database.
 - Key Function: getClient()
 - Mechanism: Uses the high-privileged SUPABASE_SERVICE_ROLE_KEY. 
@@ -32,7 +73,130 @@ Role: Managed administrative access to the Supabase database.
   server at startup, but will throw a 500 error if a restricted route is accessed.
 
 B. PaymentsService (src/server/api/payments/payments.service.ts)
---------------------------------------------------------------
+--------------------Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 11.
+
+Acceptance criteria
+
+Integration tests for all public and admin endpoints
+
+Auth and role cases covered
+
+Tests run in CI
+Ticket ID: S6-BE-02. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Auth, RBAC, input-validation and payment webhook checks
+
+No critical vulnerabilities open
+
+Findings tracked as issues
+Ticket ID: S6-BE-03. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Load test plan and results
+
+API response time under 200ms on key endpoints
+
+Bottlenecks logged and fixed or ticketed
+Ticket ID: S6-BE-04. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 11.
+
+Acceptance criteria
+
+Integration tests for all public and admin endpoints
+
+Auth and role cases covered
+
+Tests run in CI
+Ticket ID: S6-BE-02. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Auth, RBAC, input-validation and payment webhook checks
+
+No critical vulnerabilities open
+
+Findings tracked as issues
+Ticket ID: S6-BE-03. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Load test plan and results
+
+API response time under 200ms on key endpoints
+
+Bottlenecks logged and fixed or ticketed
+Ticket ID: S6-BE-04. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+-----------------Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 11.
+
+Acceptance criteria
+
+Integration tests for all public and admin endpoints
+
+Auth and role cases covered
+
+Tests run in CI
+Ticket ID: S6-BE-02. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Auth, RBAC, input-validation and payment webhook checks
+
+No critical vulnerabilities open
+
+Findings tracked as issues
+Ticket ID: S6-BE-03. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+Sprint 6: Testing & QA (Weeks 11-12) | Roadmap Phase 6 | Estimate: 5 pts
+Depends on: none
+Note: Week 12.
+
+Acceptance criteria
+
+Load test plan and results
+
+API response time under 200ms on key endpoints
+
+Bottlenecks logged and fixed or ticketed
+Ticket ID: S6-BE-04. Sprint sync: Mostly parallel. E2E needs both BE and FE functional. Use mock servers where BE is not ready.
+
+-------------------------
 Role: Handles Xendit Invoice generation.
 - Function: createCheckoutSession(itemName, amount, successUrl, cancelUrl)
 - Mechanism:

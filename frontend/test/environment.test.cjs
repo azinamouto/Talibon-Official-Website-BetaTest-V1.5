@@ -12,6 +12,10 @@ const { validateEnvironment } = context.module.exports;
 const key = role => ['test', Buffer.from(JSON.stringify({ role })).toString('base64url'), 'test'].join('.');
 const valid = { VITE_SUPABASE_URL: 'http://localhost:54321', VITE_SUPABASE_ANON_KEY: key('anon') };
 test('accepts anon configuration and local projects', () => assert.equal(validateEnvironment(valid).isValid, true));
+test('prefers publishable keys while retaining the legacy anon variable', () => {
+  assert.equal(validateEnvironment({ ...valid, VITE_SUPABASE_ANON_KEY: '', VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_example' }).isValid, true);
+  assert.equal(validateEnvironment({ ...valid, VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_secret_example' }).isValid, false);
+});
 test('rejects missing, placeholder, malformed, secret, and elevated keys', () => {
   for (const value of ['', 'your_supabase_anon_key', 'sb_secret_test', key('service_role'), key('authenticated')]) {
     const result = validateEnvironment({ ...valid, VITE_SUPABASE_ANON_KEY: value });

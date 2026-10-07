@@ -6,7 +6,7 @@ if (!validation.isValid) {
   throw new Error('Invalid frontend configuration: ' + validation.issues.join(' '));
 }
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY.trim();
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY).trim();
 export const isSupabaseConfigured = true;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true },

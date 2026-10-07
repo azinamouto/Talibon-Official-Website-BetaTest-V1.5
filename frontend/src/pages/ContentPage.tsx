@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { AlertCircle } from "lucide-react";
 import { SkeletonLoader } from "../components/SkeletonLoader";
@@ -21,31 +21,29 @@ const ContentPage: React.FC<ContentPageProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetchData();
-      setData(response);
-    } catch (err) {
-      console.error("ContentPage error:", err);
-      setError(ERROR_MESSAGES.LOAD_FAILED);
-      setData(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchData]);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let active = true;
+    setLoading(true);
+    setError(null);
+    setData(null);
+    fetchData().then(response => {
+      if (active) setData(response);
+    }).catch(() => {
+      if (active) setError(ERROR_MESSAGES.LOAD_FAILED);
+    }).finally(() => {
+      if (active) setLoading(false);
+    });
+    return () => { active = false; };
+  }, [fetchData, attempt]);
 
   const handleRetry = () => {
-    loadData();
+    setAttempt(value => value + 1);
   };
 
   return (
-    <div className="pb-12 min-h-screen bg-brand-bg relative overflow-hidden">
+    <main className="pb-12 min-h-screen bg-brand-bg relative overflow-hidden break-words">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -58,9 +56,9 @@ const ContentPage: React.FC<ContentPageProps> = ({
           </div>
 
           {loading ? (
-            <SkeletonLoader count={3} type={skeletonType} />
+            <div role="status" aria-label="Loading content"><SkeletonLoader count={3} type={skeletonType} /></div>
           ) : error ? (
-            <div className="bg-red-50 border-2 border-red-200 rounded-3xl p-8 flex items-start gap-4">
+            <div role="alert" className="bg-red-50 border-2 border-red-200 rounded-3xl p-8 flex items-start gap-4">
               <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
               <div className="flex-1">
                 <h3 className="font-bold text-red-900 mb-2">Error Loading Content</h3>
@@ -83,7 +81,7 @@ const ContentPage: React.FC<ContentPageProps> = ({
           )}
         </motion.div>
       </div>
-    </div>
+    </main>
   );
 };
 

@@ -10,12 +10,13 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { useAuth } from "../contexts/SupabaseAuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import GlobalSearch from "./GlobalSearch";
+import { useUI } from "../contexts/UIContext";
 import { useIsScrolled } from "../hooks/useIsScrolled";
 
 export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const { user, profile, signOut, state } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isNavigationOpen: isOpen, setNavigationOpen: setIsOpen } = useUI();
   const [isAudioMuted, setIsAudioMuted] = useState(true);
 
   useEffect(() => {
@@ -117,8 +118,10 @@ export default function Navbar() {
         { name: "Brief History", href: "/about/history" },
         { name: "List of Mayors", href: "/about/mayors" },
         { name: "Vicinity Map", href: "/about/vicinity" },
+        { name: "Demographics", href: "/about/demographics" },
+        { name: "Location", href: "/about/location" },
         { name: "Industry", href: "/about/industry" },
-        { name: "Government Services", href: "/e-services" },
+        { name: "Government Services", href: "/about/services" },
         { name: "Talibon Hymn", href: "/about/hymn" },
       ])
     },
@@ -504,6 +507,9 @@ export default function Navbar() {
             </button>
             <button 
               onClick={() => setIsOpen(!isOpen)}
+              aria-label="Open navigation"
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
               className="lg:hidden hover:bg-slate-900/10 rounded-full text-slate-950 transition-all hover:scale-110 active:scale-95 flex items-center justify-center border border-slate-900/10 p-1 sm:p-1.5"
               title="Menu"
             >
@@ -518,6 +524,7 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id="mobile-navigation"
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
@@ -528,7 +535,7 @@ export default function Navbar() {
                 <Link to="/" onClick={(e) => { setIsOpen(false); handleHomeClick(e); }}>
                   <img src="http://talibon.gov.ph/wp-content/uploads/2025/09/Talibon-Official-Seal-v4-2003-to-2023-.png" alt="Seal" className="h-16" />
                 </Link>
-                <button onClick={() => setIsOpen(false)} className="p-2 border border-brand-primary rounded-xl text-brand-primary"><X size={24} /></button>
+                <button aria-label="Close navigation" onClick={() => setIsOpen(false)} className="p-2 border border-brand-primary rounded-xl text-brand-primary"><X size={24} /></button>
               </div>
 
               <div className="space-y-4">

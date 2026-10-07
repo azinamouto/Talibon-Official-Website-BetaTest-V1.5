@@ -89,7 +89,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // Apply security headers & cache control to all routes
     consumer
-      .apply(SecurityHeadersMiddleware, CacheControlMiddleware)
-      .forRoutes({ path: "*", method: RequestMethod.ALL });
+      .apply(CacheControlMiddleware, AuditMiddleware)
+      .forRoutes({ path: "{*path}", method: RequestMethod.ALL });
   }
 }

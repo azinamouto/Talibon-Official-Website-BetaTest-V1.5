@@ -33,7 +33,7 @@ export default function BarangaysView({ data }: BarangaysViewProps) {
       population: brgy.population || 0,
       contact_number: brgy.contact_number || "",
       office_address: brgy.office_address || "",
-      office_hours: brgy.office_hours || "Monday to Friday, 8:00 AM - 5:00 PM",
+      office_hours: brgy.office_hours || "Not Specified",
       cover_image: brgy.cover_image || ""
     };
   };

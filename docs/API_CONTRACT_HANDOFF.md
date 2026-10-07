@@ -18,6 +18,10 @@ npm run contracts:check --prefix backend
 npm run dev:mock --prefix frontend
 ```
 
+Validation: `npm run test:contracts:browser --prefix frontend` exercises the
+About routes against the example server at mobile and desktop widths, plus
+retry and empty states. `npm test --prefix frontend` includes mock contract checks.
+
 The last command starts the loopback example API on port 4010 and Vite on 5173.
 No backend credentials or running database are required for About development.
 Other site modules are outside the fixture server's scope and may show unavailable

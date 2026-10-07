@@ -7,7 +7,7 @@ Backend-only implementation. Frontend source files are unchanged.
 Swagger UI: `/api/docs/`. Generated OpenAPI JSON: `/api/openapi.json`.
 Documentation is public and contains schemas only, never environment values.
 Send `X-API-Version: 1`; omitting it selects v1 for existing frontend clients.
-Unsupported versions return 404. Responses vary on the version header.
+Unsupported versions return 404. Respo  nses vary on the version header.
 Future breaking versions use Nest's `@Version()` decorator with the same header.
 DTOs reject unknown fields; errors retain the standard envelope documented below.
 

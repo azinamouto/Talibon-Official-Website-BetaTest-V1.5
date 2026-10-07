@@ -14,8 +14,11 @@
     "lint": "eslint src && tsc --noEmit",
     "clean": "npx rimraf dist",
     "test": "npm run build:tsc && jest --runInBand && node --test --test-timeout=120000 test/*.test.cjs",
+    "test:load": "npm run build:tsc && node --test test/load/metrics.test.cjs && node test/load/run.cjs",
     "test:db": "powershell -NoProfile -ExecutionPolicy Bypass -File test/run-database-tests.ps1",
-    "test:unit": "npm run build:tsc && jest --runInBand"
+    "test:unit": "npm run build:tsc && jest --runInBand",
+    "contracts:export": "npm run build:tsc && node scripts/export-openapi.cjs",
+    "contracts:check": "npm run build:tsc && node scripts/export-openapi.cjs --check"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.17",

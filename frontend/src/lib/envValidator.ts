@@ -9,9 +9,10 @@ export interface EnvValidationResult {
 export function validateEnvironment(env: Record<string, unknown> = import.meta.env): EnvValidationResult {
   const issues: string[] = [];
   const url = typeof env.VITE_SUPABASE_URL === 'string' ? env.VITE_SUPABASE_URL.trim() : '';
-  const key = typeof env.VITE_SUPABASE_ANON_KEY === 'string' ? env.VITE_SUPABASE_ANON_KEY.trim() : '';
+  const selectedKey = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY;
+  const key = typeof selectedKey === 'string' ? selectedKey.trim() : '';
   let urlValid = false;
-  let keyValid = false;
+  let keyValid = /^sb_publishable_[A-Za-z0-9_-]+$/.test(key);
   try {
     const parsed = new URL(url);
     urlValid = ['http:', 'https:'].includes(parsed.protocol) && !parsed.username && !parsed.password && !parsed.search && !parsed.hash && !/your-project|placeholder/i.test(url);
@@ -22,9 +23,9 @@ export function validateEnvironment(env: Record<string, unknown> = import.meta.e
   try {
     const parts = key.split('.');
     const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-    keyValid = parts.length === 3 && payload.role === 'anon';
+    keyValid = keyValid || (parts.length === 3 && payload.role === 'anon');
   } catch { /* Invalid keys fail closed. */ }
-  if (!keyValid) issues.push('VITE_SUPABASE_ANON_KEY must contain a public anon key.');
+  if (!keyValid) issues.push('VITE_SUPABASE_PUBLISHABLE_KEY or VITE_SUPABASE_ANON_KEY must contain a public key.');
   for (const name of Object.keys(env)) {
     if (/^VITE_.*(SECRET|SERVICE_ROLE|PRIVATE|PASSWORD|ADMIN)/i.test(name)) {
       issues.push('Private environment variables must not use the VITE_ prefix.');

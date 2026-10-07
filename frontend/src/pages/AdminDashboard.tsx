@@ -59,7 +59,11 @@ const AdminDashboard: React.FC = () => {
     | 'logs'
     | 'meeting-assistant'
     | 'workflows'
-  >('overview');
+  >(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    const tabs = ['overview', 'news', 'downloadables', 'tourism', 'officials', 'departments', 'barangays', 'services', 'charter', 'events', 'media', 'users', 'logs', 'meeting-assistant', 'workflows'] as const;
+    return tabs.find(value => value === tab) ?? 'overview';
+  });
 
   const [workflowExpandedIds, setWorkflowExpandedIds] = useState<Set<string>>(new Set());
   const [workflowSortField, setWorkflowSortField] = useState<'date' | 'ticket'>('date');
@@ -106,7 +110,7 @@ const AdminDashboard: React.FC = () => {
     const searchParams = new URLSearchParams(window.location.search);
     if (searchParams.get('tab') !== activeTab) {
       searchParams.set('tab', activeTab);
-      window.history.replaceState(null, "", `${window.location.pathname}?${searchParams.toString()}`);
+      window.history.replaceState(window.history.state, "", `${window.location.pathname}?${searchParams.toString()}${window.location.hash}`);
     }
   }, [activeTab]);
 

@@ -4,6 +4,8 @@ Welcome to the TAL.GOV documentation hub. This directory contains comprehensive 
 
 ## Documentation Index
 
+- [Sprint 2 Public Frontend](./SPRINT2_PUBLIC_FRONTEND.md) — services, news, public API integration, search, and verification.
+
 - [API Contract Handoff](./API_CONTRACT_HANDOFF.md) — OpenAPI, example mock server, About routes, and BE/FE sign-off workflow.
 
 - [Sprint 1 Frontend Foundation](./FRONTEND_FOUNDATION.md) — routing, contexts, UI controls, auth and tests.

@@ -1,41 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Newspaper, User, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
-import { newsService } from "../services/newsService";
-import { NewsItem } from "../services/cmsService";
+import { listPublic, PublicNews } from "../services/publicApi";
+import { usePublicResource } from "../hooks/usePublicResource";
+import { PublicState } from "./PublicContent";
 
 export default function NewsTodaySection() {
-  const [newsList, setNewsList] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchNews() {
-      try {
-        const data = await newsService.getNews();
-        // Exclude pure advisories if desired, or show top published items
-        const published = data.filter((item) => item.status === "published" || !item.status);
-        setNewsList(published.slice(0, 3));
-      } catch (err) {
-        console.warn("Error fetching News Today:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchNews();
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="py-8 bg-brand-surface">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-xs font-bold text-brand-muted uppercase tracking-widest animate-pulse">Loading News Today...</p>
-        </div>
-      </section>
-    );
-  }
-
+  const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<PublicNews>('news', { limit: 3 }, signal), []));
+  const newsList = resource.data?.data || [];
+  if (resource.loading || resource.error) return <section className="max-w-7xl mx-auto p-6"><PublicState {...resource} /></section>;
   if (newsList.length === 0) return null;
 
   return (
@@ -76,7 +50,7 @@ export default function NewsTodaySection() {
           </div>
 
           <Link
-            to="/news/articles"
+            to="/news"
             className="px-4 py-2.5 bg-[#3A8FC2] hover:bg-[#2B82B8] text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all inline-flex items-center gap-2 self-start md:self-auto shadow-lg border border-sky-300/30 hover:scale-105 active:scale-95"
           >
             <span>View All News</span>

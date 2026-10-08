@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, X, FileText, Newspaper, FileCode, ArrowRight, Loader2, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { publicGet, SearchItem, searchLink } from "../services/publicApi";
 
 interface SearchResult {
   id: string;
   title: string;
-  type: "news" | "ordinance" | "page";
+  type: "news" | "services" | "pages";
   url: string;
   description?: string;
   date?: string;
@@ -18,25 +18,13 @@ interface GlobalSearchProps {
   onClose: () => void;
 }
 
-const staticPages: SearchResult[] = [
-  { id: "p1", title: "Brief Profile", type: "page", url: "/about/profile", description: "Learn about Talibon's profile and demographics." },
-  { id: "p2", title: "Official Seal", type: "page", url: "/about/seal", description: "The symbolism and history of the municipal seal." },
-  { id: "p3", title: "Brief History", type: "page", url: "/about/history", description: "The timeline and historical background of Talibon." },
-  { id: "p4", title: "Executive Mandate", type: "page", url: "/executive/mandate", description: "The roles and mandates of the executive branch." },
-  { id: "p5", title: "Legislative Mandate", type: "page", url: "/legislative/mandate", description: "The roles and mandates of the legislative branch." },
-  { id: "p6", title: "Citizen's Charter", type: "page", url: "/transparency/charter", description: "Official service standards and guidelines." },
-  { id: "p7", title: "Full Disclosure", type: "page", url: "/transparency/disclosure", description: "Transparency and financial accountability reports." },
-  { id: "p8", title: "Infrastructure Projects", type: "page", url: "/transparency/infrastructure", description: "Status of ongoing and completed municipal projects." },
-  { id: "p9", title: "Tourist Spots", type: "page", url: "/tourism/spots", description: "Explore the beautiful destinations in Talibon." },
-  { id: "p10", title: "GAD-IMS", type: "page", url: "/executive/gad-ims", description: "Integrated Management System for GAD." },
-];
-
 const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -53,79 +41,24 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   useEffect(() => {
+    const controller = new AbortController();
     const q = searchQuery.trim();
-    if (q.length < 2) {
-      setResults([]);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      performSearch(q);
-    }, 300);
-
-    return () => {
-      clearTimeout(timer);
-      abortRef.current?.abort();
-    };
-  }, [searchQuery]);
-
-  const performSearch = async (q: string) => {
-    if (abortRef.current) abortRef.current.abort();
-    abortRef.current = new AbortController();
-
-    setLoading(true);
-    const lq = q.toLowerCase();
-
-    try {
-      const pageResults = staticPages.filter(
-        (p) =>
-          p.title.toLowerCase().includes(lq) ||
-          (p.description?.toLowerCase().includes(lq) ?? false)
-      );
-
-      const [newsResponse, ordResponse] = await Promise.all([
-        supabase
-          .from("news")
-          .select("id, title, summary, date, category")
-          .is("barangay_id", null)
-          .is("deleted_at", null)
-          .or(`title.ilike.%${q}%,summary.ilike.%${q}%`)
-          .limit(8),
-        supabase
-          .from("ordinances")
-          .select("id, title, year, created_at")
-          .is("barangay_id", null)
-          .ilike("title", `%${q}%`)
-          .limit(8),
-      ]);
-
-      const newsResults: SearchResult[] = (newsResponse.data ?? []).map((n) => ({
-        id: n.id,
-        title: n.title,
-        type: "news" as const,
-        url: `/news/view/${n.id}`,
-        description: n.summary,
-        date: n.date,
-      }));
-
-      const ordResults: SearchResult[] = (ordResponse.data ?? []).map((o) => ({
-        id: o.id,
-        title: o.title,
-        type: "ordinance" as const,
-        url: "/legislative/ordinances",
-        description: `Year: ${o.year}`,
-        date: o.created_at,
-      }));
-
-      setResults([...pageResults, ...newsResults, ...ordResults]);
-    } catch (err) {
-      if ((err as Error).name !== "AbortError") {
-        console.error("[GlobalSearch] Error:", err);
+    setResults([]);
+    setError(null);
+    setLoading(isOpen && q.length >= 2);
+    if (!isOpen || q.length < 2) return () => controller.abort();
+    const timer = setTimeout(async () => {
+      try {
+        const response = await publicGet<{ data: SearchItem[] }>(`search?${new URLSearchParams({ q, limit: '10' })}`, controller.signal);
+        if (!controller.signal.aborted) setResults(response.data.map(item => ({ id: item.id, title: item.title, type: item.type, url: searchLink(item), description: item.snippet })));
+      } catch {
+        if (!controller.signal.aborted) setError('Search is temporarily unavailable. Please try again.');
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 300);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [searchQuery, isOpen, attempt]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") onClose();
@@ -165,7 +98,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
                 <input
                   ref={searchInputRef}
                   type="search"
-                  placeholder="Search articles, ordinances, pages..."
+                  placeholder="Search news, services, pages..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   maxLength={100}
@@ -189,7 +122,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
                     ? "Type at least 2 characters"
                     : loading
                     ? "Searching..."
-                    : "No results found"}
+                    : error ? "Search unavailable" : "No results found"}
                 </span>
                 <kbd className="bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-[8px]">
                   ESC
@@ -199,7 +132,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
 
             <div className="max-h-[60vh] overflow-y-auto px-4 pb-8">
               <AnimatePresence mode="wait">
-                {loading ? (
+                {error ? <div key="error" role="alert" className="p-6 space-y-4"><p>{error}</p><button className="px-4 py-2 rounded-lg bg-brand-primary text-white" onClick={() => setAttempt(value => value + 1)}>Try again</button></div> : loading ? (
                   <motion.div
                     key="loading"
                     initial={{ opacity: 0 }}
@@ -219,7 +152,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="grid grid-cols-1 gap-2"
-                    role="listbox"
+                    role="list"
                     aria-label="Search results"
                   >
                     {results.map((result) => (
@@ -227,15 +160,13 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
                         key={`${result.type}-${result.id}`}
                         to={result.url}
                         onClick={onClose}
-                        role="option"
-                        aria-selected="false"
                         className="group flex flex-col sm:flex-row sm:items-center gap-4 p-6 hover:bg-brand-primary/5 rounded-3xl border border-transparent hover:border-brand-primary/10 transition-all"
                       >
                         <div
                           className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110 ${
                             result.type === "news"
                               ? "bg-sky-50 text-sky-600"
-                              : result.type === "ordinance"
+                              : result.type === "services"
                               ? "bg-blue-50 text-blue-600"
                               : "bg-green-50 text-green-600"
                           }`}
@@ -243,7 +174,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
                         >
                           {result.type === "news" ? (
                             <Newspaper size={20} />
-                          ) : result.type === "ordinance" ? (
+                          ) : result.type === "services" ? (
                             <FileCode size={20} />
                           ) : (
                             <Globe size={20} />

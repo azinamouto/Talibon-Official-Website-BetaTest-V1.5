@@ -6,6 +6,7 @@ import { Public } from '../../security/auth.guard';
 import { RateLimit, RateLimitCategory } from '../../security/rate-limiter.guard';
 import type { AuthenticatedRequest } from '../../security/authenticated-request';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { clientPermissions } from '../../security/permissions';
 
 @ApiTags('Authentication')
 @Controller('api/auth')
@@ -34,7 +35,7 @@ export class AuthController {
   @AuthResponse('me')
   @ApiBearerAuth()
   me(@Req() req: AuthenticatedRequest) {
-    return { success: true, data: { user: { id: req.user.id, email: req.user.email }, profile: req.profile } };
+    return { success: true, data: { user: { id: req.user.id, email: req.user.email }, profile: req.profile, permissions: clientPermissions(req.profile) } };
   }
 
   @Post('logout')

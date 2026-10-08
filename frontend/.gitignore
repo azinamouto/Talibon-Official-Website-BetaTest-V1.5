@@ -4,4 +4,5 @@ dist/
 .env.local
 .env.production
 test-results/
+test-results-eservices/
 playwright-report/

@@ -11,6 +11,8 @@
     "clean": "npx rimraf dist",
     "test": "node --test test/*.test.cjs",
     "test:browser": "playwright test",
+    "test:admin": "playwright test --config playwright.admin.config.ts",
+    "test:eservices": "playwright test --config playwright.eservices.config.ts",
     "test:contracts:browser": "playwright test --config playwright.contract.config.ts",
     "mock:api": "node mocks/server.mjs",
     "dev:mock": "node mocks/dev.mjs"

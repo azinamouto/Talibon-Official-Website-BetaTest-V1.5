@@ -16,6 +16,11 @@ export class UsersService {
   }
   async list(query: UserListDto) {
     let request = this.supabase.getClient().from('profiles').select(FIELDS, { count: 'exact' });
+    if (query.q) {
+      // Quote PostgREST grammar separately from LIKE wildcards; user text cannot add filters.
+      const literal = query.q.replace(/[\\%_*]/g, '\\$&').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      request = request.or(`full_name.ilike."%${literal}%",email.ilike."%${literal}%"`);
+    }
     if (query.role) request = request.eq('role', query.role);
     if (query.status === 'active') request = request.is('deleted_at', null);
     if (query.status === 'inactive') request = request.not('deleted_at', 'is', null);

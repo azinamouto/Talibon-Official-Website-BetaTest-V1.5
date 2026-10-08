@@ -19,6 +19,8 @@ async function mockApi(context: BrowserContext, role = 'citizen', failLogout = f
     return route.fulfill({ json: [] });
   });
   await context.route('**/api/**', route => route.fulfill({ json: {} }));
+  await context.route('**/api/auth/me', route => route.fulfill({ json: { success: true, data: { user, profile: { role }, permissions: role === 'admin' ? ['users:read', 'reports:read', 'content:manage'] : [] } } }));
+  await context.route(/\/api\/(admin\/users|pages\/manage|news\/manage|services\/manage)/, route => route.fulfill({ json: { data: [], pagination: { page: 1, total: 0, totalPages: 0 } } }));
   return requests;
 }
 async function login(page: Page) {

@@ -465,7 +465,8 @@
                       "type": "object",
                       "required": [
                         "user",
-                        "profile"
+                        "profile",
+                        "permissions"
                       ],
                       "properties": {
                         "user": {
@@ -488,6 +489,13 @@
                           "type": "object",
                           "nullable": true,
                           "additionalProperties": true
+                        },
+                        "permissions": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Live profile-derived UI hints. Server authorization is authoritative."
                         }
                       }
                     }
@@ -502,7 +510,8 @@
                       "profile": {
                         "role": "citizen",
                         "is_verified": false
-                      }
+                      },
+                      "permissions": []
                     }
                   }
                 }
@@ -5519,11 +5528,718 @@
           "services"
         ]
       }
+    },
+    "/api/admin/users": {
+      "get": {
+        "operationId": "UsersController_list_1",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Literal name or email substring",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "guest",
+                "citizen",
+                "staff",
+                "editor",
+                "department_admin",
+                "barangay_admin",
+                "municipal_admin",
+                "admin",
+                "super_admin"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserListResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fields, version, role or referenced department/barangay"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Insufficient permission, self-mutation, or protected administrative target"
+          },
+          "404": {
+            "description": "User does not exist"
+          },
+          "409": {
+            "description": "Stale version, inactive target, or last-super-admin protection"
+          },
+          "503": {
+            "description": "Storage unavailable; no partial mutation is committed"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List profiles by role and active status",
+        "tags": [
+          "Admin users"
+        ]
+      }
+    },
+    "/api/admin/users/{id}": {
+      "get": {
+        "operationId": "UsersController_get_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fields, version, role or referenced department/barangay"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Insufficient permission, self-mutation, or protected administrative target"
+          },
+          "404": {
+            "description": "User does not exist"
+          },
+          "409": {
+            "description": "Stale version, inactive target, or last-super-admin protection"
+          },
+          "503": {
+            "description": "Storage unavailable; no partial mutation is committed"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "View an active or deactivated user profile",
+        "tags": [
+          "Admin users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fields, version, role or referenced department/barangay"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Insufficient permission, self-mutation, or protected administrative target"
+          },
+          "404": {
+            "description": "User does not exist"
+          },
+          "409": {
+            "description": "Stale version, inactive target, or last-super-admin protection"
+          },
+          "503": {
+            "description": "Storage unavailable; no partial mutation is committed"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update profile details or verification with optimistic concurrency",
+        "tags": [
+          "Admin users"
+        ]
+      }
+    },
+    "/api/admin/users/{id}/role": {
+      "patch": {
+        "operationId": "UsersController_role_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fields, version, role or referenced department/barangay"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Insufficient permission, self-mutation, or protected administrative target"
+          },
+          "404": {
+            "description": "User does not exist"
+          },
+          "409": {
+            "description": "Stale version, inactive target, or last-super-admin protection"
+          },
+          "503": {
+            "description": "Storage unavailable; no partial mutation is committed"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign a role (super admin only); audit records actor and before/after roles atomically",
+        "tags": [
+          "Admin users"
+        ]
+      }
+    },
+    "/api/admin/users/{id}/deactivate": {
+      "post": {
+        "operationId": "UsersController_deactivate_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserVersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fields, version, role or referenced department/barangay"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Insufficient permission, self-mutation, or protected administrative target"
+          },
+          "404": {
+            "description": "User does not exist"
+          },
+          "409": {
+            "description": "Stale version, inactive target, or last-super-admin protection"
+          },
+          "503": {
+            "description": "Storage unavailable; no partial mutation is committed"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate a user; subsequent API and RLS access is denied",
+        "tags": [
+          "Admin users"
+        ]
+      }
+    },
+    "/api/admin/reports/submissions": {
+      "get": {
+        "operationId": "ReportsController_submissions_1",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "description": "Inclusive UTC timestamp (timezone required)",
+            "schema": {
+              "example": "2026-09-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "description": "Exclusive timestamp; maximum interval 366 days",
+            "schema": {
+              "example": "2026-10-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 500,
+              "default": 100,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "description": "Use nextCursor.before with nextCursor.beforeId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "beforeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid date range or cursor"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Verified administrative permission required"
+          },
+          "503": {
+            "description": "Report storage unavailable"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export submission rows by creation date (includes soft-deleted history)",
+        "tags": [
+          "Admin reports"
+        ]
+      }
+    },
+    "/api/admin/reports/payments": {
+      "get": {
+        "operationId": "ReportsController_payments_1",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "description": "Inclusive UTC timestamp (timezone required)",
+            "schema": {
+              "example": "2026-09-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "description": "Exclusive timestamp; maximum interval 366 days",
+            "schema": {
+              "example": "2026-10-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 500,
+              "default": 100,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "description": "Use nextCursor.before with nextCursor.beforeId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "beforeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid date range or cursor"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Verified administrative permission required"
+          },
+          "503": {
+            "description": "Report storage unavailable"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export payment ledger rows by creation date; amounts are decimal strings",
+        "tags": [
+          "Admin reports"
+        ]
+      }
+    },
+    "/api/admin/reports/user-activity": {
+      "get": {
+        "operationId": "ReportsController_activity_1",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "description": "Inclusive UTC timestamp (timezone required)",
+            "schema": {
+              "example": "2026-09-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "description": "Exclusive timestamp; maximum interval 366 days",
+            "schema": {
+              "example": "2026-10-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 500,
+              "default": 100,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "before",
+            "required": false,
+            "in": "query",
+            "description": "Use nextCursor.before with nextCursor.beforeId",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "beforeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid date range or cursor"
+          },
+          "401": {
+            "description": "Missing, expired or revoked session"
+          },
+          "403": {
+            "description": "Verified administrative permission required"
+          },
+          "503": {
+            "description": "Report storage unavailable"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export recorded API audit events (auth, mutations, and failures)",
+        "tags": [
+          "Admin reports"
+        ]
+      }
     }
   },
   "info": {
     "title": "Talibon Municipal API",
-    "description": "Send X-API-Version: 1 (default when omitted). Bearer tokens are Supabase access tokens. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: Sprint 1 authentication and Sprint 2 About/content endpoints. Other APIs remain in the live document.",
+    "description": "Send X-API-Version: 1 (default when omitted). Bearer tokens are Supabase access tokens. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: Sprint 1 authentication, Sprint 2 About/content and Sprint 4 admin endpoints. Other APIs remain in the live document.",
     "version": "1",
     "contact": {}
   },
@@ -5853,6 +6569,197 @@
             "example": "None"
           }
         }
+      },
+      "AdminUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "guest",
+              "citizen",
+              "staff",
+              "editor",
+              "department_admin",
+              "barangay_admin",
+              "municipal_admin",
+              "admin",
+              "super_admin"
+            ]
+          },
+          "is_verified": {
+            "type": "boolean"
+          },
+          "barangay_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "department_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "full_name",
+          "role",
+          "is_verified",
+          "barangay_id",
+          "department_id",
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "version"
+        ]
+      },
+      "UserPaginationDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "page",
+          "limit",
+          "total",
+          "totalPages"
+        ]
+      },
+      "AdminUserListResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminUserDto"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/UserPaginationDto"
+          }
+        },
+        "required": [
+          "data",
+          "pagination"
+        ]
+      },
+      "AdminUserResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AdminUserDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Current profile version; stale writes return 409"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "barangay_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "department_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_verified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "AssignRoleDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Current profile version; stale writes return 409"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "guest",
+              "citizen",
+              "staff",
+              "editor",
+              "department_admin",
+              "barangay_admin",
+              "municipal_admin",
+              "admin",
+              "super_admin"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "role"
+        ]
+      },
+      "UserVersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Current profile version; stale writes return 409"
+          }
+        },
+        "required": [
+          "version"
+        ]
       }
     }
   }

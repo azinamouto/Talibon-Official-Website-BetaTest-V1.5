@@ -12,6 +12,8 @@ const definitions = [
   ['content/pages', 'PageContentController', 'content/content', 'ContentService'],
   ['content/news', 'NewsContentController', 'content/content', 'ContentService'],
   ['content/services', 'ServiceContentController', 'content/content', 'ContentService'],
+  ['admin/users', 'UsersController', 'admin/users', 'UsersService'],
+  ['admin/reports', 'ReportsController', 'admin/reports', 'ReportsService'],
 ];
 async function exportDocument() {
   const controllers = definitions.map(([file, name]) => require(`../dist/api/${file}.controller`)[name]);
@@ -22,7 +24,7 @@ async function exportDocument() {
   try {
     configureApp(app);
     const document = createApiDocument(app);
-    document.info.description += ' Checked-in scope: Sprint 1 authentication and Sprint 2 About/content endpoints. Other APIs remain in the live document.';
+    document.info.description += ' Checked-in scope: Sprint 1 authentication, Sprint 2 About/content and Sprint 4 admin endpoints. Other APIs remain in the live document.';
     const output = JSON.stringify(document, null, 2) + '\n';
     const target = path.resolve(__dirname, '../../contracts/openapi.json');
     if (process.argv.includes('--check')) {

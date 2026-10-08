@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { createBrowserRouter, createRoutesFromElements, RouterProvider, Outlet, Route, Navigate } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import ContentPage from "./pages/ContentPage";
@@ -25,12 +25,13 @@ import ServiceInfoPage from "./pages/ServiceInfoPage";
 import Login from "./pages/Login";
 import AuthCallback from "./pages/AuthCallback";
 import EServicesPage from "./pages/EServicesPage";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard, { AdminPreview } from "./pages/SprintAdminDashboard";
 import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
 import TourismMapPage from "./pages/TourismMapPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
+import PaymentReturn from "./pages/PaymentReturn";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ScrollToTop from "./components/ScrollToTop";
 import { aboutApi, executiveApi, legislativeApi, transparencyApi, tourismApi, formsApi } from "./services/api";
@@ -75,16 +76,8 @@ import { UIProvider } from "./contexts/UIContext";
 import { AppConfigProvider } from "./contexts/AppConfigContext";
 import ErrorPage from "./pages/ErrorPage";
 
-export default function App() {
-  return (
-    <ErrorBoundary fallback={<ErrorPage />} componentName="Application">
-      <AppConfigProvider>
-        <UIProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <Router>
-                <ScrollToTop />
-                <Routes>
+const router = createBrowserRouter(createRoutesFromElements(
+  <Route element={<><ScrollToTop /><Outlet /></>}>
                   <Route element={<BaseLayout />}>
                     {/* Public routes remain available while auth initializes. */}
                     <Route>
@@ -97,6 +90,7 @@ export default function App() {
                       <Route path="/services/:slug" element={<ServiceInfoPage />} />
                       <Route path="/payment/success" element={<PaymentSuccess />} />
                       <Route path="/payment/cancel" element={<PaymentCancel />} />
+                      <Route path="/payment/failure" element={<PaymentReturn outcome="failure" />} />
                       <Route path="/tourism/map" element={<TourismMapPage />} />
                       <Route path="/news" element={<NewsCategoryPage />} />
                       <Route path="/services" element={<ServicesPage />} />
@@ -159,6 +153,7 @@ export default function App() {
                       <Route path="/access-denied" element={<AccessDenied />} />
                       <Route path="*" element={<NotFound />} />
                     </Route>
+                    {import.meta.env.DEV && import.meta.env.VITE_DASHBOARD_PREVIEW === "true" && <Route path="/admin-preview" element={<AdminPreview />} />}
                     <Route element={<ProtectedRoute roles={STAFF_ROLES} />}>
                       <Route path="/admin" element={<AdminDashboard />} />
                       <Route path="/dashboard" element={<AdminDashboard />} />
@@ -166,8 +161,18 @@ export default function App() {
                       <Route path="/manage/*" element={<AdminDashboard />} />
                     </Route>
                   </Route>
-                </Routes>
-              </Router>
+
+  </Route>
+));
+
+export default function App() {
+  return (
+    <ErrorBoundary fallback={<ErrorPage />} componentName="Application">
+      <AppConfigProvider>
+        <UIProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <RouterProvider router={router} />
             </AuthProvider>
           </LanguageProvider>
         </UIProvider>

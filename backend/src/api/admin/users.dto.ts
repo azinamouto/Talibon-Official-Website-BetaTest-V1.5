@@ -4,6 +4,8 @@ import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Length, Max, Min, Validat
 import { ROLE_NAMES } from '../../security/permissions';
 
 export class UserListDto {
+  @ApiPropertyOptional({ description: 'Literal name or email substring', maxLength: 100 })
+  @IsOptional() @Transform(({ value }) => typeof value === 'string' ? value.trim() : value) @IsString() @Length(1,100) q?: string;
   @ApiPropertyOptional({ default: 1 }) @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(10000) page = 1;
   @ApiPropertyOptional({ default: 20 }) @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) limit = 20;
   @ApiPropertyOptional({ enum: ROLE_NAMES }) @IsOptional() @IsIn(ROLE_NAMES) role?: string;

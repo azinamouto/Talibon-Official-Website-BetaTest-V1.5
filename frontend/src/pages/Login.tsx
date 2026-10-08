@@ -54,6 +54,9 @@ export default function Login() {
       <Button className="mt-4" onClick={() => void auth.refreshProfile()}>Try again</Button>
       <Button variant="secondary" className="ml-4" onClick={() => void auth.signOut()}>Sign out</Button>
     </div>;
+    // Citizen services use authenticated ownership; staff approval is only required for staff destinations.
+    const citizenDestination = /^\/(?:e-services|payment\/(?:success|cancel|failure))(?:[?#]|$)/.test(destination);
+    if (citizenDestination && auth.profile?.is_active !== false) return <Navigate to={destination} replace />;
     return <Navigate to={auth.profile?.is_verified && auth.profile.is_active !== false && STAFF_ROLES.includes(auth.profile.role) ? destination : '/access-denied'} replace />;
   }
   const title = view === 'register' ? 'Create an account' : view === 'forgot' ? 'Reset your password' : view === 'reset' ? 'Choose a new password' : 'Sign in';

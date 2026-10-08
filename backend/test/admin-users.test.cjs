@@ -11,11 +11,12 @@ const { AuthGuard } = require('../dist/security/auth.guard');
 const { configureApp } = require('../dist/configure-app');
 const actor = randomUUID(), target = randomUUID();
 const token = `h.${Buffer.from(JSON.stringify({ session_id: randomUUID() })).toString('base64url')}.s`;
-let role='admin', verified=true, deleted=null, code=null, mutation;
+let role='admin', verified=true, deleted=null, code=null, mutation, searchFilter;
 let rows = [{ id: target, role: 'citizen', full_name: 'Citizen', deleted_at: null, version: 1 }];
 function from() {
   let filters=[], single=false, start=0, end=100;
   const q={ select: () => q, eq: (key,val) => { filters.push(row=>row[key]===val); return q; },
+    or: value => { searchFilter=value; return q; },
     is: (key,val) => { filters.push(row=>row[key]===val); return q; },
     not: (key,_op,val) => { filters.push(row=>row[key]!==val); return q; },
     order: () => q, range: (a,b) => { start=a; end=b; return q; }, maybeSingle: () => { single=true; return q; },
@@ -41,6 +42,13 @@ before(async()=>{ app=await NestFactory.create(TestModule,{logger:false}); confi
 after(async()=>app?.close());
 const request=(path='',method='GET',body,auth=true)=>fetch(`${base}/api/admin/users${path}`,{ method,headers:{'Content-Type':'application/json',...(auth?{Authorization:`Bearer ${token}`}:{})},body:body?JSON.stringify(body):undefined });
 const operations=[['','GET'],[`/${target}`,'GET'],[`/${target}`,'PATCH',{version:1,full_name:'Updated'}],[`/${target}/role`,'PATCH',{version:1,role:'editor'}],[`/${target}/deactivate`,'POST',{version:1}]];
+test('user search is bounded and quoted as literal PostgREST filter text', async () => {
+  const q = 'a",role.eq.super_admin%_*';
+  assert.equal((await request(`?${new URLSearchParams({q})}`)).status, 200);
+  const escaped = q.replace(/[\\%_*]/g, '\\$&').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  assert.equal(searchFilter, `full_name.ilike."%${escaped}%",email.ilike."%${escaped}%"`);
+  for (const q of ['', ' '.repeat(3), 'x'.repeat(101)]) assert.equal((await request(`?${new URLSearchParams({q})}`)).status, 400);
+});
 test('all user routes reject anonymous, non-admin, unverified and deactivated callers',async()=>{
   for(const op of operations) {
     assert.equal((await request(...op.slice(0,2),op[2],false)).status,401);

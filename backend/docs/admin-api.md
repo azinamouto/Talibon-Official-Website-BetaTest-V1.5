@@ -39,7 +39,7 @@ it does not measure hosted network latency or concurrent production traffic.
 
 | Method and path | Behavior |
 | --- | --- |
-| `GET /users` | Paginated profiles; `page=1`, `limit=20` (maximum 100), optional role, `status=active\|inactive\|all` |
+| `GET /users` | Paginated profiles; `page=1`, `limit=20` (maximum 100), optional role, `status=active\|inactive\|all`, optional `q` (1–100 characters, literal name/email substring) |
 | `GET /users/:id` | View profile including version and deactivation timestamp |
 | `PATCH /users/:id` | Update full_name, barangay_id, department_id, is_verified |
 | `PATCH /users/:id/role` | Assign role; verified super admin only |

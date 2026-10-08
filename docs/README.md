@@ -4,6 +4,10 @@ Welcome to the TAL.GOV documentation hub. This directory contains comprehensive 
 
 ## Documentation Index
 
+- [Sprint 4 Admin Dashboard](./SPRINT4_ADMIN_DASHBOARD.md) — permission contract, mock layout, user management, CMS editors, reports, and validation.
+
+- [Sprint 3 E-Services Frontend](./SPRINT3_FRONTEND.md) — shared wizard, five form integrations, submission tracking, payment dependency handoff, and verification.
+
 - [Sprint 2 Public Frontend](./SPRINT2_PUBLIC_FRONTEND.md) — services, news, public API integration, search, and verification.
 
 - [API Contract Handoff](./API_CONTRACT_HANDOFF.md) — OpenAPI, example mock server, About routes, and BE/FE sign-off workflow.

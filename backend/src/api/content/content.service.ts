@@ -8,7 +8,7 @@ export const CONTENT = {
   services: { table: 'services_cms', title: 'name', visible: 'available', fields: 'id,name,slug,description,purpose,requirements,processing_time,fees,office_responsible,office_hours,contact_info,physical_address,status,downloadable_forms,created_at,updated_at' },
 } as const;
 export type ContentKind = keyof typeof CONTENT;
-export const CONTENT_ROLES = ['super_admin', 'admin', 'municipal_admin', 'editor'];
+export { CONTENT_ROLES } from '../../security/permissions';
 
 @Injectable()
 export class ContentService {

@@ -10,9 +10,9 @@ const sessionSchema: SchemaObject = { type: 'object', required: ['access_token',
 export function AuthResponse(operation: 'signup' | 'login' | 'refresh' | 'me' | 'logout') {
   const profile = { role: 'citizen', is_verified: false };
   const session = { access_token: 'mock-access-token-not-valid', refresh_token: 'mock-refresh-token-not-valid', expires_in: 3600, token_type: 'bearer', user };
-  const data = operation === 'me' ? { user, profile } : { user, session: operation === 'signup' ? null : session, ...(operation === 'signup' ? { confirmation_required: true } : {}) };
+  const data = operation === 'me' ? { user, profile, permissions: [] } : { user, session: operation === 'signup' ? null : session, ...(operation === 'signup' ? { confirmation_required: true } : {}) };
   const properties: Record<string, SchemaObject> = operation === 'me'
-    ? { user: userSchema, profile: { type: 'object', nullable: true, additionalProperties: true } }
+    ? { user: userSchema, profile: { type: 'object', nullable: true, additionalProperties: true }, permissions: { type: 'array', items: { type: 'string' }, description: 'Live profile-derived UI hints. Server authorization is authoritative.' } }
     : { user: { ...userSchema, nullable: operation === 'signup' }, session: { ...sessionSchema, nullable: operation === 'signup' }, ...(operation === 'signup' ? { confirmation_required: { type: 'boolean' as const } } : {}) };
   return ApiResponse({ status: operation === 'signup' ? 201 : 200, description: 'Authentication response. Mock tokens are deliberately unusable against live services.', schema: {
     type: 'object', required: operation === 'logout' ? ['success'] : ['success', 'data'], properties: {

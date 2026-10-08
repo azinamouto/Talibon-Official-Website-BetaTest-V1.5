@@ -1,5 +1,26 @@
 # Sprint 4 authorization (S4-BE-01)
 
+## Client contract (S4-INT-01)
+
+`GET /api/auth/me` returns `data.permissions: string[]`, derived from the live,
+verified, active profile by the same server policy used by guards. The frontend
+starts with no permissions and never derives access from JWT metadata. The server
+remains authoritative. Missing permissions or failed identity requests deny access;
+401/403 responses clear the admin view until permissions are reloaded.
+
+| Roles | Client permissions |
+| --- | --- |
+| guest, citizen, staff, department_admin, barangay_admin | none |
+| editor | `content:manage` |
+| municipal_admin, admin | `content:manage`, `reports:read`, `users:read`, `users:update`, `users:deactivate` |
+| super_admin | all above plus `users:roles` |
+
+`content:manage` represents the existing `CONTENT_ROLES` policy for guarded
+page/news/service management routes; it does not broaden those routes. Unknown,
+unverified and inactive roles receive an empty array. See the shared
+[FE/BE handoff](../../docs/SPRINT4_ADMIN_DASHBOARD.md). Implementation and contract
+tests are recorded there; human FE/BE sign-off remains pending.
+
 The global AuthGuard verifies the bearer token with Supabase Auth, checks the live
 session, then loads the current profile. Deleted profiles are denied. Administrative
 roles require `is_verified=true`. JWT metadata never grants permissions; role changes

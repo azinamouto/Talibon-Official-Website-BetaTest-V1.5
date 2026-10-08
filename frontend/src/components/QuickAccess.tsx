@@ -15,7 +15,7 @@ export default function QuickAccess() {
     { name: "Apply for Permit", icon: FileText, href: "/services" },
     { name: "Request Certificate", icon: FileCheck, href: "/services" },
     { name: "Pay Online", icon: CreditCard, href: "/e-services" },
-    { name: "Track My Request", icon: Search, href: "/e-services" },
+    { name: "Track My Request", icon: Search, href: "/e-services?view=submissions" },
     { name: "Tourism Guide", icon: Map, href: "/tourism/spots" },
     { name: "Downloadables", icon: Download, href: "/downloads" },
     { name: "Citizen's Charter", icon: BookOpen, href: "/transparency/charter" },

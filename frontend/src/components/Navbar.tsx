@@ -121,7 +121,7 @@ export default function Navbar() {
         { name: "Demographics", href: "/about/demographics" },
         { name: "Location", href: "/about/location" },
         { name: "Industry", href: "/about/industry" },
-        { name: "Government Services", href: "/about/services" },
+        { name: "Government Services", href: "/services" },
         { name: "Talibon Hymn", href: "/about/hymn" },
       ])
     },

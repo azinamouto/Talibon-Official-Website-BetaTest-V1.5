@@ -16,7 +16,8 @@ import BusinessPermitPage from "./pages/BusinessPermitPage";
 import BuildingPermitPage from "./pages/BuildingPermitPage";
 import ZoningClearancePage from "./pages/ZoningClearancePage";
 import OrganizationalChartPage from "./pages/OrganizationalChartPage";
-import UpdatesPage from "./pages/UpdatesPage";
+import ServicesPage from "./pages/ServicesPage";
+import PublicPageDetail from "./pages/PublicPageDetail";
 import NewsCategoryPage from "./pages/NewsCategoryPage";
 import NewsDetailPage from "./pages/NewsDetailPage";
 import DownloadsPage from "./pages/DownloadsPage";
@@ -97,7 +98,9 @@ export default function App() {
                       <Route path="/payment/success" element={<PaymentSuccess />} />
                       <Route path="/payment/cancel" element={<PaymentCancel />} />
                       <Route path="/tourism/map" element={<TourismMapPage />} />
-                      <Route path="/news/updates" element={<UpdatesPage />} />
+                      <Route path="/news" element={<NewsCategoryPage />} />
+                      <Route path="/services" element={<ServicesPage />} />
+                      <Route path="/pages/:id" element={<PublicPageDetail />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           
                       {/* About Talibon */}

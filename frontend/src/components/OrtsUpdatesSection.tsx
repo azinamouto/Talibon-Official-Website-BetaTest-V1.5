@@ -1,35 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, RefreshCw, Calendar, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
-import { newsService } from "../services/newsService";
-import { NewsItem } from "../services/cmsService";
+import { listPublic, PublicNews } from "../services/publicApi";
+import { usePublicResource } from "../hooks/usePublicResource";
+import { PublicState } from "./PublicContent";
 
 export default function OrtsUpdatesSection() {
-  const [ortsItems, setOrtsItems] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchOrts() {
-      try {
-        const allNews = await newsService.getNews();
-        const filtered = allNews.filter((item) => {
-          const cat = (item.category || "").toUpperCase();
-          const title = (item.title || "").toUpperCase();
-          return cat === "UPDATE" || cat.includes("ORTS") || title.includes("ORTS");
-        });
-        setOrtsItems(filtered.slice(0, 3));
-      } catch (err) {
-        console.warn("Error fetching ORTS Updates:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchOrts();
-  }, []);
-
-  if (loading) return null;
+  const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<PublicNews>('news', { limit: 3, category: 'UPDATE' }, signal), []));
+  const ortsItems = resource.data?.data || [];
+  if (resource.loading || resource.error) return <section className="max-w-7xl mx-auto p-6"><PublicState {...resource} /></section>;
   if (ortsItems.length === 0) return null;
 
   return (

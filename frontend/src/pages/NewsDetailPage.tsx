@@ -1,86 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Calendar, User, ArrowLeft, Loader2, Share2, Bookmark, Printer, ShieldCheck, Clock, Tag, Check, ArrowRight, Building2 } from 'lucide-react';
-import { newsService } from '../services/newsService';
-import { NewsItem } from '../services/cmsService';
-
-const MOCK_NEWS_DETAILS: Record<string, NewsItem> = {
-  "1": {
-    id: "1",
-    slug: "talibon-annual-festival-parade",
-    title: "Talibon Celebrates Annual Festival with Vibrant Cultural Parade",
-    content: "The vibrant coastal town of Talibon came alive today as the community celebrated its annual patronal festival. Local schools, civic organizations, and barangay groups lined the streets in spectacular costumes showcasing Boholano heritage and modern progress.\n\nThe municipal leadership commended the volunteers and security personnel for a safe and deeply enriching celebration that attracted tourists from neighboring towns.\n\nMayor and LGU officials highlighted that this year's festival emphasized coastal conservation and youth participation, setting a precedent for sustainable municipal cultural activities in the province.",
-    summary: "The municipality of Talibon marks its historic community celebration with a spectacular parade highlighting local culture, heritage, and unity.",
-    category: "Events",
-    image_url: "https://picsum.photos/seed/festival/1200/800",
-    date: new Date().toISOString(),
-    author: "LGU Media Relations",
-    status: "published"
-  },
-  "2": {
-    id: "2",
-    slug: "public-health-program-coastal-barangays",
-    title: "New Public Health Program Launched for Coastal Barangays",
-    content: "In an effort to bring quality healthcare directly to the community, the local government unit of Talibon launched 'LGU Kalusugan'. The program deploys a team of physicians, dentists, nurses, and pharmacists to remote island barangays.\n\nOver 500 residents received free physical checkups, dental extractions, diagnostic screenings, and maintenance medicines during the first leg of the mission.\n\nThe Municipal Health Office (MHO) announced that monthly schedules for coastal health visits will now be posted across all municipal communication channels and barangay halls.",
-    summary: "LGU Talibon extends comprehensive medical services, checkups, and educational seminars to remote island and coastal communities.",
-    category: "Health",
-    image_url: "https://picsum.photos/seed/health/1200/800",
-    date: new Date(Date.now() - 86400000).toISOString(),
-    author: "LGU Health Division",
-    status: "published"
-  },
-  "3": {
-    id: "3",
-    slug: "sea-wall-extension-completion",
-    title: "Infrastructure Update: Sea Wall Extension Nears Completion",
-    date: new Date(Date.now() - 172800000).toISOString(),
-    category: "Infrastructure",
-    summary: "The defense infrastructure project along the coastal zone is on schedule, ensuring safety and climate resilience for shoreline residents.",
-    content: "Construction of the 500-meter shoreline sea wall extension is now 90% complete, according to the municipal engineering office. This project aims to shield low-lying coastal neighborhoods from tidal surges during the typhoon season.\n\nLocal residents expressed their relief and gratitude, noting that the sea wall has already proven effective during high tides last month.\n\nThe Municipal Engineering Office confirms that final turn-over and ribbon cutting are slated for the upcoming month.",
-    image_url: "https://picsum.photos/seed/infra/1200/800",
-    author: "Municipal Engineering Office",
-    status: "published"
-  }
-};
+import { publicDetail, PublicNews } from '../services/publicApi';
+import { usePublicResource } from '../hooks/usePublicResource';
+import { PublicState } from '../components/PublicContent';
 
 const NewsDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [item, setItem] = useState<NewsItem | null>(null);
-  const [loading, setLoading] = useState(true);
+  const resource = usePublicResource(useCallback((signal: AbortSignal) => publicDetail<PublicNews>('news', id || '', signal), [id]));
+  const { data: item, loading } = resource;
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    const fetchItem = async () => {
-      if (!id) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-
-      try {
-        console.log(`[NewsDetailPage] Loading article for identifier: "${id}"`);
-        const found = await newsService.getNewsById(id);
-        if (found) {
-          setItem(found);
-        } else if (MOCK_NEWS_DETAILS[id]) {
-          setItem(MOCK_NEWS_DETAILS[id]);
-        } else {
-          setItem(null);
-        }
-      } catch (err: any) {
-        console.warn("[NewsDetailPage] Failed to fetch news detail:", err.message || err);
-        setItem(MOCK_NEWS_DETAILS[id] || null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchItem();
-    window.scrollTo(0, 0);
-  }, [id]);
 
   const handleShare = () => {
     if (navigator.clipboard) {
@@ -102,6 +34,8 @@ const NewsDetailPage: React.FC = () => {
       </div>
     );
   }
+
+  if (resource.error) return <div className="max-w-3xl mx-auto p-8"><PublicState {...resource} /></div>;
 
   if (!item) {
     return (

@@ -29,5 +29,14 @@ test('mock serves OpenAPI examples, filtering, pagination, and explicit unsuppor
     assert.equal((await fetch(base + '/api/pages/missing')).status, 404);
     assert.equal((await fetch(base + '/api/pages', { method: 'POST' })).status, 501);
     assert.equal((await fetch(base + '/api/about/profile', { headers: { 'X-API-Version': '2' } })).status, 404);
+    const search = await (await fetch(base + '/api/search?q=municipal&limit=10')).json();
+    assert.ok(search.data.some(item => item.type === 'services'));
+    assert.equal(search.meta.total, search.data.length);
+    const result = search.data.find(item => item.type === 'services');
+    const detail = await fetch(base + '/api/services/' + result.id);
+    assert.equal(detail.status, 200);
+    assert.equal((await detail.json()).data.name, result.title);
+    assert.deepEqual((await (await fetch(base + '/api/search?q=no-such-result')).json()).data, []);
+    assert.equal((await fetch(base + '/api/search?q=')).status, 400);
   } finally { await new Promise(resolve => server.close(resolve)); }
 });

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, X, FileText, Newspaper, FileCode, ArrowRight, Loader2, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
-import { publicGet, SearchItem, searchLink } from "../services/publicApi";
+import { searchPublic, searchLink } from "../services/publicApi";
 
 interface SearchResult {
   id: string;
@@ -49,7 +49,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
     if (!isOpen || q.length < 2) return () => controller.abort();
     const timer = setTimeout(async () => {
       try {
-        const response = await publicGet<{ data: SearchItem[] }>(`search?${new URLSearchParams({ q, limit: '10' })}`, controller.signal);
+        const response = await searchPublic({ q, limit: 10 }, controller.signal);
         if (!controller.signal.aborted) setResults(response.data.map(item => ({ id: item.id, title: item.title, type: item.type, url: searchLink(item), description: item.snippet })));
       } catch {
         if (!controller.signal.aborted) setError('Search is temporarily unavailable. Please try again.');
@@ -259,7 +259,8 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
               </AnimatePresence>
             </div>
 
-            <div className="bg-gray-50 p-6 flex justify-center items-center border-t border-gray-100">
+            <div className="bg-gray-50 p-6 flex flex-col gap-4 justify-center items-center border-t border-gray-100">
+              <Link className="ui-focus font-semibold text-brand-primary underline" to={`/search${searchQuery.trim() ? `?${new URLSearchParams({ q: searchQuery.trim() })}` : ''}`} onClick={onClose}>View all results and filters</Link>
               <div className="flex items-center gap-2 opacity-50">
                 <img
                   src="http://talibon.gov.ph/wp-content/uploads/2025/09/Talibon-Official-Seal-v4-2003-to-2023-.png"

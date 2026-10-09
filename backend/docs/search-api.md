@@ -4,6 +4,15 @@ The Search API provides high-performance, full-text discovery across published m
 
 The endpoint uses `/api/search`, API version 1 (`X-API-Version: 1`), and is publicly accessible. OpenAPI documentation is served at `/api/openapi.json`.
 
+The generated review snapshot now includes search in `contracts/openapi.json`.
+See [Sprint 5 integration handoff](../../docs/SPRINT5_SEARCH.md) for the mock,
+frontend, verification and pending BE/FE agreement.
+
+Facet counts describe query matches before type/category filtering and pagination.
+Category facets include up to 20 categories by count. `meta.total` and
+`meta.totalPages` describe filtered matches; zero matches means zero pages.
+Both sort modes break ties by creation date descending and ID descending.
+
 ---
 
 ## Endpoint Contract
@@ -161,4 +170,3 @@ export async function searchContent(query: {
 - `400 Bad Request`: When `q` is missing, empty, or exceeds 100 characters; when `limit` exceeds 50; or when invalid enum values are passed.
 - `429 Too Many Requests`: When request rate exceeds 120 calls / minute from a single IP. `Retry-After` header indicates wait time in seconds.
 - `503 Service Unavailable`: When database search storage is temporarily offline. Internal connection details and database stack traces are sanitized.
-

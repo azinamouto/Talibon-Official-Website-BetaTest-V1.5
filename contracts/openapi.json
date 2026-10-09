@@ -6235,11 +6235,165 @@
           "Admin reports"
         ]
       }
+    },
+    "/api/search": {
+      "get": {
+        "operationId": "SearchController_search_1",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "Search term or query keywords (trimmed, 1-100 characters)",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 100,
+              "example": "business permit",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "Filter by content type",
+            "schema": {
+              "default": "all",
+              "type": "string",
+              "enum": [
+                "all",
+                "news",
+                "services",
+                "pages"
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Exact category or responsible department; trimmed, empty means no filter",
+            "schema": {
+              "maxLength": 100,
+              "example": "ANNOUNCEMENT",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Results per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Sort by relevance rank or creation date",
+            "schema": {
+              "default": "relevance",
+              "type": "string",
+              "enum": [
+                "relevance",
+                "date"
+              ]
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matched items with relevance ranking, query-wide facets, and filtered pagination metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchResponseDto"
+                    }
+                  ],
+                  "example": {
+                    "data": [
+                      {
+                        "id": "11111111-1111-4111-8111-111111111111",
+                        "type": "services",
+                        "title": "Municipal information",
+                        "slug": "municipal-information",
+                        "snippet": "Service details.",
+                        "category": "mayor",
+                        "created_at": "2026-09-21T00:00:00.000Z",
+                        "score": 1
+                      }
+                    ],
+                    "meta": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "totalPages": 1
+                    },
+                    "facets": {
+                      "byType": {
+                        "news": 0,
+                        "services": 1,
+                        "pages": 0
+                      },
+                      "byCategory": {
+                        "mayor": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters or query string constraint violation"
+          },
+          "429": {
+            "description": "Public read rate limit exceeded; retry after the Retry-After header delay"
+          },
+          "503": {
+            "description": "Search storage unavailable"
+          }
+        },
+        "summary": "Full-text discovery across municipal news, services, and content pages with facets",
+        "tags": [
+          "Search"
+        ]
+      }
     }
   },
   "info": {
     "title": "Talibon Municipal API",
-    "description": "Send X-API-Version: 1 (default when omitted). Bearer tokens are Supabase access tokens. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: Sprint 1 authentication, Sprint 2 About/content and Sprint 4 admin endpoints. Other APIs remain in the live document.",
+    "description": "Send X-API-Version: 1 (default when omitted). Bearer tokens are Supabase access tokens. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: Sprint 1 authentication, Sprint 2 About/content, Sprint 4 admin and Sprint 5 search endpoints. Other APIs remain in the live document.",
     "version": "1",
     "contact": {}
   },
@@ -6759,6 +6913,153 @@
         },
         "required": [
           "version"
+        ]
+      },
+      "SearchItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "news",
+              "services",
+              "pages"
+            ],
+            "example": "services"
+          },
+          "title": {
+            "type": "string",
+            "example": "Business Permit Application & Renewal"
+          },
+          "slug": {
+            "type": "string",
+            "example": "business-permit"
+          },
+          "snippet": {
+            "type": "string",
+            "example": "Guidelines and online processing for new municipal business permits."
+          },
+          "category": {
+            "type": "string",
+            "example": "Business Permits & Licensing Office (BPLO)"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-09-01T12:00:00.000Z"
+          },
+          "score": {
+            "type": "number",
+            "example": 0.8542,
+            "description": "Calculated PostgreSQL ts_rank_cd relevance score"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "slug",
+          "snippet",
+          "category",
+          "created_at",
+          "score"
+        ]
+      },
+      "SearchMetaDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 10
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 5
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "SearchFacetsDto": {
+        "type": "object",
+        "properties": {
+          "byType": {
+            "type": "object",
+            "example": {
+              "news": 15,
+              "services": 8,
+              "pages": 3
+            },
+            "properties": {
+              "news": {
+                "type": "integer"
+              },
+              "services": {
+                "type": "integer"
+              },
+              "pages": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "news",
+              "services",
+              "pages"
+            ],
+            "description": "Query matches per type before type/category filters and pagination"
+          },
+          "byCategory": {
+            "type": "object",
+            "example": {
+              "ARTICLE": 10,
+              "ANNOUNCEMENT": 5,
+              "BPLO": 4
+            },
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Top 20 categories by query match count before type/category filters and pagination"
+          }
+        },
+        "required": [
+          "byCategory"
+        ]
+      },
+      "SearchResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchItemDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/SearchMetaDto"
+          },
+          "facets": {
+            "$ref": "#/components/schemas/SearchFacetsDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "facets"
         ]
       }
     }

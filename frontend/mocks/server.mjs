@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { mockSearch } from './search.mjs';
 
 export const contract = JSON.parse(readFileSync(new URL('../../contracts/openapi.json', import.meta.url), 'utf8'));
 
@@ -14,22 +15,9 @@ export function createMockServer() {
     const url = new URL(req.url, 'http://localhost');
     if (req.headers['x-api-version'] && req.headers['x-api-version'] !== '1') return fail(404, 'Unsupported API version');
     if (url.pathname === '/api/openapi.json') return send(200, contract);
-    // Search is not in the older checked-in OpenAPI snapshot. Use the current
-    // SearchResponseDto shape and the same content examples as the resource routes.
     if (url.pathname === '/api/search' && req.method === 'GET') {
-      const q = (url.searchParams.get('q') || '').trim();
-      const page = Number(url.searchParams.get('page') || 1);
-      const limit = Number(url.searchParams.get('limit') || 10);
-      if (!q || q.length > 100 || !Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 1 || limit > 50) return fail(400, 'Invalid search query');
-      const rows = ['news', 'services', 'pages'].flatMap(type => {
-        const media = contract.paths[`/api/${type}`].get.responses['200'].content['application/json'];
-        return (media.example ?? media.schema.example).data.map(item => ({
-          id: item.id, slug: item.slug, type, title: item.title || item.name,
-          snippet: item.summary || item.description || item.content,
-          category: item.category || item.office_responsible || '', created_at: item.created_at, score: 1,
-        }));
-      }).filter(item => `${item.title} ${item.snippet}`.toLowerCase().includes(q.toLowerCase()));
-      return send(200, { data: rows.slice((page - 1) * limit, page * limit), meta: { page, limit, total: rows.length, totalPages: Math.ceil(rows.length / limit) }, facets: { byType: Object.fromEntries(['news', 'services', 'pages'].map(type => [type, rows.filter(item => item.type === type).length])), byCategory: {} } });
+      const body = mockSearch(url.searchParams, contract);
+      return body ? send(200, body) : fail(400, 'Invalid search query');
     }
     const path = Object.keys(contract.paths).find(path => path === url.pathname)
       ?? Object.keys(contract.paths).find(path => path.includes('{id}') && new RegExp('^' + path.replace('{id}', '[^/]+') + '$').test(url.pathname));

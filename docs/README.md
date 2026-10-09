@@ -4,6 +4,8 @@ Welcome to the TAL.GOV documentation hub. This directory contains comprehensive 
 
 ## Documentation Index
 
+- [Sprint 5 Search](./SPRINT5_SEARCH.md) — query/filter/result contract, mock server, search page, verification and pending BE/FE agreement.
+
 - [Sprint 4 Admin Dashboard](./SPRINT4_ADMIN_DASHBOARD.md) — permission contract, mock layout, user management, CMS editors, reports, and validation.
 
 - [Sprint 3 E-Services Frontend](./SPRINT3_FRONTEND.md) — shared wizard, five form integrations, submission tracking, payment dependency handoff, and verification.

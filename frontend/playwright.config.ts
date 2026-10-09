@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './test/browser',
-  testIgnore: ['about-contract.spec.ts', 'public-contract.spec.ts', 'eservices.spec.ts', 'admin.spec.ts'],
+  testIgnore: ['about-contract.spec.ts', 'public-contract.spec.ts', 'search-contract.spec.ts', 'eservices.spec.ts', 'admin.spec.ts'],
   fullyParallel: false,
   workers: 1,
   use: {

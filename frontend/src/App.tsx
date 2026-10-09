@@ -18,6 +18,7 @@ import ZoningClearancePage from "./pages/ZoningClearancePage";
 import OrganizationalChartPage from "./pages/OrganizationalChartPage";
 import ServicesPage from "./pages/ServicesPage";
 import PublicPageDetail from "./pages/PublicPageDetail";
+import SearchPage from "./pages/SearchPage";
 import NewsCategoryPage from "./pages/NewsCategoryPage";
 import NewsDetailPage from "./pages/NewsDetailPage";
 import DownloadsPage from "./pages/DownloadsPage";
@@ -94,6 +95,7 @@ const router = createBrowserRouter(createRoutesFromElements(
                       <Route path="/tourism/map" element={<TourismMapPage />} />
                       <Route path="/news" element={<NewsCategoryPage />} />
                       <Route path="/services" element={<ServicesPage />} />
+                      <Route path="/search" element={<SearchPage />} />
                       <Route path="/pages/:id" element={<PublicPageDetail />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           

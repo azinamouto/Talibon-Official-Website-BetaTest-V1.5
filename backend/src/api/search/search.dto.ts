@@ -3,7 +3,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class SearchQueryDto {
-  @ApiProperty({ description: 'Search term or query keywords (1-100 characters)', example: 'business permit' })
+  @ApiProperty({ description: 'Search term or query keywords (trimmed, 1-100 characters)', minLength: 1, maxLength: 100, example: 'business permit' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @MinLength(1)
@@ -15,7 +15,7 @@ export class SearchQueryDto {
   @IsIn(['all', 'news', 'services', 'pages'])
   type?: 'all' | 'news' | 'services' | 'pages' = 'all';
 
-  @ApiPropertyOptional({ description: 'Filter by category or responsible department', example: 'ANNOUNCEMENT' })
+  @ApiPropertyOptional({ description: 'Exact category or responsible department; trimmed, empty means no filter', maxLength: 100, example: 'ANNOUNCEMENT' })
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
@@ -86,7 +86,10 @@ export class SearchMetaDto {
 export class SearchFacetsDto {
   @ApiProperty({
     example: { news: 15, services: 8, pages: 3 },
-    description: 'Matched items count per content type',
+    type: 'object',
+    properties: { news: { type: 'integer' }, services: { type: 'integer' }, pages: { type: 'integer' } },
+    required: ['news', 'services', 'pages'],
+    description: 'Query matches per type before type/category filters and pagination',
   })
   byType: {
     news: number;
@@ -96,7 +99,8 @@ export class SearchFacetsDto {
 
   @ApiProperty({
     example: { 'ARTICLE': 10, 'ANNOUNCEMENT': 5, 'BPLO': 4 },
-    description: 'Matched items count per category or department',
+    type: 'object', additionalProperties: { type: 'integer' },
+    description: 'Top 20 categories by query match count before type/category filters and pagination',
   })
   byCategory: Record<string, number>;
 }
@@ -111,4 +115,3 @@ export class SearchResponseDto {
   @ApiProperty({ type: SearchFacetsDto })
   facets: SearchFacetsDto;
 }
-

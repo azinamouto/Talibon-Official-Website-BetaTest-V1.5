@@ -13,6 +13,20 @@ export interface PublicNews {
 export interface PublicPage { id: string; slug: string; title: string; content: string }
 export interface SearchItem {
   id: string; slug: string; title: string; snippet: string; type: 'news' | 'services' | 'pages';
+  category: string; created_at: string; score: number;
+}
+export interface SearchQuery {
+  q: string; type?: 'all' | SearchItem['type']; category?: string;
+  page?: number; limit?: number; sort?: 'relevance' | 'date';
+}
+export interface SearchResponse {
+  data: SearchItem[];
+  meta: Pagination;
+  facets: { byType: Record<SearchItem['type'], number>; byCategory: Record<string, number> };
+}
+export function searchPublic(params: SearchQuery, signal?: AbortSignal) {
+  const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value !== undefined && value !== '').map(([key, value]) => [key, String(value)]));
+  return publicGet<SearchResponse>(`search?${query}`, signal);
 }
 export class PublicApiError extends Error {
   constructor(public status: number) {

@@ -2,11 +2,15 @@
 
 Tickets: S1-INT-02, S2-INT-01, S2-FE-02. Prepared 2026-10-07.
 
+Sprint 5 search handoff (S5-INT-01 / S5-FE-02): see
+[Sprint 5 Search](./SPRINT5_SEARCH.md) for the query/filter/result contract,
+mock behavior, frontend flow and pending reviewer agreement.
+
 ## Source of truth
 
 OpenAPI is the wire contract. Backend OpenAPI decorators/response definitions produce
 [`contracts/openapi.json`](../contracts/openapi.json), the committed review artifact
-for Sprint 1 authentication and Sprint 2 content/About endpoints. Never edit that
+for Sprint 1 authentication, Sprint 2 content/About, Sprint 4 admin and Sprint 5 search endpoints. Never edit that
 generated file directly. The full live API remains available at `/api/openapi.json`
 and `/api/docs`. Other modules are outside this snapshot's scope.
 

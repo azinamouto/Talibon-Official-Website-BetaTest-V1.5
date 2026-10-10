@@ -1,0 +1,46 @@
+name: Frontend checks
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      VITE_SUPABASE_URL: http://127.0.0.1:54321
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_test_only
+      VITE_ENABLE_MOCK_DATA: 'false'
+      PLAYWRIGHT_CHANNEL: chromium
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run test:coverage
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - run: npm run test:eservices
+      - run: npm run test:eservices -- --grep "payments remain unavailable by default"
+        env:
+          TEST_SUBMISSION_PAYMENTS: 'false'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-qa
+          path: |
+            frontend/coverage/
+            frontend/test-results/
+            frontend/test-results-eservices/
+          if-no-files-found: warn

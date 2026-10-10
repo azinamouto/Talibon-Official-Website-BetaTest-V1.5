@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import GeminiAssistant from '../components/GeminiAssistant';
+import MunicipalChatbot from '../components/MunicipalChatbot';
 import ErrorBoundary from '../components/ErrorBoundary';
 import ErrorPage from '../pages/ErrorPage';
 import { Alert } from '../components/ui/Alert';
@@ -29,7 +29,7 @@ export default function BaseLayout() {
       </ErrorBoundary>
     </div>
     <Footer />
-    <GeminiAssistant />
+    <MunicipalChatbot />
     {isOffline && <div className="fixed bottom-4 right-4 z-50 max-w-sm"><Alert>You're offline. Check your internet connection.</Alert></div>}
   </div>;
 }

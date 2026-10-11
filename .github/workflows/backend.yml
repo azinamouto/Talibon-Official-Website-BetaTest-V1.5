@@ -22,6 +22,7 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: node scripts/export-openapi.cjs --check
+      - run: node --test ../ops/test/*.test.mjs
   database:
     runs-on: windows-latest
     steps:

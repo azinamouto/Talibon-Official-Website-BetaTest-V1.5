@@ -3,6 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import express from 'express';
 import { randomUUID } from 'node:crypto';
 import { SecurityHeadersMiddleware } from './security/security-headers.middleware';
+import { requestMetrics } from './security/request-metrics.middleware';
 
 export function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) return true;
@@ -29,6 +30,7 @@ export function configureApp(app: INestApplication) {
     next();
   });
   app.use(new SecurityHeadersMiddleware().use);
+  app.use(requestMetrics);
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ limit: '1mb', extended: false }));
   app.useGlobalPipes(new ValidationPipe({

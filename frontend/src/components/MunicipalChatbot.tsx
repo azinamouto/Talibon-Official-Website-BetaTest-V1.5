@@ -25,7 +25,7 @@ export default function MunicipalChatbot() {
     {open && <section id="municipal-assistant" role="dialog" aria-labelledby="assistant-title"
       onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); close(); } }}
       className="fixed bottom-24 right-3 z-[95] flex max-h-[calc(100dvh-7rem)] w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl border bg-white shadow-2xl sm:right-6 sm:w-[420px]">
-      <header className="flex items-center justify-between gap-2 bg-brand-text p-4 text-white">
+      <header className="flex items-center justify-between gap-2 bg-brand-text p-4 text-white ">
         <div><h2 id="assistant-title" className="font-bold">Talibon Assistant</h2><p className="text-xs">Prepared answers · Service and website guide</p></div>
         <button className="ui-focus p-2" onClick={close} aria-label="Close Chat"><X aria-hidden="true" /></button>
       </header>

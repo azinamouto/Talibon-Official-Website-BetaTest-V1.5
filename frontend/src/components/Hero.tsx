@@ -266,7 +266,7 @@ const Hero: React.FC<HeroProps> = ({
     <section
       ref={sectionRef}
       id="home"
-      className="relative min-h-screen w-full overflow-hidden flex flex-col items-start justify-center pt-28 sm:pt-36 lg:pt-40 pb-12 sm:pb-16 lg:pb-20 px-0"
+      className="relative min-h-screen w-full overflow-hidden flex flex-col items-start justify-center pt-28 sm:pt-36 lg:pt-40 pb-0 px-0"
     >
       {/* BACKGROUND VIDEO */}
       <div className="absolute inset-0 z-0 overflow-hidden bg-black">

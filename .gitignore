@@ -8,3 +8,6 @@ coverage/
 !.env.example
 supabase/.temp/
 backend/test/load/results/
+.vercel/
+ops/evidence/
+ops/backups/

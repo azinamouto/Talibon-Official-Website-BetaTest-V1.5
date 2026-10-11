@@ -57,6 +57,28 @@ try {
       Write-Output "PASS: $database Sprint 4 reports, user authorization, audit rollback and deactivation RLS"
       Write-Output "PASS: $database Sprint 3 ownership, transactional outbox and retry assertions"
       Write-Output "PASS: $database Sprint 2 content schema and RLS assertions"
+      Invoke-SqlFile $database 'ops/verify-database.sql'
+      if ($database -eq 'phase1_fresh') {
+        # Rehearse a logical backup/restore using synthetic data in this local cluster.
+        # This is not evidence of a hosted Supabase staging restore.
+        $archive = Join-Path $scratch 'rehearsal.dump'
+        & (Join-Path $pgBin 'pg_dump.exe') -h 127.0.0.1 -p $port -U postgres -d $database -Fc -f $archive
+        if ($LASTEXITCODE -ne 0) { throw 'Backup rehearsal dump failed.' }
+        & (Join-Path $pgBin 'createdb.exe') -h 127.0.0.1 -p $port -U postgres phase7_restored
+        if ($LASTEXITCODE -ne 0) { throw 'Restore database creation failed.' }
+        & (Join-Path $pgBin 'pg_restore.exe') -h 127.0.0.1 -p $port -U postgres -d phase7_restored --exit-on-error --single-transaction $archive
+        if ($LASTEXITCODE -ne 0) { throw 'Backup rehearsal restore failed.' }
+        Invoke-SqlFile 'phase7_restored' 'ops/verify-database.sql'
+        $manifests = @()
+        foreach ($source in @($database, 'phase7_restored')) {
+          $manifest = & (Join-Path $pgBin 'psql.exe') -X -q -A -t -h 127.0.0.1 -p $port -U postgres -d $source -v ON_ERROR_STOP=1 -f (Join-Path $repo 'ops/data-manifest.sql')
+          if ($LASTEXITCODE -ne 0) { throw 'Data manifest generation failed.' }
+          $manifests += ($manifest -join "`n")
+        }
+        if ($manifests[0] -cne $manifests[1]) { throw 'Restored data does not match backup source.' }
+        Invoke-SqlFile 'phase7_restored' 'backend/test/database-security.sql'
+        Write-Output 'PASS: Sprint 7 local backup/restore, row counts, data hashes, RLS and schema verification'
+      }
     } else {
       # Historical V4 has municipal_services, UUID departments and different enums.
       # It is retained here only for the existing Sprint 1 security regression.

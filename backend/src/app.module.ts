@@ -38,10 +38,12 @@ import { SearchController } from './api/search/search.controller';
 import { SearchService } from './api/search/search.service';
 import { ChatController } from './api/chat/chat.controller';
 import { ChatService } from './api/chat/chat.service';
+import { HealthController } from './api/health/health.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
   controllers: [
+    HealthController,
     ChatController,
     SearchController,
     ReportsController,

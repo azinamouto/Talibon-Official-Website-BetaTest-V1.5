@@ -10,6 +10,7 @@ export class CacheControlMiddleware implements NestMiddleware {
     if (
       path.startsWith("/api/forms/certificate") ||
       path.startsWith("/api/auth") ||
+      path.startsWith("/api/health") ||
       !!req.headers.authorization ||
       path.startsWith("/api/payments") ||
       req.method !== "GET"

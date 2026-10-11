@@ -19,6 +19,13 @@ test('deployment entry boots concurrently and retains DTO metadata', async () =>
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   try {
     const base = `http://127.0.0.1:${server.address().port}`;
+    const health = await fetch(base + '/api/health');
+    assert.equal(health.status, 200);
+    assert.deepEqual(await health.json(), { status: 'ok', service: 'talibon-api' });
+    assert.match(health.headers.get('cache-control'), /no-store/);
+    const unavailable = await fetch(base + '/api/health/ready');
+    assert.equal(unavailable.status, 503);
+    assert.match(unavailable.headers.get('cache-control'), /no-store/);
     const responses = await Promise.all([1, 2].map(() => fetch(base + '/api/auth/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: 'bad', password: '', role: 'admin' }),

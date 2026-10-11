@@ -4,6 +4,8 @@ Welcome to the TAL.GOV documentation hub. This directory contains comprehensive 
 
 ## Documentation Index
 
+- [Sprint 7 Operations](./SPRINT7_OPERATIONS.md) - release gates, health checks, monitoring, encrypted backups, restore and rollback procedures, and pending live acceptance.
+
 - [Sprint 5 Advanced Frontend and Sprint 6 QA](./SPRINT5_ADVANCED_FRONTEND.md) — live maps, prepared-answer chatbot, graceful fallbacks, coverage scope and CI verification.
 
 - [Sprint 5 Search](./SPRINT5_SEARCH.md) — query/filter/result contract, mock server, search page, verification and pending BE/FE agreement.

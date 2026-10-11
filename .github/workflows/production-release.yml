@@ -1,0 +1,84 @@
+name: Production release (existing combined Vercel project)
+on:
+  workflow_dispatch:
+    inputs:
+      staging_evidence:
+        description: 'Link to S6-INT-01 sign-off, staging migration and restore rehearsal evidence'
+        required: true
+        type: string
+      backup_evidence:
+        description: 'Successful pre-release backup run URL (within the write freeze)'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: production
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_CLI_VERSION: ${{ vars.VERCEL_CLI_VERSION }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+      PGHOST: ${{ secrets.PRODUCTION_PGHOST }}
+      PGPORT: ${{ secrets.PRODUCTION_PGPORT }}
+      PGUSER: ${{ secrets.PRODUCTION_PGUSER }}
+      PGPASSWORD: ${{ secrets.PRODUCTION_PGPASSWORD }}
+      PGDATABASE: postgres
+      PGSSLMODE: require
+      PGCONNECT_TIMEOUT: '15'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check release configuration
+        env:
+          STAGING_EVIDENCE: ${{ inputs.staging_evidence }}
+          BACKUP_EVIDENCE: ${{ inputs.backup_evidence }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH"
+          : "${VERCEL_ORG_ID:?}" "${VERCEL_PROJECT_ID:?}" "${VERCEL_TOKEN:?}"
+          : "${PGHOST:?}" "${PGPORT:?}" "${PGUSER:?}" "${PGPASSWORD:?}"
+          [[ "$VERCEL_CLI_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          node --input-type=module -e "import {origin} from './ops/http.mjs'; origin(process.env.PRODUCTION_URL)"
+          [[ "$STAGING_EVIDENCE" == https://* && "$BACKUP_EVIDENCE" == https://* ]]
+      - run: npm ci && npm ci --prefix backend && npm ci --prefix frontend
+      - run: npm run lint:backend && npm test --prefix backend && npm run test:ops
+      - name: Verify migrated database before deployment
+        run: |
+          set -euo pipefail
+          # Production migrations are a separate operator step under a write freeze.
+          # A mismatched history or invalid schema stops the deploy here.
+          node ops/check-migration-history.mjs
+          psql -X -v ON_ERROR_STOP=1 -f ops/verify-database.sql
+      - name: Build and deploy candidate (backend then frontend build)
+        run: |
+          set -euo pipefail
+          npx --yes "vercel@$VERCEL_CLI_VERSION" pull --yes --environment=production --token="$VERCEL_TOKEN"
+          npx --yes "vercel@$VERCEL_CLI_VERSION" build --prod --token="$VERCEL_TOKEN"
+          candidate=$(npx --yes "vercel@$VERCEL_CLI_VERSION" deploy --prebuilt --prod --skip-domain --token="$VERCEL_TOKEN")
+          echo "DEPLOYMENT_URL=$candidate" >> "$GITHUB_ENV"
+      - name: Smoke candidate before promotion
+        run: npm run ops:smoke
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      - name: Promote tested candidate
+        run: npx --yes "vercel@$VERCEL_CLI_VERSION" promote "$DEPLOYMENT_URL" --yes --token="$VERCEL_TOKEN"
+      - name: Smoke public production domain
+        run: npm run ops:smoke
+        env:
+          DEPLOYMENT_URL: ${{ vars.PRODUCTION_URL }}
+      - name: Notify release failure
+        if: failure()
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: node ops/alert.mjs

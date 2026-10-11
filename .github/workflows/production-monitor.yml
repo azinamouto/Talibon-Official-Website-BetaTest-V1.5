@@ -1,0 +1,26 @@
+name: Production uptime monitor
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  contents: read
+concurrency:
+  group: production-monitor
+  cancel-in-progress: false
+jobs:
+  probe:
+    if: vars.PRODUCTION_MONITOR_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    environment: production-operations
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node ops/monitor.mjs
+        env:
+          DEPLOYMENT_URL: ${{ vars.PRODUCTION_URL }}
+          MONITOR_LATENCY_MS: ${{ vars.MONITOR_LATENCY_MS }}
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}

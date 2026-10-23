@@ -27,7 +27,7 @@ export default function CitizensCharterSection() {
 
   return (
     <section id="charter" className="py-12 sm:py-16 bg-brand-surface relative overflow-hidden border-y border-brand-border/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1680px] px-5 sm:px-8 lg:px-10 2xl:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 sm:mb-10">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-2">
@@ -55,7 +55,7 @@ export default function CitizensCharterSection() {
           </a>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {offices.map((office, idx) => (
             <motion.div
               key={office.name}

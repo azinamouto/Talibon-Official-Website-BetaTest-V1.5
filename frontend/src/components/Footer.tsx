@@ -19,7 +19,7 @@ export default function Footer() {
   return (
     <footer id="contact" className="bg-brand-bg border-t border-brand-border pt-32 pb-16 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-32">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-12 mb-12 lg:mb-16">
           {/* Branding */}
           <div className="space-y-8">
             <div className="flex items-center gap-4">

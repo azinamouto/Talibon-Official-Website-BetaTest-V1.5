@@ -8,7 +8,7 @@ export default function Location() {
 
   return (
     <section id="location" className="py-32 bg-brand-surface relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1680px] px-5 sm:px-8 lg:px-10 2xl:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -63,7 +63,7 @@ export default function Location() {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white dark:border-dark-border bg-white dark:bg-dark-surface flex items-center justify-center">
+            <div className="flex aspect-[16/10] min-h-[320px] items-center justify-center overflow-hidden rounded-2xl border border-brand-border bg-white shadow-sm sm:min-h-[400px]">
               {loadMap ? (
                 <iframe 
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15707.382483838237!2d124.321852028686!3d10.152377484462102!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3307cc27f5e8e8e9%3A0x63359784347716cc!2sTalibon%2C%20Bohol!5e0!3m2!1sen!2sph!4v1713290000000!5m2!1sen!2sph" 

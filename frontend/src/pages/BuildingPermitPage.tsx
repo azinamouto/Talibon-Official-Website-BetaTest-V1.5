@@ -162,12 +162,12 @@ const BuildingPermitPage: React.FC = () => {
                 Online Permit Fees
               </h3>
               <p className="text-brand-muted font-medium">
-                Settle your building permit processing fees online for faster approval and processing.
+                Fees are assessed by the responsible municipal office. Online payment is not yet available.
               </p>
             </div>
 
             <div className="w-full md:w-72">
-              <PaymentButton itemName="Building Permit Processing Fee" amount={1500} />
+              <PaymentButton itemName="Municipal fee pending verification" amount={0} />
             </div>
           </motion.div>
 

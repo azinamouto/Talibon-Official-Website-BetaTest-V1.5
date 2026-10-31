@@ -88,12 +88,12 @@ const ZoningClearancePage: React.FC = () => {
                   Online Clearing Fee
                 </h3>
                 <p className="text-gray-500 font-medium">
-                  Conveniently pay your zoning clearance fees online.
+                  Contact the responsible municipal office for the official assessment and payment instructions.
                 </p>
               </div>
 
               <div className="w-full md:w-72">
-                <PaymentButton itemName="Zoning Clearance Fee" amount={300} />
+                <PaymentButton itemName="Municipal fee pending verification" amount={0} />
               </div>
             </motion.div>
 

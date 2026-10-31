@@ -1,6 +1,7 @@
 import { test, expect, type Page, type BrowserContext } from '@playwright/test';
 
-const paymentsEnabled = process.env.TEST_SUBMISSION_PAYMENTS !== 'false';
+// Settlement endpoints are not implemented; preserve explicit TODO coverage in backend.
+const paymentsEnabled = false;
 const id = '22222222-2222-4222-8222-222222222222';
 const user = { id: '11111111-1111-4111-8111-111111111111', email: 'citizen@example.test', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' };
 const application = { id, ticketId: `TAL-${id}`, documentType: 'Barangay Clearance', fullName: 'Juan Cruz', email: user.email, barangay: 'poblacion', mobileNumber: '09171234567', purpose: 'Employment', details: { sitioPurok: 'Purok 1', yearsOfResidency: 5 }, attachments: [], status: 'Submitted', version: 1, submittedAt: '2026-10-08T00:00:00Z', updatedAt: '2026-10-08T00:00:00Z', history: [{ id: 'history-1', status: 'Submitted', remarks: 'Application received.', createdAt: '2026-10-08T00:00:00Z' }] };

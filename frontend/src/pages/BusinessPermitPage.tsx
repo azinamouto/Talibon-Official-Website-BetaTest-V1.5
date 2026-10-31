@@ -103,16 +103,16 @@ const BusinessPermitPage: React.FC = () => {
 
                 <div className="min-w-0">
                   <h3 className="text-sm sm:text-base font-bold text-brand-text uppercase tracking-tight font-display">
-                    Simplified Online Payment
+                    Payment Instructions
                   </h3>
                   <p className="text-brand-muted font-medium text-xs mt-0.5 leading-relaxed">
-                    Skip the long lines. Pay your processing fees online securely via GCash, Maya, or Cards.
+                    Contact the Municipal Treasury Office for the approved assessment and payment instructions.
                   </p>
                 </div>
               </div>
 
               <div className="w-full md:w-64 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-brand-border/40">
-                <PaymentButton itemName="Business Permit Processing Fee" amount={500} />
+                <PaymentButton itemName="Municipal fee pending verification" amount={0} />
               </div>
             </motion.div>
 

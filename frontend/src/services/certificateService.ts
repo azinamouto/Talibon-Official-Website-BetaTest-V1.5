@@ -174,65 +174,10 @@ export const certificateService = {
   /**
    * Submit a certificate request directly to public.certificate_requests
    */
-  async submitRequest(payload: Omit<CertificateRequest, "ticketId" | "submittedAt" | "status">): Promise<CertificateRequest> {
-    const ticketId = generateTicketId(payload.documentType);
-    const now = new Date().toISOString();
-
-    if (!isSupabaseConfigured) {
-      throw new Error("Supabase is unconfigured. Production application requires an active database connection.");
-    }
-
-    const insertPayload = {
-      ticket_id: ticketId,
-      document_type: payload.documentType,
-      barangay_id: payload.barangay || "Poblacion",
-      full_name: payload.fullName,
-      email: payload.email || "",
-      mobile_number: payload.mobileNumber || "",
-      purpose: payload.purpose || "",
-      attachments: payload.attachments || [],
-      status: "Submitted",
-      submitted_at: now
-    };
-
-    console.log(`[CertificateService] Submitting request to public.certificate_requests with tracking code: ${ticketId}`);
-
-    // Insert directly into public.certificate_requests (V4 primary interface)
-    let createdData: any = null;
-    const { data: crData, error: crError } = await supabase
-      .from("certificate_requests")
-      .insert([insertPayload])
-      .select()
-      .maybeSingle();
-
-    if (crData) {
-      createdData = crData;
-      console.log(`[CertificateService] Successfully inserted into public.certificate_requests (ID: ${crData.id})`);
-    } else {
-      console.warn("[CertificateService] Insert to public.certificate_requests returned empty or error:", crError?.message || crError);
-      // Fallback insert to service_requests table
-      const { data: srData, error: srError } = await supabase
-        .from("service_requests")
-        .insert([insertPayload])
-        .select()
-        .maybeSingle();
-
-      if (srError || !srData) {
-        console.error("[CertificateService] Failed to insert into service_requests fallback:", srError);
-        throw new Error(crError?.message || srError?.message || "Failed to save application to database.");
-      }
-      createdData = srData;
-    }
-
-    const mapped = mapDbToRequest(createdData, [{
-      id: "hist-1",
-      status: "Submitted",
-      remarks: "Application received and registered in municipal e-services queue.",
-      createdAt: now
-    }]);
-
-    saveLocalRequest(mapped);
-    return mapped;
+  async submitRequest(_payload: Omit<CertificateRequest, "ticketId" | "submittedAt" | "status">): Promise<CertificateRequest> {
+    // The previous method wrote directly into privileged municipal tables,
+    // bypassing the canonical NestJS DTO and authenticated ownership flow.
+    throw new Error("Legacy E-Cedula submission is unavailable. Use approved municipal service channels.");
   },
 
   /**

@@ -78,11 +78,16 @@ test('ownership applies to UUID and ticket lookup, lists, pagination and legacy 
   assert.equal((await request('submissions?limit=101')).status,400);
   assert.equal((await request('submissions?user_id='+stranger)).status,400);
 });
-test('only verified staff update statuses, with valid enum, version and concurrency protection', async () => {
+test('only verified municipal admins may view and update unrestricted submissions', async () => {
   const path = `certificate/${rows[0].id}/status`, dto={ status:'Processing',version:1,remarks:'Review started' };
   assert.equal((await request(path,'PUT',dto)).status,403);
-  role='staff'; verified=false; assert.equal((await request(path,'PUT',dto)).status,403);
+  role='staff'; verified=true;
+  assert.equal((await request(path,'PUT',dto)).status,403);
+  assert.equal((await request('admin/submissions')).status,403);
+  assert.equal((await request(`admin/submissions/${rows[0].id}`)).status,403);
+  role='admin'; verified=false; assert.equal((await request(path,'PUT',dto)).status,403);
   verified=true;
+  assert.equal((await request('admin/submissions')).status,200);
   assert.equal((await request(path,'PUT',{ ...dto, status:'Anything' })).status,400);
   assert.equal((await request(path,'PUT',{ status:'Processing' })).status,400);
   assert.equal((await request(path,'PUT',dto)).status,200);

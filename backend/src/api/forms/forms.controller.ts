@@ -15,7 +15,7 @@ export class FormsController {
   constructor(@Inject(FormsService) private readonly formsService: FormsService) {}
 
   @Get(['certificate', 'admin/submissions']) @ApiBearerAuth() @RequireAuth()
-  @RateLimit(RateLimitCategory.ADMIN_MUTATION) @Roles('admin', 'super_admin', 'municipal_admin', 'staff')
+  @RateLimit(RateLimitCategory.ADMIN_MUTATION) @Roles('admin', 'super_admin', 'municipal_admin')
   async getAllRequests(@Query() query: ListSubmissionsDto) { return this.formsService.getAllRequests(query); }
 
   @Post(['certificate', 'submissions']) @ApiBearerAuth() @RequireAuth()
@@ -38,13 +38,13 @@ export class FormsController {
   }
 
   @Get('admin/submissions/:id') @ApiBearerAuth() @RequireAuth()
-  @Roles('admin', 'super_admin', 'municipal_admin', 'staff') @RateLimit(RateLimitCategory.ADMIN_MUTATION)
+  @Roles('admin', 'super_admin', 'municipal_admin') @RateLimit(RateLimitCategory.ADMIN_MUTATION)
   async getAdminRequest(@Param('id', new ParseUUIDPipe()) id: string) {
     return { success: true, request: await this.formsService.getRequestStatus(id) };
   }
 
   @Put(['certificate/:id/status', 'admin/submissions/:id/status']) @ApiBearerAuth() @RequireAuth()
-  @Roles('admin', 'super_admin', 'municipal_admin', 'staff') @RateLimit(RateLimitCategory.ADMIN_MUTATION)
+  @Roles('admin', 'super_admin', 'municipal_admin') @RateLimit(RateLimitCategory.ADMIN_MUTATION)
   async updateRequestStatus(@Param('id', new ParseUUIDPipe()) id: string, @Body() dto: UpdateStatusDto, @Req() req: AuthenticatedRequest) {
     return this.formsService.updateRequestStatus(id, dto, req.user.id);
   }

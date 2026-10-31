@@ -10,6 +10,10 @@ on:
         description: 'Successful pre-release backup run URL (within the write freeze)'
         required: true
         type: string
+      official_data_evidence:
+        description: 'Municipal signed data-validation sign-off URL (no citizen records)'
+        required: true
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -42,6 +46,7 @@ jobs:
         env:
           STAGING_EVIDENCE: ${{ inputs.staging_evidence }}
           BACKUP_EVIDENCE: ${{ inputs.backup_evidence }}
+          OFFICIAL_DATA_EVIDENCE: ${{ inputs.official_data_evidence }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
@@ -50,7 +55,7 @@ jobs:
           : "${PGHOST:?}" "${PGPORT:?}" "${PGUSER:?}" "${PGPASSWORD:?}"
           [[ "$VERCEL_CLI_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           node --input-type=module -e "import {origin} from './ops/http.mjs'; origin(process.env.PRODUCTION_URL)"
-          [[ "$STAGING_EVIDENCE" == https://* && "$BACKUP_EVIDENCE" == https://* ]]
+          [[ "$STAGING_EVIDENCE" == https://* && "$BACKUP_EVIDENCE" == https://* && "$OFFICIAL_DATA_EVIDENCE" == https://* ]]
       - run: npm ci && npm ci --prefix backend && npm ci --prefix frontend
       - run: npm run lint:backend && npm test --prefix backend && npm run test:ops
       - name: Verify migrated database before deployment
@@ -60,6 +65,7 @@ jobs:
           # A mismatched history or invalid schema stops the deploy here.
           node ops/check-migration-history.mjs
           psql -X -v ON_ERROR_STOP=1 -f ops/verify-database.sql
+          psql -X -v ON_ERROR_STOP=1 -f ops/verify-official-data.sql
       - name: Build and deploy candidate (backend then frontend build)
         run: |
           set -euo pipefail

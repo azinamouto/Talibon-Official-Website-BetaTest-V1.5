@@ -1,6 +1,6 @@
 # R2 scope and route disposition
 
-Status: proposed implementation contract; no routes changed in Increment 0.
+Status: Increment 0 proposal preserved below. Increment 1 implementation and justified refinements are in [the shutdown contract](DEFERRED_WORKFLOW_SHUTDOWN.md): informational service pages and legacy public form GETs remain; all transaction paths close. Hosted closure is pending release evidence.
 
 ## Retain
 

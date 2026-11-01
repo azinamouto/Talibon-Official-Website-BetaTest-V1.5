@@ -1,3 +1,25 @@
+# Increment 1 acceptance update ? 2026-11-01
+
+**Application scope reduction implemented and locally verified. NOT PRODUCTION-QUALIFIED.** Implementation SHA: `eee418dbb180aebd3766726e4ba65632c21b8c2b`, branch `feat/talgov-r2-increment-1`. Increment 0 was preserved in `cf3cd57fab1a90694d91d5f78d1e2ef62b750e94`. No Neon migration, hosted shutdown, production data operation or deployment ran. Increment 2 has not started.
+
+| Current gate | Increment 1 evidence / result |
+|---|---|
+| Frontend/backend builds and lint | Passed using local synthetic/loopback configuration; production configuration remains unqualified |
+| Backend tests | Jest 54/54 in 5 suites; Node 88 passed, 0 failed, 4 TODO (92 total). No skipped/cancelled tests |
+| Production application retirement | 28/28 HTTP/worker/edge checks, included in Node total; actual AppModule with provider tripwires, all-method closures, malformed/oversized inputs, role claims, flags, aliases and retained-read checks |
+| Frontend unit/React | 21/21 Node tests; 52/52 React tests across 2 files |
+| Browser regression | 26/26 public/auth/scope, 22/22 E-services, 12/12 admin, 10/10 contract-browser tests: 70 passed, none failed or skipped |
+| Production gates / OpenAPI | Ops 8/8; OpenAPI export/check pass; R1 official-data and static security-header gates preserved |
+| Checkout baseline failure | Resolved by intentional 410 retirement contract; 5xx sanitizer unchanged. Original failing Increment 0 log preserved |
+| Preservation / diff validation | R1 worktree, Increment 0 report/evidence, canonical migrations, manifests/locks and security guard/filter/data gate unchanged; diff checks pass |
+| Dependencies | Audits still fail: root 10 (1 critical, 7 high, 2 moderate); backend 41 (1 critical, 7 high, 30 moderate, 3 low); frontend 4 high. Counts unchanged; no automatic fixes |
+| Hosted/source-side closure | **Pending credentials and release evidence**: existing deployed workers/edge schedules, direct provider tables/RPC/storage and hosted signup are not verified disabled. Deny candidate prepared outside automatic migrations; not run or rehearsed |
+| Later R2 release gates | **Not satisfied**: zero Supabase, verified Neon auth/MFA/storage, migrations/reconciliation, media CMS, durable audit, staging/performance/restore and municipal/DPO/operator approvals remain later work |
+
+See the [full Increment 1 report](INCREMENT_1_REPORT.md), [endpoint/job contract and shutdown procedure](DEFERRED_WORKFLOW_SHUTDOWN.md), [machine-readable outcomes](evidence/increment-1/checks.json), and [preservation checks](evidence/increment-1/preservation-checks.json). Exact raw logs, changed files, screenshots, unresolved findings and test-boundary limitations are linked there. Application tests do not prove hosted shutdown or authorize a production release.
+
+The following Increment 0 evidence is preserved as the historical baseline. Its "not implemented" states describe Increment 0 and are superseded only by the specific local results above; its unresolved production gates remain applicable.
+
 # Production acceptance and Increment 0 evidence
 
 **NOT PRODUCTION-QUALIFIED.** Increment 0 is documentation and baseline discovery. R2 runtime, authentication, storage and migrations are not implemented. No data migration or deployment was performed. All future gates apply to the exact candidate SHA and target account, not to a simulated provider.

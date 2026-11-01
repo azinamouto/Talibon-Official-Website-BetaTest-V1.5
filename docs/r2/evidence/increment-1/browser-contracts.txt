@@ -1,0 +1,38 @@
+
+> talgov-frontend@0.0.0 test:contracts:browser
+> playwright test --config playwright.contract.config.ts
+
+node.exe : [2m[WebServer] [22m(node:28824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being
+set.
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2m[WebServer]... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:22460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:5076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:5276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:1780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 test\browser\about-contract.spec.ts:9:3 › About routes render contract examples without horizontal overflow at 375px (12.8s)
+  ok  2 test\browser\about-contract.spec.ts:9:3 › About routes render contract examples without horizontal overflow at 1280px (14.4s)
+  ok  3 test\browser\about-contract.spec.ts:38:1 › About failure is retryable and empty lists do not invent content (2.5s)
+  ok  4 test\browser\public-contract.spec.ts:3:1 › public catalog and news render the shared contract server and search opens its service (4.5s)
+  ok  5 test\browser\search-contract.spec.ts:9:3 › search filters, pagination and history against the contract mock at 375px (4.9s)
+  ok  6 test\browser\search-contract.spec.ts:9:3 › search filters, pagination and history against the contract mock at 1280px (3.5s)
+  ok  7 test\browser\search-contract.spec.ts:47:1 › idle, empty, out-of-range and malformed URL states (4.8s)
+  ok  8 test\browser\search-contract.spec.ts:69:1 › loading, rate-limit and service errors allow retry (2.0s)
+  ok  9 test\browser\search-contract.spec.ts:91:1 › superseded search responses cannot replace the current results (2.1s)
+  ok 10 test\browser\search-contract.spec.ts:110:1 › popup links to full search and results navigate by content type (5.9s)
+
+  10 passed (1.1m)

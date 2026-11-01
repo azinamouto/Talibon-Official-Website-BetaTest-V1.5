@@ -1,0 +1,46 @@
+
+> talgov-frontend@0.0.0 test:eservices
+> playwright test --config playwright.eservices.config.ts
+
+node.exe : [2m[WebServer] [22m(node:29356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being
+set.
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2m[WebServer]... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:21220) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 22 tests using 1 worker
+
+(node:20880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services (10.6s)
+  ok  2 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?type=Barangay%20Clearance (1.2s)
+  ok  3 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?type=Certificate%20of%20Indigency (1.0s)
+  ok  4 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?type=Business%20Permit (1.0s)
+  ok  5 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?type=Building%20Permit (1.1s)
+  ok  6 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?type=Zoning%20Clearance (1.0s)
+  ok  7 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?view=submissions&page=2 (1.1s)
+  ok  8 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?track=TAL-test (1.2s)
+  ok  9 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services?service=e-cedula (1.1s)
+  ok 10 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /e-services/legacy (1.0s)
+  ok 11 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /forms/business (1.0s)
+  ok 12 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /forms/building (1.0s)
+  ok 13 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /forms/zoning (1.1s)
+  ok 14 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /forms/unknown/deep (1.1s)
+  ok 15 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /payment/success?status=paid&submission=id&receipt=forged (1.2s)
+  ok 16 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /payment/cancel?submission=id (1.6s)
+  ok 17 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /payment/failure?retry=true (1.5s)
+  ok 18 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /payment/pending?status=paid (1.4s)
+  ok 19 test\browser\eservices.spec.ts:20:27 › R2 entry point cannot submit, track or confirm: /payment/unknown/deep (1.3s)
+  ok 20 test\browser\eservices.spec.ts:35:34 › anonymous navigation and placeholder fit at 375px (2.3s)
+  ok 21 test\browser\eservices.spec.ts:35:34 › anonymous navigation and placeholder fit at 1280px (2.3s)
+  ok 22 test\browser\eservices.spec.ts:45:1 › registration controls are absent while staff login and recovery remain (1.4s)
+
+  22 passed (46.8s)

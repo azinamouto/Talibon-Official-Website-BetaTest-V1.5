@@ -1,0 +1,13 @@
+{
+  "implementation_sha": "eee418dbb180aebd3766726e4ba65632c21b8c2b",
+  "branch": "feat/talgov-r2-increment-1",
+  "source_worktree_status": "",
+  "protected_changed_files": [],
+  "original_increment_0_evidence_files_checked": 16,
+  "runtime_changes_after_implementation_commit": "",
+  "broken_r2_local_links": [],
+  "git_diff_check_exit": 0,
+  "changed_file_count": 74,
+  "note": "Only report/documentation evidence changes follow the tested implementation commit. No live provider or database check is claimed.",
+  "git_staged_diff_check_exit": 0
+}

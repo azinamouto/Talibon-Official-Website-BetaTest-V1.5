@@ -1,3 +1,11 @@
+# Increment 1 implementation addendum
+
+The current repository now enforces scope reduction using an early, unconditional 410 middleware shared by standalone and serverless NestJS startup. Forms/payment/notification/chat providers are unbound; a separate public-forms controller retains informational reads without the writable forms service. Public `/forms/*` and `/payment/*` paths render the exact E-services placeholder. Public content, search, staff authentication/account administration and security activity reports remain on the R1 provider stack.
+
+The service directory and detail pages were inspected and are already read-only, so they remain to preserve office information. Broad editing tabs/mutations, citizen signup, notification UI, chatbot and GAD profiling entry points are retired. History remains in Git and unmounted source. No new runtime dependencies, provider adapters or migrations were introduced. See [endpoint and job inventory](DEFERRED_WORKFLOW_SHUTDOWN.md) and [Increment 1 report](INCREMENT_1_REPORT.md). Hosted direct-provider access is not certified closed by this application change.
+
+The Increment 0 architecture below is preserved as the original design record; its statements about runtime being unchanged describe Increment 0 only.
+
 # TalGov R2 architecture — Increment 0
 
 Status: discovery and design implemented; runtime migration not implemented. Evidence date: 2026-11-01 (Asia/Shanghai). This is not production qualification.

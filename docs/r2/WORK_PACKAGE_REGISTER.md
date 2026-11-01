@@ -2,6 +2,19 @@
 
 Status at Increment 0: discovery documents implemented; runtime packages below are planned, blocked or pending inputs. Filenames marked **new** are proposals, not existing implementations. No later increment is authorized to bypass provider or release gates.
 
+## Increment 1 status (2026-11-01)
+
+| Package | Current status and evidence |
+|---|---|
+| WP0 | Completed discovery preserved without alteration in commit `cf3cd57fab1a90694d91d5f78d1e2ef62b750e94`, based on R1 `fd2fe689b2f442f22409ca9c7a2699e3cd0c25be` |
+| WP1 | Application scope reduction implemented and locally tested. Exact HTTP/job inventory, compatibility decisions and hosted shutdown procedure: [shutdown contract](DEFERRED_WORKFLOW_SHUTDOWN.md). Validation and qualification: [Increment 1 report](INCREMENT_1_REPORT.md) |
+| WP1 hosted exit | Pending credentials, clone rehearsal and operator evidence: direct provider grants/RPC/storage/signup restrictions and deployed worker/scheduler shutdown. Prepared deny candidate is outside automatic migrations and has not run. This exit is **not** certified by local tests |
+| WP2?WP6 | Not started by Increment 1; existing provider, municipal and release gates remain |
+
+Implementation refinements: `/services` and `/services/:slug` already provide read-only guidance and remain available. Legacy public forms GET/HEAD endpoints use a separate read-only controller with `/api/public-forms/*` aliases; they are not retired with citizen transactions. Shared staff account administration and security activity reports remain. Non-media mutation methods, workflow reports and public assistant entry points close. Historical implementations and R1 safety tests are preserved; current production-app tests establish retirement independently of the test-only historical controller harness.
+
+The original file-level plan below remains a design record. No canonical SQL migration, Neon adapter, dependency upgrade, production action or Increment 2 work was performed.
+
 ## WP0 — Discovery (this increment)
 
 Deliver the ten R2 design documents, baseline/source inventory, provider checks, risk register and execution report. Add discovery notices to README, agent guidance and example environments. Preserve R1 and all canonical SQL. Exit: every discovered dependency has a disposition, unresolved provider/account facts have explicit blockers, and evidence distinguishes baseline tests from R2 qualification.

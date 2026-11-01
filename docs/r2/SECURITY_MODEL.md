@@ -43,7 +43,7 @@ The response-finish `AuditMiddleware` currently persists asynchronously. Preserv
 | R2-02 | P0 Blocked | Closed provider registration and Nest live session bridge unverified | Backend/security; direct-signup denial, expiry/revocation tests |
 | R2-03 | P0 Pending credentials | Actual schema/auth/buckets/jobs differ potentially from canonical source | DBA/ops; read-only catalog + reconciled manifest |
 | R2-04 | P0 Pending approval | Placeholder seeds and hardcoded civic claims lack complete official provenance | Municipal content owners; signed approved content manifest |
-| R2-05 | P0 Planned | Forms, signup, email processing and direct data paths still executable in R1 | Increment 1; all disabled routes/roles/flags/worker tests |
+| R2-05 | P0 Locally implemented; hosted closure pending | Increment 1 retires app routes and local worker/edge entry points; direct hosted grants/signup/jobs remain unverified | [Shutdown evidence and release procedure](DEFERRED_WORKFLOW_SHUTDOWN.md); clone rehearsal and operator shutdown evidence required |
 | R2-06 | P0 Planned | Broad public buckets cannot enforce draft privacy by metadata alone | CMS/security; private access and unpublish tests |
 | R2-07 | P1 Pending credentials | Lifecycle/versioning limitations require independent recovery; hosted controls untested | Ops; object and DB restore rehearsal |
 | R2-08 | P1 Planned | Async request audit is not atomic with CMS writes | Backend; injected audit failure rollback test |

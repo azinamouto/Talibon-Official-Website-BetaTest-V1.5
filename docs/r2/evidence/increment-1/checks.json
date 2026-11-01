@@ -1,0 +1,152 @@
+{
+  "evidence_date": "2026-11-01 Asia/Shanghai",
+  "implementation_sha": "eee418dbb180aebd3766726e4ba65632c21b8c2b",
+  "branch": "feat/talgov-r2-increment-1",
+  "commands": [
+    {
+      "command": "npm run build --prefix backend",
+      "exit_code": 0,
+      "log": "backend-build.txt"
+    },
+    {
+      "command": "npm run build --prefix frontend",
+      "exit_code": 0,
+      "log": "frontend-build.txt",
+      "configuration": "loopback synthetic public config; no live provider"
+    },
+    {
+      "command": "npm run lint --prefix backend",
+      "exit_code": 0,
+      "log": "backend-lint.txt"
+    },
+    {
+      "command": "npm run lint --prefix frontend",
+      "exit_code": 0,
+      "log": "frontend-lint.txt"
+    },
+    {
+      "command": "npm test --prefix backend",
+      "exit_code": 0,
+      "log": "backend-test.txt",
+      "jest": {
+        "passed": 54,
+        "suites": 5
+      },
+      "node": {
+        "total": 92,
+        "passed": 88,
+        "failed": 0,
+        "todo": 4,
+        "skipped": 0
+      }
+    },
+    {
+      "command": "node --test --test-timeout=20000 backend/test/r2-disabled-routes.test.cjs",
+      "exit_code": 0,
+      "log": "r2-http.txt",
+      "passed": 28,
+      "note": "subset of backend Node suite"
+    },
+    {
+      "command": "npm test --prefix frontend",
+      "exit_code": 0,
+      "log": "frontend-test.txt",
+      "passed": 21
+    },
+    {
+      "command": "npm run test:react --prefix frontend",
+      "exit_code": 0,
+      "log": "frontend-react.txt",
+      "passed": 52,
+      "files": 2
+    },
+    {
+      "command": "npm run test:browser --prefix frontend",
+      "exit_code": 0,
+      "log": "browser-public.txt",
+      "passed": 26
+    },
+    {
+      "command": "npm run test:eservices --prefix frontend",
+      "exit_code": 0,
+      "log": "browser-eservices.txt",
+      "passed": 22
+    },
+    {
+      "command": "npm run test:admin --prefix frontend",
+      "exit_code": 0,
+      "log": "browser-admin.txt",
+      "passed": 12
+    },
+    {
+      "command": "npm run test:contracts:browser --prefix frontend",
+      "exit_code": 0,
+      "log": "browser-contracts.txt",
+      "passed": 10
+    },
+    {
+      "command": "npm run test:ops",
+      "exit_code": 0,
+      "log": "ops-test.txt",
+      "passed": 8
+    },
+    {
+      "command": "npm run contracts:export --prefix backend",
+      "exit_code": 0,
+      "log": "contracts-export.txt"
+    },
+    {
+      "command": "npm run contracts:check --prefix backend",
+      "exit_code": 0,
+      "log": "contracts-check.txt"
+    }
+  ],
+  "audits": [
+    {
+      "tree": "root",
+      "command": "npm audit --package-lock-only --audit-level=high --json",
+      "exit_code": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 2,
+        "high": 7,
+        "critical": 1,
+        "total": 10
+      },
+      "log": "audit-root.json"
+    },
+    {
+      "tree": "backend",
+      "command": "npm audit --package-lock-only --audit-level=high --json --prefix backend",
+      "exit_code": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 3,
+        "moderate": 30,
+        "high": 7,
+        "critical": 1,
+        "total": 41
+      },
+      "log": "audit-backend.json"
+    },
+    {
+      "tree": "frontend",
+      "command": "npm audit --package-lock-only --audit-level=high --json --prefix frontend",
+      "exit_code": 1,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 4,
+        "critical": 0,
+        "total": 4
+      },
+      "log": "audit-frontend.json"
+    }
+  ],
+  "production_qualified": false,
+  "hosted_shutdown_verified": false,
+  "migrations_executed": false,
+  "increment_2_started": false
+}

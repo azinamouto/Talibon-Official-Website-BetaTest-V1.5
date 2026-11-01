@@ -7,7 +7,7 @@ const {Pool}=require('pg');
 const {PostgresDatabase,connectionConfig}=require('../dist/database/postgres.js');
 const {PgRepositories}=require('../dist/database/repositories.js');
 const {migrate,isolatedConfig}=require('../scripts/r2-migrate.cjs');
-const {digest,exportSnapshot,importBundle,reconcile,rollback}=require('../scripts/r2-transfer.cjs');
+const {digest,digestText,exportSnapshot,importBundle,reconcile,rollback}=require('../scripts/r2-transfer.cjs');
 const url=process.env.R2_TEST_DATABASE_URL;
 if (!url) throw new Error('Use test:r2:db to start an isolated database');
 const owner=new Pool(isolatedConfig(url));
@@ -183,19 +183,23 @@ test('last-admin protection and concurrent demotion cannot remove all active adm
 test('snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit',async()=>{
   const sourceUrl=new URL(url);sourceUrl.pathname='/r2_source';const legacy=new Pool(isolatedConfig(sourceUrl.toString()));
   try {
-    await legacy.query('CREATE TABLE public.pages(id text PRIMARY KEY,title text); CREATE TABLE public.certificate_requests(id int)');
-    await legacy.query("INSERT INTO public.pages VALUES('one','Synthetic source'),('two','Quarantine fixture'); INSERT INTO public.certificate_requests VALUES(1)");
+    await legacy.query('CREATE TABLE public.pages(id text PRIMARY KEY,title text,precise numeric); CREATE TABLE public.certificate_requests(id int)');
+    await legacy.query("INSERT INTO public.pages VALUES('one','Synthetic source',9007199254740992),('two','Quarantine fixture',NULL); INSERT INTO public.certificate_requests VALUES(1)");
+    const hashes=Object.fromEntries((await legacy.query('SELECT id,to_jsonb(t)::text AS snapshot FROM public.pages t')).rows.map(row=>[row.id,digestText(row.snapshot)]));
     const sid=randomUUID(),cid=randomUUID(),batch=randomUUID();
     const plan={version:1,approvalReference:'synthetic-test-only',rows:[
-      {table:'pages',id:'one',sourceDigest:digest({id:'one',title:'Synthetic source'}),disposition:'approved',reason:'Synthetic test',targets:[
+      {table:'pages',id:'one',sourceDigest:hashes.one,disposition:'approved',reason:'Synthetic test',targets:[
         {table:'content_sources',row:{id:sid,reference:'test',owner:'test',sha256:'c'.repeat(64),approved:true,reviewed_at:'2026-01-01T00:00:00Z'}},
         {table:'public_content',row:{id:cid,kind:'pages',legacy_id:'one',slug:'import-test',title:'Synthetic source',body:{text:'null vs zero',nullable:null,zero:0},source_id:sid,publication:'published',published_at:'2026-01-01T00:00:00Z'}}]},
-      {table:'pages',id:'two',sourceDigest:digest({id:'two',title:'Quarantine fixture'}),disposition:'quarantined',reason:'No approval'}]};
+      {table:'pages',id:'two',sourceDigest:hashes.two,disposition:'quarantined',reason:'No approval'}]};
     const bundle=await exportSnapshot(legacy,plan);
     assert.equal(bundle.payload.inventory.find(t=>t.table==='certificate_requests').disposition,'excluded');
     assert.equal(bundle.payload.inventory.find(t=>t.table==='pages').quarantined,1);
     assert.deepEqual(await exportSnapshot(legacy,plan),bundle);
     await assert.rejects(exportSnapshot(legacy,{...plan,rows:plan.rows.slice(0,1)}));
+    await legacy.query("UPDATE public.pages SET precise=9007199254740993 WHERE id='one'");
+    await assert.rejects(exportSnapshot(legacy,plan));
+    await legacy.query("UPDATE public.pages SET precise=9007199254740992 WHERE id='one'");
     await legacy.query("UPDATE public.pages SET title='Drift' WHERE id='one'");
     await assert.rejects(exportSnapshot(legacy,plan));
     assert.equal((await importBundle(owner,bundle,batch,true)).matched,2);
@@ -216,5 +220,7 @@ test('snapshot export partitions rows, detects drift, imports idempotently and r
     assert.equal((await owner.query('SELECT count(*)::int AS n FROM app.content_sources WHERE id=$1',[sid])).rows[0].n,0);
     const tampered=structuredClone(bundle);tampered.payload.targets[0].row.title='tamper';
     await assert.rejects(importBundle(owner,tampered,randomUUID()));
+    const unsafe=structuredClone(bundle);unsafe.payload.targets.find(t=>t.table==='public_content').row.body.number=9007199254740992;unsafe.digest=digest(unsafe.payload);
+    await assert.rejects(importBundle(owner,unsafe,randomUUID()));
   } finally {await legacy.end();}
 });

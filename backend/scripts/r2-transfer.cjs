@@ -18,11 +18,17 @@ function normalize(value) {
   return value;
 }
 const digest = value => crypto.createHash('sha256').update(canonical(value)).digest('hex');
+const digestText = value => crypto.createHash('sha256').update(value).digest('hex');
 const ident = value => '"'+value.replaceAll('"','""')+'"';
 function requireValue(ok) { if (!ok) throw new Error('Reconciliation or manifest validation failed'); }
 function validateTarget(target) {
   requireValue(target && Object.hasOwn(fields,target.table) && target.row && typeof target.row.id==='string');
   requireValue(Object.keys(target.row).every(key => fields[target.table].includes(key)));
+  const checkNumbers = value => {
+    if (typeof value==='number') requireValue(Number.isFinite(value) && (!Number.isInteger(value) || Number.isSafeInteger(value)));
+    else if (value && typeof value==='object') Object.values(value).forEach(checkNumbers);
+  };
+  checkNumbers(target.row);
 }
 
 async function exportSnapshot(pool, plan) {
@@ -42,11 +48,12 @@ async function exportSnapshot(pool, plan) {
       const [{count}] = (await client.query(`SELECT count(*)::text AS count FROM public.${ident(table)}`)).rows;
       if (!retained.includes(table)) { inventory.push({table,total:count,disposition:'excluded',reason:'Outside approved public-content allowlist; no rows exported'}); continue; }
       requireValue(Number(count)<=10000); // Explicit bounded rehearsal; larger sources require a reviewed streaming implementation.
-      const rows = (await client.query(`SELECT to_jsonb(t) AS row FROM public.${ident(table)} t ORDER BY id::text`)).rows;
+      // Hash PostgreSQL's exact JSONB text, avoiding JS rounding of bigint/numeric source values.
+      const rows = (await client.query(`SELECT id::text AS id,to_jsonb(t)::text AS snapshot FROM public.${ident(table)} t ORDER BY id::text`)).rows;
       const counts = {approved:0,archived:0,deferred:0,quarantined:0};
-      for (const {row} of rows) {
-        const key = table+':'+String(row.id), decision = decisions.get(key);
-        requireValue(decision && digest(row)===decision.sourceDigest);
+      for (const {id,snapshot} of rows) {
+        const key = table+':'+id, decision = decisions.get(key);
+        requireValue(decision && digestText(snapshot)===decision.sourceDigest);
         seen.add(key); counts[decision.disposition]++;
         if (decision.disposition==='approved') {
           requireValue(Array.isArray(decision.targets) && decision.targets.length>0);
@@ -72,13 +79,14 @@ async function exportSnapshot(pool, plan) {
 }
 
 async function snapshotTarget(client, table, id) {
-  const [result] = (await client.query(`SELECT to_jsonb(t) AS row FROM app.${ident(table)} t WHERE id=$1`,[id])).rows;
+  const [result] = (await client.query(`SELECT to_jsonb(t)::text AS row FROM app.${ident(table)} t WHERE id=$1`,[id])).rows;
   return result?.row;
 }
 async function checkReceipt(client, receipt) {
   const counts = {};
   for (const target of receipt.targets) {
-    requireValue(digest(await snapshotTarget(client,target.table,target.id) ?? null)===target.digest);
+    const current = await snapshotTarget(client,target.table,target.id);
+    requireValue(current && digestText(current)===target.digest);
     counts[target.table]=(counts[target.table] || 0)+1;
   }
   return {matched:receipt.targets.length,counts};
@@ -113,7 +121,7 @@ async function importBundle(pool, bundle, batchId, dryRun = false) {
       for (const target of bundle.payload.targets.filter(t=>t.table===table)) {
         const keys = Object.keys(target.row);
         await client.query(`INSERT INTO app.${ident(table)} (${keys.map(ident).join(',')}) VALUES (${keys.map((_,i)=>'$'+(i+1)).join(',')})`,keys.map(k=>target.row[k]));
-        receipt.targets.push({table,id:target.row.id,digest:digest(await snapshotTarget(client,table,target.row.id))});
+        receipt.targets.push({table,id:target.row.id,digest:digestText(await snapshotTarget(client,table,target.row.id))});
       }
     }
     await client.query('INSERT INTO app.import_batches(id,digest,manifest) VALUES($1,$2,$3)',[batchId,bundle.digest,receipt]);
@@ -144,7 +152,7 @@ async function rollback(pool,batchId) {
     return {replayed:false};
   });
 }
-module.exports={canonical,digest,exportSnapshot,importBundle,reconcile,rollback};
+module.exports={canonical,digest,digestText,exportSnapshot,importBundle,reconcile,rollback};
 if (require.main===module) {
   (async()=>{
     let pool;

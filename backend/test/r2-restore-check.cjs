@@ -11,7 +11,7 @@ const {digest}=require('../scripts/r2-transfer.cjs');
     let rows=0;
     for(const {tablename:table} of tables) {
       assert.match(table,/^[a-z_]+$/);
-      const sql=`SELECT to_jsonb(t) AS row FROM app.${table} t ORDER BY to_jsonb(t)::text`;
+      const sql=`SELECT to_jsonb(t)::text AS row FROM app.${table} t ORDER BY to_jsonb(t)::text`;
       const [a,b]=await Promise.all([source.query(sql),restored.query(sql)]);
       assert.equal(digest(a.rows),digest(b.rows));rows+=a.rowCount;
     }

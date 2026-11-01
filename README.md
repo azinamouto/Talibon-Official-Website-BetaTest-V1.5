@@ -1,3 +1,5 @@
+> **TalGov R2 discovery (2026-11-01):** [Architecture and migration plan](docs/r2/ARCHITECTURE.md), [work packages](docs/r2/WORK_PACKAGE_REGISTER.md), and [qualification evidence](docs/r2/PRODUCTION_ACCEPTANCE.md). Increment 0 changes documentation only. The application below still uses the preserved R1 stack; Neon authentication is blocked pending required capability verification. Do not treat the target architecture as deployed or production-qualified.
+
 <div align="center">
 
 <!-- Banner image: save as docs/assets/banner.png -->

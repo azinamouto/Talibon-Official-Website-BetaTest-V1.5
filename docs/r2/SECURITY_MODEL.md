@@ -1,5 +1,7 @@
 # R2 security model and risk register
 
+Increment 2 adds locally tested parameterized repositories, strict TLS configuration, bounded transactions, app-owned active-staff RBAC, optimistic versions/last-admin protection, public visibility views, narrow database grants and atomic mutation auditing. [Implementation boundaries](DATABASE_OPERATIONS.md) and [test/audit evidence](INCREMENT_2_REPORT.md) define what is verified. The module is unmounted: R1 guards and Increment 1 retirement remain unchanged. No Neon identity/session/MFA or object delivery claim is made. Dependency advisories, hosted source closure and release gates remain open. R2-08's new metadata-write atomicity is locally tested; existing async request telemetry remains unchanged.
+
 Status: proposed controls; R1 remains implemented. See [execution evidence](PRODUCTION_ACCEPTANCE.md) for what was actually tested.
 
 ## Preserve existing protections

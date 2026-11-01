@@ -1,0 +1,12 @@
+[
+  {
+    "name": "frontend-react",
+    "command": "npm run test:react --prefix frontend",
+    "exitCode": 0
+  },
+  {
+    "name": "browser-contracts",
+    "command": "npm run test:contracts:browser --prefix frontend",
+    "exitCode": 0
+  }
+]

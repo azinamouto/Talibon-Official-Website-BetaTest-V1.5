@@ -1,3 +1,7 @@
+# Increment 2 schema implementation
+
+`backend/database/migrations/001_foundation.sql` and `002_privileges.sql` implement nine app tables, two public visibility views, approval/immutability triggers, FK/check/unique constraints and a separate checksum ledger. No municipal seed or legacy migration is replayed. [Exact schema, grants and mapping limits](DATABASE_OPERATIONS.md) supersede the tentative model below: retained content uses a normalized read model; upload intents/live storage and legacy-specific query/DTO mapping remain deferred. Reconciliation receipts are added for repeatable imports. Runtime cannot approve sources, mark files ready, mutate retained content or alter audit history. Local tests do not certify hosted Neon compatibility.
+
 # Database inventory and proposed R2 schema
 
 Status: static source inventory and design, not a live catalog, approved DDL or executed migration. [Declaration locations/checksums](evidence/source-inventory.json) are tied to the starting SHA.

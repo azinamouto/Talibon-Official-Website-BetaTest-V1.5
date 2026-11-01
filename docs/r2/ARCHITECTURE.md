@@ -1,3 +1,7 @@
+# Increment 2 implementation addendum
+
+The backend now includes an unmounted `pg` database module, repository interfaces, versioned schema/grants, and isolated migration/reconciliation/recovery tooling. No route or frontend switches provider. PostgreSQL 17+ is required; local verification uses PostgreSQL 18. See [implemented contracts and operations](DATABASE_OPERATIONS.md) and [Increment 2 evidence](INCREMENT_2_REPORT.md). Authentication, storage, retained-route cutover and hosted qualification remain gated. The historical design below remains a record, not a claim that its entire proposed model is implemented.
+
 # Increment 1 implementation addendum
 
 The current repository now enforces scope reduction using an early, unconditional 410 middleware shared by standalone and serverless NestJS startup. Forms/payment/notification/chat providers are unbound; a separate public-forms controller retains informational reads without the writable forms service. Public `/forms/*` and `/payment/*` paths render the exact E-services placeholder. Public content, search, staff authentication/account administration and security activity reports remain on the R1 provider stack.

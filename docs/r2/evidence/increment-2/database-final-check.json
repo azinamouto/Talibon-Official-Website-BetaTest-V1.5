@@ -1,0 +1,4 @@
+{
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File backend/test/run-r2-database-tests.ps1",
+  "exitCode": 0
+}

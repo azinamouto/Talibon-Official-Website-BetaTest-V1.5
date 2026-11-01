@@ -1,0 +1,75 @@
+
+> talgov-frontend@0.0.0 test:contracts:browser
+> playwright test --config playwright.contract.config.ts
+
+[WebServer] (node:29808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:9356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:32364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:11216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:19748) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19748) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 test\browser\about-contract.spec.ts:9:3 › About routes render contract examples without horizontal overflow at 375px (30.9s)
+(node:5160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 test\browser\about-contract.spec.ts:9:3 › About routes render contract examples without horizontal overflow at 1280px (24.8s)
+  ok  3 test\browser\about-contract.spec.ts:38:1 › About failure is retryable and empty lists do not invent content (3.7s)
+  ok  4 test\browser\public-contract.spec.ts:3:1 › public catalog and news render the shared contract server and search opens its service (5.7s)
+  ok  5 test\browser\search-contract.spec.ts:9:3 › search filters, pagination and history against the contract mock at 375px (6.4s)
+  ok  6 test\browser\search-contract.spec.ts:9:3 › search filters, pagination and history against the contract mock at 1280px (4.8s)
+  ok  7 test\browser\search-contract.spec.ts:47:1 › idle, empty, out-of-range and malformed URL states (8.9s)
+  ok  8 test\browser\search-contract.spec.ts:69:1 › loading, rate-limit and service errors allow retry (2.4s)
+  ok  9 test\browser\search-contract.spec.ts:91:1 › superseded search responses cannot replace the current results (2.5s)
+  ok 10 test\browser\search-contract.spec.ts:110:1 › popup links to full search and results navigate by content type (6.1s)
+
+
+  1) test\browser\about-contract.spec.ts:9:3 › About routes render contract examples without horizontal overflow at 375px
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForResponse: Test timeout of 30000ms exceeded.
+
+      19 |       ['hymn', 'Talibon Hymn', 'about/hymn'], ['seal', 'Official Seal', 'about/seal'],
+      20 |     ]) {
+    > 21 |       const response = page.waitForResponse(response => response.url().endsWith('/api/' + endpoint));
+         |                             ^
+      22 |       await page.goto('/about/' + path);
+      23 |       expect((await response).status()).toBe(200);
+      24 |       await expect(page.getByRole('heading', { name: heading, exact: true, level: 1 })).toBeVisible();
+        at C:\Users\admin\Documents\Talibon-Official-Website-BetaTest-V1.5\frontend\test\browser\about-contract.spec.ts:21:29
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:5174/about/seal", waiting until "load"
+
+
+      20 |     ]) {
+      21 |       const response = page.waitForResponse(response => response.url().endsWith('/api/' + endpoint));
+    > 22 |       await page.goto('/about/' + path);
+         |                  ^
+      23 |       expect((await response).status()).toBe(200);
+      24 |       await expect(page.getByRole('heading', { name: heading, exact: true, level: 1 })).toBeVisible();
+      25 |       await expect(page.getByRole('status', { name: 'Loading content' })).toHaveCount(0);
+        at C:\Users\admin\Documents\Talibon-Official-Website-BetaTest-V1.5\frontend\test\browser\about-contract.spec.ts:22:18
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\about-contract-About-route-20300-orizontal-overflow-at-375px\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\about-contract-About-route-20300-orizontal-overflow-at-375px\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    test\browser\about-contract.spec.ts:9:3 › About routes render contract examples without horizontal overflow at 375px
+  9 passed (1.8m)

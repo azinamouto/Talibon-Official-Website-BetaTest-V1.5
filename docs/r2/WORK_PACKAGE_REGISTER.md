@@ -1,5 +1,9 @@
 # R2 work packages and file-level implementation plan
 
+## Increment 2 status (2026-11-01)
+
+WP2's local PostgreSQL foundation, versioned DDL, repository/RBAC/atomic-audit boundaries and repeatable rehearsal tooling are implemented. [Operations contract](DATABASE_OPERATIONS.md); [validation and qualification](INCREMENT_2_REPORT.md). Hosted Neon tests, real source reconciliation, official mapping approvals and production cutover remain blocked/unverified. WP3-WP6 were not started. Historical package plans below are preserved.
+
 Status at Increment 0: discovery documents implemented; runtime packages below are planned, blocked or pending inputs. Filenames marked **new** are proposals, not existing implementations. No later increment is authorized to bypass provider or release gates.
 
 ## Increment 1 status (2026-11-01)

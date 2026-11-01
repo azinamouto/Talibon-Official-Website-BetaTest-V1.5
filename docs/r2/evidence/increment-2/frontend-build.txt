@@ -1,0 +1,18 @@
+
+> talgov-frontend@0.0.0 build
+> vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 2796 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                     0.92 kB │ gzip:   0.48 kB
+dist/assets/index-BX9F7NV_.css    203.71 kB │ gzip:  31.82 kB
+dist/assets/index-C1l6Sz94.js   1,535.46 kB │ gzip: 438.59 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 39.80s

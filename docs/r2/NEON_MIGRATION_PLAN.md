@@ -1,5 +1,7 @@
 # Neon migration plan
 
+Increment 2: the foundation and rehearsal tooling are implemented. Follow [DATABASE_OPERATIONS.md](DATABASE_OPERATIONS.md) for actual filenames, dry-run/apply commands, reviewed row mapping, count/digest reconciliation and rollback/restore constraints. CLI target writes are limited to loopback `r2_*` databases. No source/Neon credentials or production data were used. Proposed filenames/versions below are historical design only; search, live storage and production cutover remain deferred. [Execution report](INCREMENT_2_REPORT.md).
+
 Status: design only. No source/target data connection, export, import or migration executed in Increment 0.
 
 ## Preparation and gates

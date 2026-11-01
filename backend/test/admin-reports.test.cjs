@@ -8,7 +8,7 @@ const { ReportsController } = require('../dist/api/admin/reports.controller');
 const { ReportsService } = require('../dist/api/admin/reports.service');
 const { SupabaseService } = require('../dist/supabase.service');
 const { AuthGuard } = require('../dist/security/auth.guard');
-const { configureApp } = require('../dist/configure-app');
+const { configureApp } = require('./legacy-controller-harness.cjs');
 let role = 'admin', verified = true, fail = false, calls = 0;
 const id = randomUUID();
 const token = `h.${Buffer.from(JSON.stringify({ session_id: id })).toString('base64url')}.s`;
@@ -56,7 +56,7 @@ test('OpenAPI documents authenticated reports and query validation', async () =>
   const doc=await (await fetch(base+'/api/openapi.json')).json();
   for (const kind of ['submissions','payments','user-activity']) {
     const op=doc.paths[`/api/admin/reports/${kind}`].get;
-    assert.ok(op.security.some(s => s.bearer)); assert.ok(op.responses['403']);
+    assert.ok(op.security.some(s => s.bearer)); assert.ok(op.responses[kind === 'user-activity' ? '403' : '410']);
     assert.ok(op.parameters.some(p => p.name==='from' && p.required));
   }
 });

@@ -7,7 +7,7 @@ export async function smoke(base) {
   for (const [path, options] of [
     ['/api/health', { json: { status: 'ok', service: 'talibon-api' } }],
     ['/api/health/ready', { json: { status: 'ok', database: 'reachable' } }],
-    ['/api/forms/certificate', { expectedStatus: 401 }],
+    ['/api/forms/certificate', { expectedStatus: 410 }],
     ['/', { html: true }],
     ['/login', { html: true }],
   ]) results.push(await probe(base, path, options));

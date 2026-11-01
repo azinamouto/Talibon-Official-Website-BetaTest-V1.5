@@ -1,0 +1,44 @@
+[
+  {
+    "name": "backend-test",
+    "command": "npm test --prefix backend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:40:21.090Z",
+    "finished": "2026-11-01T09:42:43.930Z"
+  },
+  {
+    "name": "backend-build",
+    "command": "npm run build --prefix backend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:42:43.930Z",
+    "finished": "2026-11-01T09:43:15.607Z"
+  },
+  {
+    "name": "backend-lint",
+    "command": "npm run lint --prefix backend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:43:15.607Z",
+    "finished": "2026-11-01T09:44:32.086Z"
+  },
+  {
+    "name": "contracts-check",
+    "command": "npm run contracts:check --prefix backend",
+    "exitCode": 1,
+    "started": "2026-11-01T09:44:32.086Z",
+    "finished": "2026-11-01T09:44:53.119Z"
+  },
+  {
+    "name": "r2-database",
+    "command": "npm run test:r2:db --prefix backend",
+    "exitCode": 1,
+    "started": "2026-11-01T09:44:53.119Z",
+    "finished": "2026-11-01T09:46:02.392Z"
+  },
+  {
+    "name": "legacy-database",
+    "command": "npm run test:db --prefix backend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:46:02.392Z",
+    "finished": "2026-11-01T09:50:20.544Z"
+  }
+]

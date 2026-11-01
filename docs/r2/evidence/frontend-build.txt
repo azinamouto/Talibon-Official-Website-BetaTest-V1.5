@@ -1,0 +1,12 @@
+
+> talgov-frontend@0.0.0 build
+> vite build
+
+failed to load config from C:\Users\admin\Documents\TalGov-R2-Increment-0\frontend\vite.config.ts
+error during build:
+Error: Invalid frontend configuration: VITE_SUPABASE_URL must be a configured HTTP(S) project URL. VITE_SUPABASE_PUBLISHABLE_KEY or VITE_SUPABASE_ANON_KEY must contain a public key.
+    at file:///C:/Users/admin/Documents/TalGov-R2-Increment-0/frontend/node_modules/.vite-temp/vite.config.ts.timestamp-1793464328387-55780d30880c4.mjs:42:11
+    at loadConfigFromFile (file:///C:/Users/admin/Documents/TalGov-R2-Increment-0/frontend/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:49398:64)
+    at async resolveConfig (file:///C:/Users/admin/Documents/TalGov-R2-Increment-0/frontend/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:48891:24)
+    at async createBuilder (file:///C:/Users/admin/Documents/TalGov-R2-Increment-0/frontend/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:46866:18)
+    at async CAC.<anonymous> (file:///C:/Users/admin/Documents/TalGov-R2-Increment-0/frontend/node_modules/vite/dist/node/cli.js:862:23)

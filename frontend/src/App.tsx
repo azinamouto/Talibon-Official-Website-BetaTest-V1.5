@@ -12,9 +12,6 @@ import EnactedOrdinancesPage from "./pages/EnactedOrdinancesPage";
 import ResolutionsPage from "./pages/ResolutionsPage";
 import CitizenCharterPage from "./pages/CitizenCharterPage";
 import FullDisclosurePage from "./pages/FullDisclosurePage";
-import BusinessPermitPage from "./pages/BusinessPermitPage";
-import BuildingPermitPage from "./pages/BuildingPermitPage";
-import ZoningClearancePage from "./pages/ZoningClearancePage";
 import OrganizationalChartPage from "./pages/OrganizationalChartPage";
 import ServicesPage from "./pages/ServicesPage";
 import PublicPageDetail from "./pages/PublicPageDetail";
@@ -30,9 +27,6 @@ import AdminDashboard, { AdminPreview } from "./pages/SprintAdminDashboard";
 import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
 import TourismMapPage from "./pages/TourismMapPage";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentCancel from "./pages/PaymentCancel";
-import PaymentReturn from "./pages/PaymentReturn";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ScrollToTop from "./components/ScrollToTop";
 import { aboutApi, executiveApi, legislativeApi, transparencyApi, tourismApi, formsApi } from "./services/api";
@@ -84,14 +78,13 @@ const router = createBrowserRouter(createRoutesFromElements(
                     <Route>
                       <Route path="/" element={<Home />} />
                       <Route path="/login" element={<Login />} />
-                      <Route path="/e-services" element={<EServicesPage />} />
+                      <Route path="/e-services/*" element={<EServicesPage />} />
+                      <Route path="/forms/*" element={<EServicesPage />} />
+                      <Route path="/payment/*" element={<EServicesPage />} />
                       <Route path="/auth/callback" element={<AuthCallback />} />
           
                       <Route path="/downloads" element={<DownloadsPage />} />
                       <Route path="/services/:slug" element={<ServiceInfoPage />} />
-                      <Route path="/payment/success" element={<PaymentSuccess />} />
-                      <Route path="/payment/cancel" element={<PaymentCancel />} />
-                      <Route path="/payment/failure" element={<PaymentReturn outcome="failure" />} />
                       <Route path="/tourism/map" element={<TourismMapPage />} />
                       <Route path="/news" element={<NewsCategoryPage />} />
                       <Route path="/services" element={<ServicesPage />} />
@@ -147,9 +140,6 @@ const router = createBrowserRouter(createRoutesFromElements(
                       <Route path="/tourism/delicacies" element={<ContentPage title="Local Delicacies" fetchData={tourismApi.getDelicacies} renderContent={(data) => <DelicaciesView data={data} />} />} />
 
                       {/* Forms */}
-                      <Route path="/forms/business" element={<BusinessPermitPage />} />
-                      <Route path="/forms/building" element={<BuildingPermitPage />} />
-                      <Route path="/forms/zoning" element={<ZoningClearancePage />} />
 
                       {/* Access Control & Fallback Routes */}
                       <Route path="/access-denied" element={<AccessDenied />} />

@@ -1,3 +1,7 @@
+> **TalGov R2 Increment 1:** E-services now displays the approved information page; citizen transactions, payment returns and deferred API workflows are closed. Public information and staff account controls remain. See [shutdown contract](docs/r2/DEFERRED_WORKFLOW_SHUTDOWN.md) and [qualification report](docs/r2/INCREMENT_1_REPORT.md). No Neon migration or deployment has run. Hosted shutdown and production qualification remain pending.
+
+> **TalGov R2 discovery (2026-11-01):** [Architecture and migration plan](docs/r2/ARCHITECTURE.md), [work packages](docs/r2/WORK_PACKAGE_REGISTER.md), and [qualification evidence](docs/r2/PRODUCTION_ACCEPTANCE.md). Increment 0 changes documentation only. The application below still uses the preserved R1 stack; Neon authentication is blocked pending required capability verification. Do not treat the target architecture as deployed or production-qualified.
+
 <div align="center">
 
 <!-- Banner image: save as docs/assets/banner.png -->

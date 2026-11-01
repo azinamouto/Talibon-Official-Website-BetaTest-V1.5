@@ -21,7 +21,7 @@ test('smoke rejects SPA fallback, cached health, dependency failures and redirec
         'Content-Type': 'application/json', 'Cache-Control': mode === 'cached' ? 'public, max-age=60' : 'no-store',
       });
       res.end(JSON.stringify({ status: 'ok', service: 'talibon-api', database: 'reachable' }));
-    } else if (req.url === '/api/forms/certificate') { res.writeHead(401); res.end(); }
+    } else if (req.url === '/api/forms/certificate') { res.writeHead(410); res.end(); }
     else res.end('<html><body>Talibon</body></html>');
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));

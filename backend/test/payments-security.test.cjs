@@ -36,26 +36,26 @@ function checkout(body, headers = {}) {
 
 test('public checkout is unavailable even with a well-formed client-controlled amount', async () => {
   const response = await checkout({ itemName: 'Unverified municipal fee', amount: 100 });
-  assert.equal(response.status, 503);
-  assert.match(await response.text(), /unavailable/i);
+  assert.equal(response.status, 410);
+  assert.match(await response.text(), /Online services are not available/);
 });
 test('client amount or return URL cannot unlock checkout', async () => {
   for (const payload of [
     { itemName: 'Business Permit', amount: 1, successUrl: 'https://talibon.gov.ph/payment/success' },
     { itemName: 'Business Permit', amount: 1000000 },
-  ]) assert.equal((await checkout(payload)).status, 503);
+  ]) assert.equal((await checkout(payload)).status, 410);
 });
-test('DTO validation still rejects overposting and malformed amounts', async () => {
+test('retirement rejects overposting and malformed amounts before parsing', async () => {
   for (const body of [
     { itemName: 'Permit', amount: -1 },
     { itemName: 'Permit', amount: '100' },
     { itemName: 'Permit', amount: 1.001 },
     { itemName: 'Permit', amount: 100, status: 'paid' },
-  ]) assert.equal((await checkout(body)).status, 400, JSON.stringify(body));
+  ]) assert.equal((await checkout(body)).status, 410, JSON.stringify(body));
 });
 test('payment route has request hardening without cookies or exposed secrets', async () => {
   const response = await checkout({ itemName: 'Permit', amount: 100 });
-  assert.equal(response.status, 503);
+  assert.equal(response.status, 410);
   assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
   assert.match(response.headers.get('content-security-policy') ?? '', /default-src 'none'/);
 });

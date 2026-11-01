@@ -1,0 +1,29 @@
+
+> talgov-frontend@0.0.0 test:admin
+> playwright test --config playwright.admin.config.ts
+
+[WebServer] (node:26536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:30068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:30000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 test\browser\admin.spec.ts:25:1 › mock layout is responsive and does not query protected APIs (6.5s)
+  ok  2 test\browser\admin.spec.ts:37:1 › editor cannot reach users or reports by navigation or direct tab URL (6.5s)
+  ok  3 test\browser\admin.spec.ts:46:1 › unknown or absent permission contract fails closed (3.4s)
+  ok  4 test\browser\admin.spec.ts:51:1 › admin controls hide role assignment and disable self, privileged and inactive targets (3.4s)
+  ok  5 test\browser\admin.spec.ts:64:1 › identity failures do not load live dashboard data and can be retried (3.6s)
+  ok  6 test\browser\admin.spec.ts:73:1 › users search and filters reach API; role confirmation sends current version (5.8s)
+  ok  7 test\browser\admin.spec.ts:84:1 › deactivation needs confirmation; conflict requires reload before retry (3.9s)
+  ok  8 test\browser\admin.spec.ts:98:60 › pages: editing is retired even for super admin (2.5s)
+  ok  9 test\browser\admin.spec.ts:98:60 › news: editing is retired even for super admin (4.5s)
+  ok 10 test\browser\admin.spec.ts:98:60 › services: editing is retired even for super admin (4.3s)
+  ok 11 test\browser\admin.spec.ts:107:1 › reports expose only retained security activity (5.0s)
+  ok 12 test\browser\admin.spec.ts:112:1 › reports validate ranges, preserve cursor precision and clear data on 403 (5.4s)
+
+  12 passed (1.1m)

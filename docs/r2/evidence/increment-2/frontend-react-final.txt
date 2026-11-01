@@ -1,0 +1,12 @@
+
+> talgov-frontend@0.0.0 test:react
+> vitest run
+
+
+ RUN  v5.0.3 C:/Users/admin/Documents/Talibon-Official-Website-BetaTest-V1.5/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  52 passed (52)
+   Start at  17:53:45
+   Duration  9.53s (tests 69%, import 12%, environment 11%, setup 5%, transform 2%)

@@ -4,6 +4,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "db:r2:migrate": "npm run build:tsc && node scripts/r2-migrate.cjs",
+    "db:r2:transfer": "node scripts/r2-transfer.cjs",
+    "test:r2:db": "npm run build:tsc && powershell -NoProfile -ExecutionPolicy Bypass -File test/run-r2-database-tests.ps1",
     "notifications:work": "node dist/api/notifications/email-worker.js",
     "dev": "npm run build:tsc && node dist/main.js",
     "build": "npm run build:tsc",
@@ -32,6 +35,7 @@
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "pg": "^8.23.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "stripe": "^22.0.2",
@@ -40,6 +44,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.4",
+    "@types/pg": "^8.23.1",
     "esbuild": "^0.24.2",
     "eslint": "9.39.5",
     "jest": "30.5.2",

@@ -1,0 +1,35 @@
+
+> talgov-frontend@0.0.0 test:eservices
+> playwright test --config playwright.eservices.config.ts
+
+[2m[WebServer] [22m(node:1192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:14576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 17 tests using 1 worker
+
+(node:14888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 test\browser\eservices.spec.ts:42:46 › Barangay Clearance: typed submission, review, progress and status (9.6s)
+  ok  2 test\browser\eservices.spec.ts:42:46 › Certificate of Indigency: typed submission, review, progress and status (5.9s)
+  ok  3 test\browser\eservices.spec.ts:42:46 › Business Permit: typed submission, review, progress and status (8.3s)
+  ok  4 test\browser\eservices.spec.ts:42:46 › Building Permit: typed submission, review, progress and status (10.2s)
+  ok  5 test\browser\eservices.spec.ts:42:46 › Zoning Clearance: typed submission, review, progress and status (9.4s)
+  ok  6 test\browser\eservices.spec.ts:68:1 › schema errors are linked, focusable, keyboard navigable and mobile fits (5.8s)
+  ok  7 test\browser\eservices.spec.ts:84:1 › submission failures retain review and never fabricate success; retry saves once (6.5s)
+  ok  8 test\browser\eservices.spec.ts:101:1 › signed-out visitors must sign in; private tracking 404 is recoverable (10.9s)
+  ok  9 test\browser\eservices.spec.ts:109:1 › citizen login returns to the requested form through the existing service link (5.2s)
+  ok 10 test\browser\eservices.spec.ts:120:1 › listing pagination and throttled lookup have recovery controls (4.9s)
+  ok 11 test\browser\eservices.spec.ts:135:1 › submissions list reads live pagination and refreshes current status (5.3s)
+  ok 12 test\browser\eservices.spec.ts:144:1 › success URL alone cannot assert payment or create a receipt (3.8s)
+  ok 13 test\browser\eservices.spec.ts:149:1 › payments remain unavailable by default (3.8s)
+  -  14 test\browser\eservices.spec.ts:156:1 › pending payment cannot be retried; server confirmation supplies the receipt
+  -  15 test\browser\eservices.spec.ts:167:46 › cancel: saved application, checkout retry and safe redirect
+  -  16 test\browser\eservices.spec.ts:167:46 › failure: saved application, checkout retry and safe redirect
+  -  17 test\browser\eservices.spec.ts:181:1 › checkout failure and invalid redirect stay recoverable
+
+  4 skipped
+  13 passed (1.7m)

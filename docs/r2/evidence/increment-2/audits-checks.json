@@ -1,0 +1,51 @@
+[
+  {
+    "name": "audit-root",
+    "command": "npm audit --package-lock-only --audit-level=high --json",
+    "exitCode": 1,
+    "started": "2026-11-01T09:40:35.826Z",
+    "finished": "2026-11-01T09:40:41.595Z"
+  },
+  {
+    "name": "audit-backend",
+    "command": "npm audit --prefix backend --package-lock-only --audit-level=high --json",
+    "exitCode": 1,
+    "started": "2026-11-01T09:40:41.595Z",
+    "finished": "2026-11-01T09:40:52.745Z"
+  },
+  {
+    "name": "audit-frontend",
+    "command": "npm audit --prefix frontend --package-lock-only --audit-level=high --json",
+    "exitCode": 1,
+    "started": "2026-11-01T09:40:52.745Z",
+    "finished": "2026-11-01T09:40:55.696Z"
+  },
+  {
+    "name": "audit-root-prod",
+    "command": "npm audit --omit=dev --package-lock-only --audit-level=high --json",
+    "exitCode": 1,
+    "started": "2026-11-01T09:40:55.696Z",
+    "finished": "2026-11-01T09:40:58.062Z"
+  },
+  {
+    "name": "audit-backend-prod",
+    "command": "npm audit --prefix backend --omit=dev --package-lock-only --audit-level=high --json",
+    "exitCode": 1,
+    "started": "2026-11-01T09:40:58.062Z",
+    "finished": "2026-11-01T09:41:00.506Z"
+  },
+  {
+    "name": "audit-frontend-prod",
+    "command": "npm audit --prefix frontend --omit=dev --package-lock-only --audit-level=high --json",
+    "exitCode": 1,
+    "started": "2026-11-01T09:41:00.506Z",
+    "finished": "2026-11-01T09:41:05.147Z"
+  },
+  {
+    "name": "ops-test",
+    "command": "npm run test:ops",
+    "exitCode": 0,
+    "started": "2026-11-01T09:41:05.147Z",
+    "finished": "2026-11-01T09:41:06.587Z"
+  }
+]

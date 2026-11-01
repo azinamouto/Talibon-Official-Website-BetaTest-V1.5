@@ -4,7 +4,6 @@ import { LayoutDashboard, Users, FileText, Newspaper, Briefcase, BarChart3, Shie
 import { useAuth } from '../contexts/SupabaseAuthContext';
 import { adminService, type AdminIdentity } from '../services/adminService';
 import { AdminUsers } from '../components/admin/AdminUsers';
-import { AdminContent } from '../components/admin/AdminContent';
 import { AdminReports } from '../components/admin/AdminReports';
 import { Button } from '../components/ui/Button';
 import { Failure, errorMessage, useAdminLoad } from '../components/admin/shared';
@@ -12,9 +11,6 @@ import { Failure, errorMessage, useAdminLoad } from '../components/admin/shared'
 const navigation = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, permission: '' },
   { id: 'users', label: 'Users', icon: Users, permission: 'users:read' },
-  { id: 'pages', label: 'Pages', icon: FileText, permission: 'content:manage' },
-  { id: 'news', label: 'News', icon: Newspaper, permission: 'content:manage' },
-  { id: 'services', label: 'Services', icon: Briefcase, permission: 'content:manage' },
   { id: 'reports', label: 'Reports', icon: BarChart3, permission: 'reports:read' },
 ];
 function Overview({ preview, identity }: { preview: boolean; identity: AdminIdentity }) {
@@ -23,7 +19,7 @@ function Overview({ preview, identity }: { preview: boolean; identity: AdminIden
     if (preview) return [['Users', 128], ['Pages', 12], ['News', 24], ['Services', 8]] as [string, number][];
     return Promise.all([
       ...(identity.permissions.includes('users:read') ? [adminService.users(new URLSearchParams({ limit: '1', status: 'all' }), signal).then(result => ['Users', result.pagination.total] as [string, number])] : []),
-      ...(identity.permissions.includes('content:manage') ? (['pages', 'news', 'services'] as const).map(kind => adminService.content(kind, 1, signal).then(result => [kind, result.pagination.total] as [string, number])) : []),
+
     ]);
   }, [preview, identity]);
   return <section><h2 className="text-2xl font-bold">Municipal overview</h2><p className="mt-2 text-slate-600">Manage public information and municipal accounts from one workspace.</p>
@@ -45,7 +41,7 @@ function DashboardShell({ identity, preview = false }: { identity: AdminIdentity
           : tab === 'overview' ? <Overview preview={preview} identity={identity} />
           : tab === 'users' ? <AdminUsers identity={identity} />
           : tab === 'reports' ? <AdminReports />
-          : tab === 'pages' || tab === 'news' || tab === 'services' ? <AdminContent key={tab} kind={tab} /> : null}
+          : null}
       </div>
     </div>
   </main>;

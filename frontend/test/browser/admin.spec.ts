@@ -26,7 +26,7 @@ test('mock layout is responsive and does not query protected APIs', async ({ pag
   await setup(page, context);
   const requests: string[] = []; page.on('request', req => { if (/\/api\/(admin|auth\/me|.+\/manage)/.test(req.url())) requests.push(req.url()); });
   await page.setViewportSize({ width: 375, height: 812 }); await page.goto('/admin-preview');
-  await expect(page.getByText('Mock data — Week 7', { exact: false })).toBeVisible();
+  await expect(page.getByText(/Mock data.*Week 7/)).toBeVisible();
   await expect(page.getByText('128', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: info.outputPath('admin-mobile.png'), fullPage: true });
@@ -95,42 +95,20 @@ test('deactivation needs confirmation; conflict requires reload before retry', a
   expect((await mutation).postDataJSON()).toEqual({ version: 4 });
   await expect(page.getByText('Account deactivated.', { exact: true })).toBeVisible();
 });
-for (const kind of ['pages', 'news', 'services'] as const) test(`${kind}: create, publish, edit and delete`, async ({ page, context }) => {
-  await setup(page, context); let record: Record<string, unknown> | null = null;
-  await context.route(`**/api/${kind}/manage*`, route => route.fulfill({ json: { data: record ? [record] : [], pagination: { page: 1, total: record ? 1 : 0, totalPages: 1 } } }));
-  await context.route(new RegExp(`/api/${kind}(?:/${target.id})?$`), route => {
-    if (route.request().method() === 'DELETE') { record = null; return route.fulfill({ status: 204 }); }
-    record = { ...record, id: target.id, ...route.request().postDataJSON() }; return route.fulfill({ json: { data: record } });
-  });
-  await page.goto(`/admin?tab=${kind}`); await page.getByRole('button', { name: `Create ${kind}` }).click();
-  await page.getByLabel(kind === 'services' ? 'Service name' : 'Title', { exact: true }).fill('Test entry');
-  await page.getByLabel('Slug', { exact: false }).fill('test-entry');
-  await page.getByLabel(kind === 'services' ? 'Description' : 'Content', { exact: true }).fill('Municipal information.');
-  if (kind === 'news') await page.getByLabel('Summary').fill('Summary.');
-  if (kind === 'services') await page.getByLabel('Responsible department ID', { exact: false }).fill('mayor');
-  await page.getByRole('button', { name: 'Save and publish' }).click(); await expect(page.getByText('Content saved.', { exact: true })).toBeVisible();
-  expect(record!['status']).toBe(kind === 'services' ? 'available' : 'published');
-  await page.getByRole('button', { name: 'Edit', exact: true }).click();
-  await page.getByLabel(kind === 'services' ? 'Service name' : 'Title', { exact: true }).fill('Updated entry');
-  await page.getByRole('button', { name: 'Save', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Updated entry' })).toBeVisible();
-  await page.getByRole('button', { name: 'Delete', exact: true }).click(); await page.getByRole('button', { name: 'Confirm deletion' }).click();
-  await expect(page.getByText('Content deleted.', { exact: true })).toBeVisible(); expect(record).toBeNull();
+for (const kind of ['pages', 'news', 'services'] as const) test(`${kind}: editing is retired even for super admin`, async ({ page, context }) => {
+  await setup(page, context);
+  const writes: string[] = [];
+  page.on('request', request => { if (request.method() !== 'GET' && request.url().includes(`/api/${kind}`)) writes.push(request.url()); });
+  await page.goto(`/admin?tab=${kind}`);
+  await expect(page.getByRole('alert')).toContainText('do not have access');
+  await expect(page.getByRole('button', { name: /Create|Save|Publish|Delete/ })).toHaveCount(0);
+  expect(writes).toEqual([]);
 });
-test('CMS rejects blank text, retains drafts after failures and blocks browser Back', async ({ page, context }) => {
-  await setup(page, context); await page.goto('/admin');
-  await page.getByRole('navigation', { name: 'Admin sections' }).getByRole('link', { name: 'Pages', exact: true }).click();
-  await page.getByRole('button', { name: 'Create pages' }).click();
-  await page.getByLabel('Title', { exact: true }).fill('   '); await page.getByLabel('Slug', { exact: false }).fill('draft'); await page.getByLabel('Content', { exact: true }).fill('Body');
-  await page.getByRole('button', { name: 'Save', exact: true }).click(); await expect(page.getByRole('dialog').getByRole('alert')).toContainText('non-blank');
-  await page.getByLabel('Title', { exact: true }).fill('My draft');
-  await context.route('**/api/pages', route => route.fulfill({ status: 503, json: {} }));
-  await page.getByRole('button', { name: 'Save', exact: true }).click(); await expect(page.getByRole('dialog').getByRole('alert')).toContainText('unavailable');
-  page.once('dialog', dialog => dialog.dismiss()); await page.goBack();
-  await expect(page.getByLabel('Title', { exact: true })).toHaveValue('My draft');
-  page.once('dialog', dialog => dialog.dismiss()); await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  page.once('dialog', dialog => dialog.accept()); await page.getByRole('button', { name: 'Cancel', exact: true }).click(); await expect(page.getByRole('dialog')).toHaveCount(0);
+test('reports expose only retained security activity', async ({ page, context }) => {
+  await setup(page, context); await page.goto('/admin?tab=reports');
+  await expect(page.getByLabel('Report type').locator('option')).toHaveText(['user-activity']);
 });
+
 test('reports validate ranges, preserve cursor precision and clear data on 403', async ({ page, context }) => {
   await setup(page, context); let denied = false;
   const cursor = { before: '2026-10-01T00:00:00.123456+00:00', beforeId: target.id };

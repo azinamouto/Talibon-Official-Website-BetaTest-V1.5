@@ -9,7 +9,7 @@ const { SupabaseService } = require('../dist/supabase.service');
 const { AuthGuard } = require('../dist/security/auth.guard');
 const { RateLimiterGuard } = require('../dist/security/rate-limiter.guard');
 const { AllExceptionsFilter } = require('../dist/security/all-exceptions.filter');
-const { configureApp } = require('../dist/configure-app');
+const { configureApp } = require('./legacy-controller-harness.cjs');
 const { CacheControlMiddleware } = require('../dist/security/cache-control.middleware');
 
 test('signup HTTP contract validates input, preserves confirmation state and limits abuse', async () => {

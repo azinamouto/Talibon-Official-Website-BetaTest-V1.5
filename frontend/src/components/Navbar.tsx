@@ -1,9 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, Globe, ChevronDown, ArrowUpRight, Phone, Mail, MapPin, Search, Accessibility, Bell, Clock, LogIn, LayoutDashboard, LogOut, User, Volume2, VolumeX } from "lucide-react";
 import { useState, useEffect } from "react";
-import NotificationBell from "./NotificationBell";
-import NotificationDrawer from "./NotificationDrawer";
-import ErrorBoundary from "./ErrorBoundary";
 import { Link, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
@@ -35,7 +32,6 @@ export default function Navbar() {
     setIsAudioMuted(nextMuted);
     window.dispatchEvent(new CustomEvent('hero-audio-toggle', { detail: { muted: nextMuted } }));
   };
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [dynamicNavLinks, setDynamicNavLinks] = useState<any[]>([]);
   const location = useLocation();
   
@@ -313,9 +309,6 @@ export default function Navbar() {
                 <Globe size={11} />
                 {language === 'en' ? 'EN' : 'CEB'}
               </button>
-              <ErrorBoundary componentName="NotificationBell">
-                <NotificationBell onClick={() => setIsNotificationOpen(true)} />
-              </ErrorBoundary>
               <button className="hover:text-brand-primary text-brand-text transition-colors"><Accessibility size={14} /></button>
               <button 
                 onClick={toggleAudio}
@@ -624,25 +617,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <ErrorBoundary componentName="NotificationDrawer">
-        <NotificationDrawer 
-          isOpen={isNotificationOpen} 
-          onClose={() => setIsNotificationOpen(false)} 
-          onViewAction={(actionUrl) => {
-            // If already on /admin page, update URL parameter or hash so component reacts, otherwise redirect
-            if (window.location.pathname === "/admin") {
-              const searchParams = new URLSearchParams(window.location.search);
-              searchParams.set("tab", actionUrl);
-              window.history.pushState(null, "", `${window.location.pathname}?${searchParams.toString()}`);
-              // Dispatch a window event to let AdminDashboard know the active tab changed
-              window.dispatchEvent(new CustomEvent("talibon_tab_changed", { detail: actionUrl }));
-            } else {
-              window.location.href = `/admin?tab=${actionUrl}`;
-            }
-          }}
-        />
-      </ErrorBoundary>
 
       <GlobalSearch 
         isOpen={isSearchOpen} 

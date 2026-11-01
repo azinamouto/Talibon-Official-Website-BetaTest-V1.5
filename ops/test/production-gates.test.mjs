@@ -27,3 +27,16 @@ test('staff may not inspect the unscoped submission queue', () => {
   const source = get('backend/src/api/forms/forms.controller.ts');
   assert.doesNotMatch(source, /@Roles\([^)]*'staff'[^)]*\)/);
 });
+
+test('R2 production binding cannot load transaction or notification providers', () => {
+  const module = get('backend/src/app.module.ts');
+  assert.doesNotMatch(module, /\b(?:FormsService|FormsController|PaymentsModule|NotificationsModule|ChatController)\b/);
+  assert.match(module, /PublicFormsController/);
+  const configure = get('backend/src/configure-app.ts');
+  assert.ok(configure.indexOf('app.use(deferredRoutes)') < configure.indexOf('app.use(express.json'));
+  const routes = get('frontend/src/App.tsx');
+  for (const path of ['/forms/*', '/payment/*', '/e-services/*']) assert.ok(routes.includes(`path="${path}" element={<EServicesPage />}`));
+  assert.doesNotMatch(routes, /import (PaymentReturn|PaymentSuccess|BusinessPermitPage|BuildingPermitPage|ZoningClearancePage)/);
+  assert.doesNotMatch(get('backend/src/api/notifications/email-worker.ts'), /NestFactory|processPending/);
+  assert.doesNotMatch(get('supabase/functions/send-status-email/index.ts'), /createClient|fetch\(|Deno.env/);
+});

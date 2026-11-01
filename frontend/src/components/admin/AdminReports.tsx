@@ -5,7 +5,7 @@ import { control, Field, Failure, useAdminLoad } from './shared';
 
 export function AdminReports() {
   const today = new Date().toISOString().slice(0, 10);
-  const [form, setForm] = useState({ kind: 'submissions', from: `${today.slice(0, 7)}-01`, to: new Date(Date.now() + 86400000).toISOString().slice(0, 10) });
+  const [form, setForm] = useState({ kind: 'user-activity', from: `${today.slice(0, 7)}-01`, to: new Date(Date.now() + 86400000).toISOString().slice(0, 10) });
   const [query, setQuery] = useState(form);
   const [cursor, setCursor] = useState<ReportResult['nextCursor']>(null);
   const [history, setHistory] = useState<ReportResult['nextCursor'][]>([]);
@@ -19,7 +19,7 @@ export function AdminReports() {
       event.preventDefault(); const days = (Date.parse(form.to) - Date.parse(form.from)) / 86400000;
       if (!Number.isFinite(days) || days <= 0 || days > 366) { setError('Choose an end date after the start date, no more than 366 days apart.'); return; }
       setError(''); setCursor(null); setHistory([]); setQuery({ ...form });
-    }}><Field label="Report type"><select className={control} value={form.kind} onChange={e => setForm({ ...form, kind: e.target.value })}>{['submissions', 'payments', 'user-activity'].map(value => <option key={value}>{value}</option>)}</select></Field>
+    }}><Field label="Report type"><select className={control} value={form.kind} onChange={e => setForm({ ...form, kind: e.target.value })}>{['user-activity'].map(value => <option key={value}>{value}</option>)}</select></Field>
       <Field label="From (UTC)"><input className={control} type="date" required value={form.from} onChange={e => setForm({ ...form, from: e.target.value })} /></Field>
       <Field label="To (UTC, exclusive)"><input className={control} type="date" required value={form.to} onChange={e => setForm({ ...form, to: e.target.value })} /></Field><Button type="submit" className="self-end">Apply filters</Button></form>
     <Failure message={error || report.error} />{report.error && <Button onClick={report.reload}>Retry report</Button>}

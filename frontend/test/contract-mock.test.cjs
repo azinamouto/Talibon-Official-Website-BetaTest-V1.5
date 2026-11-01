@@ -12,6 +12,10 @@ test('mock serves OpenAPI examples, filtering, pagination, and explicit unsuppor
       if (path.includes('{') || path.includes('/manage') || path.startsWith('/api/admin/') || path === '/api/search') continue;
       for (const [method, operation] of Object.entries(item)) {
         if (!['get', 'post'].includes(method) || (method !== 'get' && !path.startsWith('/api/auth/'))) continue;
+        if (operation.responses['410']) {
+          assert.equal((await fetch(base + path, { method })).status, 410);
+          continue;
+        }
         const status = Object.keys(operation.responses).find(code => /^2\d\d$/.test(code));
         const example = operation.responses[status].content?.['application/json']?.schema?.example;
         assert.notEqual(example, undefined, `${method} ${path} needs an example`);
@@ -28,7 +32,7 @@ test('mock serves OpenAPI examples, filtering, pagination, and explicit unsuppor
       assert.equal((await fetch(base + '/api/pages?' + query)).status, 400);
     }
     assert.equal((await fetch(base + '/api/pages/missing')).status, 404);
-    assert.equal((await fetch(base + '/api/pages', { method: 'POST' })).status, 501);
+    assert.equal((await fetch(base + '/api/pages', { method: 'POST' })).status, 410);
     assert.equal((await fetch(base + '/api/about/profile', { headers: { 'X-API-Version': '2' } })).status, 404);
     const search = await (await fetch(base + '/api/search?q=municipal&limit=10')).json();
     assert.ok(search.data.some(item => item.type === 'services'));

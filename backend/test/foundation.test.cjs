@@ -13,7 +13,7 @@ const { RateLimiterGuard } = require('../dist/security/rate-limiter.guard');
 const { AllExceptionsFilter } = require('../dist/security/all-exceptions.filter');
 const { CacheControlMiddleware } = require('../dist/security/cache-control.middleware');
 const { SecurityHeadersMiddleware } = require('../dist/security/security-headers.middleware');
-const { configureApp, isAllowedOrigin } = require('../dist/configure-app');
+const { configureApp, isAllowedOrigin } = require('./legacy-controller-harness.cjs');
 
 const sessionId = '11111111-1111-4111-8111-111111111111';
 const token = `header.${Buffer.from(JSON.stringify({ session_id: sessionId })).toString('base64url')}.signature`;

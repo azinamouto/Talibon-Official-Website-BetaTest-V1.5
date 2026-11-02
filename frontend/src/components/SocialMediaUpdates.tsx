@@ -1,131 +1,106 @@
-import React, { useState } from "react";
-import { motion } from "motion/react";
-import { Facebook, Twitter, Instagram, ArrowUpRight, MessageSquare, ShieldCheck, Flame, Camera, Lock, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, ExternalLink, Facebook } from "lucide-react";
+
+const facebookUrl = "https://www.facebook.com/profile.php?id=100092810378501";
+const channels = [
+  { name: "Information Office", url: facebookUrl },
+  { name: "Abante Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
+  { name: "SK Federation", url: "https://www.facebook.com/TalibonOfficialPage" },
+  { name: "PESO Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
+  { name: "PNP Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
+  { name: "BFP Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
+  { name: "Tourism Office", url: "https://www.facebook.com/TalibonOfficialPage" },
+];
 
 export default function SocialMediaUpdates() {
   const [loadEmbed, setLoadEmbed] = useState(false);
-  const facebookUrl = "https://www.facebook.com/profile.php?id=100092810378501";
-
-  const channels = [
-    { name: "Information Office", icon: MessageSquare, color: "bg-blue-500", url: "https://www.facebook.com/profile.php?id=100092810378501" },
-    { name: "Abante Talibon", icon: Facebook, color: "bg-brand-primary", url: "https://www.facebook.com/TalibonOfficialPage" },
-    { name: "SK Federation", icon: Instagram, color: "bg-pink-500", url: "https://www.facebook.com/TalibonOfficialPage" },
-    { name: "PESO Talibon", icon: Facebook, color: "bg-blue-600", url: "https://www.facebook.com/TalibonOfficialPage" },
-    { name: "PNP Talibon", icon: ShieldCheck, color: "bg-slate-800", url: "https://www.facebook.com/TalibonOfficialPage" },
-    { name: "BFP Talibon", icon: Flame, color: "bg-sky-600", url: "https://www.facebook.com/TalibonOfficialPage" },
-    { name: "Tourism Office", icon: Camera, color: "bg-emerald-600", url: "https://www.facebook.com/TalibonOfficialPage" },
-  ];
-
-  // Using some icons from lucide that match the context
-  const getIcon = (name: string) => {
-    if (name.includes("PNP")) return <ShieldCheck size={20} />;
-    if (name.includes("BFP")) return <Flame size={20} />;
-    if (name.includes("Tourism")) return <Camera size={20} />;
-    if (name.includes("SK")) return <Instagram size={20} />;
-    if (name.includes("Information")) return <MessageSquare size={20} />;
-    return <Facebook size={20} />;
-  };
 
   return (
-    <section className="py-10 sm:py-14 bg-brand-surface overflow-hidden">
+    <section
+      id="social-updates"
+      aria-labelledby="social-updates-heading"
+      className="scroll-mt-40 bg-brand-surface py-10 sm:py-12 lg:py-16"
+    >
       <div className="site-container">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div>
-            <span className="section-label">Stay Connected</span>
-            <h2 className="section-title">Social Media Updates</h2>
-            <p className="text-xs sm:text-sm text-brand-muted font-medium leading-relaxed mb-6 max-w-lg">
-              Stay informed with the latest announcements, events, and updates from Talibon through our official social media channels.
+        <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
+          <div className="min-w-0">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand-primary">
+              Stay connected
             </p>
-            
-            <div className="flex flex-wrap gap-2.5">
-              {channels.map((channel, idx) => (
-                <motion.a
-                  key={channel.name}
-                  href={channel.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="flex items-center gap-2 px-3.5 py-2 bg-white border border-brand-border rounded-xl hover:border-brand-primary/30 hover:shadow-md transition-all group"
-                >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-primary/10 text-brand-primary">
-                    {React.cloneElement(getIcon(channel.name), { size: 14 })}
-                  </div>
-                  <span className="text-[9px] sm:text-[10px] font-bold text-brand-text uppercase tracking-widest">{channel.name}</span>
-                  <ArrowUpRight size={12} className="text-brand-muted group-hover:text-brand-primary transition-colors" />
-                </motion.a>
+            <h2 id="social-updates-heading" className="font-display text-2xl font-bold tracking-tight text-brand-text sm:text-3xl">
+              Social media updates
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-brand-muted sm:text-base">
+              Follow Talibon's offices for announcements, community news and updates.
+            </p>
+
+            <ul className="mt-4 grid grid-cols-2 gap-x-5 sm:flex sm:max-w-2xl sm:flex-wrap sm:gap-x-7">
+              {channels.map(({ name, url }) => (
+                <li key={name} className="min-w-0">
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-brand-text underline-offset-4 transition-colors hover:text-brand-primary hover:underline"
+                  >
+                    <span>{name}</span>
+                    <ExternalLink size={12} className="shrink-0 text-brand-muted group-hover:text-brand-primary" aria-hidden="true" />
+                  </a>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
-          <div className="relative">
-            {/* Privacy-Preserving Facebook Embed Facade */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-xl sm:rounded-2xl border border-brand-border shadow-lg shadow-black/5 p-4 overflow-hidden min-h-[420px] flex flex-col justify-center"
+          <div className="min-w-0 border-t border-brand-border pt-6 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
+            <div className="flex items-center gap-2.5">
+              <Facebook size={20} className="shrink-0 text-brand-primary" aria-hidden="true" />
+              <h3 className="font-display text-xl font-semibold tracking-tight text-brand-text sm:text-2xl">
+                Talibon on Facebook
+              </h3>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-brand-muted">
+              Talibon Public Information Office
+            </p>
+
+            {loadEmbed ? (
+              <div className="mt-5">
+                <iframe
+                  src={"https://www.facebook.com/plugins/page.php?href=" + encodeURIComponent(facebookUrl) + "&tabs=timeline&width=500&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"}
+                  width="500"
+                  height="500"
+                  className="w-full max-w-[500px] border-0"
+                  scrolling="no"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Talibon Facebook Feed"
+                />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setLoadEmbed(true)}
+                aria-describedby="facebook-privacy-note"
+                className="group mt-3 inline-flex min-h-11 items-center gap-2 py-2 text-sm font-semibold text-brand-text transition-colors hover:text-brand-primary"
+              >
+                <span className="border-b border-current pb-1">Load Facebook feed</span>
+                <ArrowRight size={16} className="text-brand-primary transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+              </button>
+            )}
+
+            <a
+              href={facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 flex min-h-11 w-fit items-center gap-2 py-2 text-sm text-brand-muted underline-offset-4 transition-colors hover:text-brand-text hover:underline"
             >
-              {loadEmbed ? (
-                <div className="w-full flex justify-center">
-                  <iframe 
-                    src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(facebookUrl)}&tabs=timeline&width=500&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId`} 
-                    width="100%" 
-                    height="500" 
-                    style={{ border: 'none', overflow: 'hidden', borderRadius: '1rem' }} 
-                    scrolling="no" 
-                    frameBorder="0" 
-                    allowFullScreen={true} 
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                    title="Talibon Facebook Feed"
-                  />
-                </div>
-              ) : (
-                <div className="text-center py-8 px-4 space-y-4 max-w-md mx-auto">
-                  <div className="w-14 h-14 mx-auto rounded-2xl bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center shadow-xs">
-                    <Facebook size={32} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-black tracking-widest text-[#1877F2] uppercase">
-                      Talibon Public Information Office
-                    </span>
-                    <h3 className="text-base font-bold text-slate-900 font-display">
-                      Official Facebook Timeline
-                    </h3>
-                    <p className="text-xs text-slate-500 leading-relaxed font-normal">
-                      Facebook content is provided by Meta. Loading this content may transfer information to Facebook.
-                    </p>
-                  </div>
-                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <button
-                      onClick={() => setLoadEmbed(true)}
-                      className="w-full sm:w-auto px-5 py-2.5 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2"
-                    >
-                      <Facebook size={16} />
-                      Load Facebook Feed
-                    </button>
-                    <a
-                      href={facebookUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <span>Open on Facebook</span>
-                      <ExternalLink size={13} />
-                    </a>
-                  </div>
-                  <p className="text-[10px] text-slate-400 font-medium">
-                    No data is sent to Meta until you click Load.
-                  </p>
-                </div>
-              )}
-            </motion.div>
-            
-            {/* Decorative element */}
-            <div className="absolute -top-12 -right-12 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl -z-10" />
-            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-brand-accent/5 rounded-full blur-3xl -z-10" />
+              Open on Facebook
+              <ExternalLink size={13} aria-hidden="true" />
+            </a>
+            {!loadEmbed && (
+              <p id="facebook-privacy-note" className="mt-1 text-xs leading-5 text-brand-muted">
+                Loading the feed connects to Meta.
+              </p>
+            )}
           </div>
         </div>
       </div>

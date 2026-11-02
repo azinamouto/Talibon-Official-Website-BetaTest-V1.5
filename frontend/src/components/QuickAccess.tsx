@@ -23,7 +23,7 @@ export default function QuickAccess() {
   return (
     <section className="py-10 sm:py-12 bg-white border-y border-brand-border">
       <div className="site-container">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6 lg:gap-8">
+        <div className="mx-auto grid w-full max-w-2xl grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6 sm:gap-x-4">
           {quickLinks.map((link, idx) => (
             <motion.div
               key={link.name}

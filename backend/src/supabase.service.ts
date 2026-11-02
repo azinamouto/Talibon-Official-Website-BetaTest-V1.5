@@ -1,12 +1,16 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
+function normalizeSupabaseUrl(url: string): string {
+  return url.trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '').replace(/\/+$/, '');
+}
+
 @Injectable()
 export class SupabaseService {
   private supabase: SupabaseClient | null = null;
 
   constructor() {
-    let rawUrl = process.env.SUPABASE_URL;
+    const rawUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     const hasUrl = !!rawUrl && rawUrl.length > 5;
@@ -20,21 +24,7 @@ export class SupabaseService {
       throw new Error("Missing backend Supabase configuration.");
     }
 
-    const sanitizeUrl = (url: string): string => {
-      let trimmed = url.trim();
-      while (trimmed.endsWith('/')) {
-        trimmed = trimmed.slice(0, -1);
-      }
-      if (trimmed.endsWith('/rest/v1')) {
-        trimmed = trimmed.slice(0, -8);
-      }
-      while (trimmed.endsWith('/')) {
-        trimmed = trimmed.slice(0, -1);
-      }
-      return trimmed;
-    };
-
-    const supabaseUrl = sanitizeUrl(rawUrl);
+    const supabaseUrl = normalizeSupabaseUrl(rawUrl);
 
     try {
       this.supabase = createClient(supabaseUrl, supabaseKey, {
@@ -52,7 +42,7 @@ export class SupabaseService {
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
     if (!url || !key) throw new InternalServerErrorException('Authentication is not configured.');
-    return createClient(url, key, {
+    return createClient(normalizeSupabaseUrl(url), key, {
       auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
     });
   }

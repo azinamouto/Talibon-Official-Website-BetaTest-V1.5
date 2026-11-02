@@ -1,7 +1,21 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 const get = path => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
+
+test('combined deployment routes API requests to the backend and deep links to the SPA', () => {
+  assert.equal(existsSync(new URL('../../frontend/vercel.json', import.meta.url)), false,
+    'Use the repository-root deployment; a frontend-only config omits the same-origin API');
+  const config = JSON.parse(get('vercel.json'));
+  const destination = path => config.rewrites.find(rule =>
+    new RegExp(`^${rule.source}$`).test(path))?.destination;
+  for (const path of ['/api/health', '/api/about/profile', '/api/auth/me']) {
+    assert.equal(destination(path), '/api', `${path} must reach the backend`);
+  }
+  assert.equal(destination('/about/barangays'), '/index.html');
+  assert.ok(existsSync(new URL('../../api/index.js', import.meta.url)));
+  assert.ok(config.functions['api/index.js'].includeFiles.includes('backend/dist'));
+});
 
 test('static Vercel frontend has defense-in-depth headers', () => {
   const config = JSON.parse(get('vercel.json'));

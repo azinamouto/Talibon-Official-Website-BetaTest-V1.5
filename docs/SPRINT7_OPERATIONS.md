@@ -34,6 +34,20 @@ The existing root `vercel.json` serves a static frontend and `api/index.js` in a
 **single atomic deployment**. Backend compilation now precedes frontend compilation.
 The release workflow preserves this existing project and its production environment.
 
+Set the Vercel project's **Root Directory** to the repository root (leave the
+dashboard field empty), with the root `vercel.json` supplying the install, build,
+output and function settings. Apply this to preview deployments as well. A project
+rooted at `frontend/` omits `api/index.js` and the backend build; it cannot serve
+the application's same-origin `/api/*` requests. `VITE_API_URL` only configures
+the local Vite proxy and does not connect a deployed frontend to a backend.
+
+After changing a previously frontend-rooted project, create a new preview and
+verify `/api/health` returns JSON with HTTP 200, a public API such as
+`/api/about/profile` returns JSON, and a direct SPA URL such as `/about/barangays`
+loads the application. Confirm staff login and an authorized API operation before
+promotion. Dashboard settings and hosted credentials require separate verification;
+repository checks cannot prove that the hosted project uses these settings.
+
 The ticket's strict order is **DB migration -> BE deploy -> FE deploy -> smoke**.
 With the current topology the executable order is **DB migration -> combined BE/FE
 candidate -> smoke -> promote -> production smoke**. Separate BE and FE deployments

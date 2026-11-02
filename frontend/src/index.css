@@ -96,6 +96,11 @@
 
 @layer components {
 
+  /* Fluid section layout with consistent gutters across the homepage. */
+  .site-container {
+    @apply mx-auto w-full min-w-0 px-4 sm:px-6 lg:px-8;
+  }
+
   /* ─── Card variants ─── */
   .minimal-card {
     @apply bg-brand-surface rounded-xl sm:rounded-2xl transition-all duration-500;

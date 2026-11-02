@@ -21,7 +21,7 @@ export default function About() {
         style={{ background: "linear-gradient(to right, rgba(15, 23, 42, 0.90) 0%, rgba(15, 23, 42, 0.75) 50%, rgba(15, 23, 42, 0.60) 100%)" }} 
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 lg:gap-20 items-center">
           {/* Left Column: Written Content */}
           <motion.div

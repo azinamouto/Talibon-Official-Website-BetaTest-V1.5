@@ -316,7 +316,7 @@ const Hero: React.FC<HeroProps> = ({
       </div>
 
       {/* HERO CONTENT */}
-      <div className="relative z-20 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-left my-auto">
+      <div className="site-container relative z-20 text-left my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
 
           <motion.div

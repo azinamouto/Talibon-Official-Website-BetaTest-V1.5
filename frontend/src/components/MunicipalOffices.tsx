@@ -52,7 +52,7 @@ export default function MunicipalOffices() {
 
   return (
     <section id="offices" className="py-16 sm:py-20 bg-brand-bg relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container">
         <div className="text-center mb-12">
           <motion.span 
             initial={{ opacity: 0, y: 10 }}

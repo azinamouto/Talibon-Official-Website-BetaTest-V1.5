@@ -82,7 +82,7 @@ export default function Services() {
       <div className="absolute -top-24 right-1/4 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none z-0" />
       <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container relative z-10">
         <div className="text-center mb-10 sm:mb-12">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Building size={15} className="text-sky-300" />

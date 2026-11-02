@@ -29,7 +29,7 @@ export default function Tourism() {
 
   return (
     <section id="tourism" className="py-32 bg-brand-bg relative overflow-hidden">
-      <div className="mx-auto w-full max-w-[1680px] px-5 sm:px-8 lg:px-10 2xl:px-12">
+      <div className="site-container">
         <div className="flex flex-col lg:flex-row items-end justify-between gap-12 mb-32">
           <div className="max-w-2xl">
             <span className="section-label">Explore Talibon</span>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ExternalLink, Globe, Map, MapPin, Ruler } from "lucide-react";
+import { ArrowRight, ExternalLink, MapPin } from "lucide-react";
 
 export default function Location() {
   const [loadMap, setLoadMap] = useState(false);
@@ -12,7 +12,7 @@ export default function Location() {
       className="scroll-mt-40 border-t border-brand-border bg-brand-surface py-10 sm:py-12 lg:py-16"
     >
       <div className="site-container">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-10">
+        <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
           <div className="min-w-0">
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand-primary">
               Find us
@@ -24,34 +24,28 @@ export default function Location() {
               Talibon is a first-class municipality situated in the northernmost part of Bohol, Philippines, approximately 114.8 kilometers from Tagbilaran City.
             </p>
 
-            <dl className="mt-6 grid grid-cols-1 gap-5 border-y border-brand-border py-5 sm:grid-cols-2 sm:gap-6">
-              <div className="flex items-start gap-3">
-                <Globe size={18} className="mt-0.5 shrink-0 text-brand-primary" aria-hidden="true" />
-                <div>
-                  <dt className="text-sm text-brand-muted">Coordinates</dt>
-                  <dd className="mt-1 text-base font-semibold text-brand-text">10.12°N, 124.28°E</dd>
-                </div>
+            <dl className="mt-5 flex flex-wrap gap-x-10 gap-y-4">
+              <div>
+                <dt className="text-xs leading-5 text-brand-muted">Coordinates</dt>
+                <dd className="mt-1 text-base font-semibold text-brand-text">10.12°N, 124.28°E</dd>
               </div>
-              <div className="flex items-start gap-3">
-                <Ruler size={18} className="mt-0.5 shrink-0 text-brand-primary" aria-hidden="true" />
-                <div>
-                  <dt className="text-sm text-brand-muted">Land area</dt>
-                  <dd className="mt-1 text-base font-semibold text-brand-text">140.46 km²</dd>
-                </div>
+              <div>
+                <dt className="text-xs leading-5 text-brand-muted">Land area</dt>
+                <dd className="mt-1 text-base font-semibold text-brand-text">140.46 km²</dd>
               </div>
             </dl>
           </div>
 
-          <div className="min-w-0 overflow-hidden rounded-xl border border-brand-border bg-brand-bg">
-            <div className="flex items-center gap-3 px-5 pt-5 sm:px-6 sm:pt-6">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-brand-primary" aria-hidden="true">
-                <Map size={22} />
-              </span>
-              <div>
-                <h3 className="text-base font-semibold text-brand-text">Talibon, Bohol</h3>
-                <p className="mt-0.5 text-sm text-brand-muted">Interactive map</p>
-              </div>
+          <div className="min-w-0 border-t border-brand-border pt-6 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
+            <div className="flex items-center gap-2.5">
+              <MapPin size={20} className="shrink-0 text-brand-primary" aria-hidden="true" />
+              <h3 className="font-display text-xl font-semibold tracking-tight text-brand-text sm:text-2xl">
+                Explore Talibon
+              </h3>
             </div>
+            <p className="mt-2 text-sm leading-6 text-brand-muted">
+              Find your way around the municipality.
+            </p>
 
             {loadMap ? (
               <iframe
@@ -63,35 +57,31 @@ export default function Location() {
                 title="Google Maps - Talibon, Bohol"
               />
             ) : (
-              <div className="px-5 pt-4 sm:px-6">
-                <p id="map-privacy-note" className="max-w-lg text-sm leading-6 text-brand-muted">
-                  Explore the area on the map. Loading it connects to Google.
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setLoadMap(true)}
+                aria-describedby="map-privacy-note"
+                className="group mt-3 inline-flex min-h-11 items-center gap-2 py-2 text-sm font-semibold text-brand-text transition-colors hover:text-brand-primary"
+              >
+                <span className="border-b border-current pb-1">Load interactive map</span>
+                <ArrowRight size={16} className="text-brand-primary transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+              </button>
             )}
 
-            <div className="flex flex-col gap-3 px-5 pb-5 pt-5 sm:flex-row sm:flex-wrap sm:px-6 sm:pb-6">
-              {!loadMap && (
-                <button
-                  type="button"
-                  onClick={() => setLoadMap(true)}
-                  aria-describedby="map-privacy-note"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-text px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-text/90 active:bg-brand-text/80"
-                >
-                  <MapPin size={16} aria-hidden="true" />
-                  Load interactive map
-                </button>
-              )}
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-brand-border bg-white px-4 py-2.5 text-sm font-semibold text-brand-text transition-colors hover:border-brand-primary hover:text-brand-primary"
-              >
-                Open in Google Maps
-                <ExternalLink size={14} aria-hidden="true" />
-              </a>
-            </div>
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 flex min-h-11 w-fit items-center gap-2 py-2 text-sm text-brand-muted underline-offset-4 transition-colors hover:text-brand-text hover:underline"
+            >
+              Open in Google Maps
+              <ExternalLink size={13} aria-hidden="true" />
+            </a>
+            {!loadMap && (
+              <p id="map-privacy-note" className="mt-1 text-xs leading-5 text-brand-muted">
+                Loading the map connects to Google.
+              </p>
+            )}
           </div>
         </div>
       </div>

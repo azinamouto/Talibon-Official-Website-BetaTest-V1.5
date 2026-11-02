@@ -1,0 +1,12 @@
+PASS: exact project, organization, region, nondefault development branch and endpoint verified
+PASS: migration-direct verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_migration
+PASS: runtime-pooled verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_app
+Migration dry run: {"migrations":2,"applied":0}
+Migration apply: {"migrations":2,"applied":0}
+PASS: role flags, memberships, DDL/temporary objects, role escalation and ledger denials
+PASS: 8 concurrent pooled transactions, pool bound 2, no transaction-setting leakage; wrong password sanitized
+PASS: .env.local uses runtime login only; provisioning and migration credentials isolated in ignored ACL-protected operator files
+Isolated hosted databases: {"test":"r2_q_9d0f60e4_test","source":"r2_q_9d0f60e4_source","upgrade":"r2_q_9d0f60e4_upgrade","restore":"r2_q_9d0f60e4_restore"}
+PASS: hosted direct logical backup/restore: 9 tables / 21 synthetic rows; exact digests, ledger, indexes, constraints, views/options, ACLs, triggers and functions
+Archive SHA256: c79db09d0970c7c6061686a3abc0847886192c2905c8accee8ebc300b3bd6844
+Protected recovery artifacts: C:\Users\admin\AppData\Local\Temp\talgov-neon-V1ECmK

@@ -1,0 +1,756 @@
+
+> talgov-backend@0.0.0 test
+> npm run build:tsc && jest --runInBand && node --test --test-timeout=120000 test/*.test.cjs
+
+
+> talgov-backend@0.0.0 build:tsc
+> tsc -p tsconfig.json && node --input-type=commonjs -e "require('node:fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))"
+
+[Nest] 36300  - 11/02/2026, 9:21:52 PM    WARN [FormEmailWorker] Email job job-1: attempt 2 failed; outcome persisted.
+[Nest] 36300  - 11/02/2026, 9:21:52 PM    WARN [FormEmailWorker] Email job job-1: attempt 2 failed; outcome persisted.
+node.exe : [Nest] 36300  - 11/02/2026, 9:21:52 PM   ERROR [FormEmailWorker] Email job job-1: delivery acknowledgement
+failed; lease recovery will retry.
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([Nest] 36300  -...ery will retry.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+
+Test Suites: 5 passed, 5 total
+Tests:       54 passed, 54 total
+Snapshots:   0 total
+Time:        25.058 s
+Ran all test suites.
+TAP version 13
+# Subtest: About editorial responses match the shared OpenAPI examples
+ok 1 - About editorial responses match the shared OpenAPI examples
+  ---
+  duration_ms: 3.2253
+  type: 'test'
+  ...
+# Subtest: client permission contract matches server policies and excludes inactive/unverified roles
+ok 2 - client permission contract matches server policies and excludes inactive/unverified roles
+  ---
+  duration_ms: 2.7254
+  type: 'test'
+  ...
+# Subtest: every report rejects anonymous, non-admin and unverified callers before data access
+ok 3 - every report rejects anonymous, non-admin and unverified callers before data access
+  ---
+  duration_ms: 188.1698
+  type: 'test'
+  ...
+# Subtest: all admin roles receive bounded pages with exact timestamp cursors
+ok 4 - all admin roles receive bounded pages with exact timestamp cursors
+  ---
+  duration_ms: 64.7441
+  type: 'test'
+  ...
+# Subtest: invalid dates, unbounded limits, incomplete cursors and unknown fields fail validation
+ok 5 - invalid dates, unbounded limits, incomplete cursors and unknown fields fail validation
+  ---
+  duration_ms: 12.2999
+  type: 'test'
+  ...
+# Subtest: OpenAPI documents authenticated reports and query validation
+ok 6 - OpenAPI documents authenticated reports and query validation
+  ---
+  duration_ms: 15.0791
+  type: 'test'
+  ...
+# Subtest: user search is bounded and quoted as literal PostgREST filter text
+ok 7 - user search is bounded and quoted as literal PostgREST filter text
+  ---
+  duration_ms: 147.1628
+  type: 'test'
+  ...
+# Subtest: all user routes reject anonymous, non-admin, unverified and deactivated callers
+ok 8 - all user routes reject anonymous, non-admin, unverified and deactivated callers
+  ---
+  duration_ms: 298.8398
+  type: 'test'
+  ...
+# Subtest: admin listing, status filtering and detail are paginated and do not expose Auth internals
+ok 9 - admin listing, status filtering and detail are paginated and do not expose Auth internals
+  ---
+  duration_ms: 33.4899
+  type: 'test'
+  ...
+# Subtest: update validation blocks role overposting and forwards authenticated actor/request IDs
+ok 10 - update validation blocks role overposting and forwards authenticated actor/request IDs
+  ---
+  duration_ms: 26.7525
+  type: 'test'
+  ...
+# Subtest: role assignment requires super admin, and deactivation is versioned
+ok 11 - role assignment requires super admin, and deactivation is versioned
+  ---
+  duration_ms: 18.3026
+  type: 'test'
+  ...
+# Subtest: database conflicts and failures map to safe responses
+ok 12 - database conflicts and failures map to safe responses
+  ---
+  duration_ms: 16.5976
+  type: 'test'
+  ...
+# Subtest: OpenAPI documents every operation and user input/output schemas
+ok 13 - OpenAPI documents every operation and user input/output schemas
+  ---
+  duration_ms: 18.0057
+  type: 'test'
+  ...
+# Subtest: POST /api/chat rejects anonymous requests with 401 Unauthorized
+ok 14 - POST /api/chat rejects anonymous requests with 401 Unauthorized
+  ---
+  duration_ms: 333.876
+  type: 'test'
+  ...
+# Subtest: POST /api/chat succeeds with authenticated session and returns municipal response
+ok 15 - POST /api/chat succeeds with authenticated session and returns municipal response
+  ---
+  duration_ms: 16.7634
+  type: 'test'
+  ...
+# Subtest: input validation rejects empty messages, oversized inputs, and invalid history
+ok 16 - input validation rejects empty messages, oversized inputs, and invalid history
+  ---
+  duration_ms: 35.3597
+  type: 'test'
+  ...
+# Subtest: rate limiter enforces 10 queries per minute limit and provides Retry-After header
+ok 17 - rate limiter enforces 10 queries per minute limit and provides Retry-After header
+  ---
+  duration_ms: 16.0084
+  type: 'test'
+  ...
+# Subtest: OpenAPI documentation covers /api/chat with Bearer auth, schemas, and error responses
+ok 18 - OpenAPI documentation covers /api/chat with Bearer auth, schemas, and error responses
+  ---
+  duration_ms: 22.3598
+  type: 'test'
+  ...
+# Subtest: provider errors return 502 without exposing private provider details
+ok 19 - provider errors return 502 without exposing private provider details
+  ---
+  duration_ms: 1.8498
+  type: 'test'
+  ...
+# Subtest: provider timeouts return 504 Gateway Timeout cleanly
+ok 20 - provider timeouts return 504 Gateway Timeout cleanly
+  ---
+  duration_ms: 0.7413
+  type: 'test'
+  ...
+# Subtest: pages: CRUD, publication, pagination, role protection and soft deletion through HTTP
+ok 21 - pages: CRUD, publication, pagination, role protection and soft deletion through HTTP
+  ---
+  duration_ms: 510.6363
+  type: 'test'
+  ...
+# Subtest: news: CRUD, publication, pagination, role protection and soft deletion through HTTP
+ok 22 - news: CRUD, publication, pagination, role protection and soft deletion through HTTP
+  ---
+  duration_ms: 111.7834
+  type: 'test'
+  ...
+# Subtest: services: CRUD, publication, pagination, role protection and soft deletion through HTTP
+ok 23 - services: CRUD, publication, pagination, role protection and soft deletion through HTTP
+  ---
+  duration_ms: 101.2386
+  type: 'test'
+  ...
+# Subtest: storage failures are sanitized and not cached
+ok 24 - storage failures are sanitized and not cached
+  ---
+  duration_ms: 3.5543
+  type: 'test'
+  ...
+# Subtest: published OpenAPI includes CRUD contracts, examples, pagination and bearer security
+ok 25 - published OpenAPI includes CRUD contracts, examples, pagination and bearer security
+  ---
+  duration_ms: 45.6837
+  type: 'test'
+  ...
+# [VERCEL_API] Cold start: Initializing NestJS serverless application on Vercel...
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [NestFactory] Starting Nest application...
+# [SUPABASE_SERVER] Initialization check: SUPABASE_URL: PRESENT, SUPABASE_SERVICE_ROLE_KEY: PRESENT
+# [SUPABASE_SERVER] Initialization check: SUPABASE_URL: PRESENT, SUPABASE_SERVICE_ROLE_KEY: PRESENT
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +33ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +2ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [InstanceLoader] AuthModule dependencies initialized +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [InstanceLoader] AppModule dependencies initialized +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] HealthController {/api/health} (version: 1): +16ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/health, GET} (version: 1) route +3ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/health/ready, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] PublicFormsController {/api/forms} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/forms/business-permits, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/forms/building-permits, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/forms/zoning-clearance, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/forms/downloadable, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] PublicFormsController {/api/public-forms} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/public-forms/business-permits, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/public-forms/building-permits, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/public-forms/zoning-clearance, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/public-forms/downloadable, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] SearchController {/api/search} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/search, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] ReportsController {/api/admin/reports} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/reports/submissions, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/reports/payments, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/reports/user-activity, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] UsersController {/api/admin/users} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/users, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/users/:id, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/users/:id, PATCH} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/users/:id/role, PATCH} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/admin/users/:id/deactivate, POST} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] AboutController {/api/about} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/profile, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/seal, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/history, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/mayors, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/departments, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/vicinity-map, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/barangays, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/industry, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/services, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/hymn, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/demographics, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/about/location, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] ExecutiveController {/api/executive} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/executive/mandate, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/executive/vision-mission, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/executive/chart, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/executive/directory, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/executive/gad-ims, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] LegislativeController {/api/legislative} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/legislative/mandate, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/legislative/structure, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/legislative/ordinances, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/legislative/resolutions, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] NewsController {/api/news} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/articles, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/advisories, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/disaster-preparedness, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/updates, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/gallery, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/community, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/public-notices, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/downloadable, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] PageContentController {/api/pages} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/pages, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/pages/manage, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/pages/manage/:id, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/pages/:id, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/pages, POST} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/pages/:id, PATCH} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/pages/:id, DELETE} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] NewsContentController {/api/news} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/manage, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/manage/:id, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/:id, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news, POST} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/:id, PATCH} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/news/:id, DELETE} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] ServiceContentController {/api/services} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/services, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/services/manage, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/services/manage/:id, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/services/:id, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/services, POST} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/services/:id, PATCH} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/services/:id, DELETE} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] TransparencyController {/api/transparency} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/citizen-charter, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/full-disclosure, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/infrastructure, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/finance-reports, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/executive-orders, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/budget, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/bayanihan-grant, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/biddings, GET} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/ordinances, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/transparency/sroi, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] TourismController {/api/tourism} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/tourism/spots, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/tourism/festivities, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/tourism/delicacies, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RoutesResolver] AuthController {/api/auth} (version: 1): +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/auth/signup, POST} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/auth/login, POST} (version: 1) route +1ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/auth/refresh, POST} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/auth/me, GET} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RouterExplorer] Mapped {/api/auth/logout, POST} (version: 1) route +0ms
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [NestApplication] Nest application successfully started +3ms
+# [VERCEL_API] NestJS serverless initialization completed successfully.
+# [Nest] 27580  - 11/02/2026, 9:22:08 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"64904730-0ca6-4c34-b4d8-d6ae19a4afa8","method":"GET","route":"/api/health","status":200,"durationMs":6.03}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM    WARN [SecurityExceptionsFilter] {"status":503,"method":"GET","route":"/api/health/ready","requestId":"2ff1f2ac-df17-455c-b424-d3ab86f88fb7"}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM   ERROR [SecurityAudit] Audit persistence failed; retain structured platform logs.
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"2ff1f2ac-df17-455c-b424-d3ab86f88fb7","method":"GET","route":"/api/health/ready","status":503,"durationMs":3014.92}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [SecurityAudit] {"request_id":"2ff1f2ac-df17-455c-b424-d3ab86f88fb7","actor_id":null,"method":"GET","route":"/api/health/ready","status_code":503}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM    WARN [SecurityExceptionsFilter] {"status":400,"method":"POST","route":"/api/auth/login","requestId":"698bf367-faa8-4a11-a6a7-9c4db4d19ed6"}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"698bf367-faa8-4a11-a6a7-9c4db4d19ed6","method":"POST","route":"/api/auth/login","status":400,"durationMs":15.22}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [SecurityAudit] {"request_id":"698bf367-faa8-4a11-a6a7-9c4db4d19ed6","actor_id":null,"method":"POST","route":"/api/auth/login","status_code":400}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM   ERROR [SecurityAudit] Audit persistence failed; retain structured platform logs.
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM    WARN [SecurityExceptionsFilter] {"status":400,"method":"POST","route":"/api/auth/login","requestId":"b0565506-2a84-4896-8f6c-c5c84737cd7f"}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"b0565506-2a84-4896-8f6c-c5c84737cd7f","method":"POST","route":"/api/auth/login","status":400,"durationMs":2.24}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [SecurityAudit] {"request_id":"b0565506-2a84-4896-8f6c-c5c84737cd7f","actor_id":null,"method":"POST","route":"/api/auth/login","status_code":400}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM   ERROR [SecurityAudit] Audit persistence failed; retain structured platform logs.
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"1d4c2137-744d-4645-aa1f-43815df5c5b3","method":"GET","route":"/api/about/profile","status":200,"durationMs":1.02}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"700e5441-fd0e-4eca-a85b-a2c0dec65799","method":"GET","route":"unmatched","status":410,"durationMs":0.32}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM    WARN [SecurityExceptionsFilter] {"status":400,"method":"POST","route":"unmatched","requestId":"01d61bc9-953e-40cd-a63f-b75f0eb34acc"}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"01d61bc9-953e-40cd-a63f-b75f0eb34acc","method":"POST","route":"unmatched","status":400,"durationMs":1.89}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM    WARN [SecurityExceptionsFilter] {"status":413,"method":"POST","route":"unmatched","requestId":"004298bf-4b62-4329-8254-2b523d72f28e"}
+# [Nest] 27580  - 11/02/2026, 9:22:11 PM     LOG [RequestMetrics] {"event":"http_request","requestId":"004298bf-4b62-4329-8254-2b523d72f28e","method":"POST","route":"unmatched","status":413,"durationMs":2.16}
+# Subtest: deployment entry boots concurrently and retains DTO metadata
+ok 26 - deployment entry boots concurrently and retains DTO metadata
+  ---
+  duration_ms: 8501.1309
+  type: 'test'
+  ...
+# Subtest: Barangay Clearance: typed HTTP submission validation and persistence
+ok 27 - Barangay Clearance: typed HTTP submission validation and persistence
+  ---
+  duration_ms: 428.7221
+  type: 'test'
+  ...
+# Subtest: Certificate of Indigency: typed HTTP submission validation and persistence
+ok 28 - Certificate of Indigency: typed HTTP submission validation and persistence
+  ---
+  duration_ms: 52.3528
+  type: 'test'
+  ...
+# Subtest: Business Permit: typed HTTP submission validation and persistence
+ok 29 - Business Permit: typed HTTP submission validation and persistence
+  ---
+  duration_ms: 38.616
+  type: 'test'
+  ...
+# Subtest: Building Permit: typed HTTP submission validation and persistence
+ok 30 - Building Permit: typed HTTP submission validation and persistence
+  ---
+  duration_ms: 32.1843
+  type: 'test'
+  ...
+# Subtest: Zoning Clearance: typed HTTP submission validation and persistence
+ok 31 - Zoning Clearance: typed HTTP submission validation and persistence
+  ---
+  duration_ms: 28.6634
+  type: 'test'
+  ...
+# Subtest: ownership applies to UUID and ticket lookup, lists, pagination and legacy tracking
+ok 32 - ownership applies to UUID and ticket lookup, lists, pagination and legacy tracking
+  ---
+  duration_ms: 18.8902
+  type: 'test'
+  ...
+# Subtest: only verified municipal admins may view and update unrestricted submissions
+ok 33 - only verified municipal admins may view and update unrestricted submissions
+  ---
+  duration_ms: 29.5522
+  type: 'test'
+  ...
+# Subtest: storage failures never report success or disclose provider errors
+ok 34 - storage failures never report success or disclose provider errors
+  ---
+  duration_ms: 3.9386
+  type: 'test'
+  ...
+# Subtest: OpenAPI exposes form detail schemas and bearer auth
+ok 35 - OpenAPI exposes form detail schemas and bearer auth
+  ---
+  duration_ms: 27.9024
+  type: 'test'
+  ...
+# Subtest: email queue processing is restricted to verified administrators
+ok 36 - email queue processing is restricted to verified administrators
+  ---
+  duration_ms: 11.2227
+  type: 'test'
+  ...
+# Subtest: production CORS uses exact origins, not hostname substrings
+ok 37 - production CORS uses exact origins, not hostname substrings
+  ---
+  duration_ms: 77.9123
+  type: 'test'
+  ...
+# Subtest: Swagger is reachable and exposes validated request fields
+ok 38 - Swagger is reachable and exposes validated request fields
+  ---
+  duration_ms: 91.8978
+  type: 'test'
+  ...
+# Subtest: API defaults to v1 and rejects unsupported versions
+ok 39 - API defaults to v1 and rejects unsupported versions
+  ---
+  duration_ms: 12.277
+  type: 'test'
+  ...
+# Subtest: CORS permits version header only for an allowed origin
+ok 40 - CORS permits version header only for an allowed origin
+  ---
+  duration_ms: 7.1534
+  type: 'test'
+  ...
+# Subtest: unmarked routes require auth, and errors cannot be publicly cached
+ok 41 - unmarked routes require auth, and errors cannot be publicly cached
+  ---
+  duration_ms: 4.4224
+  type: 'test'
+  ...
+# Subtest: DTO validation rejects overposting before calling Auth
+ok 42 - DTO validation rejects overposting before calling Auth
+  ---
+  duration_ms: 134.9363
+  type: 'test'
+  ...
+# Subtest: login returns a session, invalid credentials fail, and tokens are never cached
+ok 43 - login returns a session, invalid credentials fail, and tokens are never cached
+  ---
+  duration_ms: 13.5965
+  type: 'test'
+  ...
+# Subtest: refresh accepts a valid token and rejects an expired one
+ok 44 - refresh accepts a valid token and rejects an expired one
+  ---
+  duration_ms: 9.8
+  type: 'test'
+  ...
+# Subtest: profile roles override stale claims and require verification
+ok 45 - profile roles override stale claims and require verification
+  ---
+  duration_ms: 15.8219
+  type: 'test'
+  ...
+# Subtest: tracking requires authentication and exposes no applicant data anonymously
+ok 46 - tracking requires authentication and exposes no applicant data anonymously
+  ---
+  duration_ms: 3.6148
+  type: 'test'
+  ...
+# Subtest: logout invalidates an otherwise verified access token at the API
+ok 47 - logout invalidates an otherwise verified access token at the API
+  ---
+  duration_ms: 7.9544
+  type: 'test'
+  ...
+# Subtest: authentication rate limit returns 429 and Retry-After
+ok 48 - authentication rate limit returns 429 and Retry-After
+  ---
+  duration_ms: 77.072
+  type: 'test'
+  ...
+# Subtest: public health reports dependency failures without caching or leaking secrets
+ok 49 - public health reports dependency failures without caching or leaking secrets
+  ---
+  duration_ms: 614.8265
+  type: 'test'
+  ...
+# Subtest: hosted writes reject parent, another project, default branch and endpoint substitution
+ok 50 - hosted writes reject parent, another project, default branch and endpoint substitution
+  ---
+  duration_ms: 2.0378
+  type: 'test'
+  ...
+# Subtest: hosted URL guard rejects arbitrary hosts, pooler migrations, database names and missing security requirements
+ok 51 - hosted URL guard rejects arbitrary hosts, pooler migrations, database names and missing security requirements
+  ---
+  duration_ms: 1.7765
+  type: 'test'
+  ...
+# Subtest: public checkout is unavailable even with a well-formed client-controlled amount
+ok 52 - public checkout is unavailable even with a well-formed client-controlled amount
+  ---
+  duration_ms: 119.589
+  type: 'test'
+  ...
+# Subtest: client amount or return URL cannot unlock checkout
+ok 53 - client amount or return URL cannot unlock checkout
+  ---
+  duration_ms: 9.8527
+  type: 'test'
+  ...
+# Subtest: retirement rejects overposting and malformed amounts before parsing
+ok 54 - retirement rejects overposting and malformed amounts before parsing
+  ---
+  duration_ms: 12.0549
+  type: 'test'
+  ...
+# Subtest: payment route has request hardening without cookies or exposed secrets
+ok 55 - payment route has request hardening without cookies or exposed secrets
+  ---
+  duration_ms: 4.3549
+  type: 'test'
+  ...
+# Subtest: S3-BE-02: webhook rejects missing/forged credentials and altered payloads
+ok 56 - S3-BE-02: webhook rejects missing/forged credentials and altered payloads # TODO
+  ---
+  duration_ms: 0.2304
+  type: 'test'
+  ...
+# Subtest: S3-BE-02: verified webhook matches invoice, submission, amount and currency
+ok 57 - S3-BE-02: verified webhook matches invoice, submission, amount and currency # TODO
+  ---
+  duration_ms: 0.1265
+  type: 'test'
+  ...
+# Subtest: S3-BE-02: duplicate, concurrent and out-of-order events settle exactly once
+ok 58 - S3-BE-02: duplicate, concurrent and out-of-order events settle exactly once # TODO
+  ---
+  duration_ms: 0.1009
+  type: 'test'
+  ...
+# Subtest: S3-BE-02: persistence failure is retryable and cannot acknowledge settlement
+ok 59 - S3-BE-02: persistence failure is retryable and cannot acknowledge settlement # TODO
+  ---
+  duration_ms: 0.2348
+  type: 'test'
+  ...
+# Subtest: URL security parameters translate to verified TLS and mandatory binding without driver URL overrides
+ok 60 - URL security parameters translate to verified TLS and mandatory binding without driver URL overrides
+  ---
+  duration_ms: 7.6446
+  type: 'test'
+  ...
+# Subtest: ambiguous, unknown and weakening URL options fail with secret-safe errors
+ok 61 - ambiguous, unknown and weakening URL options fail with secret-safe errors
+  ---
+  duration_ms: 1.3385
+  type: 'test'
+  ...
+# Subtest: binding guard refuses non-PLUS, unverified TLS, MD5, cleartext and invalid server signatures
+ok 62 - binding guard refuses non-PLUS, unverified TLS, MD5, cleartext and invalid server signatures
+  ---
+  duration_ms: 1.3935
+  type: 'test'
+  ...
+# Subtest: connection refusal and premature disconnect fail safely without logs or credentials
+ok 63 - connection refusal and premature disconnect fail safely without logs or credentials
+  ---
+  duration_ms: 22.3431
+  type: 'test'
+  ...
+# [SUPABASE_SERVER] Initialization check: SUPABASE_URL: PRESENT, SUPABASE_SERVICE_ROLE_KEY: PRESENT
+# [SUPABASE_SERVER] Initialization check: SUPABASE_URL: PRESENT, SUPABASE_SERVICE_ROLE_KEY: PRESENT
+# Subtest: production AppModule retires all methods: /api/forms
+ok 64 - production AppModule retires all methods: /api/forms
+  ---
+  duration_ms: 92.2477
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/certificate
+ok 65 - production AppModule retires all methods: /api/forms/certificate
+  ---
+  duration_ms: 18.6548
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/submissions
+ok 66 - production AppModule retires all methods: /api/forms/submissions
+  ---
+  duration_ms: 8.6701
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/certificate/TAL-test
+ok 67 - production AppModule retires all methods: /api/forms/certificate/TAL-test
+  ---
+  duration_ms: 9.3582
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/submissions/TAL-test
+ok 68 - production AppModule retires all methods: /api/forms/submissions/TAL-test
+  ---
+  duration_ms: 6.7401
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/admin/submissions
+ok 69 - production AppModule retires all methods: /api/forms/admin/submissions
+  ---
+  duration_ms: 7.0985
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/admin/submissions/id
+ok 70 - production AppModule retires all methods: /api/forms/admin/submissions/id
+  ---
+  duration_ms: 7.6713
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/certificate/id/status
+ok 71 - production AppModule retires all methods: /api/forms/certificate/id/status
+  ---
+  duration_ms: 6.8573
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/admin/submissions/id/status
+ok 72 - production AppModule retires all methods: /api/forms/admin/submissions/id/status
+  ---
+  duration_ms: 6.6509
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments
+ok 73 - production AppModule retires all methods: /api/payments
+  ---
+  duration_ms: 6.2312
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/create-checkout-session
+ok 74 - production AppModule retires all methods: /api/payments/create-checkout-session
+  ---
+  duration_ms: 6.6646
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/submission-checkout
+ok 75 - production AppModule retires all methods: /api/payments/submission-checkout
+  ---
+  duration_ms: 6.0803
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/submissions/id
+ok 76 - production AppModule retires all methods: /api/payments/submissions/id
+  ---
+  duration_ms: 7.81
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/webhook
+ok 77 - production AppModule retires all methods: /api/payments/webhook
+  ---
+  duration_ms: 12.0813
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/settlement
+ok 78 - production AppModule retires all methods: /api/payments/settlement
+  ---
+  duration_ms: 12.8965
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/notifications/process
+ok 79 - production AppModule retires all methods: /api/notifications/process
+  ---
+  duration_ms: 6.6221
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/notifications/unknown
+ok 80 - production AppModule retires all methods: /api/notifications/unknown
+  ---
+  duration_ms: 6.1257
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/auth/signup
+ok 81 - production AppModule retires all methods: /api/auth/signup
+  ---
+  duration_ms: 6.7934
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/admin/reports/submissions
+ok 82 - production AppModule retires all methods: /api/admin/reports/submissions
+  ---
+  duration_ms: 5.9935
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/admin/reports/payments
+ok 83 - production AppModule retires all methods: /api/admin/reports/payments
+  ---
+  duration_ms: 5.8624
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/chat
+ok 84 - production AppModule retires all methods: /api/chat
+  ---
+  duration_ms: 7.6767
+  type: 'test'
+  ...
+# Subtest: production retirement ignores role claims, version headers, enable flags and oversized bodies
+ok 85 - production retirement ignores role claims, version headers, enable flags and oversized bodies
+  ---
+  duration_ms: 100.167
+  type: 'test'
+  ...
+# Subtest: slash, case and encoded route aliases are closed; ambiguous paths fail closed
+ok 86 - slash, case and encoded route aliases are closed; ambiguous paths fail closed
+  ---
+  duration_ms: 12.0555
+  type: 'test'
+  ...
+# Subtest: public forms metadata and health remain available without workflow services
+ok 87 - public forms metadata and health remain available without workflow services
+  ---
+  duration_ms: 11.9992
+  type: 'test'
+  ...
+# Subtest: content mutations close before database access while account authorization still routes
+ok 88 - content mutations close before database access while account authorization still routes
+  ---
+  duration_ms: 22.5132
+  type: 'test'
+  ...
+# Subtest: retained public content and search still reach their read services
+ok 89 - retained public content and search still reach their read services
+  ---
+  duration_ms: 6.3731
+  type: 'test'
+  ...
+# Subtest: published contract describes retired operations as 410 only
+ok 90 - published contract describes retired operations as 410 only
+  ---
+  duration_ms: 42.3194
+  type: 'test'
+  ...
+# Subtest: standalone worker and edge entry point cannot initialize providers
+ok 91 - standalone worker and edge entry point cannot initialize providers
+  ---
+  duration_ms: 55.8705
+  type: 'test'
+  ...
+# Subtest: metrics record errors/latency once using route templates and omit private input
+ok 92 - metrics record errors/latency once using route templates and omit private input
+  ---
+  duration_ms: 2.9221
+  type: 'test'
+  ...
+# Subtest: public search returns results with relevance score, facets, and pagination
+ok 93 - public search returns results with relevance score, facets, and pagination
+  ---
+  duration_ms: 71.247
+  type: 'test'
+  ...
+# Subtest: query parameter filtering and pagination offsets are mapped correctly to RPC
+ok 94 - query parameter filtering and pagination offsets are mapped correctly to RPC
+  ---
+  duration_ms: 5.0875
+  type: 'test'
+  ...
+# Subtest: input validation rejects empty queries, oversized lengths, bad limits and unknown fields
+ok 95 - input validation rejects empty queries, oversized lengths, bad limits and unknown fields
+  ---
+  duration_ms: 18.8924
+  type: 'test'
+  ...
+# Subtest: storage failures return 503 and do not disclose internal error details
+ok 96 - storage failures return 503 and do not disclose internal error details
+  ---
+  duration_ms: 2.9281
+  type: 'test'
+  ...
+# Subtest: OpenAPI documentation includes /api/search with query parameters and response schemas
+ok 97 - OpenAPI documentation includes /api/search with query parameters and response schemas
+  ---
+  duration_ms: 12.4367
+  type: 'test'
+  ...
+# Subtest: signup HTTP contract validates input, preserves confirmation state and limits abuse
+ok 98 - signup HTTP contract validates input, preserves confirmation state and limits abuse
+  ---
+  duration_ms: 307.1179
+  type: 'test'
+  ...
+1..98
+# tests 98
+# suites 0
+# pass 94
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 4
+# duration_ms 13330.3708

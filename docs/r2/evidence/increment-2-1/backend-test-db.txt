@@ -1,0 +1,27 @@
+
+> talgov-backend@0.0.0 test:db
+> powershell -NoProfile -ExecutionPolicy Bypass -File test/run-database-tests.ps1
+
+waiting for server to start.... done
+server started
+PASS: phase1_fresh security assertions and migration reapplication
+
+NOTICE:  REPORT BENCHMARK submissions: 100000 rows, first/next/deep pages 109.362000 ms
+REPORT BENCHMARK payments: 100000 rows, first/next/deep pages 25.648000 ms
+REPORT BENCHMARK user-activity: 100000 rows, first/next/deep pages 34.119000 ms
+PASS: phase1_fresh Sprint 4 reports, user authorization, audit rollback and deactivation RLS
+PASS: phase1_fresh Sprint 3 ownership, transactional outbox and retry assertions
+PASS: phase1_fresh Sprint 2 content schema and RLS assertions
+PASS: Sprint 7 local backup/restore, row counts, data hashes, RLS and schema verification
+PASS: phase1_canonical security assertions and migration reapplication
+NOTICE:  REPORT BENCHMARK submissions: 100000 rows, first/next/deep pages 46.211000 ms
+REPORT BENCHMARK payments: 100000 rows, first/next/deep pages 17.173000 ms
+REPORT BENCHMARK user-activity: 100000 rows, first/next/deep pages 11.922000 ms
+PASS: phase1_canonical Sprint 4 reports, user authorization, audit rollback and deactivation RLS
+PASS: phase1_canonical Sprint 3 ownership, transactional outbox and retry assertions
+PASS: phase1_canonical Sprint 2 content schema and RLS assertions
+PASS: phase1_v4 security assertions and migration reapplication
+INFO: Sprint 2 requires canonical schema; archived V4 needs schema reconciliation first.
+waiting for server to shut down........ done
+server stopped
+Disposable PostgreSQL files and logs retained at C:\Users\admin\AppData\Local\Temp\talgov-phase1-ee2d66c4cd2e415094fd1f857577d736

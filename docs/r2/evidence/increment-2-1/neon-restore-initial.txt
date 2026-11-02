@@ -1,0 +1,60 @@
+PASS: exact project, organization, region, nondefault development branch and endpoint verified
+PASS: migration-direct verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_migration
+PASS: runtime-pooled verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_app
+Migration dry run: {"migrations":2,"applied":0}
+Migration apply: {"migrations":2,"applied":0}
+PASS: role flags, memberships, DDL/temporary objects, role escalation and ledger denials
+PASS: 8 concurrent pooled transactions, pool bound 2, no transaction-setting leakage; wrong password sanitized
+PASS: .env.local uses runtime login only; provisioning and migration credentials isolated in ignored ACL-protected operator files
+Isolated hosted databases: {"test":"r2_q_15601cd9_test","source":"r2_q_15601cd9_source","upgrade":"r2_q_15601cd9_upgrade","restore":"r2_q_15601cd9_restore"}
+node : Neon qualification failed: Expected values to be strictly deep-equal:
+At line:2 char:1
++ node backend/scripts/r2-neon-qualify.cjs --restore-run=r2_q_15601cd9  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Neon qualificat...tly deep-equal::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
++ actual - expected
+... Skipped lines
+
+  [
+    {
+      relacl: null,
+      relname: 'audit_actor_time'
+    },
+...
+    {
++     relacl: '{talgov_r2_migration=arwdDxtm/talgov_r2_migration}',
+-     relacl: null,
+      relname: 'content_asset_links'
+    },
+    {
+      relacl: null,
+      relname: 'content_asset_links_pkey'
+...
+    {
++     relacl: '{talgov_r2_migration=arwdDxtm/talgov_r2_migration}',
+-     relacl: null,
+      relname: 'import_batches'
+    },
+    {
+      relacl: null,
+      relname: 'import_batches_pkey'
+...
+    {
++     relacl: '{talgov_r2_migration=arwdDxtm/talgov_r2_migration}',
+-     relacl: null,
+      relname: 'media_revisions'
+    },
+    {
+      relacl: null,
+      relname: 'media_revisions_object_key_key'
+...
+    {
++     relacl: '{talgov_r2_migration=arwdDxtm/talgov_r2_migration}',
+-     relacl: null,
+      relname: 'public_content'
+    },
+    {
+      relacl: null,
+      relname: 'public_content_kind_legacy_id_key'

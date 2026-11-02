@@ -1,0 +1,10 @@
+{
+  "id": "br-flat-shape-aoyf83yq",
+  "project_id": "misty-silence-69777617",
+  "name": "main",
+  "primary": true,
+  "default": true,
+  "written_data_bytes": 0,
+  "updated_at": "2026-11-02T04:59:16Z",
+  "note": "Read-only Neon control-plane query; no SQL connection or write to parent main during qualification."
+}

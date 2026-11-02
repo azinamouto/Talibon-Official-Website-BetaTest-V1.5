@@ -47,7 +47,7 @@ export default function EmergencyHotlines() {
       <div className="absolute top-0 right-0 w-96 h-96 bg-brand-accent/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-primary/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="site-container relative z-10">
         <div className="text-center mb-20">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight mb-6 font-display">Emergency Hotlines</h2>
           <p className="text-white/60 font-normal text-base max-w-2xl mx-auto">

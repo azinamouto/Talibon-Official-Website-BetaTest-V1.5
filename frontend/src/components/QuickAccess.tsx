@@ -22,8 +22,8 @@ export default function QuickAccess() {
 
   return (
     <section className="py-10 sm:py-12 bg-white border-y border-brand-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8">
+      <div className="site-container">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6 lg:gap-8">
           {quickLinks.map((link, idx) => (
             <motion.div
               key={link.name}

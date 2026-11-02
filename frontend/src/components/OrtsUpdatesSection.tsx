@@ -9,12 +9,12 @@ import { PublicState } from "./PublicContent";
 export default function OrtsUpdatesSection() {
   const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<PublicNews>('news', { limit: 3, category: 'UPDATE' }, signal), []));
   const ortsItems = resource.data?.data || [];
-  if (resource.loading || resource.error) return <section className="max-w-7xl mx-auto p-6"><PublicState {...resource} /></section>;
+  if (resource.loading || resource.error) return <section className="site-container py-6"><PublicState {...resource} /></section>;
   if (ortsItems.length === 0) return null;
 
   return (
     <section className="py-8 sm:py-10 bg-brand-surface border-t border-brand-border/40" id="orts-updates">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
           <div>
             <h2 className="text-lg sm:text-xl md:text-2xl font-black text-brand-text uppercase tracking-tight font-display">

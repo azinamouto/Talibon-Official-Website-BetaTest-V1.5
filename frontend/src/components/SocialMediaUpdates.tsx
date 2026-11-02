@@ -28,7 +28,7 @@ export default function SocialMediaUpdates() {
 
   return (
     <section className="py-10 sm:py-14 bg-brand-surface overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="site-container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div>
             <span className="section-label">Stay Connected</span>
@@ -50,7 +50,7 @@ export default function SocialMediaUpdates() {
                   transition={{ delay: idx * 0.05 }}
                   className="flex items-center gap-2 px-3.5 py-2 bg-white border border-brand-border rounded-xl hover:border-brand-primary/30 hover:shadow-md transition-all group"
                 >
-                  <div className={`w-6 h-6 rounded-lg ${channel.color} flex items-center justify-center text-white transition-transform group-hover:rotate-12`}>
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-primary/10 text-brand-primary">
                     {React.cloneElement(getIcon(channel.name), { size: 14 })}
                   </div>
                   <span className="text-[9px] sm:text-[10px] font-bold text-brand-text uppercase tracking-widest">{channel.name}</span>

@@ -18,6 +18,7 @@ The TAL.GOV project includes the following specialized skills:
 4. **Deployment & DevOps Skill** - Deployment pipelines, CI/CD, and infrastructure
 5. **Frontend Development Skill** - React, TypeScript, and Vite frontend development
 6. **Testing & QA Skill** - Testing and quality assurance across the stack
+7. **Frontend UI & Design System Skill** - High-craft UI/UX doctrine, reference tokens, and design systems (CATZ Frontend)
 
 ## Skill Structure
 

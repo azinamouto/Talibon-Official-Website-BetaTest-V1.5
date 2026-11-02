@@ -21,7 +21,7 @@ export default function QuickAccess() {
   ];
 
   return (
-    <section className="py-6 sm:py-8 bg-white border-y border-brand-border">
+    <section className="py-10 sm:py-12 bg-white border-y border-brand-border">
       <div className="site-container">
         <div className="mx-auto grid w-full max-w-2xl grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6 sm:gap-x-4">
           {quickLinks.map((link, idx) => (
@@ -34,12 +34,12 @@ export default function QuickAccess() {
             >
               <Link
                 to={link.href}
-                className="flex h-full flex-col items-center gap-2 group p-1.5 rounded-xl transition-all duration-300"
+                className="flex flex-col items-center gap-2.5 group p-1.5 rounded-2xl transition-all duration-300"
               >
-                <div className="h-12 w-12 rounded-xl bg-brand-surface shadow-xs border border-brand-border flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white group-hover:border-brand-primary transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md group-hover:shadow-brand-primary/20">
-                  <link.icon size={20} className="transition-colors" />
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-brand-surface shadow-xs border border-brand-border flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white group-hover:border-brand-primary transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md group-hover:shadow-brand-primary/20">
+                  <link.icon size={24} className="sm:w-7 sm:h-7 transition-colors" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-brand-text group-hover:text-brand-primary transition-colors text-center max-w-24 leading-tight">
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-brand-text group-hover:text-brand-primary transition-colors text-center max-w-[105px] leading-tight">
                   {link.name}
                 </span>
               </Link>

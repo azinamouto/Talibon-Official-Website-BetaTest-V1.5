@@ -8,7 +8,7 @@ export default function Location() {
 
   return (
     <section id="location" className="py-32 bg-brand-surface relative overflow-hidden">
-      <div className="mx-auto w-full max-w-[1680px] px-5 sm:px-8 lg:px-10 2xl:px-12">
+      <div className="site-container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

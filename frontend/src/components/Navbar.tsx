@@ -184,7 +184,7 @@ export default function Navbar() {
 
       {/* Tier 1: Utility Navigation */}
       <div className="bg-brand-bg/50 border-b border-brand-border backdrop-blur-md relative z-30">
-        <div className="max-w-screen-2xl mx-auto px-2 sm:px-4 h-7 sm:h-8 flex justify-between items-center text-[9px] sm:text-[11px]">
+        <div className="site-container h-7 sm:h-8 flex justify-between items-center text-[9px] sm:text-[11px]">
           <div className="flex items-center gap-2 sm:gap-4 divide-x divide-brand-border/60">
             <div className="flex items-center gap-2 sm:gap-3">
               <Link to="/" onClick={handleHomeClick} className="font-extrabold text-brand-text hover:text-brand-primary transition-colors tracking-tight text-[10px] sm:text-xs">GOVPH</Link>
@@ -333,7 +333,7 @@ export default function Navbar() {
           ? "h-0 py-0 opacity-0 pointer-events-none border-none" 
           : "py-1.5 sm:py-2"
       }`}>
-        <div className="max-w-screen-2xl mx-auto px-2 sm:px-4 flex items-center justify-between">
+        <div className="site-container flex items-center justify-between">
           {/* Left Section: Logos */}
           <div className="flex items-center gap-2 sm:gap-3 w-1/4">
             <Link to="/" onClick={handleHomeClick} className="flex items-center gap-2 sm:gap-3 group">
@@ -391,7 +391,7 @@ export default function Navbar() {
       <div className={`bg-[linear-gradient(90deg,#0284C7_0%,#38BDF8_50%,#FFFFFF_100%)] backdrop-blur-md border-none relative z-20 transition-all duration-300 ${
         isScrolled ? "shadow-md" : ""
       }`}>
-        <div className="max-w-screen-2xl mx-auto px-2 sm:px-4 flex items-center justify-between relative transition-all duration-300">
+        <div className="site-container flex items-center justify-between relative transition-all duration-300">
           
           {/* Left: Mini Seal & Title (Visible when scrolled) */}
           <div className="flex items-center gap-1.5 min-w-[100px] lg:min-w-[140px]">

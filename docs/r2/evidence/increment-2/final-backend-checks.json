@@ -1,0 +1,17 @@
+[
+  {
+    "name": "r2-database",
+    "command": "npm run test:r2:db --prefix backend",
+    "exitCode": 0
+  },
+  {
+    "name": "backend-lint-final",
+    "command": "npm run lint --prefix backend",
+    "exitCode": 0
+  },
+  {
+    "name": "contracts-check",
+    "command": "npm run contracts:check --prefix backend",
+    "exitCode": 0
+  }
+]

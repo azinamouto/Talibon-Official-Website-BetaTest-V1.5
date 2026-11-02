@@ -9,7 +9,7 @@ const { ChatService } = require('../dist/api/chat/chat.service');
 const { SupabaseService } = require('../dist/supabase.service');
 const { AuthGuard } = require('../dist/security/auth.guard');
 const { RateLimiterGuard } = require('../dist/security/rate-limiter.guard');
-const { configureApp } = require('../dist/configure-app');
+const { configureApp } = require('./legacy-controller-harness.cjs');
 
 const userId = randomUUID();
 const validToken = `h.${Buffer.from(JSON.stringify({ session_id: userId })).toString('base64url')}.s`;
@@ -183,10 +183,7 @@ test('OpenAPI documentation covers /api/chat with Bearer auth, schemas, and erro
 
   const postOp = chatPath.post;
   assert.ok(postOp.security.some((s) => s.bearer || s.bearerAuth || Object.keys(s).length > 0), 'Must declare Bearer auth');
-  assert.ok(postOp.responses['201'], 'Must document 201 response');
-  assert.ok(postOp.responses['400'], 'Must document 400 response');
-  assert.ok(postOp.responses['401'], 'Must document 401 response');
-  assert.ok(postOp.responses['429'], 'Must document 429 response');
+  assert.ok(postOp.responses['410'], 'Must document unconditional R2 retirement');
 });
 
 test('provider errors return 502 without exposing private provider details', async () => {

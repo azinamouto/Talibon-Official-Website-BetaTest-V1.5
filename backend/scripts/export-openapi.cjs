@@ -29,7 +29,7 @@ async function exportDocument() {
     const output = JSON.stringify(document, null, 2) + '\n';
     const target = path.resolve(__dirname, '../../contracts/openapi.json');
     if (process.argv.includes('--check')) {
-      if (!fs.existsSync(target) || fs.readFileSync(target, 'utf8') !== output) throw new Error('OpenAPI snapshot is stale. Run npm run contracts:export.');
+      if (!fs.existsSync(target) || fs.readFileSync(target, 'utf8').replace(/\r\n/g, '\n') !== output) throw new Error('OpenAPI snapshot is stale. Run npm run contracts:export.');
     } else {
       fs.mkdirSync(path.dirname(target), { recursive: true });
       fs.writeFileSync(target, output);

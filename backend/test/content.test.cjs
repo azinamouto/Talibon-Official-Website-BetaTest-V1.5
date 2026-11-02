@@ -14,7 +14,7 @@ const { SupabaseService } = require('../dist/supabase.service');
 const { AuthGuard } = require('../dist/security/auth.guard');
 const { AllExceptionsFilter } = require('../dist/security/all-exceptions.filter');
 const { CacheControlMiddleware } = require('../dist/security/cache-control.middleware');
-const { configureApp } = require('../dist/configure-app');
+const { configureApp } = require('./legacy-controller-harness.cjs');
 
 // In-memory persistence double; real RLS and schema are exercised by content-security.sql.
 const tables = { pages: [], news: [], services_cms: [] };
@@ -157,7 +157,7 @@ test('published OpenAPI includes CRUD contracts, examples, pagination and bearer
     assert.ok(collection.get.responses['200'].content['application/json'].schema.example.pagination);
     assert.ok(collection.get.parameters.some(parameter => parameter.name === 'limit'));
     assert.ok(spec.paths[`/api/${kind}/{id}`].patch.requestBody);
-    assert.ok(spec.paths[`/api/${kind}/{id}`].delete.responses['204']);
+    assert.ok(spec.paths[`/api/${kind}/{id}`].delete.responses['410']);
   }
   assert.ok(spec.components.schemas.CreateNewsDto.properties.summary);
 });

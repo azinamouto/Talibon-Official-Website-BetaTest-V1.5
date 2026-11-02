@@ -1,0 +1,43 @@
+
+> talgov-frontend@0.0.0 test:browser
+> playwright test
+
+[WebServer] (node:5564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:22208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 26 tests using 1 worker
+
+(node:9860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 test\browser\advanced-features.spec.ts:9:34 › live-record map fallback and retired assistant at 375px (25.1s)
+  ok  2 test\browser\advanced-features.spec.ts:9:34 › live-record map fallback and retired assistant at 1280px (6.2s)
+  ok  3 test\browser\advanced-features.spec.ts:27:1 › empty live directory contains no invented destinations or statistics (4.1s)
+  ok  4 test\browser\foundation.spec.ts:34:1 › protected URL redirects to login and returns staff to the original location (8.8s)
+  ok  5 test\browser\foundation.spec.ts:45:1 › citizens cannot enter staff routes; modal traps focus, Escape restores focus, logout clears session (6.1s)
+  ok  6 test\browser\foundation.spec.ts:66:1 › expired persisted session refreshes without bouncing to login (4.6s)
+  ok  7 test\browser\foundation.spec.ts:75:1 › recovery is accessible with a verified staff session (5.4s)
+  ok  8 test\browser\foundation.spec.ts:84:1 › public 404 and invalid callback have useful recovery links (8.0s)
+  ok  9 test\browser\foundation.spec.ts:93:1 › mobile login has labelled controls, visible focus and no horizontal overflow (4.5s)
+  ok 10 test\browser\foundation.spec.ts:104:1 › refresh keeps the mounted staff page and does not reload the profile (4.8s)
+  ok 11 test\browser\foundation.spec.ts:120:1 › server logout failure reports the SDK local signout accurately (7.3s)
+  ok 12 test\browser\foundation.spec.ts:131:1 › logout is synchronized to another open tab (8.5s)
+  ok 13 test\browser\foundation.spec.ts:143:1 › route rendering errors preserve the layout and show recovery actions (2.7s)
+  ok 14 test\browser\public-content.spec.ts:14:3 › services and news list/detail flows at 375px (6.1s)
+  ok 15 test\browser\public-content.spec.ts:14:3 › services and news list/detail flows at 1280px (6.5s)
+  ok 16 test\browser\public-content.spec.ts:50:3 › /services has loading, retry, empty/not-found states (4.4s)
+  ok 17 test\browser\public-content.spec.ts:50:3 › /news has loading, retry, empty/not-found states (2.3s)
+  ok 18 test\browser\public-content.spec.ts:50:3 › /services/business-permit has loading, retry, empty/not-found states (2.4s)
+  ok 19 test\browser\public-content.spec.ts:50:3 › /news/view/22222222-2222-4222-8222-222222222222 has loading, retry, empty/not-found states (2.6s)
+  ok 20 test\browser\public-content.spec.ts:70:1 › news filters reset pagination and use backend query parameters (2.4s)
+  ok 21 test\browser\public-content.spec.ts:82:1 › site search calls search API, retries failures and opens service and page results (5.9s)
+  ok 22 test\browser\r2-scope.spec.ts:9:1 › mobile direct links remain informational (9.0s)
+  ok 23 test\browser\r2-scope.spec.ts:19:1 › home shortcuts no longer advertise applications, tracking or payment (3.1s)
+  ok 24 test\browser\r2-scope.spec.ts:28:52 › citizen persisted session cannot reopen workflow UI (2.3s)
+  ok 25 test\browser\r2-scope.spec.ts:28:52 › admin persisted session cannot reopen workflow UI (2.2s)
+  ok 26 test\browser\r2-scope.spec.ts:28:52 › editor persisted session cannot reopen workflow UI (2.2s)
+
+  26 passed (2.7m)

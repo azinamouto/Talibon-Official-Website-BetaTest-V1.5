@@ -1,0 +1,140 @@
+
+> talgov-frontend@0.0.0 test
+> node --test test/*.test.cjs
+
+TAP version 13
+# Subtest: profile work is deferred outside the auth callback; refresh preserves content
+ok 1 - profile work is deferred outside the auth callback; refresh preserves content
+  ---
+  duration_ms: 45.2785
+  type: 'test'
+  ...
+# Subtest: late profile and bootstrap results cannot undo logout
+ok 2 - late profile and bootstrap results cannot undo logout
+  ---
+  duration_ms: 28.6375
+  type: 'test'
+  ...
+# Subtest: switching accounts discards the previous account profile
+ok 3 - switching accounts discards the previous account profile
+  ---
+  duration_ms: 48.1432
+  type: 'test'
+  ...
+# Subtest: profile failure is recoverable and does not fabricate a signout
+ok 4 - profile failure is recoverable and does not fabricate a signout
+  ---
+  duration_ms: 14.5828
+  type: 'test'
+  ...
+# Subtest: bootstrap rejection exits loading and disposal prevents updates
+ok 5 - bootstrap rejection exits loading and disposal prevents updates
+  ---
+  duration_ms: 31.9078
+  type: 'test'
+  ...
+# Subtest: password recovery survives refresh until explicitly completed
+ok 6 - password recovery survives refresh until explicitly completed
+  ---
+  duration_ms: 15.7834
+  type: 'test'
+  ...
+# Subtest: mock serves OpenAPI examples, filtering, pagination, and explicit unsupported responses
+ok 7 - mock serves OpenAPI examples, filtering, pagination, and explicit unsupported responses
+  ---
+  duration_ms: 330.3281
+  type: 'test'
+  ...
+# Subtest: all base control text and hover pairs meet AA normal text contrast
+ok 8 - all base control text and hover pairs meet AA normal text contrast
+  ---
+  duration_ms: 2.0686
+  type: 'test'
+  ...
+# Subtest: accepts anon configuration and local projects
+ok 9 - accepts anon configuration and local projects
+  ---
+  duration_ms: 1.931
+  type: 'test'
+  ...
+# Subtest: prefers publishable keys while retaining the legacy anon variable
+ok 10 - prefers publishable keys while retaining the legacy anon variable
+  ---
+  duration_ms: 0.5228
+  type: 'test'
+  ...
+# Subtest: rejects missing, placeholder, malformed, secret, and elevated keys
+ok 11 - rejects missing, placeholder, malformed, secret, and elevated keys
+  ---
+  duration_ms: 1.0006
+  type: 'test'
+  ...
+# Subtest: rejects sensitive Vite names and URLs containing credentials
+ok 12 - rejects sensitive Vite names and URLs containing credentials
+  ---
+  duration_ms: 0.3907
+  type: 'test'
+  ...
+# Subtest: browser configuration contains no privileged or canonical fallback and no Gemini injection
+ok 13 - browser configuration contains no privileged or canonical fallback and no Gemini injection
+  ---
+  duration_ms: 1.0167
+  type: 'test'
+  ...
+# Subtest: invalid configuration prevents Supabase client creation
+ok 14 - invalid configuration prevents Supabase client creation
+  ---
+  duration_ms: 18.8362
+  type: 'test'
+  ...
+# Subtest: required numeric fields do not convert blank values to zero
+ok 15 - required numeric fields do not convert blank values to zero
+  ---
+  duration_ms: 1.359
+  type: 'test'
+  ...
+# Subtest: numeric bounds and integer counts match the backend
+ok 16 - numeric bounds and integer counts match the backend
+  ---
+  duration_ms: 0.5879
+  type: 'test'
+  ...
+# Subtest: contact and selection validation rejects invalid values
+ok 17 - contact and selection validation rejects invalid values
+  ---
+  duration_ms: 0.4344
+  type: 'test'
+  ...
+# Subtest: payload is trimmed, typed and excludes unknown fields and card data
+ok 18 - payload is trimmed, typed and excludes unknown fields and card data
+  ---
+  duration_ms: 0.5737
+  type: 'test'
+  ...
+# Subtest: all schema string lengths reject oversized values
+ok 19 - all schema string lengths reject oversized values
+  ---
+  duration_ms: 0.4474
+  type: 'test'
+  ...
+# Subtest: search mock validates the contract and applies filters, facets and pagination
+ok 20 - search mock validates the contract and applies filters, facets and pagination
+  ---
+  duration_ms: 350.2681
+  type: 'test'
+  ...
+# Subtest: fixture ranking, date sorting, phrases and exclusions are deterministic
+ok 21 - fixture ranking, date sorting, phrases and exclusions are deterministic
+  ---
+  duration_ms: 11.0813
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 716.5596

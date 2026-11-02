@@ -1,21 +1,21 @@
 import { Public } from "../../security/auth.guard";
-import { Controller, Post, Body, Inject } from "@nestjs/common";
-import { PaymentsService } from "./payments.service";
+import { Controller, Post, Body, ServiceUnavailableException } from "@nestjs/common";
 import { CreateCheckoutSessionDto } from "./dto/checkout-session.dto";
 import { RateLimit, RateLimitCategory } from "../../security/rate-limiter.guard";
 
+/**
+ * Deprecated public checkout endpoint. Do not reinstate without trusted,
+ * submission-linked fee assessment and authenticated, idempotent webhooks.
+ * In particular, client-supplied amounts are NEVER authoritative fees.
+ */
 @Controller("api/payments")
 export class PaymentsController {
-  constructor(@Inject(PaymentsService) private readonly paymentsService: PaymentsService) {}
-
   @Public()
   @Post("create-checkout-session")
   @RateLimit(RateLimitCategory.PAYMENT)
-  async createCheckoutSession(
-    @Body() dto: CreateCheckoutSessionDto
-  ) {
-    const { itemName, amount, successUrl, cancelUrl } = dto;
-
-    return this.paymentsService.createCheckoutSession(itemName, amount, successUrl, cancelUrl);
+  createCheckoutSession(@Body() _dto: CreateCheckoutSessionDto): never {
+    throw new ServiceUnavailableException(
+      "Online payment is unavailable pending municipal fee and settlement verification."
+    );
   }
 }

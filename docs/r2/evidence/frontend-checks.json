@@ -1,0 +1,22 @@
+[
+  {
+    "check": "frontend-lint",
+    "command": "npm run lint --prefix frontend",
+    "exit_code": 0
+  },
+  {
+    "check": "frontend-test",
+    "command": "npm test --prefix frontend",
+    "exit_code": 0
+  },
+  {
+    "check": "frontend-react",
+    "command": "npm run test:react --prefix frontend",
+    "exit_code": 0
+  },
+  {
+    "check": "frontend-build",
+    "command": "npm run build --prefix frontend",
+    "exit_code": 1
+  }
+]

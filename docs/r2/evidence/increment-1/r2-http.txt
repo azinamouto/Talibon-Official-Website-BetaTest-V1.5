@@ -1,0 +1,180 @@
+TAP version 13
+# [SUPABASE_SERVER] Initialization check: SUPABASE_URL: PRESENT, SUPABASE_SERVICE_ROLE_KEY: PRESENT
+# [SUPABASE_SERVER] Initialization check: SUPABASE_URL: PRESENT, SUPABASE_SERVICE_ROLE_KEY: PRESENT
+# Subtest: production AppModule retires all methods: /api/forms
+ok 1 - production AppModule retires all methods: /api/forms
+  ---
+  duration_ms: 247.0196
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/certificate
+ok 2 - production AppModule retires all methods: /api/forms/certificate
+  ---
+  duration_ms: 30.4512
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/submissions
+ok 3 - production AppModule retires all methods: /api/forms/submissions
+  ---
+  duration_ms: 25.7034
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/certificate/TAL-test
+ok 4 - production AppModule retires all methods: /api/forms/certificate/TAL-test
+  ---
+  duration_ms: 26.5566
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/submissions/TAL-test
+ok 5 - production AppModule retires all methods: /api/forms/submissions/TAL-test
+  ---
+  duration_ms: 16.9881
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/admin/submissions
+ok 6 - production AppModule retires all methods: /api/forms/admin/submissions
+  ---
+  duration_ms: 19.1488
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/admin/submissions/id
+ok 7 - production AppModule retires all methods: /api/forms/admin/submissions/id
+  ---
+  duration_ms: 21.5702
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/certificate/id/status
+ok 8 - production AppModule retires all methods: /api/forms/certificate/id/status
+  ---
+  duration_ms: 24.544
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/forms/admin/submissions/id/status
+ok 9 - production AppModule retires all methods: /api/forms/admin/submissions/id/status
+  ---
+  duration_ms: 15.373
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments
+ok 10 - production AppModule retires all methods: /api/payments
+  ---
+  duration_ms: 13.8431
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/create-checkout-session
+ok 11 - production AppModule retires all methods: /api/payments/create-checkout-session
+  ---
+  duration_ms: 12.4884
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/submission-checkout
+ok 12 - production AppModule retires all methods: /api/payments/submission-checkout
+  ---
+  duration_ms: 12.8896
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/submissions/id
+ok 13 - production AppModule retires all methods: /api/payments/submissions/id
+  ---
+  duration_ms: 18.8875
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/webhook
+ok 14 - production AppModule retires all methods: /api/payments/webhook
+  ---
+  duration_ms: 16.0807
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/payments/settlement
+ok 15 - production AppModule retires all methods: /api/payments/settlement
+  ---
+  duration_ms: 15.0584
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/notifications/process
+ok 16 - production AppModule retires all methods: /api/notifications/process
+  ---
+  duration_ms: 31.438
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/notifications/unknown
+ok 17 - production AppModule retires all methods: /api/notifications/unknown
+  ---
+  duration_ms: 15.0898
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/auth/signup
+ok 18 - production AppModule retires all methods: /api/auth/signup
+  ---
+  duration_ms: 26.8432
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/admin/reports/submissions
+ok 19 - production AppModule retires all methods: /api/admin/reports/submissions
+  ---
+  duration_ms: 46.6614
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/admin/reports/payments
+ok 20 - production AppModule retires all methods: /api/admin/reports/payments
+  ---
+  duration_ms: 49.6751
+  type: 'test'
+  ...
+# Subtest: production AppModule retires all methods: /api/chat
+ok 21 - production AppModule retires all methods: /api/chat
+  ---
+  duration_ms: 25.4543
+  type: 'test'
+  ...
+# Subtest: production retirement ignores role claims, version headers, enable flags and oversized bodies
+ok 22 - production retirement ignores role claims, version headers, enable flags and oversized bodies
+  ---
+  duration_ms: 279.2942
+  type: 'test'
+  ...
+# Subtest: slash, case and encoded route aliases are closed; ambiguous paths fail closed
+ok 23 - slash, case and encoded route aliases are closed; ambiguous paths fail closed
+  ---
+  duration_ms: 13.1765
+  type: 'test'
+  ...
+# Subtest: public forms metadata and health remain available without workflow services
+ok 24 - public forms metadata and health remain available without workflow services
+  ---
+  duration_ms: 35.4998
+  type: 'test'
+  ...
+# Subtest: content mutations close before database access while account authorization still routes
+ok 25 - content mutations close before database access while account authorization still routes
+  ---
+  duration_ms: 75.7422
+  type: 'test'
+  ...
+# Subtest: retained public content and search still reach their read services
+ok 26 - retained public content and search still reach their read services
+  ---
+  duration_ms: 17.3522
+  type: 'test'
+  ...
+# Subtest: published contract describes retired operations as 410 only
+ok 27 - published contract describes retired operations as 410 only
+  ---
+  duration_ms: 137.7443
+  type: 'test'
+  ...
+# Subtest: standalone worker and edge entry point cannot initialize providers
+ok 28 - standalone worker and edge entry point cannot initialize providers
+  ---
+  duration_ms: 138.8284
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5263.1399

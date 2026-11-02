@@ -6,7 +6,6 @@ import {
   GraduationCap, Settings, ChevronRight, Info,
   Globe, UserPlus, ExternalLink
 } from 'lucide-react';
-import GadEntryModule from './GadEntryModule';
 import { 
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
   CartesianGrid, Tooltip, PieChart, Pie, Cell 
@@ -64,7 +63,6 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
   // Inject Data Entry tab if not in data sections
   const sections = data?.sections ? [
     ...data.sections.slice(0, 2),
-    { id: 'data-entry', title: '03. Individual Profiling', content: [] },
     ...data.sections.slice(2)
   ] : [];
 
@@ -85,31 +83,6 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
 
   return (
     <div className="space-y-6">
-      {/* Top Call-to-Action Banner for External GAD-IMS System */}
-      <div className="py-2 px-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-brand-border pb-5">
-        <div className="space-y-1 max-w-xl">
-          <div className="flex items-center gap-1.5 text-brand-primary text-[11px] font-extrabold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Live System Available
-          </div>
-          <h2 className="text-lg sm:text-xl font-bold uppercase tracking-tight text-brand-text font-display">
-            Access GAD-IMS Portal
-          </h2>
-          <p className="text-xs text-brand-muted font-medium leading-relaxed">
-            Open the GAD-IMS Management System for real-time gender profiling, budget tracking, and governance reports.
-          </p>
-        </div>
-        <a
-          href="https://tagad-sys.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-brand-primary font-bold text-xs uppercase tracking-wider underline underline-offset-4 hover:text-brand-primary/80 transition-colors py-1 shrink-0"
-        >
-          <span>Access GAD-IMS</span>
-          <ExternalLink size={14} className="shrink-0" />
-        </a>
-      </div>
-
       <div className="flex flex-col lg:flex-row gap-5 bg-brand-surface border border-brand-border rounded-2xl p-4 lg:p-6 shadow-xs relative overflow-hidden">
         {/* Sidebar Navigation */}
         <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-4">
@@ -247,7 +220,7 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
 
             {activeTab === 'data-entry' ? (
               <div className="flex-1 mt-2">
-                <GadEntryModule />
+                <p>Online services are to be implemented.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">

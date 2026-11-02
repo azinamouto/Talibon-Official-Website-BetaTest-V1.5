@@ -21,14 +21,14 @@ export default function Services() {
     {
       icon: FileText,
       title: "Business Permits",
-      description: "Apply or renew your business permits online with our streamlined process.",
+      description: "Online services are to be implemented. Please visit the appropriate municipal office.",
       href: "/forms/business",
       iconColor: "text-sky-400"
     },
     {
       icon: CreditCard,
       title: "Real Property Tax",
-      description: "Pay your RPT online and avoid long queues.",
+      description: "View published finance information.",
       href: "/transparency/finance",
       iconColor: "text-amber-400"
     },
@@ -42,7 +42,7 @@ export default function Services() {
     {
       icon: Building2,
       title: "Building Permits",
-      description: "Apply for building permits and structural clearances.",
+      description: "Visit the appropriate municipal office for building permit assistance.",
       href: "/forms/building",
       iconColor: "text-indigo-400"
     },

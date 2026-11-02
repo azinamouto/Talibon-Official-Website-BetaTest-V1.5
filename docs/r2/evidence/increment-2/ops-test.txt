@@ -1,0 +1,62 @@
+
+> react-example@0.0.0 test:ops
+> node --test ops/test/*.test.mjs
+
+TAP version 13
+# Subtest: reject credential-bearing, non-HTTPS remote and path URLs
+ok 1 - reject credential-bearing, non-HTTPS remote and path URLs
+  ---
+  duration_ms: 2.8532
+  type: 'test'
+  ...
+# Subtest: smoke rejects SPA fallback, cached health, dependency failures and redirects
+ok 2 - smoke rejects SPA fallback, cached health, dependency failures and redirects
+  ---
+  duration_ms: 197.9607
+  type: 'test'
+  ...
+# Subtest: monitor tolerates one cold start, alerts on repeated latency/outage, fails on delivery error
+ok 3 - monitor tolerates one cold start, alerts on repeated latency/outage, fails on delivery error
+  ---
+  duration_ms: 7.4835
+  type: 'test'
+  ...
+# Subtest: static Vercel frontend has defense-in-depth headers
+ok 4 - static Vercel frontend has defense-in-depth headers
+  ---
+  duration_ms: 24.3036
+  type: 'test'
+  ...
+# Subtest: release verifies official data and requires approval evidence
+ok 5 - release verifies official data and requires approval evidence
+  ---
+  duration_ms: 42.021
+  type: 'test'
+  ...
+# Subtest: unsafe client-defined checkout is disabled at both layers
+ok 6 - unsafe client-defined checkout is disabled at both layers
+  ---
+  duration_ms: 1.241
+  type: 'test'
+  ...
+# Subtest: staff may not inspect the unscoped submission queue
+ok 7 - staff may not inspect the unscoped submission queue
+  ---
+  duration_ms: 0.6907
+  type: 'test'
+  ...
+# Subtest: R2 production binding cannot load transaction or notification providers
+ok 8 - R2 production binding cannot load transaction or notification providers
+  ---
+  duration_ms: 26.0047
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 522.2809

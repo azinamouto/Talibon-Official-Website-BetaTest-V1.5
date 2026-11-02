@@ -13,7 +13,7 @@ export default function Login() {
   const { appName } = useAppConfig();
   const location = useLocation();
   const navigate = useNavigate();
-  const [view, setView] = useState<'login' | 'register' | 'forgot' | 'reset'>(() =>
+  const [view, setView] = useState<'login' | 'forgot' | 'reset'>(() =>
     new URLSearchParams(location.search).get('type') === 'recovery' || location.hash.includes('type=recovery') ? 'reset' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,14 +29,10 @@ export default function Login() {
     setBusy(true); setError(''); setMessage('');
     try {
       const result = view === 'login' ? await auth.signInWithEmail(email.trim(), password)
-        : view === 'register' ? await auth.signUpWithEmail(email.trim(), password)
         : view === 'forgot' ? await auth.resetPasswordForEmail(email.trim())
         : await auth.updatePassword(password);
       if (result.error) throw result.error;
-      if (view === 'register') {
-        changeView('login');
-        setMessage('Check your email to confirm your account. Staff access requires administrator approval.');
-      } else if (view === 'forgot') {
+      if (view === 'forgot') {
         setMessage('If this email has an account, a password reset link will be sent.');
       } else if (view === 'reset') {
         setPassword(''); setView('login');
@@ -48,18 +44,15 @@ export default function Login() {
   }
   const recovering = view === 'reset' || auth.isPasswordRecovery;
   if (auth.loading && !recovering) return <AuthLoading />;
-  if (auth.user && !recovering && !busy && view !== 'register') {
+  if (auth.user && !recovering && !busy) {
     if (auth.state === 'ERROR') return <div className="mx-auto max-w-lg p-6">
       <Alert tone="error">Your account could not be loaded. Check your connection.</Alert>
       <Button className="mt-4" onClick={() => void auth.refreshProfile()}>Try again</Button>
       <Button variant="secondary" className="ml-4" onClick={() => void auth.signOut()}>Sign out</Button>
     </div>;
-    // Citizen services use authenticated ownership; staff approval is only required for staff destinations.
-    const citizenDestination = /^\/(?:e-services|payment\/(?:success|cancel|failure))(?:[?#]|$)/.test(destination);
-    if (citizenDestination && auth.profile?.is_active !== false) return <Navigate to={destination} replace />;
     return <Navigate to={auth.profile?.is_verified && auth.profile.is_active !== false && STAFF_ROLES.includes(auth.profile.role) ? destination : '/access-denied'} replace />;
   }
-  const title = view === 'register' ? 'Create an account' : view === 'forgot' ? 'Reset your password' : view === 'reset' ? 'Choose a new password' : 'Sign in';
+  const title = view === 'forgot' ? 'Reset your password' : view === 'reset' ? 'Choose a new password' : 'Sign in';
   return <main className="mx-auto flex min-h-[70vh] max-w-lg items-center px-4 py-12">
     <Card className="w-full space-y-6">
       <Link to="/" className="ui-focus text-action underline">Back to {appName}</Link>
@@ -76,7 +69,6 @@ export default function Login() {
       <div className="flex flex-wrap gap-3">
         {view === 'login' ? <>
           <Button variant="secondary" onClick={() => changeView('forgot')}>Forgot password?</Button>
-          <Button variant="secondary" onClick={() => changeView('register')}>Create account</Button>
         </> : <Button variant="secondary" onClick={() => changeView('login')}>Back to sign in</Button>}
       </div>
     </Card>

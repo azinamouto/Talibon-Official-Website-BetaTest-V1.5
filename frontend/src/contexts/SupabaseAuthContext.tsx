@@ -25,7 +25,7 @@ interface AuthContextType {
   state: AuthState;
   isPasswordRecovery: boolean;
   signInWithEmail: (email: string, password: string) => Promise<AuthResponse>;
-  signUpWithEmail: (email: string, password: string) => Promise<AuthResponse>;
+  signUpWithEmail: (email: string, password: string) => Promise<{ error: Error }>;
   signOut: () => Promise<void>;
   refreshProfile: (user?: User) => Promise<UserProfile | null>;
   resetPasswordForEmail: (email: string) => Promise<{ error: AuthError | null }>;
@@ -53,15 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshProfile = useCallback((user?: User) => observer.current?.refreshProfile(user) ?? Promise.resolve(null), []);
   const signInWithEmail = useCallback((email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password }), []);
-  const signUpWithEmail = useCallback(async (email: string, password: string) => {
-    const result = await supabase.auth.signUp({ email, password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` } });
-    if (result.data.session) {
-      const { error } = await supabase.auth.signOut({ scope: 'local' });
-      if (error) throw error;
-    }
-    return result;
-  }, []);
+  const signUpWithEmail = useCallback(async (_email: string, _password: string) => ({ error: new Error('Online registration is not available.') }), []);
   const signOut = useCallback(async () => {
     try {
       const { error } = await supabase.auth.signOut({ scope: 'local' });

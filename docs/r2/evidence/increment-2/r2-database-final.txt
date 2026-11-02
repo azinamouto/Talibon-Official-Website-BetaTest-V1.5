@@ -1,0 +1,88 @@
+waiting for server to start.... done
+server started
+TAP version 13
+# Subtest: migrations replay, upgrade, checksum drift and failed DDL roll back atomically
+ok 1 - migrations replay, upgrade, checksum drift and failed DDL roll back atomically
+  ---
+  duration_ms: 666.2291
+  type: 'test'
+  ...
+# Subtest: TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets
+ok 2 - TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets
+  ---
+  duration_ms: 0.8762
+  type: 'test'
+  ...
+# Subtest: staff authorization rejects unknown/inactive identities, missing assurance and editor admin actions
+ok 3 - staff authorization rejects unknown/inactive identities, missing assurance and editor admin actions
+  ---
+  duration_ms: 52.5473
+  type: 'test'
+  ...
+# Subtest: media CRUD, parameterization, optimistic conflict, publication and soft deletion are audited
+ok 4 - media CRUD, parameterization, optimistic conflict, publication and soft deletion are audited
+  ---
+  duration_ms: 87.8765
+  type: 'test'
+  ...
+# Subtest: constraints reject invalid metadata, duplicate keys, missing FKs and unsupported roles
+ok 5 - constraints reject invalid metadata, duplicate keys, missing FKs and unsupported roles
+  ---
+  duration_ms: 29.4777
+  type: 'test'
+  ...
+# Subtest: public content filters drafts, deleted, future and revoked provenance; runtime cannot edit content
+ok 6 - public content filters drafts, deleted, future and revoked provenance; runtime cannot edit content
+  ---
+  duration_ms: 26.1292
+  type: 'test'
+  ...
+# Subtest: runtime least privilege prevents DDL, approval, readiness, audit tampering and schema history changes
+ok 7 - runtime least privilege prevents DDL, approval, readiness, audit tampering and schema history changes
+  ---
+  duration_ms: 20.0469
+  type: 'test'
+  ...
+# Subtest: revision immutability and content/media foreign keys preserve referenced history
+ok 8 - revision immutability and content/media foreign keys preserve referenced history
+  ---
+  duration_ms: 88.0766
+  type: 'test'
+  ...
+# Subtest: audit failure rolls back mutation; failed transactions release a usable connection
+ok 9 - audit failure rolls back mutation; failed transactions release a usable connection
+  ---
+  duration_ms: 39.2468
+  type: 'test'
+  ...
+# Subtest: statement, lock, idle transaction and pool acquisition timeouts fail safely and recover
+ok 10 - statement, lock, idle transaction and pool acquisition timeouts fail safely and recover
+  ---
+  duration_ms: 1533.4613
+  type: 'test'
+  ...
+# Subtest: last-admin protection and concurrent demotion cannot remove all active admins
+ok 11 - last-admin protection and concurrent demotion cannot remove all active admins
+  ---
+  duration_ms: 44.6078
+  type: 'test'
+  ...
+# Subtest: snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit
+ok 12 - snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit
+  ---
+  duration_ms: 120.7258
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2850.3836
+PASS: logical backup/restore: 9 tables, 21 rows, exact digests, migration checksums, grants and constraints
+waiting for server to shut down....... done
+server stopped
+Disposable files retained at C:\Users\admin\AppData\Local\Temp\talgov-r2-c4eb307675a54556996f3e4770bbb7a0

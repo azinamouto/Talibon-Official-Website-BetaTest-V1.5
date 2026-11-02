@@ -1,5 +1,9 @@
 # TAL.GOV AI Agent Workflow Guidelines
 
+## R2 discovery boundary (2026-11-01)
+
+Read [R2 architecture](../docs/r2/ARCHITECTURE.md) and [work packages](../docs/r2/WORK_PACKAGE_REGISTER.md) before migration work. Increment 0 is documentation only; existing Supabase guidance below describes R1. R2 requires backend repositories, verified Neon Auth/Object Storage capabilities, admin/editor-only media CMS, server-disabled citizen/payment workflows and zero active Supabase production dependencies. Do not simply rename the existing service or assume SDK compatibility. Authentication migration is blocked pending required MFA, closed registration and Nest session verification. Preserve local work and R1 safety gates. No source data migration, production cutover, deployment or provider substitution is authorized by discovery documentation.
+
 ## Agent Optimization Strategy
 
 This document defines the efficient, cost-effective workflow for AI agents working on the TAL.GOV project to minimize token consumption while maintaining precision and quality.

@@ -1,0 +1,58 @@
+[
+  {
+    "name": "frontend-test",
+    "command": "npm test --prefix frontend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:40:35.854Z",
+    "finished": "2026-11-01T09:40:37.785Z"
+  },
+  {
+    "name": "frontend-react",
+    "command": "npm run test:react --prefix frontend",
+    "exitCode": 1,
+    "started": "2026-11-01T09:40:37.785Z",
+    "finished": "2026-11-01T09:41:49.198Z"
+  },
+  {
+    "name": "frontend-lint",
+    "command": "npm run lint --prefix frontend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:41:49.198Z",
+    "finished": "2026-11-01T09:43:25.461Z"
+  },
+  {
+    "name": "frontend-build",
+    "command": "npm run build --prefix frontend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:43:25.461Z",
+    "finished": "2026-11-01T09:44:11.481Z"
+  },
+  {
+    "name": "browser-public",
+    "command": "npm run test:browser --prefix frontend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:44:11.481Z",
+    "finished": "2026-11-01T09:47:38.651Z"
+  },
+  {
+    "name": "browser-eservices",
+    "command": "npm run test:eservices --prefix frontend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:47:38.652Z",
+    "finished": "2026-11-01T09:49:08.539Z"
+  },
+  {
+    "name": "browser-admin",
+    "command": "npm run test:admin --prefix frontend",
+    "exitCode": 0,
+    "started": "2026-11-01T09:49:08.539Z",
+    "finished": "2026-11-01T09:50:18.934Z"
+  },
+  {
+    "name": "browser-contracts",
+    "command": "npm run test:contracts:browser --prefix frontend",
+    "exitCode": 1,
+    "started": "2026-11-01T09:50:18.934Z",
+    "finished": "2026-11-01T09:52:13.117Z"
+  }
+]

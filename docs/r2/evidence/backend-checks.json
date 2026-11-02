@@ -1,0 +1,17 @@
+[
+  {
+    "check": "backend-lint",
+    "command": "npm run lint --prefix backend",
+    "exit_code": 0
+  },
+  {
+    "check": "backend-test",
+    "command": "npm test --prefix backend",
+    "exit_code": 1
+  },
+  {
+    "check": "ops-test",
+    "command": "npm run test:ops",
+    "exit_code": 0
+  }
+]

@@ -23,6 +23,7 @@ export function createMockServer() {
       ?? Object.keys(contract.paths).find(path => path.includes('{id}') && new RegExp('^' + path.replace('{id}', '[^/]+') + '$').test(url.pathname));
     const operation = contract.paths[path]?.[req.method.toLowerCase()];
     if (!operation) return fail(404, 'No contract operation');
+    if (operation.responses['410']) return fail(410, operation.responses['410'].description);
     // This fixture server never models authorization or persists writes.
     if (url.pathname.includes('/manage') || (!url.pathname.startsWith('/api/auth/') && req.method !== 'GET')) return fail(501, 'Content writes and staff reads are not mocked');
     const status = Object.keys(operation.responses).find(code => /^2\d\d$/.test(code));

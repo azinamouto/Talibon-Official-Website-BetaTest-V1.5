@@ -1,0 +1,20 @@
+[
+  {
+    "check": "frontend-build-test-config",
+    "command": "npm run build --prefix frontend",
+    "exit_code": 0,
+    "environment": "Loopback Supabase URL, synthetic publishable key, mock-data flag false; browser suites stub network contracts."
+  },
+  {
+    "check": "frontend-browser",
+    "command": "npm run test:browser --prefix frontend",
+    "exit_code": 0,
+    "environment": "Loopback Supabase URL, synthetic publishable key, mock-data flag false; browser suites stub network contracts."
+  },
+  {
+    "check": "frontend-eservices",
+    "command": "npm run test:eservices --prefix frontend",
+    "exit_code": 0,
+    "environment": "Loopback Supabase URL, synthetic publishable key, mock-data flag false; browser suites stub network contracts."
+  }
+]

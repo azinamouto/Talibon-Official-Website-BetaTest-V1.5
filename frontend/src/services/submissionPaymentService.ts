@@ -1,7 +1,8 @@
 import { citizenRequest } from './submissionService';
 
 // Pending S3-BE-02 / S3-INT-01 contract. Keep disabled until backend sign-off.
-export const submissionPaymentsEnabled = import.meta.env.VITE_SUBMISSION_PAYMENTS_ENABLED === 'true';
+// Hard release gate. No environment setting can enable unimplemented settlement.
+export const submissionPaymentsEnabled = false;
 export type PaymentStatus = 'not_required' | 'awaiting_assessment' | 'unpaid' | 'pending' | 'paid' | 'failed' | 'cancelled';
 export interface SubmissionPayment { status: PaymentStatus; amount: number; currency: 'PHP'; receiptReference?: string }
 export function safeCheckoutUrl(value: string): string {

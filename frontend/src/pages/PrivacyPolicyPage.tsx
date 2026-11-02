@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
             Privacy Notice & Data Processing Policy
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-2">
-            Local Government Unit of Talibon, Bohol • Effective Date: August 15, 2026 • Version 4.0
+            Local Government Unit of Talibon, Bohol • Draft notice — municipal DPO review and approval required
           </p>
           <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-4 text-xs text-slate-600">
             <span className="flex items-center gap-1.5 font-bold">
@@ -40,7 +40,7 @@ export default function PrivacyPolicyPage() {
               <CheckCircle size={14} className="text-emerald-600" /> No Advertising Cookies
             </span>
             <span className="flex items-center gap-1.5 font-bold">
-              <CheckCircle size={14} className="text-emerald-600" /> RA 10173 Compliant
+              <CheckCircle size={14} className="text-emerald-600" /> Privacy Controls Under Review
             </span>
           </div>
         </div>

@@ -1,0 +1,2411 @@
+{
+  "date": "2026-11-01",
+  "source_sha": "fd2fe689b2f442f22409ca9c7a2699e3cd0c25be",
+  "method": "Static lexical scan; declarations include superseded definitions; not a live catalog or reachability proof.",
+  "schema_declarations": [
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 21,
+      "kind": "type",
+      "name": "public.news_status_type"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 24,
+      "kind": "type",
+      "name": "public.downloadable_status_type"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 27,
+      "kind": "type",
+      "name": "public.service_status_type"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 30,
+      "kind": "type",
+      "name": "public.payment_status_type"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 33,
+      "kind": "type",
+      "name": "public.request_status_type"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 36,
+      "kind": "type",
+      "name": "public.audit_action_type"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 39,
+      "kind": "type",
+      "name": "public.notification_category_type"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 55,
+      "kind": "table",
+      "name": "public.roles"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 64,
+      "kind": "table",
+      "name": "public.barangays"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 74,
+      "kind": "table",
+      "name": "public.departments"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 90,
+      "kind": "table",
+      "name": "public.profiles"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 104,
+      "kind": "table",
+      "name": "public.news"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 123,
+      "kind": "table",
+      "name": "public.downloadables"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 137,
+      "kind": "table",
+      "name": "public.tourism_spots"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 153,
+      "kind": "table",
+      "name": "public.officials"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 169,
+      "kind": "table",
+      "name": "public.services_cms"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 190,
+      "kind": "table",
+      "name": "public.citizens_charter_cms"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 205,
+      "kind": "table",
+      "name": "public.events"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 219,
+      "kind": "table",
+      "name": "public.ordinances"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 232,
+      "kind": "table",
+      "name": "public.resolutions"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 245,
+      "kind": "table",
+      "name": "public.meetings"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 257,
+      "kind": "table",
+      "name": "public.navigation"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 269,
+      "kind": "table",
+      "name": "public.gad_beneficiaries"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 285,
+      "kind": "table",
+      "name": "public.certificate_requests"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 303,
+      "kind": "table",
+      "name": "public.workflow_history"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 314,
+      "kind": "table",
+      "name": "public.payments"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 329,
+      "kind": "table",
+      "name": "public.notifications"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 344,
+      "kind": "table",
+      "name": "public.audit_logs"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 446,
+      "kind": "view",
+      "name": "public.view_dashboard_aggregates"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 459,
+      "kind": "view",
+      "name": "public.view_monthly_request_stats"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 470,
+      "kind": "view",
+      "name": "public.view_gad_sectoral_stats"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 483,
+      "kind": "function",
+      "name": "public.get_user_role"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 493,
+      "kind": "function",
+      "name": "public.is_user_verified"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 503,
+      "kind": "function",
+      "name": "public.is_verified_admin"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 514,
+      "kind": "function",
+      "name": "public.is_verified_staff"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 525,
+      "kind": "function",
+      "name": "public.get_user_department"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 536,
+      "kind": "function",
+      "name": "public.approve_user"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 561,
+      "kind": "function",
+      "name": "public.publish_news"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 582,
+      "kind": "function",
+      "name": "public.submit_certificate_request"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 632,
+      "kind": "function",
+      "name": "public.update_request_status"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 661,
+      "kind": "function",
+      "name": "public.mark_notification_read"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 681,
+      "kind": "function",
+      "name": "public.get_request_status_by_ticket"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 729,
+      "kind": "function",
+      "name": "public.handle_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 738,
+      "kind": "function",
+      "name": "public.handle_profile_insert_before"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 751,
+      "kind": "trigger",
+      "name": "on_profile_insert_before"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 756,
+      "kind": "function",
+      "name": "public.handle_new_auth_user"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 772,
+      "kind": "trigger",
+      "name": "on_auth_user_created"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 777,
+      "kind": "function",
+      "name": "public.handle_profile_verified"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 793,
+      "kind": "trigger",
+      "name": "on_profile_verified"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 798,
+      "kind": "function",
+      "name": "public.handle_news_published"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 814,
+      "kind": "trigger",
+      "name": "on_news_published"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 819,
+      "kind": "function",
+      "name": "public.handle_certificate_request_created"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 836,
+      "kind": "trigger",
+      "name": "on_certificate_request_created"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 841,
+      "kind": "function",
+      "name": "public.handle_certificate_request_status_changed"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 862,
+      "kind": "trigger",
+      "name": "on_certificate_request_status_changed"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 867,
+      "kind": "trigger",
+      "name": "set_profiles_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 868,
+      "kind": "trigger",
+      "name": "set_news_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 869,
+      "kind": "trigger",
+      "name": "set_downloadables_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 870,
+      "kind": "trigger",
+      "name": "set_tourism_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 871,
+      "kind": "trigger",
+      "name": "set_officials_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 872,
+      "kind": "trigger",
+      "name": "set_services_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 873,
+      "kind": "trigger",
+      "name": "set_charter_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 874,
+      "kind": "trigger",
+      "name": "set_events_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 875,
+      "kind": "trigger",
+      "name": "set_ordinances_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 876,
+      "kind": "trigger",
+      "name": "set_resolutions_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 877,
+      "kind": "trigger",
+      "name": "set_meetings_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 878,
+      "kind": "trigger",
+      "name": "set_navigation_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 879,
+      "kind": "trigger",
+      "name": "set_gad_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 880,
+      "kind": "trigger",
+      "name": "set_certificate_requests_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 881,
+      "kind": "trigger",
+      "name": "set_payments_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 882,
+      "kind": "trigger",
+      "name": "set_notifications_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 885,
+      "kind": "function",
+      "name": "public.process_audit_log"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 937,
+      "kind": "trigger",
+      "name": "audit_profiles_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 938,
+      "kind": "trigger",
+      "name": "audit_news_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 939,
+      "kind": "trigger",
+      "name": "audit_download_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 940,
+      "kind": "trigger",
+      "name": "audit_tourism_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 941,
+      "kind": "trigger",
+      "name": "audit_services_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 942,
+      "kind": "trigger",
+      "name": "audit_charter_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 943,
+      "kind": "trigger",
+      "name": "audit_gad_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 944,
+      "kind": "trigger",
+      "name": "audit_requests_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 945,
+      "kind": "trigger",
+      "name": "audit_officials_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 946,
+      "kind": "trigger",
+      "name": "audit_events_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 947,
+      "kind": "trigger",
+      "name": "audit_ordinances_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 948,
+      "kind": "trigger",
+      "name": "audit_resolutions_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 1187,
+      "kind": "function",
+      "name": "private.has_role"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 1199,
+      "kind": "function",
+      "name": "public.is_staff_user"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 1216,
+      "kind": "table",
+      "name": "public.security_audit_events"
+    },
+    {
+      "file": "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql",
+      "line": 1304,
+      "kind": "function",
+      "name": "public.is_api_session_active"
+    },
+    {
+      "file": "supabase/migrations/20260921014054_sprint2_content_pages.sql",
+      "line": 7,
+      "kind": "table",
+      "name": "public.pages"
+    },
+    {
+      "file": "supabase/migrations/20260921014054_sprint2_content_pages.sql",
+      "line": 27,
+      "kind": "trigger",
+      "name": "set_pages_updated_at"
+    },
+    {
+      "file": "supabase/migrations/20260921014054_sprint2_content_pages.sql",
+      "line": 29,
+      "kind": "trigger",
+      "name": "audit_pages_changes"
+    },
+    {
+      "file": "supabase/migrations/20260921103019_sprint3_forms_notifications.sql",
+      "line": 26,
+      "kind": "function",
+      "name": "public.handle_certificate_request_created"
+    },
+    {
+      "file": "supabase/migrations/20260921103019_sprint3_forms_notifications.sql",
+      "line": 33,
+      "kind": "function",
+      "name": "public.handle_certificate_request_status_changed"
+    },
+    {
+      "file": "supabase/migrations/20260921103440_sprint3_email_outbox.sql",
+      "line": 2,
+      "kind": "table",
+      "name": "public.form_email_templates"
+    },
+    {
+      "file": "supabase/migrations/20260921103440_sprint3_email_outbox.sql",
+      "line": 10,
+      "kind": "table",
+      "name": "public.form_email_jobs"
+    },
+    {
+      "file": "supabase/migrations/20260921103440_sprint3_email_outbox.sql",
+      "line": 27,
+      "kind": "table",
+      "name": "public.form_email_attempts"
+    },
+    {
+      "file": "supabase/migrations/20260921103440_sprint3_email_outbox.sql",
+      "line": 43,
+      "kind": "function",
+      "name": "public.enqueue_form_email"
+    },
+    {
+      "file": "supabase/migrations/20260921103440_sprint3_email_outbox.sql",
+      "line": 59,
+      "kind": "trigger",
+      "name": "enqueue_form_email"
+    },
+    {
+      "file": "supabase/migrations/20260921103440_sprint3_email_outbox.sql",
+      "line": 63,
+      "kind": "function",
+      "name": "public.claim_form_email"
+    },
+    {
+      "file": "supabase/migrations/20260921103440_sprint3_email_outbox.sql",
+      "line": 84,
+      "kind": "function",
+      "name": "public.finish_form_email"
+    },
+    {
+      "file": "supabase/migrations/20260921110449_sprint4_reports.sql",
+      "line": 6,
+      "kind": "function",
+      "name": "public.admin_report"
+    },
+    {
+      "file": "supabase/migrations/20260921150312_sprint4_user_management.sql",
+      "line": 5,
+      "kind": "function",
+      "name": "private.increment_profile_version"
+    },
+    {
+      "file": "supabase/migrations/20260921150312_sprint4_user_management.sql",
+      "line": 8,
+      "kind": "trigger",
+      "name": "profile_version"
+    },
+    {
+      "file": "supabase/migrations/20260921150312_sprint4_user_management.sql",
+      "line": 13,
+      "kind": "function",
+      "name": "private.account_active"
+    },
+    {
+      "file": "supabase/migrations/20260921150312_sprint4_user_management.sql",
+      "line": 30,
+      "kind": "table",
+      "name": "public.admin_user_audit"
+    },
+    {
+      "file": "supabase/migrations/20260921150312_sprint4_user_management.sql",
+      "line": 44,
+      "kind": "function",
+      "name": "public.admin_mutate_user"
+    },
+    {
+      "file": "supabase/migrations/20260921160000_sprint5_search.sql",
+      "line": 28,
+      "kind": "function",
+      "name": "public.search_content"
+    }
+  ],
+  "supabase_references": [
+    {
+      "file": ".env.example",
+      "lines": [
+        14,
+        15,
+        22,
+        23
+      ]
+    },
+    {
+      "file": ".github/workflows/database-backup.yml",
+      "lines": [
+        18,
+        19,
+        32,
+        33,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43
+      ]
+    },
+    {
+      "file": ".github/workflows/frontend-ci.yml",
+      "lines": [
+        16,
+        17
+      ]
+    },
+    {
+      "file": "backend/.env.example",
+      "lines": [
+        12,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    {
+      "file": "backend/package-lock.json",
+      "lines": [
+        16,
+        3316,
+        3318,
+        3328,
+        3330,
+        3340,
+        3342,
+        3346,
+        3348,
+        3358,
+        3360,
+        3364,
+        3371,
+        3373,
+        3384,
+        3386,
+        3390,
+        3391,
+        3392,
+        3393,
+        3394
+      ]
+    },
+    {
+      "file": "backend/package.json",
+      "lines": [
+        29
+      ]
+    },
+    {
+      "file": "backend/src/api/about/about.service.ts",
+      "lines": [
+        2,
+        4,
+        5,
+        6,
+        7,
+        17,
+        301,
+        302,
+        304,
+        330
+      ]
+    },
+    {
+      "file": "backend/src/api/admin/reports.service.ts",
+      "lines": [
+        2,
+        8,
+        15
+      ]
+    },
+    {
+      "file": "backend/src/api/admin/users.service.ts",
+      "lines": [
+        2,
+        8,
+        18,
+        33,
+        41
+      ]
+    },
+    {
+      "file": "backend/src/api/auth/auth.module.ts",
+      "lines": [
+        4,
+        6
+      ]
+    },
+    {
+      "file": "backend/src/api/auth/auth.service.ts",
+      "lines": [
+        2,
+        7,
+        10,
+        29,
+        35,
+        42
+      ]
+    },
+    {
+      "file": "backend/src/api/content/content.service.ts",
+      "lines": [
+        2,
+        15,
+        28,
+        42,
+        52,
+        61,
+        69
+      ]
+    },
+    {
+      "file": "backend/src/api/forms/forms.service.ts",
+      "lines": [
+        3,
+        17,
+        38,
+        49,
+        60,
+        69
+      ]
+    },
+    {
+      "file": "backend/src/api/health/health.controller.ts",
+      "lines": [
+        3,
+        8,
+        19
+      ]
+    },
+    {
+      "file": "backend/src/api/notifications/email-notification.service.ts",
+      "lines": [
+        2,
+        21,
+        29
+      ]
+    },
+    {
+      "file": "backend/src/api/notifications/notification.module.ts",
+      "lines": [
+        3,
+        5
+      ]
+    },
+    {
+      "file": "backend/src/api/search/search.service.ts",
+      "lines": [
+        2,
+        7,
+        19
+      ]
+    },
+    {
+      "file": "backend/src/app.module.ts",
+      "lines": [
+        24,
+        67
+      ]
+    },
+    {
+      "file": "backend/src/config/environment.ts",
+      "lines": [
+        9,
+        16,
+        18,
+        19,
+        20,
+        30,
+        33
+      ]
+    },
+    {
+      "file": "backend/src/configure-app.ts",
+      "lines": [
+        62
+      ]
+    },
+    {
+      "file": "backend/src/security/audit.middleware.ts",
+      "lines": [
+        3,
+        9,
+        30
+      ]
+    },
+    {
+      "file": "backend/src/security/auth.guard.ts",
+      "lines": [
+        12,
+        29,
+        68
+      ]
+    },
+    {
+      "file": "backend/src/security/authenticated-request.ts",
+      "lines": [
+        2
+      ]
+    },
+    {
+      "file": "backend/src/security/security-headers.middleware.ts",
+      "lines": [
+        44
+      ]
+    },
+    {
+      "file": "backend/src/supabase.service.ts",
+      "lines": [
+        2,
+        5,
+        6,
+        9,
+        10,
+        13,
+        16,
+        19,
+        20,
+        37,
+        40,
+        47,
+        52,
+        53,
+        61,
+        63,
+        66
+      ]
+    },
+    {
+      "file": "frontend/.env.example",
+      "lines": [
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    {
+      "file": "frontend/package-lock.json",
+      "lines": [
+        13,
+        1691,
+        1693,
+        1703,
+        1705,
+        1715,
+        1717,
+        1721,
+        1723,
+        1733,
+        1735,
+        1739,
+        1746,
+        1748,
+        1759,
+        1761,
+        1765,
+        1766,
+        1767,
+        1768,
+        1769
+      ]
+    },
+    {
+      "file": "frontend/package.json",
+      "lines": [
+        25
+      ]
+    },
+    {
+      "file": "frontend/src/App.tsx",
+      "lines": [
+        39
+      ]
+    },
+    {
+      "file": "frontend/src/components/Events.tsx",
+      "lines": [
+        5,
+        48,
+        56,
+        75,
+        80
+      ]
+    },
+    {
+      "file": "frontend/src/components/FileUpload.tsx",
+      "lines": [
+        2,
+        117,
+        118,
+        154,
+        169
+      ]
+    },
+    {
+      "file": "frontend/src/components/GadEntryModule.tsx",
+      "lines": [
+        2,
+        41,
+        85,
+        92,
+        110
+      ]
+    },
+    {
+      "file": "frontend/src/components/MeetingAssistant.tsx",
+      "lines": [
+        3,
+        4,
+        33,
+        48,
+        53,
+        183,
+        205
+      ]
+    },
+    {
+      "file": "frontend/src/components/Navbar.tsx",
+      "lines": [
+        9,
+        10,
+        55,
+        60,
+        74,
+        79
+      ]
+    },
+    {
+      "file": "frontend/src/components/NotificationBell.tsx",
+      "lines": [
+        4
+      ]
+    },
+    {
+      "file": "frontend/src/components/NotificationDrawer.tsx",
+      "lines": [
+        20
+      ]
+    },
+    {
+      "file": "frontend/src/components/eservices/FormWizard.tsx",
+      "lines": [
+        3
+      ]
+    },
+    {
+      "file": "frontend/src/contexts/SupabaseAuthContext.tsx",
+      "lines": [
+        2,
+        3,
+        43,
+        44,
+        55,
+        57,
+        60,
+        67,
+        74,
+        83,
+        87
+      ]
+    },
+    {
+      "file": "frontend/src/lib/authSession.ts",
+      "lines": [
+        1,
+        13
+      ]
+    },
+    {
+      "file": "frontend/src/lib/envValidator.ts",
+      "lines": [
+        4,
+        5,
+        11,
+        12,
+        20,
+        28,
+        34
+      ]
+    },
+    {
+      "file": "frontend/src/lib/rateLimitNotice.ts",
+      "lines": [
+        7
+      ]
+    },
+    {
+      "file": "frontend/src/lib/supabase.ts",
+      "lines": [
+        1,
+        8,
+        9,
+        10,
+        11,
+        15,
+        16,
+        17,
+        18,
+        19
+      ]
+    },
+    {
+      "file": "frontend/src/pages/AccessDenied.tsx",
+      "lines": [
+        3
+      ]
+    },
+    {
+      "file": "frontend/src/pages/AdminDashboard.tsx",
+      "lines": [
+        2,
+        3,
+        429,
+        480,
+        482,
+        494,
+        1004,
+        1020,
+        1023,
+        1028,
+        1562,
+        1563,
+        1564,
+        1568,
+        1569,
+        2450,
+        2489,
+        2490
+      ]
+    },
+    {
+      "file": "frontend/src/pages/AuthCallback.tsx",
+      "lines": [
+        2
+      ]
+    },
+    {
+      "file": "frontend/src/pages/DownloadsPage.tsx",
+      "lines": [
+        5,
+        32,
+        34,
+        49
+      ]
+    },
+    {
+      "file": "frontend/src/pages/EServicesPage.tsx",
+      "lines": [
+        3
+      ]
+    },
+    {
+      "file": "frontend/src/pages/EnactedOrdinancesPage.tsx",
+      "lines": [
+        2,
+        51,
+        62,
+        89,
+        97
+      ]
+    },
+    {
+      "file": "frontend/src/pages/Login.tsx",
+      "lines": [
+        3
+      ]
+    },
+    {
+      "file": "frontend/src/pages/OrganizationalChartPage.tsx",
+      "lines": [
+        4,
+        45,
+        58,
+        64,
+        65,
+        88,
+        93
+      ]
+    },
+    {
+      "file": "frontend/src/pages/PaymentReturn.tsx",
+      "lines": [
+        2
+      ]
+    },
+    {
+      "file": "frontend/src/pages/PrivacyPolicyPage.tsx",
+      "lines": [
+        93
+      ]
+    },
+    {
+      "file": "frontend/src/pages/ResolutionsPage.tsx",
+      "lines": [
+        4,
+        53,
+        61,
+        78,
+        83
+      ]
+    },
+    {
+      "file": "frontend/src/pages/SprintAdminDashboard.tsx",
+      "lines": [
+        4
+      ]
+    },
+    {
+      "file": "frontend/src/pages/transparency/BudgetView.tsx",
+      "lines": [
+        121
+      ]
+    },
+    {
+      "file": "frontend/src/routes/RouteGuards.tsx",
+      "lines": [
+        2
+      ]
+    },
+    {
+      "file": "frontend/src/services/adminService.ts",
+      "lines": [
+        1,
+        14
+      ]
+    },
+    {
+      "file": "frontend/src/services/api.ts",
+      "lines": [
+        1,
+        28,
+        30,
+        41,
+        44,
+        74,
+        256,
+        258,
+        280,
+        282,
+        315,
+        317,
+        331,
+        333,
+        354,
+        356
+      ]
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "lines": [
+        1,
+        29,
+        196,
+        197,
+        205,
+        229,
+        254,
+        272,
+        296,
+        313,
+        316,
+        317,
+        322,
+        329,
+        338,
+        371
+      ]
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "lines": [
+        1,
+        462,
+        464,
+        471,
+        579,
+        581,
+        606,
+        610,
+        620,
+        623,
+        659,
+        661,
+        684,
+        690,
+        719,
+        721,
+        745,
+        751,
+        766,
+        768,
+        773,
+        779,
+        791,
+        793,
+        800,
+        804,
+        823,
+        825,
+        832,
+        838,
+        865,
+        867,
+        874,
+        880,
+        895,
+        897,
+        902,
+        908,
+        920,
+        922,
+        947,
+        951,
+        971,
+        973,
+        992,
+        998,
+        1023,
+        1025,
+        1044,
+        1050,
+        1065,
+        1067,
+        1072,
+        1078,
+        1107,
+        1109,
+        1132,
+        1136,
+        1154,
+        1156,
+        1178,
+        1184,
+        1209,
+        1211,
+        1234,
+        1240,
+        1255,
+        1257,
+        1262,
+        1268,
+        1297,
+        1299,
+        1306,
+        1310,
+        1317,
+        1319,
+        1326,
+        1330,
+        1343,
+        1349,
+        1369,
+        1384,
+        1390
+      ]
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "lines": [
+        1,
+        34,
+        36,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        100,
+        102,
+        109,
+        152,
+        154,
+        161
+      ]
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "lines": [
+        1,
+        54,
+        57,
+        68,
+        79,
+        84,
+        90,
+        105,
+        113,
+        130,
+        136,
+        149,
+        163,
+        171,
+        189,
+        195,
+        210,
+        212,
+        218,
+        228,
+        234
+      ]
+    },
+    {
+      "file": "frontend/src/services/eventService.ts",
+      "lines": [
+        1,
+        32,
+        34,
+        44,
+        49,
+        55,
+        57,
+        68,
+        74,
+        87,
+        89,
+        101,
+        107,
+        122,
+        124,
+        132,
+        138
+      ]
+    },
+    {
+      "file": "frontend/src/services/mapLocations.ts",
+      "lines": [
+        1,
+        21
+      ]
+    },
+    {
+      "file": "frontend/src/services/navigationService.ts",
+      "lines": [
+        1,
+        39,
+        41,
+        52,
+        57,
+        63,
+        65,
+        76,
+        82,
+        95,
+        97,
+        109,
+        115,
+        130,
+        132,
+        140,
+        146
+      ]
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "lines": [
+        1,
+        34,
+        36,
+        47,
+        52,
+        72,
+        76,
+        84,
+        91,
+        99,
+        107,
+        125,
+        146,
+        155,
+        166,
+        172,
+        185,
+        197,
+        209,
+        215,
+        230,
+        232,
+        240,
+        246,
+        260,
+        263,
+        283
+      ]
+    },
+    {
+      "file": "frontend/src/services/notificationService.ts",
+      "lines": [
+        1,
+        2,
+        27,
+        99,
+        101,
+        128,
+        134,
+        139,
+        161,
+        163,
+        170,
+        172,
+        182,
+        198,
+        200,
+        218,
+        220,
+        230,
+        258,
+        260,
+        267,
+        269,
+        279,
+        301,
+        303,
+        327,
+        329,
+        340,
+        355,
+        363,
+        369,
+        372,
+        396
+      ]
+    },
+    {
+      "file": "frontend/src/services/profileService.ts",
+      "lines": [
+        1,
+        71,
+        73,
+        83,
+        88,
+        97,
+        99,
+        115,
+        125,
+        127,
+        139,
+        145,
+        160
+      ]
+    },
+    {
+      "file": "frontend/src/services/servicesCmsService.ts",
+      "lines": [
+        1,
+        77,
+        79,
+        109,
+        114,
+        150,
+        152,
+        180,
+        186,
+        220,
+        222,
+        251,
+        257,
+        272,
+        274,
+        282,
+        288
+      ]
+    },
+    {
+      "file": "frontend/src/services/submissionService.ts",
+      "lines": [
+        1,
+        13
+      ]
+    },
+    {
+      "file": "frontend/src/services/tourismService.ts",
+      "lines": [
+        1,
+        43,
+        45,
+        55,
+        60,
+        76,
+        78,
+        89,
+        95,
+        108,
+        110,
+        122,
+        128,
+        143,
+        145,
+        153,
+        159
+      ]
+    },
+    {
+      "file": "frontend/src/test-db.ts",
+      "lines": [
+        21,
+        22,
+        25,
+        45
+      ]
+    },
+    {
+      "file": "ops/check-migration-history.mjs",
+      "lines": [
+        6,
+        11
+      ]
+    },
+    {
+      "file": "package-lock.json",
+      "lines": [
+        16,
+        1725,
+        1727,
+        1737,
+        1739,
+        1749,
+        1751,
+        1755,
+        1757,
+        1767,
+        1769,
+        1773,
+        1780,
+        1782,
+        1793,
+        1795,
+        1799,
+        1800,
+        1801,
+        1802,
+        1803
+      ]
+    },
+    {
+      "file": "package.json",
+      "lines": [
+        29
+      ]
+    },
+    {
+      "file": "supabase/functions/send-status-email/index.ts",
+      "lines": [
+        2,
+        55,
+        66,
+        88,
+        89,
+        90,
+        91,
+        127,
+        137,
+        172,
+        189,
+        433,
+        450,
+        464,
+        498
+      ]
+    }
+  ],
+  "migration_sha256": {
+    "supabase/migrations/20260921011322_sprint1_canonical_baseline.sql": "11a7182b7a992230caeeeabe9c2c1921666ee0a7b5e7cad9ff4219c77cdaa477",
+    "supabase/migrations/20260921014054_sprint2_content_pages.sql": "b410db694df84e89f76c2742024bb499058b3449daf0579d471e71c1901cce86",
+    "supabase/migrations/20260921103019_sprint3_forms_notifications.sql": "0996d3b6a07f605b7b06e4b4cf17b86b8e2350ce2bc9ac587b8a454476711dfb",
+    "supabase/migrations/20260921103440_sprint3_email_outbox.sql": "42ef3e19a7fab18a501f3287391853346c6cb68988a415fc2585ae476917592c",
+    "supabase/migrations/20260921110449_sprint4_reports.sql": "33fd9744a8ab4583613ba5d4b9d3b8bc4a1bf2bdbdac48ab2779da9ccbf109d0",
+    "supabase/migrations/20260921150312_sprint4_user_management.sql": "cee1b8ab0d997f687c703b104d333d57bdc90e2f1a7239d886c363a5f0a2c321",
+    "supabase/migrations/20260921160000_sprint5_search.sql": "c2e6ec5a306640a9dbca1c91a211c23520836509470de70dfe341585f58b3c16"
+  },
+  "literal_table_bucket_rpc_calls": [
+    {
+      "file": "backend/src/api/about/about.service.ts",
+      "line": 305,
+      "method": "from",
+      "target": "municipal_services"
+    },
+    {
+      "file": "backend/src/api/admin/reports.service.ts",
+      "line": 15,
+      "method": "rpc",
+      "target": "admin_report"
+    },
+    {
+      "file": "backend/src/api/admin/users.service.ts",
+      "line": 18,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "backend/src/api/admin/users.service.ts",
+      "line": 33,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "backend/src/api/admin/users.service.ts",
+      "line": 41,
+      "method": "rpc",
+      "target": "admin_mutate_user"
+    },
+    {
+      "file": "backend/src/api/forms/forms.service.ts",
+      "line": 38,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "backend/src/api/forms/forms.service.ts",
+      "line": 49,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "backend/src/api/forms/forms.service.ts",
+      "line": 60,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "backend/src/api/forms/forms.service.ts",
+      "line": 69,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "backend/src/api/health/health.controller.ts",
+      "line": 19,
+      "method": "from",
+      "target": "roles"
+    },
+    {
+      "file": "backend/src/api/notifications/email-notification.service.ts",
+      "line": 32,
+      "method": "rpc",
+      "target": "claim_form_email"
+    },
+    {
+      "file": "backend/src/api/notifications/email-notification.service.ts",
+      "line": 39,
+      "method": "rpc",
+      "target": "finish_form_email"
+    },
+    {
+      "file": "backend/src/api/search/search.service.ts",
+      "line": 19,
+      "method": "rpc",
+      "target": "search_content"
+    },
+    {
+      "file": "backend/src/security/audit.middleware.ts",
+      "line": 30,
+      "method": "from",
+      "target": "security_audit_events"
+    },
+    {
+      "file": "backend/src/security/auth.guard.ts",
+      "line": 84,
+      "method": "rpc",
+      "target": "is_api_session_active"
+    },
+    {
+      "file": "backend/src/security/auth.guard.ts",
+      "line": 91,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/components/Events.tsx",
+      "line": 57,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/components/GadEntryModule.tsx",
+      "line": 42,
+      "method": "from",
+      "target": "gad_beneficiaries"
+    },
+    {
+      "file": "frontend/src/components/GadEntryModule.tsx",
+      "line": 86,
+      "method": "from",
+      "target": "gad_beneficiaries"
+    },
+    {
+      "file": "frontend/src/components/GadEntryModule.tsx",
+      "line": 93,
+      "method": "from",
+      "target": "gad_beneficiaries"
+    },
+    {
+      "file": "frontend/src/components/GadEntryModule.tsx",
+      "line": 110,
+      "method": "from",
+      "target": "gad_beneficiaries"
+    },
+    {
+      "file": "frontend/src/components/MeetingAssistant.tsx",
+      "line": 34,
+      "method": "from",
+      "target": "meetings"
+    },
+    {
+      "file": "frontend/src/components/MeetingAssistant.tsx",
+      "line": 183,
+      "method": "from",
+      "target": "meetings"
+    },
+    {
+      "file": "frontend/src/components/MeetingAssistant.tsx",
+      "line": 205,
+      "method": "from",
+      "target": "meetings"
+    },
+    {
+      "file": "frontend/src/components/Navbar.tsx",
+      "line": 61,
+      "method": "from",
+      "target": "navigation"
+    },
+    {
+      "file": "frontend/src/contexts/SupabaseAuthContext.tsx",
+      "line": 44,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/pages/AdminDashboard.tsx",
+      "line": 494,
+      "method": "from",
+      "target": "public-cms"
+    },
+    {
+      "file": "frontend/src/pages/AdminDashboard.tsx",
+      "line": 1028,
+      "method": "from",
+      "target": "public-cms"
+    },
+    {
+      "file": "frontend/src/pages/AdminDashboard.tsx",
+      "line": 2490,
+      "method": "from",
+      "target": "public-cms"
+    },
+    {
+      "file": "frontend/src/pages/DownloadsPage.tsx",
+      "line": 35,
+      "method": "from",
+      "target": "downloadables"
+    },
+    {
+      "file": "frontend/src/pages/EnactedOrdinancesPage.tsx",
+      "line": 63,
+      "method": "from",
+      "target": "ordinances"
+    },
+    {
+      "file": "frontend/src/pages/OrganizationalChartPage.tsx",
+      "line": 59,
+      "method": "from",
+      "target": "officials"
+    },
+    {
+      "file": "frontend/src/pages/ResolutionsPage.tsx",
+      "line": 62,
+      "method": "from",
+      "target": "resolutions"
+    },
+    {
+      "file": "frontend/src/services/api.ts",
+      "line": 259,
+      "method": "from",
+      "target": "transparency_documents"
+    },
+    {
+      "file": "frontend/src/services/api.ts",
+      "line": 283,
+      "method": "from",
+      "target": "transparency_documents"
+    },
+    {
+      "file": "frontend/src/services/api.ts",
+      "line": 318,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "frontend/src/services/api.ts",
+      "line": 334,
+      "method": "from",
+      "target": "events"
+    },
+    {
+      "file": "frontend/src/services/api.ts",
+      "line": 357,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 206,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 230,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 255,
+      "method": "from",
+      "target": "service_requests"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 273,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 297,
+      "method": "from",
+      "target": "service_request_history"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 323,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 330,
+      "method": "from",
+      "target": "service_requests"
+    },
+    {
+      "file": "frontend/src/services/certificateService.ts",
+      "line": 339,
+      "method": "from",
+      "target": "service_request_history"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 464,
+      "method": "from",
+      "target": "audit_logs"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 582,
+      "method": "from",
+      "target": "officials"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 624,
+      "method": "from",
+      "target": "officials"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 662,
+      "method": "from",
+      "target": "officials"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 722,
+      "method": "from",
+      "target": "officials"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 768,
+      "method": "from",
+      "target": "officials"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 793,
+      "method": "from",
+      "target": "departments"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 825,
+      "method": "from",
+      "target": "departments"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 867,
+      "method": "from",
+      "target": "departments"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 897,
+      "method": "from",
+      "target": "departments"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 922,
+      "method": "from",
+      "target": "barangays"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 973,
+      "method": "from",
+      "target": "barangays"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1025,
+      "method": "from",
+      "target": "barangays"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1067,
+      "method": "from",
+      "target": "barangays"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1110,
+      "method": "from",
+      "target": "citizen_charters"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1157,
+      "method": "from",
+      "target": "citizen_charters"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1212,
+      "method": "from",
+      "target": "citizen_charters"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1257,
+      "method": "from",
+      "target": "citizen_charters"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1299,
+      "method": "from",
+      "target": "audit_logs"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1319,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1350,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/services/cmsService.ts",
+      "line": 1370,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 37,
+      "method": "from",
+      "target": "view_dashboard_aggregates"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 55,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 56,
+      "method": "from",
+      "target": "downloadables"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 57,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 58,
+      "method": "from",
+      "target": "officials"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 59,
+      "method": "from",
+      "target": "departments"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 60,
+      "method": "from",
+      "target": "municipal_services"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 61,
+      "method": "from",
+      "target": "events"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 62,
+      "method": "from",
+      "target": "service_requests"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 63,
+      "method": "from",
+      "target": "gad_beneficiaries"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 103,
+      "method": "from",
+      "target": "view_monthly_request_stats"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 110,
+      "method": "from",
+      "target": "service_requests"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 155,
+      "method": "from",
+      "target": "view_gad_sectoral_stats"
+    },
+    {
+      "file": "frontend/src/services/dashboardService.ts",
+      "line": 162,
+      "method": "from",
+      "target": "gad_beneficiaries"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 58,
+      "method": "from",
+      "target": "transparency_documents"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 69,
+      "method": "from",
+      "target": "downloadables"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 106,
+      "method": "from",
+      "target": "transparency_documents"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 114,
+      "method": "from",
+      "target": "downloadables"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 164,
+      "method": "from",
+      "target": "transparency_documents"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 172,
+      "method": "from",
+      "target": "downloadables"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 213,
+      "method": "from",
+      "target": "transparency_documents"
+    },
+    {
+      "file": "frontend/src/services/downloadablesService.ts",
+      "line": 219,
+      "method": "from",
+      "target": "downloadables"
+    },
+    {
+      "file": "frontend/src/services/eventService.ts",
+      "line": 35,
+      "method": "from",
+      "target": "events"
+    },
+    {
+      "file": "frontend/src/services/eventService.ts",
+      "line": 58,
+      "method": "from",
+      "target": "events"
+    },
+    {
+      "file": "frontend/src/services/eventService.ts",
+      "line": 90,
+      "method": "from",
+      "target": "events"
+    },
+    {
+      "file": "frontend/src/services/eventService.ts",
+      "line": 125,
+      "method": "from",
+      "target": "events"
+    },
+    {
+      "file": "frontend/src/services/mapLocations.ts",
+      "line": 21,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "frontend/src/services/navigationService.ts",
+      "line": 42,
+      "method": "from",
+      "target": "navigation"
+    },
+    {
+      "file": "frontend/src/services/navigationService.ts",
+      "line": 66,
+      "method": "from",
+      "target": "navigation"
+    },
+    {
+      "file": "frontend/src/services/navigationService.ts",
+      "line": 98,
+      "method": "from",
+      "target": "navigation"
+    },
+    {
+      "file": "frontend/src/services/navigationService.ts",
+      "line": 133,
+      "method": "from",
+      "target": "navigation"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 37,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 77,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 92,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 108,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 156,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 198,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 233,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/newsService.ts",
+      "line": 264,
+      "method": "from",
+      "target": "news"
+    },
+    {
+      "file": "frontend/src/services/notificationService.ts",
+      "line": 102,
+      "method": "from",
+      "target": "notifications"
+    },
+    {
+      "file": "frontend/src/services/notificationService.ts",
+      "line": 164,
+      "method": "from",
+      "target": "notifications"
+    },
+    {
+      "file": "frontend/src/services/notificationService.ts",
+      "line": 201,
+      "method": "from",
+      "target": "notifications"
+    },
+    {
+      "file": "frontend/src/services/notificationService.ts",
+      "line": 261,
+      "method": "from",
+      "target": "notifications"
+    },
+    {
+      "file": "frontend/src/services/notificationService.ts",
+      "line": 304,
+      "method": "from",
+      "target": "notifications"
+    },
+    {
+      "file": "frontend/src/services/profileService.ts",
+      "line": 74,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/services/profileService.ts",
+      "line": 100,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/services/profileService.ts",
+      "line": 128,
+      "method": "from",
+      "target": "profiles"
+    },
+    {
+      "file": "frontend/src/services/servicesCmsService.ts",
+      "line": 80,
+      "method": "from",
+      "target": "municipal_services"
+    },
+    {
+      "file": "frontend/src/services/servicesCmsService.ts",
+      "line": 153,
+      "method": "from",
+      "target": "municipal_services"
+    },
+    {
+      "file": "frontend/src/services/servicesCmsService.ts",
+      "line": 223,
+      "method": "from",
+      "target": "municipal_services"
+    },
+    {
+      "file": "frontend/src/services/servicesCmsService.ts",
+      "line": 275,
+      "method": "from",
+      "target": "municipal_services"
+    },
+    {
+      "file": "frontend/src/services/tourismService.ts",
+      "line": 46,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "frontend/src/services/tourismService.ts",
+      "line": 79,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "frontend/src/services/tourismService.ts",
+      "line": 111,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "frontend/src/services/tourismService.ts",
+      "line": 146,
+      "method": "from",
+      "target": "tourism_spots"
+    },
+    {
+      "file": "supabase/functions/send-status-email/index.ts",
+      "line": 66,
+      "method": "from",
+      "target": "notification_delivery_logs"
+    },
+    {
+      "file": "supabase/functions/send-status-email/index.ts",
+      "line": 128,
+      "method": "from",
+      "target": "certificate_requests"
+    },
+    {
+      "file": "supabase/functions/send-status-email/index.ts",
+      "line": 138,
+      "method": "from",
+      "target": "citizen_notification_preferences"
+    }
+  ],
+  "non_utf8_files": [
+    "frontend/src/pages/NewsCategoryPage.tsx"
+  ]
+}

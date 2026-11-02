@@ -40,7 +40,7 @@ test('deployment entry boots concurrently and retains DTO metadata', async () =>
     assert.equal(publicResponse.headers.get("x-content-type-options"), "nosniff");
     assert.match(publicResponse.headers.get("content-security-policy"), /default-src 'none'/);
     const protectedResponse = await fetch(base + '/api/forms/certificate');
-    assert.equal(protectedResponse.status, 401);
+    assert.equal(protectedResponse.status, 410);
     const malformed = await fetch(base + '/api/auth/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{',
     });

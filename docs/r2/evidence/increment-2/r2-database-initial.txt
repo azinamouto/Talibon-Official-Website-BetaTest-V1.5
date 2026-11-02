@@ -1,0 +1,126 @@
+
+> talgov-backend@0.0.0 test:r2:db
+> npm run build:tsc && powershell -NoProfile -ExecutionPolicy Bypass -File test/run-r2-database-tests.ps1
+
+
+> talgov-backend@0.0.0 build:tsc
+> tsc -p tsconfig.json && node --input-type=commonjs -e "require('node:fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))"
+
+waiting for server to start..... done
+server started
+TAP version 13
+# Subtest: migrations replay, upgrade, checksum drift and failed DDL roll back atomically
+ok 1 - migrations replay, upgrade, checksum drift and failed DDL roll back atomically
+  ---
+  duration_ms: 1612.5597
+  type: 'test'
+  ...
+# Subtest: TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets
+ok 2 - TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets
+  ---
+  duration_ms: 1.6816
+  type: 'test'
+  ...
+# Subtest: staff authorization rejects unknown/inactive identities, missing assurance and editor admin actions
+ok 3 - staff authorization rejects unknown/inactive identities, missing assurance and editor admin actions
+  ---
+  duration_ms: 202.8066
+  type: 'test'
+  ...
+# Subtest: media CRUD, parameterization, optimistic conflict, publication and soft deletion are audited
+ok 4 - media CRUD, parameterization, optimistic conflict, publication and soft deletion are audited
+  ---
+  duration_ms: 154.8663
+  type: 'test'
+  ...
+# Subtest: constraints reject invalid metadata, duplicate keys, missing FKs and unsupported roles
+ok 5 - constraints reject invalid metadata, duplicate keys, missing FKs and unsupported roles
+  ---
+  duration_ms: 55.7295
+  type: 'test'
+  ...
+# Subtest: public content filters drafts, deleted, future and revoked provenance; runtime cannot edit content
+ok 6 - public content filters drafts, deleted, future and revoked provenance; runtime cannot edit content
+  ---
+  duration_ms: 66.4774
+  type: 'test'
+  ...
+# Subtest: runtime least privilege prevents DDL, approval, readiness, audit tampering and schema history changes
+ok 7 - runtime least privilege prevents DDL, approval, readiness, audit tampering and schema history changes
+  ---
+  duration_ms: 48.7447
+  type: 'test'
+  ...
+# Subtest: revision immutability and content/media foreign keys preserve referenced history
+not ok 8 - revision immutability and content/media foreign keys preserve referenced history
+  ---
+  duration_ms: 154.3557
+  type: 'test'
+  location: 'C:\\Users\\admin\\Documents\\Talibon-Official-Website-BetaTest-V1.5\\backend\\test\\r2-database.integration.cjs:128:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+
+    Caught error:
+
+    error: update or delete on table "media_assets" violates RESTRICT setting of foreign key constraint "media_revisions_asset_id_fkey" on table "media_revisions"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async TestContext.<anonymous> (C:\Users\admin\Documents\Talibon-Official-Website-BetaTest-V1.5\backend\test\r2-database.integration.cjs:134:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: audit failure rolls back mutation; failed transactions release a usable connection
+ok 9 - audit failure rolls back mutation; failed transactions release a usable connection
+  ---
+  duration_ms: 145.116
+  type: 'test'
+  ...
+# Subtest: statement, lock, idle transaction and pool acquisition timeouts fail safely and recover
+not ok 10 - statement, lock, idle transaction and pool acquisition timeouts fail safely and recover
+  ---
+  duration_ms: 2613.8959
+  type: 'test'
+  location: 'C:\\Users\\admin\\Documents\\Talibon-Official-Website-BetaTest-V1.5\\backend\\test\\r2-database.integration.cjs:145:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async TestContext.<anonymous> (C:\Users\admin\Documents\Talibon-Official-Website-BetaTest-V1.5\backend\test\r2-database.integration.cjs:162:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: last-admin protection and concurrent demotion cannot remove all active admins
+ok 11 - last-admin protection and concurrent demotion cannot remove all active admins
+  ---
+  duration_ms: 193.1808
+  type: 'test'
+  ...
+# Subtest: snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit
+ok 12 - snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit
+  ---
+  duration_ms: 350.0612
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 10
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6585.6121
+waiting for server to shut down................... done
+server stopped
+Disposable files retained at C:\Users\admin\AppData\Local\Temp\talgov-r2-beee6f185a134b3ab7386273dcfa9262
+R2 database integration tests failed
+At C:\Users\admin\Documents\Talibon-Official-Website-BetaTest-V1.5\backend\test\run-r2-database-tests.ps1:25 char:29
++ ...  ($LASTEXITCODE -ne 0) {throw 'R2 database integration tests failed'}
++                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (R2 database integration tests failed:String) [], RuntimeException
+    + FullyQualifiedErrorId : R2 database integration tests failed

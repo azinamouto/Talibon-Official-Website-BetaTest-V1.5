@@ -1,3 +1,4 @@
+import { PublicFormsController } from './api/forms/public-forms.controller';
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from "@nestjs/common";
 import { APP_GUARD, APP_FILTER } from "@nestjs/core";
 import { AuditMiddleware } from "./security/audit.middleware";
@@ -17,10 +18,6 @@ import { TransparencyController } from "./api/transparency/transparency.controll
 import { TransparencyService } from "./api/transparency/transparency.service";
 import { TourismController } from "./api/tourism/tourism.controller";
 import { TourismService } from "./api/tourism/tourism.service";
-import { FormsController } from "./api/forms/forms.controller";
-import { FormsService } from "./api/forms/forms.service";
-import { PaymentsModule } from "./api/payments/payments.module";
-import { NotificationsModule } from "./api/notifications/notification.module";
 import { SupabaseService } from "./supabase.service";
 import { RateLimiterGuard } from "./security/rate-limiter.guard";
 import { AuthGuard } from "./security/auth.guard";
@@ -36,15 +33,13 @@ import { UsersController } from './api/admin/users.controller';
 import { UsersService } from './api/admin/users.service';
 import { SearchController } from './api/search/search.controller';
 import { SearchService } from './api/search/search.service';
-import { ChatController } from './api/chat/chat.controller';
-import { ChatService } from './api/chat/chat.service';
 import { HealthController } from './api/health/health.controller';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule, PaymentsModule, NotificationsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule],
   controllers: [
     HealthController,
-    ChatController,
+    PublicFormsController,
     SearchController,
     ReportsController,
     UsersController,
@@ -57,10 +52,8 @@ import { HealthController } from './api/health/health.controller';
     ServiceContentController,
     TransparencyController,
     TourismController,
-    FormsController,
   ],
   providers: [
-    ChatService,
     SearchService,
     ReportsService,
     UsersService,
@@ -72,7 +65,6 @@ import { HealthController } from './api/health/health.controller';
     ContentService,
     TransparencyService,
     TourismService,
-    FormsService,
     {
       provide: APP_GUARD,
       useClass: RateLimiterGuard

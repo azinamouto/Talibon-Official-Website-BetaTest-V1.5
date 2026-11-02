@@ -1,0 +1,13 @@
+
+> talgov-frontend@0.0.0 test:react
+> vitest run
+
+
+ RUN  v5.0.3 C:/Users/admin/Documents/TalGov-R2-Increment-0/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  52 passed (52)
+   Start at  00:31:53
+   Duration  13.84s (tests 39%, import 27%, environment 19%, setup 10%, transform 5%, worker 1%)
+

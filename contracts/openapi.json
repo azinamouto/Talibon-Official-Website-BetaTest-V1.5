@@ -29,115 +29,16 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Authentication response. Mock tokens are deliberately unusable against live services.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "success",
-                    "data"
-                  ],
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "enum": [
-                        true
-                      ]
-                    },
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "user",
-                        "session",
-                        "confirmation_required"
-                      ],
-                      "properties": {
-                        "user": {
-                          "type": "object",
-                          "required": [
-                            "id"
-                          ],
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "format": "uuid"
-                            },
-                            "email": {
-                              "type": "string"
-                            }
-                          },
-                          "additionalProperties": true,
-                          "nullable": true
-                        },
-                        "session": {
-                          "type": "object",
-                          "required": [
-                            "access_token",
-                            "refresh_token",
-                            "expires_in",
-                            "token_type",
-                            "user"
-                          ],
-                          "properties": {
-                            "access_token": {
-                              "type": "string"
-                            },
-                            "refresh_token": {
-                              "type": "string"
-                            },
-                            "expires_in": {
-                              "type": "number"
-                            },
-                            "token_type": {
-                              "type": "string"
-                            },
-                            "user": {
-                              "type": "object",
-                              "required": [
-                                "id"
-                              ],
-                              "properties": {
-                                "id": {
-                                  "type": "string",
-                                  "format": "uuid"
-                                },
-                                "email": {
-                                  "type": "string"
-                                }
-                              },
-                              "additionalProperties": true
-                            }
-                          },
-                          "additionalProperties": true,
-                          "nullable": true
-                        },
-                        "confirmation_required": {
-                          "type": "boolean"
-                        }
-                      }
-                    }
-                  },
-                  "example": {
-                    "success": true,
-                    "data": {
-                      "user": {
-                        "id": "11111111-1111-4111-8111-111111111111",
-                        "email": "citizen@example.test"
-                      },
-                      "session": null,
-                      "confirmation_required": true
-                    }
-                  }
-                }
-              }
-            }
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "tags": [
           "Authentication"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/auth/login": {
@@ -1897,108 +1798,8 @@
           }
         },
         "responses": {
-          "201": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "id",
-                        "title",
-                        "slug",
-                        "content",
-                        "status",
-                        "created_at",
-                        "updated_at"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "title": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "slug": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "content": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "status": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "nullable": false
-                        }
-                      }
-                    }
-                  },
-                  "example": {
-                    "data": {
-                      "id": "11111111-1111-4111-8111-111111111111",
-                      "slug": "municipal-information",
-                      "status": "published",
-                      "created_at": "2026-09-21T00:00:00.000Z",
-                      "updated_at": "2026-09-21T00:00:00.000Z",
-                      "title": "Municipal information",
-                      "content": "Information about Talibon."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -2008,7 +1809,10 @@
         ],
         "tags": [
           "pages"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/pages/manage": {
@@ -2558,108 +2362,8 @@
           }
         },
         "responses": {
-          "200": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "id",
-                        "title",
-                        "slug",
-                        "content",
-                        "status",
-                        "created_at",
-                        "updated_at"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "title": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "slug": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "content": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "status": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "nullable": false
-                        }
-                      }
-                    }
-                  },
-                  "example": {
-                    "data": {
-                      "id": "11111111-1111-4111-8111-111111111111",
-                      "slug": "municipal-information",
-                      "status": "published",
-                      "created_at": "2026-09-21T00:00:00.000Z",
-                      "updated_at": "2026-09-21T00:00:00.000Z",
-                      "title": "Municipal information",
-                      "content": "Information about Talibon."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -2669,7 +2373,10 @@
         ],
         "tags": [
           "pages"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       },
       "delete": {
         "operationId": "PageContentController_remove_1",
@@ -2696,43 +2403,8 @@
           }
         ],
         "responses": {
-          "204": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Soft deleted; no response body."
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -2742,7 +2414,10 @@
         ],
         "tags": [
           "pages"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/news": {
@@ -3040,144 +2715,8 @@
           }
         },
         "responses": {
-          "201": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "id",
-                        "title",
-                        "slug",
-                        "summary",
-                        "content",
-                        "category",
-                        "date",
-                        "image_url",
-                        "file_url",
-                        "author",
-                        "status",
-                        "created_at",
-                        "updated_at"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "title": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "slug": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "summary": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "content": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "category": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "date": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "image_url": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "file_url": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "author": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "status": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "nullable": false
-                        }
-                      }
-                    }
-                  },
-                  "example": {
-                    "data": {
-                      "id": "11111111-1111-4111-8111-111111111111",
-                      "slug": "municipal-information",
-                      "status": "published",
-                      "created_at": "2026-09-21T00:00:00.000Z",
-                      "updated_at": "2026-09-21T00:00:00.000Z",
-                      "title": "Municipal information",
-                      "content": "Information about Talibon.",
-                      "summary": "Municipal update.",
-                      "category": "UPDATE",
-                      "date": "2026-09-21",
-                      "image_url": null,
-                      "file_url": null,
-                      "author": null
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -3187,7 +2726,10 @@
         ],
         "tags": [
           "news"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/news/manage": {
@@ -3845,144 +3387,8 @@
           }
         },
         "responses": {
-          "200": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "id",
-                        "title",
-                        "slug",
-                        "summary",
-                        "content",
-                        "category",
-                        "date",
-                        "image_url",
-                        "file_url",
-                        "author",
-                        "status",
-                        "created_at",
-                        "updated_at"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "title": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "slug": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "summary": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "content": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "category": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "date": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "image_url": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "file_url": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "author": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "status": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "nullable": false
-                        }
-                      }
-                    }
-                  },
-                  "example": {
-                    "data": {
-                      "id": "11111111-1111-4111-8111-111111111111",
-                      "slug": "municipal-information",
-                      "status": "published",
-                      "created_at": "2026-09-21T00:00:00.000Z",
-                      "updated_at": "2026-09-21T00:00:00.000Z",
-                      "title": "Municipal information",
-                      "content": "Information about Talibon.",
-                      "summary": "Municipal update.",
-                      "category": "UPDATE",
-                      "date": "2026-09-21",
-                      "image_url": null,
-                      "file_url": null,
-                      "author": null
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -3992,7 +3398,10 @@
         ],
         "tags": [
           "news"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       },
       "delete": {
         "operationId": "NewsContentController_remove_1",
@@ -4019,43 +3428,8 @@
           }
         ],
         "responses": {
-          "204": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Soft deleted; no response body."
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -4065,7 +3439,10 @@
         ],
         "tags": [
           "news"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/services": {
@@ -4386,167 +3763,8 @@
           }
         },
         "responses": {
-          "201": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "id",
-                        "name",
-                        "slug",
-                        "description",
-                        "purpose",
-                        "requirements",
-                        "processing_time",
-                        "fees",
-                        "office_responsible",
-                        "office_hours",
-                        "contact_info",
-                        "physical_address",
-                        "status",
-                        "downloadable_forms",
-                        "created_at",
-                        "updated_at"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "name": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "slug": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "description": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "purpose": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "requirements": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "processing_time": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "fees": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "office_responsible": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "office_hours": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "contact_info": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "physical_address": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "status": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "downloadable_forms": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "additionalProperties": true
-                          }
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "nullable": false
-                        }
-                      }
-                    }
-                  },
-                  "example": {
-                    "data": {
-                      "id": "11111111-1111-4111-8111-111111111111",
-                      "slug": "municipal-information",
-                      "status": "available",
-                      "created_at": "2026-09-21T00:00:00.000Z",
-                      "updated_at": "2026-09-21T00:00:00.000Z",
-                      "name": "Municipal information",
-                      "description": "Service details.",
-                      "office_responsible": "mayor",
-                      "requirements": [],
-                      "processing_time": "3 to 5 business days",
-                      "fees": "None",
-                      "purpose": null,
-                      "office_hours": "Monday to Friday, 8:00 AM - 5:00 PM",
-                      "contact_info": null,
-                      "physical_address": null,
-                      "downloadable_forms": []
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -4556,7 +3774,10 @@
         ],
         "tags": [
           "services"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/services/manage": {
@@ -5283,167 +4504,8 @@
           }
         },
         "responses": {
-          "200": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ],
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "id",
-                        "name",
-                        "slug",
-                        "description",
-                        "purpose",
-                        "requirements",
-                        "processing_time",
-                        "fees",
-                        "office_responsible",
-                        "office_hours",
-                        "contact_info",
-                        "physical_address",
-                        "status",
-                        "downloadable_forms",
-                        "created_at",
-                        "updated_at"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "name": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "slug": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "description": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "purpose": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "requirements": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "processing_time": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "fees": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "office_responsible": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "office_hours": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "contact_info": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "physical_address": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "status": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "downloadable_forms": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "additionalProperties": true
-                          }
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "nullable": false
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "nullable": false
-                        }
-                      }
-                    }
-                  },
-                  "example": {
-                    "data": {
-                      "id": "11111111-1111-4111-8111-111111111111",
-                      "slug": "municipal-information",
-                      "status": "available",
-                      "created_at": "2026-09-21T00:00:00.000Z",
-                      "updated_at": "2026-09-21T00:00:00.000Z",
-                      "name": "Municipal information",
-                      "description": "Service details.",
-                      "office_responsible": "mayor",
-                      "requirements": [],
-                      "processing_time": "3 to 5 business days",
-                      "fees": "None",
-                      "purpose": null,
-                      "office_hours": "Monday to Friday, 8:00 AM - 5:00 PM",
-                      "contact_info": null,
-                      "physical_address": null,
-                      "downloadable_forms": []
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -5453,7 +4515,10 @@
         ],
         "tags": [
           "services"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       },
       "delete": {
         "operationId": "ServiceContentController_remove_1",
@@ -5480,43 +4545,8 @@
           }
         ],
         "responses": {
-          "204": {
-            "headers": {
-              "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "Vary": {
-                "description": "Includes X-API-Version and CORS Origin.",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "description": "Soft deleted; no response body."
-          },
-          "400": {
-            "description": "Invalid body, query, UUID or department reference."
-          },
-          "401": {
-            "description": "Missing, invalid or ended session."
-          },
-          "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
-          },
-          "404": {
-            "description": "Missing, deleted or non-public content."
-          },
-          "409": {
-            "description": "Slug already exists, including soft-deleted records."
-          },
-          "429": {
-            "description": "Rate limit exceeded."
-          },
-          "500": {
-            "description": "Storage unavailable."
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -5526,7 +4556,10 @@
         ],
         "tags": [
           "services"
-        ]
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/admin/users": {
@@ -6017,20 +5050,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": ""
-          },
-          "400": {
-            "description": "Invalid date range or cursor"
-          },
-          "401": {
-            "description": "Missing, expired or revoked session"
-          },
-          "403": {
-            "description": "Verified administrative permission required"
-          },
-          "503": {
-            "description": "Report storage unavailable"
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -6038,10 +5059,12 @@
             "bearer": []
           }
         ],
-        "summary": "Export submission rows by creation date (includes soft-deleted history)",
+        "summary": "Retired in R2",
         "tags": [
           "Admin reports"
-        ]
+        ],
+        "deprecated": true,
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/admin/reports/payments": {
@@ -6113,20 +5136,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": ""
-          },
-          "400": {
-            "description": "Invalid date range or cursor"
-          },
-          "401": {
-            "description": "Missing, expired or revoked session"
-          },
-          "403": {
-            "description": "Verified administrative permission required"
-          },
-          "503": {
-            "description": "Report storage unavailable"
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
           }
         },
         "security": [
@@ -6134,10 +5145,12 @@
             "bearer": []
           }
         ],
-        "summary": "Export payment ledger rows by creation date; amounts are decimal strings",
+        "summary": "Retired in R2",
         "tags": [
           "Admin reports"
-        ]
+        ],
+        "deprecated": true,
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
       }
     },
     "/api/admin/reports/user-activity": {
@@ -6388,6 +5401,264 @@
         "tags": [
           "Search"
         ]
+      }
+    },
+    "/api/forms/certificate": {
+      "get": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      },
+      "post": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/forms/submissions": {
+      "get": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      },
+      "post": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/forms/certificate/{ticketId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/forms/submissions/{ticketId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/forms/admin/submissions": {
+      "get": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/forms/admin/submissions/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/forms/certificate/{id}/status": {
+      "put": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/forms/admin/submissions/{id}/status": {
+      "put": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/payments/create-checkout-session": {
+      "post": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/payments/submission-checkout": {
+      "post": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/payments/submissions/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/payments/webhook": {
+      "post": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/notifications/process": {
+      "post": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "parameters": [],
+        "deprecated": true,
+        "summary": "Retired in R2",
+        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.",
+        "responses": {
+          "410": {
+            "description": "Online services are not available. Please visit the appropriate municipal office."
+          }
+        }
       }
     }
   },

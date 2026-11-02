@@ -1,6 +1,8 @@
 # R2 security model and risk register
 
-Increment 2 adds locally tested parameterized repositories, strict TLS configuration, bounded transactions, app-owned active-staff RBAC, optimistic versions/last-admin protection, public visibility views, narrow database grants and atomic mutation auditing. [Implementation boundaries](DATABASE_OPERATIONS.md) and [test/audit evidence](INCREMENT_2_REPORT.md) define what is verified. The module is unmounted: R1 guards and Increment 1 retirement remain unchanged. No Neon identity/session/MFA or object delivery claim is made. Dependency advisories, hosted source closure and release gates remain open. R2-08's new metadata-write atomicity is locally tested; existing async request telemetry remains unchanged.
+Increment 3 update (2026-11-02): the branch now wires staff-only Better Auth 1.7.15 sessions, TOTP/backup-code MFA, active app-owned roles, a fail-closed staff guard, five-minute step-up for account changes, session revocation, and transactional staff audit. Legacy Supabase login/session and admin-user/report routes return 410. Local disposable-PostgreSQL and isolated Neon development-branch qualification are separate evidence; see [the Increment 3 report](INCREMENT_3_REPORT.md). This does not qualify production or retire Supabase from unrelated legacy/public-read or storage dependencies.
+
+The following paragraphs describe the Increment 2 baseline. Increment 2 adds locally tested parameterized repositories, strict TLS configuration, bounded transactions, app-owned active-staff RBAC, optimistic versions/last-admin protection, public visibility views, narrow database grants and atomic mutation auditing. [Implementation boundaries](DATABASE_OPERATIONS.md) and [test/audit evidence](INCREMENT_2_REPORT.md) define that baseline. At that checkpoint, the module was unmounted and no Neon identity/session/MFA claim was made. Dependency advisories, hosted source closure and release gates remain open. R2-08's metadata-write atomicity is locally tested; existing async request telemetry remains unchanged.
 
 Status: proposed controls; R1 remains implemented. See [execution evidence](PRODUCTION_ACCEPTANCE.md) for what was actually tested.
 
@@ -41,8 +43,8 @@ The response-finish `AuditMiddleware` currently persists asynchronously. Preserv
 
 | ID | Severity / state | Finding and required action | Owner / exit evidence |
 |---|---|---|---|
-| R2-01 | P0 Blocked | Neon MFA is roadmap-only; do not weaken staff MFA requirement | Security + provider; supported capability and bypass/recovery tests |
-| R2-02 | P0 Blocked | Closed provider registration and Nest live session bridge unverified | Backend/security; direct-signup denial, expiry/revocation tests |
+| R2-01 | P0 Qualification only | Staff MFA is implemented with pinned upstream Better Auth on PostgreSQL, not Neon Managed Auth; local and isolated dev-branch test results do not authorize production | Security + provider; repeatable bypass/recovery and target-specific production approval |
+| R2-02 | P0 Qualification only | Closed registration and the Nest cookie-session bridge have local/isolated dev evidence; production identity, mail, recovery and session operations remain unqualified | Backend/security; direct-signup denial, expiry/revocation tests and approved production evidence |
 | R2-03 | P0 Pending credentials | Actual schema/auth/buckets/jobs differ potentially from canonical source | DBA/ops; read-only catalog + reconciled manifest |
 | R2-04 | P0 Pending approval | Placeholder seeds and hardcoded civic claims lack complete official provenance | Municipal content owners; signed approved content manifest |
 | R2-05 | P0 Locally implemented; hosted closure pending | Increment 1 retires app routes and local worker/edge entry points; direct hosted grants/signup/jobs remain unverified | [Shutdown evidence and release procedure](DEFERRED_WORKFLOW_SHUTDOWN.md); clone rehearsal and operator shutdown evidence required |

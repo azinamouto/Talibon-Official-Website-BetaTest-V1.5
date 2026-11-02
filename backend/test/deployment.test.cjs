@@ -31,7 +31,7 @@ test('deployment entry boots concurrently and retains DTO metadata', async () =>
       body: JSON.stringify({ email: 'bad', password: '', role: 'admin' }),
     })));
     for (const res of responses) {
-      assert.equal(res.status, 400, await res.text());
+      assert.equal(res.status, 410, await res.text());
       assert.ok(res.headers.get('x-request-id'));
       assert.match(res.headers.get('cache-control'), /no-store/);
     }
@@ -44,12 +44,12 @@ test('deployment entry boots concurrently and retains DTO metadata', async () =>
     const malformed = await fetch(base + '/api/auth/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{',
     });
-    assert.equal(malformed.status, 400);
+    assert.equal(malformed.status, 410);
     const oversized = await fetch(base + '/api/auth/login', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: 'x'.repeat(1024 * 1024) }),
     });
-    assert.equal(oversized.status, 413);
+    assert.equal(oversized.status, 410);
   } finally {
     await new Promise(resolve => server.close(resolve));
   }

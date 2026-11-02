@@ -2,6 +2,14 @@
 
 Checked 2026-11-01 using official provider documentation. These are application-owned proposed interfaces, **not invented Neon SDK method names**. No account, credential, hosted API or integration was exercised. No Neon SDK is present in the three baseline lockfiles.
 
+## Increment 3 authentication update (2026-11-02)
+
+The original capability table below records the earlier evaluation of **Neon Managed Auth**. Increment 3 instead implements the pinned upstream Better Auth package (1.7.15) against app-owned PostgreSQL tables on the isolated Neon development branch. This is not a claim that Neon Managed Auth provides MFA, nor a production qualification. The local and hosted evidence and exact blockers belong in [the Increment 3 report](INCREMENT_3_REPORT.md).
+
+The current contract is staff-only: no citizen login, public registration, or legacy Supabase session exchange. Every `/api/auth/*`, `/api/admin/users/*`, and `/api/admin/reports/*` route returns 410 before body parsing or provider access. Staff sign-in, MFA, password recovery, and sign-out are under `/api/staff-auth/*`; verified staff identity is read at `/api/staff/me`. Active app-owned `admin`/`editor` role records, verified email, enabled MFA, a live eight-hour non-refreshing HttpOnly/SameSite=Strict cookie session, and MFA assurance are required. Production cookies are Secure. State-changing requests require same-origin JSON; staff access mutations additionally require assurance refreshed within five minutes.
+
+Only admins may list staff or staff authentication/access audit events. Role and activation changes require the current account version, revoke all target sessions, protect the last active admin, and atomically append audit records. Session revocation is audited. Directory and audit queries are bounded and paginated. Errors do not return provider records, cookies, recovery tokens, passwords, or MFA secrets. The global staff guard fails closed for unmarked routes and evaluates app-owned route role/permission metadata. No production migration, push, merge, or deployment is part of this qualification.
+
 ## Capability evidence
 
 | Requirement | Evidence | Decision |
@@ -20,6 +28,8 @@ Checked 2026-11-01 using official provider documentation. These are application-
 | Storage credentials | Scoped Neon credentials map to S3 keys; read/write scopes documented | Server secrets only; verify branch scope, expiry, rotation and revocation in the target account ([authentication](https://neon.com/docs/storage/authentication)) |
 
 The supported-plugin list is narrower than upstream Better Auth; upstream features are not proof of Neon support. No authentication migration component proceeds beyond design/test scaffolding until the blockers above are resolved. Keep the existing R1 authentication working during discovery. Do not silently choose another auth provider or self-host Better Auth. [Neon plugins](https://neon.com/docs/auth/guides/plugins).
+
+The paragraph above is the historical Increment 0/1 gate and is superseded for the Increment 3 staff-only scope by the implementation update above. The distinction between self-managed Better Auth on PostgreSQL and Neon Managed Auth remains important.
 
 ## Availability, limits and costs
 

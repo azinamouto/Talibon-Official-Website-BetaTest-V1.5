@@ -4,6 +4,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "test:auth:db": "npm run build:tsc && powershell -NoProfile -ExecutionPolicy Bypass -File test/run-auth-database-tests.ps1",
+    "test:auth:neon": "npm run build:tsc && node scripts/r2-auth-neon-qualify.cjs",
     "db:r2:migrate": "npm run build:tsc && node scripts/r2-migrate.cjs",
     "db:r2:transfer": "node scripts/r2-transfer.cjs",
     "test:r2:db": "npm run build:tsc && powershell -NoProfile -ExecutionPolicy Bypass -File test/run-r2-database-tests.ps1",
@@ -32,6 +34,7 @@
     "@nestjs/swagger": "11.4.7",
     "@supabase/supabase-js": "^2.101.1",
     "axios": "^1.15.0",
+    "better-auth": "1.7.15",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.7",

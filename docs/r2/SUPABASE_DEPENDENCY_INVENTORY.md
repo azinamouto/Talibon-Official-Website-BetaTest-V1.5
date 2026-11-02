@@ -2,6 +2,10 @@
 
 Status: repository inspection completed at R1 `fd2fe689b2f442f22409ca9c7a2699e3cd0c25be`; deployed account inventory pending credentials. See [machine-readable source inventory](evidence/source-inventory.json) for file/line references, literal table/RPC calls, SQL declarations and migration SHA-256 values. The lexical scan covers tracked runtime source, workflows, ops, edge functions, package manifests/locks and example environments; it is not an import-graph or live-bucket audit.
 
+## Increment 3 authentication delta (2026-11-02)
+
+The inventory below is a historical R1 baseline, not the current branch dependency graph. Increment 3 adds Better Auth 1.7.15 and uses the existing `pg` dependency for staff-only cookie sessions on PostgreSQL. Supabase login/refresh/signup/session/logout and R1 user-management/report APIs return 410; no new auth code calls Supabase. The browser staff context uses same-origin Better Auth endpoints. Existing Supabase packages and unrelated public-read/storage dependencies remain; this delta does not claim whole-project Supabase removal. See [Increment 3 authentication contracts](AUTH_AND_STORAGE_CONTRACTS.md) and [qualification report](INCREMENT_3_REPORT.md).
+
 ## Dependency graph
 
 | Manifest/lock | Direct requirement | Locked SDK |

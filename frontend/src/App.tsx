@@ -20,8 +20,8 @@ import NewsCategoryPage from "./pages/NewsCategoryPage";
 import NewsDetailPage from "./pages/NewsDetailPage";
 import DownloadsPage from "./pages/DownloadsPage";
 import ServiceInfoPage from "./pages/ServiceInfoPage";
-import Login from "./pages/Login";
-import AuthCallback from "./pages/AuthCallback";
+import Login from "./pages/StaffLogin";
+import StaffPortal from "./pages/StaffPortal";
 import EServicesPage from "./pages/EServicesPage";
 import AdminDashboard, { AdminPreview } from "./pages/SprintAdminDashboard";
 import AccessDenied from "./pages/AccessDenied";
@@ -30,7 +30,7 @@ import TourismMapPage from "./pages/TourismMapPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ScrollToTop from "./components/ScrollToTop";
 import { aboutApi, executiveApi, legislativeApi, transparencyApi, tourismApi, formsApi } from "./services/api";
-import { AuthProvider } from "./contexts/SupabaseAuthContext";
+import { StaffAuthProvider as AuthProvider } from "./contexts/StaffAuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 // Modular Page/View Components
@@ -77,11 +77,11 @@ const router = createBrowserRouter(createRoutesFromElements(
                     {/* Public routes remain available while auth initializes. */}
                     <Route>
                       <Route path="/" element={<Home />} />
-                      <Route path="/login" element={<Login />} />
+                      <Route path="/login" element={<Login />} /><Route path="/staff/login" element={<Login />} />
                       <Route path="/e-services/*" element={<EServicesPage />} />
                       <Route path="/forms/*" element={<EServicesPage />} />
                       <Route path="/payment/*" element={<EServicesPage />} />
-                      <Route path="/auth/callback" element={<AuthCallback />} />
+                      <Route path="/auth/callback" element={<Navigate to="/staff/login" replace />} />
           
                       <Route path="/downloads" element={<DownloadsPage />} />
                       <Route path="/services/:slug" element={<ServiceInfoPage />} />
@@ -146,11 +146,11 @@ const router = createBrowserRouter(createRoutesFromElements(
                       <Route path="*" element={<NotFound />} />
                     </Route>
                     {import.meta.env.DEV && import.meta.env.VITE_DASHBOARD_PREVIEW === "true" && <Route path="/admin-preview" element={<AdminPreview />} />}
-                    <Route element={<ProtectedRoute roles={STAFF_ROLES} />}>
-                      <Route path="/admin" element={<AdminDashboard />} />
-                      <Route path="/dashboard" element={<AdminDashboard />} />
-                      <Route path="/cms" element={<AdminDashboard />} />
-                      <Route path="/manage/*" element={<AdminDashboard />} />
+                    <Route>
+                      <Route path="/admin" element={<StaffPortal />} />
+                      <Route path="/dashboard" element={<StaffPortal />} />
+                      <Route path="/cms" element={<StaffPortal />} />
+                      <Route path="/manage/*" element={<StaffPortal />} />
                     </Route>
                   </Route>
 

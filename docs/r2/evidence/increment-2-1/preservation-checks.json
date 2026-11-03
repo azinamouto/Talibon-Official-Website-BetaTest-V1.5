@@ -1,0 +1,27 @@
+{
+  "base": "3419b7bc0f6803e7651622de57f69e91dbe194c7",
+  "increment2Ancestor": true,
+  "preservedScopes": [
+    "Agent",
+    ".agents",
+    ".codex",
+    "frontend",
+    "api",
+    "ops",
+    "supabase",
+    "docs/r2/INCREMENT_0_REPORT.md",
+    "docs/r2/INCREMENT_1_REPORT.md",
+    "docs/r2/INCREMENT_2_REPORT.md",
+    "backend/database/migrations",
+    "backend/src/api",
+    "backend/src/auth",
+    "backend/src/app.module.ts"
+  ],
+  "preserved": true,
+  "lockedPackageChanges": [],
+  "notes": [
+    "Existing versioned migrations and Agent files unchanged.",
+    "Only pg version range pinned; installed/locked dependency versions unchanged.",
+    "No push, merge, deployment, production access, auth/storage integration or Increment 3."
+  ]
+}

@@ -68,8 +68,9 @@ export class PgRepositories implements PublicContentRepository, MediaRepository,
   publish(identity: VerifiedStaffIdentity, id: string, version: number, published: boolean, requestId: string) {
     return this.db.transaction(async tx => {
       const actor = await authorize(tx, identity);
-      const [row] = await tx.query(`UPDATE app.media_assets SET publication=$1,published_at=$2,updated_by=$3,version=version+1,updated_at=now()
-        WHERE id=$4 AND version=$5 AND deleted_at IS NULL RETURNING *`, [published ? 'published' : 'draft',published ? new Date() : null,actor.id,id,version]);
+      const [row] = await tx.query(`UPDATE app.media_assets SET publication=$1,published_at=CASE WHEN $1='published' THEN now() ELSE NULL END,
+        updated_by=$2,version=version+1,updated_at=now()
+        WHERE id=$3 AND version=$4 AND deleted_at IS NULL RETURNING *`, [published ? 'published' : 'draft',actor.id,id,version]);
       if (!row) throw new DatabaseError('conflict');
       await audit(tx,actor.id,published ? 'media.publish' : 'media.unpublish',id,requestId);
       return row;

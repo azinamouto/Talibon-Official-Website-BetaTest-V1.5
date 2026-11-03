@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
-import { useAuth } from "../contexts/SupabaseAuthContext";
+import { useAuth } from "../contexts/StaffAuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import GlobalSearch from "./GlobalSearch";
 import { useUI } from "../contexts/UIContext";

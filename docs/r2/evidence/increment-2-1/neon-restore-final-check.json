@@ -1,0 +1,4 @@
+{
+    "exit":  0,
+    "command":  "node backend/scripts/r2-neon-qualify.cjs --restore-run=r2_q_9d0f60e4 --verify-restored"
+}

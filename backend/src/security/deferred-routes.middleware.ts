@@ -13,7 +13,8 @@ export function deferredRoutes(req: Request, res: Response, next: NextFunction) 
   }
   const read = ['GET', 'HEAD'].includes(req.method);
   const retired = /^\/api\/(payments|notifications|chat)(?:\/|$)/.test(path)
-    || /^\/api\/auth\/signup(?:\/|$)/.test(path)
+    || /^\/api\/auth(?:\/|$)/.test(path)
+    || /^\/api\/admin\/(users|reports)(?:\/|$)/.test(path)
     || (/^\/api\/forms(?:\/|$)/.test(path) && !(read && publicForms.test(path)))
     || /^\/api\/admin\/reports\/(submissions|payments)(?:\/|$)/.test(path)
     || (!read && req.method !== 'OPTIONS' && /^\/api\/(pages|news|services)(?:\/|$)/.test(path));

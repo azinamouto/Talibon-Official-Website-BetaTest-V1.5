@@ -1,0 +1,26 @@
+[
+    {
+        "exit":  0,
+        "command":  "npm run lint --prefix frontend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm run build --prefix frontend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm test --prefix frontend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm run test:react --prefix frontend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm run test:browser --prefix frontend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm run test:eservices --prefix frontend"
+    }
+]

@@ -1,5 +1,21 @@
 # Neon migration plan
 
+## Increment 2.1 development qualification — 2026-11-02
+
+The unchanged `001_foundation.sql` and `002_privileges.sql` are now applied to the existing development `neondb` in project `misty-silence-69777617`, branch `br-bitter-fire-aouffr8u` (`dev-talgov-r2-foundation`), AWS Singapore. This supersedes the historical offline-only status below. No production/source migration or parent-main modification occurred. [Qualification report](INCREMENT_2_1_REPORT.md).
+
+Run `npm run test:r2:neon --prefix backend` only for this authorized development target. The dedicated runner resolves authenticated control-plane metadata and rejects a wrong organization, project, region, branch ID/name/parent/default status, endpoint or URL before connecting. It requires a direct migration URL and pooled runtime URL with verified TLS and mandatory channel binding. The existing general migration/transfer CLIs **retain their loopback-only guards**; no generic remote-write flag was added.
+
+Initial bootstrap requires the empty `neondb`, absent qualification roles/databases, and the setup credential file. It creates a NOLOGIN runtime group and separate restricted SCRAM login roles; migration credentials then perform DDL. Passwords are random and saved only in ignored user-ACL-protected files. Bootstrap CREATE ROLE/CREATE DATABASE uses provisioning credentials; temporary SET membership used to assign scratch database ownership is revoked in `finally`. It never assigns CREATEROLE/CREATEDB to either application role. `.env.local` ends with runtime credentials only; `.env.neon-provisioning` and `.env.neon-qualification` are operator files and must stay out of deployment.
+
+The initial dry run rolls back both migrations and ledger, then explicit apply commits both atomically. Subsequent runs replay/check checksums and create **fresh** `r2_q_<8-hex>_{test,source,upgrade,restore}` databases on the same validated branch. Tests reuse existing synthetic fixtures, repositories, export/import/reconciliation and batch rollback functions. They check upgrade, failed DDL rollback, drift, permissions, publication, constraints, audit atomicity, timeouts and last-admin concurrency. The publication repository now takes its timestamp from PostgreSQL, with an application-clock-skew regression.
+
+Recovery uses direct `pg_dump -Fc` and `pg_restore --exit-on-error --single-transaction` into a verified empty scratch database, then compares all nine app tables' canonical row digests, ledger checksums, constraints, indexes, views, functions and effective table/column ACLs. Passwords travel in child environment variables, never argv. Windows libpq receives an explicit CA file containing Node's bundled public trust anchors; `verify-full` and required binding remain on. `--restore-run=r2_q_<8-hex>` resumes backup/restore for a retained run; `--verify-restored` with that flag verifies an already restored database without overwriting it. `--prepare-only` verifies roles, migration replay, TLS, concurrent pooled transactions and safe authentication failures without creating a fresh suite.
+
+No down migration, DROP database, TRUNCATE, `--clean`, production restore or reset-from-parent is used. Synthetic test state and protected local archives remain available for review. Do not treat those rows as approved LGU information. Logical recovery on a single development branch is verified; Neon PITR/branch restore, cross-project disaster recovery, production capacity and approved real-data reconciliation remain separate gates. Stop after Increment 2.1.
+
+## Historical Increment 2 / design baseline
+
 Increment 2: the foundation and rehearsal tooling are implemented. Follow [DATABASE_OPERATIONS.md](DATABASE_OPERATIONS.md) for actual filenames, dry-run/apply commands, reviewed row mapping, count/digest reconciliation and rollback/restore constraints. CLI target writes are limited to loopback `r2_*` databases. No source/Neon credentials or production data were used. Proposed filenames/versions below are historical design only; search, live storage and production cutover remain deferred. [Execution report](INCREMENT_2_REPORT.md).
 
 Status: design only. No source/target data connection, export, import or migration executed in Increment 0.

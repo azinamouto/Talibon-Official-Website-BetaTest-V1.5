@@ -11,3 +11,4 @@ backend/test/load/results/
 .vercel/
 ops/evidence/
 ops/backups/
+.neon

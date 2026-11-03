@@ -1,0 +1,102 @@
+
+> talgov-backend@0.0.0 test:r2:neon
+> npm run build:tsc && node scripts/r2-neon-qualify.cjs
+
+
+> talgov-backend@0.0.0 build:tsc
+> tsc -p tsconfig.json && node --input-type=commonjs -e "require('node:fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))"
+
+PASS: exact project, organization, region, nondefault development branch and endpoint verified
+PASS: migration-direct verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_migration
+PASS: runtime-pooled verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_app
+Migration dry run: {"migrations":2,"applied":0}
+Migration apply: {"migrations":2,"applied":0}
+PASS: role flags, memberships, DDL/temporary objects, role escalation and ledger denials
+PASS: 8 concurrent pooled transactions, pool bound 2, no transaction-setting leakage; wrong password sanitized
+PASS: .env.local uses runtime login only; provisioning and migration credentials isolated in ignored ACL-protected operator files
+Isolated hosted databases: {"test":"r2_q_9d0f60e4_test","source":"r2_q_9d0f60e4_source","upgrade":"r2_q_9d0f60e4_upgrade","restore":"r2_q_9d0f60e4_restore"}
+TAP version 13
+# Subtest: migrations replay, upgrade, checksum drift and failed DDL roll back atomically
+ok 1 - migrations replay, upgrade, checksum drift and failed DDL roll back atomically
+  ---
+  duration_ms: 5807.0474
+  type: 'test'
+  ...
+# Subtest: TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets
+ok 2 - TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets
+  ---
+  duration_ms: 2.3799
+  type: 'test'
+  ...
+# Subtest: staff authorization rejects unknown/inactive identities, missing assurance and editor admin actions
+ok 3 - staff authorization rejects unknown/inactive identities, missing assurance and editor admin actions
+  ---
+  duration_ms: 3410.4908
+  type: 'test'
+  ...
+# Subtest: media CRUD, parameterization, optimistic conflict, publication and soft deletion are audited
+ok 4 - media CRUD, parameterization, optimistic conflict, publication and soft deletion are audited
+  ---
+  duration_ms: 8397.5805
+  type: 'test'
+  ...
+# Subtest: constraints reject invalid metadata, duplicate keys, missing FKs and unsupported roles
+ok 5 - constraints reject invalid metadata, duplicate keys, missing FKs and unsupported roles
+  ---
+  duration_ms: 4333.7783
+  type: 'test'
+  ...
+# Subtest: public content filters drafts, deleted, future and revoked provenance; runtime cannot edit content
+ok 6 - public content filters drafts, deleted, future and revoked provenance; runtime cannot edit content
+  ---
+  duration_ms: 4092.2138
+  type: 'test'
+  ...
+# Subtest: runtime least privilege prevents DDL, approval, readiness, audit tampering and schema history changes
+ok 7 - runtime least privilege prevents DDL, approval, readiness, audit tampering and schema history changes
+  ---
+  duration_ms: 5035.3868
+  type: 'test'
+  ...
+# Subtest: revision immutability and content/media foreign keys preserve referenced history
+ok 8 - revision immutability and content/media foreign keys preserve referenced history
+  ---
+  duration_ms: 1511.3679
+  type: 'test'
+  ...
+# Subtest: audit failure rolls back mutation; failed transactions release a usable connection
+ok 9 - audit failure rolls back mutation; failed transactions release a usable connection
+  ---
+  duration_ms: 1958.2167
+  type: 'test'
+  ...
+# Subtest: statement, lock, idle transaction and pool acquisition timeouts fail safely and recover
+ok 10 - statement, lock, idle transaction and pool acquisition timeouts fail safely and recover
+  ---
+  duration_ms: 5876.718
+  type: 'test'
+  ...
+# Subtest: last-admin protection and concurrent demotion cannot remove all active admins
+ok 11 - last-admin protection and concurrent demotion cannot remove all active admins
+  ---
+  duration_ms: 1731.4594
+  type: 'test'
+  ...
+# Subtest: snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit
+ok 12 - snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit
+  ---
+  duration_ms: 9870.1214
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 56366.8163
+PASS: hosted direct logical backup/restore: 9 tables / 21 synthetic rows; exact digests, ledger, indexes, constraints, views, ACLs and functions
+Archive SHA256: deafba91fa16555fcecb28969bf03c20e82353a35a337b67d59aeb7ed0ff357e
+Protected recovery artifacts: C:\Users\admin\AppData\Local\Temp\talgov-neon-3c99fx

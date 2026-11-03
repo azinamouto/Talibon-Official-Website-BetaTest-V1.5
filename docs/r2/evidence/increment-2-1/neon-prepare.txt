@@ -1,0 +1,7 @@
+PASS: exact project, organization, region, nondefault development branch and endpoint verified
+PASS: migration-direct verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_migration
+PASS: runtime-pooled verified TLS and mandatory SCRAM-SHA-256-PLUS; login talgov_r2_app
+Migration dry run: {"migrations":2,"applied":2}
+PASS: dry run left no app schema
+Migration apply: {"migrations":2,"applied":2}
+PASS: role flags, memberships, DDL/temporary objects, role escalation and ledger denials

@@ -44,8 +44,22 @@ for (const width of [375, 1280]) test(`anonymous navigation and placeholder fit 
 });
 test('registration controls are absent while staff login and recovery remain', async ({ page }) => {
   await page.goto('/login?view=register');
-  await expect(page.getByRole('heading', { name: 'Sign in', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Staff sign in', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create account' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Forgot password?' }).click();
-  await expect(page.getByRole('heading', { name: 'Reset your password', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toBeVisible();
+  await expect(page.getByLabel('Staff email')).toBeVisible();
+  await expect(page.getByLabel('Password')).toHaveCount(0);
+});
+
+test('payments remain unavailable by default', async ({ page }) => {
+  const paymentRequests: string[] = [];
+  page.on('request', request => {
+    if (/\/api\/payments|checkout|xendit/i.test(request.url())) paymentRequests.push(request.url());
+  });
+  await page.goto('/payment/success?status=paid&submission=synthetic&receipt=forged');
+  await expect(page.getByRole('heading', { name: 'Electronic Services', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'To Be Implemented', exact: true })).toBeVisible();
+  await expect(page.getByText(/Payment successful|Payment confirmed|Official receipt/)).toHaveCount(0);
+  expect(paymentRequests).toEqual([]);
 });

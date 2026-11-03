@@ -1,0 +1,30 @@
+[
+    {
+        "exit":  0,
+        "command":  "npm run test:ops"
+    },
+    {
+        "exit":  1,
+        "command":  "npm audit --package-lock-only --audit-level=high --json"
+    },
+    {
+        "exit":  1,
+        "command":  "npm audit --package-lock-only --audit-level=high --json --omit=dev"
+    },
+    {
+        "exit":  1,
+        "command":  "npm audit --package-lock-only --audit-level=high --json --prefix backend"
+    },
+    {
+        "exit":  1,
+        "command":  "npm audit --package-lock-only --audit-level=high --json --prefix backend --omit=dev"
+    },
+    {
+        "exit":  1,
+        "command":  "npm audit --package-lock-only --audit-level=high --json --prefix frontend"
+    },
+    {
+        "exit":  1,
+        "command":  "npm audit --package-lock-only --audit-level=high --json --prefix frontend --omit=dev"
+    }
+]

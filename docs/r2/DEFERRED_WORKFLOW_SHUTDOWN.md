@@ -14,8 +14,8 @@ All retired categories use **410 Gone**, independently of credentials, role, bod
 | Checkout | POST `/api/payments/create-checkout-session` | 410, including malformed client amounts and return URLs |
 | Prospective checkout/status/settlement | `/api/payments/submission-checkout`, `/api/payments/submissions/:id`, `/api/payments/webhook`, `/api/payments/settlement`, all other `/api/payments/*` | 410; these additional browser-shaped routes were not implemented settlement APIs in R1 |
 | Deferred notifications | POST `/api/notifications/process`, entire `/api/notifications/*` | 410; module/provider unbound |
-| Citizen registration | `/api/auth/signup` and children | 410; direct browser SDK signup replaced with a local error; staff login/refresh/recovery/logout retained |
-| Workflow exports | `/api/admin/reports/submissions`, `/api/admin/reports/payments` | 410; `/api/admin/reports/user-activity` and user administration retain R1 authorization |
+| Legacy authentication | Entire `/api/auth/*` namespace, including login, refresh, signup, session and logout | 410 before body parsing or provider access; replaced by staff-only Better Auth endpoints under `/api/staff-auth/*`; no citizen login or public registration |
+| Legacy administration | `/api/admin/users/*` and `/api/admin/reports/*` | 410; staff roster, role/activation/session controls and authentication/access audit are available through MFA-protected `/api/staff/*` endpoints |
 | Broad content editing | Non-read methods under `/api/pages`, `/api/news`, `/api/services` (except CORS OPTIONS) | 410; public GET/HEAD and authorized management reads retained |
 | External assistant | `/api/chat/*` | 410; chatbot removed from public layout and backend provider unbound |
 
@@ -25,7 +25,7 @@ All retired categories use **410 Gone**, independently of credentials, role, bod
 
 GET/HEAD `/api/forms/downloadable`, `/api/forms/business-permits`, `/api/forms/building-permits`, `/api/forms/zoning-clearance` remain compatibility reads. `PublicFormsController` owns these without `FormsService` or a database dependency; equivalent `/api/public-forms/*` URLs are available. Other methods on the legacy forms URLs are retired. Existing source-held metadata (including `#` placeholder URLs) is preserved, not newly certified official download content.
 
-Inspection showed `/services` and `/services/:slug` already render read-only office guidance and requirements, with no application or payment controls. They remain available to satisfy preservation of public informational pages. This refines the tentative Increment 0 directory disposition. `/e-services/*`, every `/forms/*` and every `/payment/*` instead render the approved placeholder. Queries cannot select a wizard, track an application or assert a receipt. Homepage transaction advertisements, citizen signup, notification UI, broad content editor tabs, the GAD profiling entry and its separate portal action are unmounted. The GAD narrative page remains available. Staff account controls and security activity reports remain.
+Inspection showed `/services` and `/services/:slug` already render read-only office guidance and requirements, with no application or payment controls. They remain available to satisfy preservation of public informational pages. This refines the tentative Increment 0 directory disposition. `/e-services/*`, every `/forms/*` and every `/payment/*` instead render the approved placeholder. Queries cannot select a wizard, track an application or assert a receipt. Homepage transaction advertisements, citizen signup, notification UI, broad content editor tabs, the GAD profiling entry and its separate portal action are unmounted. The GAD narrative page remains available. R1 staff controls and user-activity reports are retired; Increment 3 replaces staff account control and staff authentication/access auditing with Better Auth sessions, active-staff RBAC, fresh-MFA mutations and append-only audit records.
 
 ## Jobs and source-side bypass inventory
 
@@ -41,7 +41,7 @@ Inspection showed `/services` and `/services/:slug` already render read-only off
 | Storage `citizen-vault`, `certificates` and any legacy attachment buckets | Citizen upload components unmounted | Deny direct citizen uploads/reads as required by archival policy; preserve public documents/media and staff account controls |
 | Supabase Auth public signup | Browser control removed and Nest signup retired | Disable hosted public registration; browser code cannot enforce provider settings |
 
-No notification schedule was found in checked-in GitHub workflows. This does not establish absence of hosted cron, database triggers, external workers or old deployed artifacts. Supabase is still required for retained R1 reads/auth/storage; its removal belongs to later increments.
+No notification schedule was found in checked-in GitHub workflows. This does not establish absence of hosted cron, database triggers, external workers or old deployed artifacts. Supabase remains in other legacy/public-read or storage dependencies; it is not used by the new Increment 3 staff authentication flow. Any broader Supabase removal belongs to later increments.
 
 ## Reviewed release procedure (not executed)
 

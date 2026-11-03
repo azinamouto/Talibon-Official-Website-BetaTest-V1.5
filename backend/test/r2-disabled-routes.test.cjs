@@ -35,6 +35,8 @@ const paths = [
   '/api/payments', '/api/payments/create-checkout-session', '/api/payments/submission-checkout',
   '/api/payments/submissions/id', '/api/payments/webhook', '/api/payments/settlement',
   '/api/notifications/process', '/api/notifications/unknown', '/api/auth/signup',
+  '/api/auth/login', '/api/auth/refresh', '/api/auth/me', '/api/auth/logout',
+  '/api/admin/users', '/api/admin/users/id', '/api/admin/reports/user-activity',
   '/api/admin/reports/submissions', '/api/admin/reports/payments', '/api/chat',
 ];
 for (const path of paths) test(`production AppModule retires all methods: ${path}`, async () => {
@@ -92,10 +94,10 @@ test('content mutations close before database access while account authorization
     assert.equal((await fetch(base + path + (method === 'POST' ? '' : '/id'), { method })).status,410);
   }
   assert.equal(calls,start);
-  assert.equal((await fetch(base + '/api/admin/users')).status,401);
-  assert.equal((await fetch(base + '/api/admin/reports/user-activity')).status,401);
-  assert.equal((await fetch(base + '/api/auth/me')).status,401);
-  assert.equal((await fetch(base + '/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' })).status,400);
+  assert.equal((await fetch(base + '/api/admin/users')).status,410);
+  assert.equal((await fetch(base + '/api/admin/reports/user-activity')).status,410);
+  assert.equal((await fetch(base + '/api/auth/me')).status,410);
+  assert.equal((await fetch(base + '/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' })).status,410);
 });
 test('retained public content and search still reach their read services', async () => {
   const { ContentService } = require('../dist/api/content/content.service');

@@ -4,6 +4,10 @@
 
 WP2's local PostgreSQL foundation, versioned DDL, repository/RBAC/atomic-audit boundaries and repeatable rehearsal tooling are implemented. [Operations contract](DATABASE_OPERATIONS.md); [validation and qualification](INCREMENT_2_REPORT.md). Hosted Neon tests, real source reconciliation, official mapping approvals and production cutover remain blocked/unverified. WP3-WP6 were not started. Historical package plans below are preserved.
 
+## Increment 3 status (2026-11-02)
+
+WP3's staff-only authentication implementation is in progress on `feat/talgov-r2-increment-3`, preserving the existing Increment 3 edits. Better Auth 1.7.15, app-owned active admin/editor roles, MFA, staff management/audit endpoints, legacy Supabase auth/admin retirement, and fail-closed route metadata authorization are implemented. The disposable PostgreSQL auth suite passed 8/8. Hosted Neon development-branch qualification and repository-wide regressions/builds/audits remain to be recorded in [the Increment 3 report](INCREMENT_3_REPORT.md). No production migration, push, merge, or deployment is authorized.
+
 Status at Increment 0: discovery documents implemented; runtime packages below are planned, blocked or pending inputs. Filenames marked **new** are proposals, not existing implementations. No later increment is authorized to bypass provider or release gates.
 
 ## Increment 1 status (2026-11-01)
@@ -57,9 +61,11 @@ Prerequisites: source inventory/reconciliation and schema review; credentials ne
 
 Exit: reviewed migrations, public reads through backend, no fabricated seed rows, explicit deployed-schema comparison and reconciliation result. Hosted evidence remains blocked without isolated credentials.
 
-## WP3 — Authentication (blocked)
+## WP3 — Authentication (historical gate plan; updated by Increment 3)
 
 Gate: verified provider MFA, closed registration and supported Nest session bridge. A generic Better Auth tutorial or compatible-looking SDK is insufficient.
+
+The original plan below proposed Neon Managed Auth and is retained as historical design. Increment 3 selected the pinned upstream Better Auth PostgreSQL adapter for staff-only sessions; see the current status above and [auth contracts](AUTH_AND_STORAGE_CONTRACTS.md). Neon qualification is limited to the approved development branch and does not satisfy production release gates.
 
 - **New** `backend/src/authentication/authentication.adapter.ts`, `neon-auth.adapter.ts`, `staff-policy.service.ts` after gate clearance; bind through Nest module.
 - Refactor `security/auth.guard.ts`, `permissions.ts`, `authenticated-request.ts`, `api/auth/*`, `api/admin/users.*`, auth-related audit paths.

@@ -1,5 +1,9 @@
 # R2 work packages and file-level implementation plan
 
+## Increment 4 status (2026-11-04)
+
+WP4 photo/document CMS, private Neon Object Storage adapter, repository/audit integration, offline object-copy/checksum tooling and staff UI are implemented on `feat/talgov-r2-increment-4`. [Operations](MEDIA_OPERATIONS.md) and [verification report](INCREMENT_4_REPORT.md) distinguish disposable PostgreSQL, mocked browser/API, live Neon storage and unrun hosted end-to-end gates. No production import, merge, push or deployment. WP5/WP6 remain outside this increment. The older package plans/status paragraphs below remain historical records.
+
 ## Increment 2 status (2026-11-01)
 
 WP2's local PostgreSQL foundation, versioned DDL, repository/RBAC/atomic-audit boundaries and repeatable rehearsal tooling are implemented. [Operations contract](DATABASE_OPERATIONS.md); [validation and qualification](INCREMENT_2_REPORT.md). Hosted Neon tests, real source reconciliation, official mapping approvals and production cutover remain blocked/unverified. WP3-WP6 were not started. Historical package plans below are preserved.

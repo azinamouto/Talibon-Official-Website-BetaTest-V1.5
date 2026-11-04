@@ -9,6 +9,8 @@ export class AuditMiddleware implements NestMiddleware {
   constructor(@Inject(SupabaseService) private readonly supabase: SupabaseService) {}
 
   use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    // Media mutations audit atomically in Neon; never send CMS events to Supabase.
+    if (/^\/api\/(admin\/media|media)(\/|$)/i.test(req.path)) { next(); return; }
     res.once('finish', () => {
       if (!req.path.startsWith('/api/auth') && ['GET', 'HEAD', 'OPTIONS'].includes(req.method) && res.statusCode < 400) return;
       const event = {

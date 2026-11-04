@@ -7,6 +7,8 @@ const { configureApp, createApiDocument } = require('../dist/configure-app');
 
 // Inspect production controllers without constructing database clients or listening.
 const definitions = [
+  ['media/media', 'MediaController', 'media/media', 'MediaService'],
+  ['media/media', 'PublicMediaController', 'media/media', 'MediaService'],
   ['auth/auth', 'AuthController', 'auth/auth', 'AuthService'],
   ['about/about', 'AboutController', 'about/about', 'AboutService'],
   ['content/pages', 'PageContentController', 'content/content', 'ContentService'],
@@ -25,7 +27,7 @@ async function exportDocument() {
   try {
     configureApp(app);
     const document = createApiDocument(app);
-    document.info.description += ' Checked-in scope: Sprint 1 authentication, Sprint 2 About/content, Sprint 4 admin and Sprint 5 search endpoints. Other APIs remain in the live document.';
+    document.info.description += ' Checked-in scope: legacy authentication/content/admin/search contracts, R2 staff authentication and Increment 4 photo/document media. Other APIs remain in the live document.';
     const output = JSON.stringify(document, null, 2) + '\n';
     const target = path.resolve(__dirname, '../../contracts/openapi.json');
     if (process.argv.includes('--check')) {

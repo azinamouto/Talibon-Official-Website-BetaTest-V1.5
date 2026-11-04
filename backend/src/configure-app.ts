@@ -34,6 +34,7 @@ export function configureApp(app: INestApplication) {
   app.use(new SecurityHeadersMiddleware().use);
   app.use(requestMetrics);
   app.use(deferredRoutes);
+  app.use('/api/admin/media/uploads', express.json({ limit: '3mb' }));
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ limit: '1mb', extended: false }));
   app.use((req, res, next) => {

@@ -20,7 +20,7 @@ import { TourismController } from "./api/tourism/tourism.controller";
 import { TourismService } from "./api/tourism/tourism.service";
 import { SupabaseService } from "./supabase.service";
 import { RateLimiterGuard } from "./security/rate-limiter.guard";
-import { AuthGuard } from "./security/auth.guard";
+import { StaffGuard } from "./authentication/staff.guard";
 import { CacheControlMiddleware } from "./security/cache-control.middleware";
 import { AllExceptionsFilter } from "./security/all-exceptions.filter";
 import { ContentService } from './api/content/content.service';
@@ -71,7 +71,7 @@ import { HealthController } from './api/health/health.controller';
     },
     {
       provide: APP_GUARD,
-      useClass: AuthGuard
+      useClass: StaffGuard
     },
     {
       provide: APP_FILTER,

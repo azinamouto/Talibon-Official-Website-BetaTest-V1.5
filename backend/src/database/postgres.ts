@@ -1,4 +1,37 @@
-import { Pool, PoolClient, PoolConfig, QueryResultRow } from 'pg';
+import { Client, Pool, PoolClient, PoolConfig, QueryResultRow } from 'pg';
+import { TLSSocket } from 'node:tls';
+
+// pg's supported enableChannelBinding option prefers PLUS but permits fallback.
+// Keep require fail-closed through the Pool Client extension point. These three
+// protocol hooks are version-sensitive: pg is pinned and downgrade tests gate upgrades.
+type SaslMessage = { mechanisms: string[] };
+type PgProtocol = {
+  connection: { stream: TLSSocket; emit(event: string, error: Error): void };
+  saslSession?: { mechanism: string };
+  _handleAuthSASL(message: SaslMessage): void;
+  _handleAuthSASLFinal(message: { data: string }): void;
+};
+const boundClients = new WeakSet<Client>();
+export class ChannelBoundClient extends Client {
+  _handleAuthSASL(message: SaslMessage) {
+    const protocol = this as unknown as PgProtocol;
+    if (!protocol.connection.stream.authorized || !message.mechanisms.includes('SCRAM-SHA-256-PLUS')) {
+      this._handleAuthCleartextPassword();
+      return;
+    }
+    (Client.prototype as unknown as PgProtocol)._handleAuthSASL.call(this, { mechanisms: ['SCRAM-SHA-256-PLUS'] });
+  }
+  _handleAuthCleartextPassword() {
+    (this as unknown as PgProtocol).connection.emit('error', new DatabaseError('unavailable'));
+  }
+  _handleAuthMD5Password() { this._handleAuthCleartextPassword(); }
+  _handleAuthSASLFinal(message: { data: string }) {
+    const protocol = this as unknown as PgProtocol;
+    const plus = protocol.saslSession?.mechanism === 'SCRAM-SHA-256-PLUS';
+    (Client.prototype as unknown as PgProtocol)._handleAuthSASLFinal.call(this, message);
+    if (plus && protocol.saslSession === null && protocol.connection.stream.authorized) boundClients.add(this);
+  }
+}
 
 export class DatabaseError extends Error {
   constructor(public readonly code: 'unavailable' | 'conflict' | 'invalid' | 'forbidden') {
@@ -16,16 +49,29 @@ export function sanitized(error: unknown): DatabaseError {
 export function connectionConfig(url: string, localTest = false): PoolConfig {
   try {
     const parsed = new URL(url);
-    if (!['postgres:', 'postgresql:'].includes(parsed.protocol) || !parsed.pathname.slice(1)) throw new Error();
+    if (!['postgres:', 'postgresql:'].includes(parsed.protocol) || !parsed.hostname || !parsed.pathname.slice(1) || parsed.hash) throw new Error();
     const local = ['127.0.0.1', 'localhost', '[::1]'].includes(parsed.hostname);
     // Reject URL options that could override TLS, timeouts, or search_path.
+    const seen = new Set<string>();
     for (const [key, value] of parsed.searchParams) {
-      if (key !== 'sslmode' || !['require', 'verify-full'].includes(value)) throw new Error();
+      if (seen.has(key)) throw new Error();
+      seen.add(key);
+      if (!(key === 'sslmode' && ['require', 'verify-full'].includes(value)) &&
+          !(key === 'channel_binding' && value === 'require')) throw new Error();
     }
-    if (localTest && !local) throw new Error();
+    if (localTest && (!local || seen.size)) throw new Error();
+    const bindingRequired = parsed.searchParams.get('channel_binding') === 'require';
+    // Translate validated security parameters into explicit pg options; pg URL
+    // parsing must not overwrite certificate verification or interpret require as prefer.
     parsed.search = '';
     return {
       connectionString: parsed.toString(), ssl: localTest ? false : { rejectUnauthorized: true },
+      enableChannelBinding: !localTest,
+      ...(bindingRequired ? { Client: ChannelBoundClient, onConnect: (client: Client) => {
+        // Reject trust/certificate-only authentication too. pg clears saslSession
+        // after successful SCRAM verification; observe the negotiated mechanism below.
+        if (!boundClients.has(client)) throw new DatabaseError('unavailable');
+      } } : {}),
       max: 2, connectionTimeoutMillis: 5000, idleTimeoutMillis: 10000,
       statement_timeout: 5000, query_timeout: 12000, lock_timeout: 2000, idle_in_transaction_session_timeout: 5000,
       application_name: 'talgov-r2',

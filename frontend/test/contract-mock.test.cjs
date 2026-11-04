@@ -8,8 +8,12 @@ test('mock serves OpenAPI examples, filtering, pagination, and explicit unsuppor
   const base = `http://127.0.0.1:${server.address().port}`;
   try {
     for (const [path, item] of Object.entries(contract.paths)) {
-      // Staff APIs have a separate Sprint 4 harness; search requires q and has dedicated tests.
+      // The fixture does not mock staff authorization; search requires q and has dedicated tests.
       if (path.includes('{') || path.includes('/manage') || path.startsWith('/api/admin/') || path === '/api/search') continue;
+      if (path === '/api/staff' || path.startsWith('/api/staff/')) {
+        assert.equal((await fetch(base + path)).status, 501, `${path} must not fake staff authorization`);
+        continue;
+      }
       for (const [method, operation] of Object.entries(item)) {
         if (!['get', 'post'].includes(method) || (method !== 'get' && !path.startsWith('/api/auth/'))) continue;
         if (operation.responses['410']) {

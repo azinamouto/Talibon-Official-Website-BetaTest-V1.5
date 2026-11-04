@@ -1,0 +1,113 @@
+{
+  "database": "neondb",
+  "tables": [
+    {
+      "tablename": "audit_events",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 8
+    },
+    {
+      "tablename": "content_asset_links",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 0
+    },
+    {
+      "tablename": "content_sources",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 1
+    },
+    {
+      "tablename": "import_batches",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 1
+    },
+    {
+      "tablename": "media_assets",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 3
+    },
+    {
+      "tablename": "media_categories",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 1
+    },
+    {
+      "tablename": "media_revisions",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 1
+    },
+    {
+      "tablename": "public_content",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 1
+    },
+    {
+      "tablename": "staff_accounts",
+      "tableowner": "talgov_r2_migration",
+      "syntheticRows": 4
+    }
+  ],
+  "ledger": [
+    {
+      "version": "001_foundation.sql",
+      "checksum": "b2a3f230afcd6fa060589714107946b0759f0e5cfb5018878d500d96ff2a195e"
+    },
+    {
+      "version": "002_privileges.sql",
+      "checksum": "761c527a55a88fa32ba9b7b27477a9ab6c7a39d02b46175619da16240a3c14fc"
+    }
+  ],
+  "views": [
+    {
+      "viewname": "published_content",
+      "viewowner": "talgov_r2_migration"
+    },
+    {
+      "viewname": "published_media",
+      "viewowner": "talgov_r2_migration"
+    }
+  ],
+  "roles": [
+    {
+      "rolname": "talgov_r2_app",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolcanlogin": true
+    },
+    {
+      "rolname": "talgov_r2_migration",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolcanlogin": true
+    },
+    {
+      "rolname": "talgov_runtime",
+      "rolsuper": false,
+      "rolcreatedb": false,
+      "rolcreaterole": false,
+      "rolreplication": false,
+      "rolbypassrls": false,
+      "rolcanlogin": false
+    }
+  ],
+  "scratchDatabases": [
+    "r2_q_15601cd9_restore",
+    "r2_q_15601cd9_source",
+    "r2_q_15601cd9_test",
+    "r2_q_15601cd9_upgrade",
+    "r2_q_9d0f60e4_restore",
+    "r2_q_9d0f60e4_source",
+    "r2_q_9d0f60e4_test",
+    "r2_q_9d0f60e4_upgrade",
+    "r2_restore",
+    "r2_source",
+    "r2_upgrade"
+  ],
+  "note": "Synthetic development qualification records retained. No LGU data was imported. Raw rows and credentials omitted."
+}

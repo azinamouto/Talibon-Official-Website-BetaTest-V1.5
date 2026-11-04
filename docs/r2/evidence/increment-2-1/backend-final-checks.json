@@ -1,0 +1,18 @@
+[
+    {
+        "exit":  0,
+        "command":  "npm test --prefix backend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm run lint --prefix backend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm run contracts:check --prefix backend"
+    },
+    {
+        "exit":  0,
+        "command":  "npm run test:r2:db --prefix backend"
+    }
+]

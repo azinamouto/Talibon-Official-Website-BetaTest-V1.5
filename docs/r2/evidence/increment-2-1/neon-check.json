@@ -1,0 +1,4 @@
+{
+    "exit":  0,
+    "command":  "npm run test:r2:neon --prefix backend"
+}

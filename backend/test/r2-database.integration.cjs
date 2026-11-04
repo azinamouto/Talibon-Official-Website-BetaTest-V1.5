@@ -8,9 +8,19 @@ const {PostgresDatabase,connectionConfig}=require('../dist/database/postgres.js'
 const {PgRepositories}=require('../dist/database/repositories.js');
 const {migrate,isolatedConfig}=require('../scripts/r2-migrate.cjs');
 const {digest,digestText,exportSnapshot,importBundle,reconcile,rollback}=require('../scripts/r2-transfer.cjs');
+const hosted=process.env.R2_NEON_QUALIFICATION==='true';
+const {verifyTarget,neonConfig}=require('../scripts/r2-neon-target.cjs');
+if (hosted) verifyTarget();
+const upgradeName=process.env.R2_TEST_UPGRADE_DATABASE || 'r2_upgrade';
+const sourceName=process.env.R2_TEST_SOURCE_DATABASE || 'r2_source';
+const testName=new URL(process.env.R2_TEST_DATABASE_URL).pathname.slice(1);
+if(hosted) for(const name of [testName,upgradeName,sourceName]) {
+  assert.ok(['neondb','r2_upgrade','r2_source'].includes(name) || /^r2_q_[a-f0-9]{8}_(test|source|upgrade)$/.test(name));
+}
+const operatorConfig=value=>hosted?neonConfig(value,{databases:[testName,upgradeName,sourceName]}):isolatedConfig(value);
 const url=process.env.R2_TEST_DATABASE_URL;
 if (!url) throw new Error('Use test:r2:db to start an isolated database');
-const owner=new Pool(isolatedConfig(url));
+const owner=new Pool(operatorConfig(url));
 let db,repo;
 const admin=randomUUID(), editor=randomUUID(), inactive=randomUUID(), source=randomUUID(), category=randomUUID();
 const identity=subject=>({provider:'isolated-test',subject,sessionVerified:true,assurance:'mfa'});
@@ -18,10 +28,12 @@ const fixture=()=>({kind:'photo',categoryId:category,sourceId:source,title:'Synt
 const denied=code=>error=>error.code===code && error.message===`Database operation ${code}` && !error.cause;
 before(async()=>{
   await migrate(owner);
-  await owner.query('CREATE ROLE r2_test_runtime LOGIN INHERIT');
-  await owner.query('GRANT talgov_runtime TO r2_test_runtime');
+  if (!hosted) {
+    await owner.query('CREATE ROLE r2_test_runtime LOGIN INHERIT');
+    await owner.query('GRANT talgov_runtime TO r2_test_runtime');
+  }
   const parsed=new URL(url); parsed.username='r2_test_runtime';
-  db=new PostgresDatabase(connectionConfig(parsed.toString(),true)); repo=new PgRepositories(db);
+  db=new PostgresDatabase(hosted?neonConfig(process.env.R2_NEON_RUNTIME_URL,{pooled:true,databases:[testName]}):connectionConfig(parsed.toString(),true)); repo=new PgRepositories(db);
   await owner.query(`INSERT INTO app.staff_accounts(id,provider,subject,role,active) VALUES
     ($1,'isolated-test','admin','admin',true),($2,'isolated-test','editor','editor',true),($3,'isolated-test','inactive','admin',false)`,[admin,editor,inactive]);
   await owner.query("INSERT INTO app.content_sources(id,reference,owner,sha256,approved,reviewed_at) VALUES($1,'synthetic-fixture','test-only',$2,true,now())",[source,'b'.repeat(64)]);
@@ -34,7 +46,7 @@ test('migrations replay, upgrade, checksum drift and failed DDL roll back atomic
   const directory=path.join(process.env.R2_TEST_SCRATCH,'migrations'); fs.mkdirSync(directory);
   const original=path.join(__dirname,'../database/migrations');
   fs.copyFileSync(path.join(original,'001_foundation.sql'),path.join(directory,'001_foundation.sql'));
-  const next=new URL(url); next.pathname='/r2_upgrade'; const upgrade=new Pool(isolatedConfig(next.toString()));
+  const next=new URL(url); next.pathname='/'+upgradeName; const upgrade=new Pool(operatorConfig(next.toString()));
   try {
     assert.equal((await migrate(upgrade,directory,true)).applied,1);
     assert.equal((await upgrade.query("SELECT to_regclass('app.staff_accounts') AS t")).rows[0].t,null);
@@ -82,7 +94,13 @@ test('media CRUD, parameterization, optimistic conflict, publication and soft de
   const title="x'; DROP TABLE app.staff_accounts; --";
   const edited=await repo.update(identity('editor'),row.id,1,title,'Test alt','test-edit'); assert.equal(edited.title,title);
   await assert.rejects(repo.update(identity('editor'),row.id,1,'stale','alt','test-stale'),denied('conflict'));
-  const published=await repo.publish(identity('editor'),row.id,2,true,'test-publish'); assert.equal(published.version,3);
+  // A web host clock ahead of PostgreSQL must not accidentally schedule publication.
+  const RealDate=Date;
+  global.Date=class extends RealDate { constructor(...args) { super(...(args.length?args:[RealDate.now()+86400000])); } };
+  let published;
+  try { published=await repo.publish(identity('editor'),row.id,2,true,'test-publish'); }
+  finally { global.Date=RealDate; }
+  assert.equal(published.version,3);
   const [visible]=await repo.listPublished(); assert.equal(visible.id,row.id); assert.equal(visible.object_key,undefined);
   await owner.query('UPDATE app.content_sources SET approved=false WHERE id=$1',[source]);
   assert.equal((await repo.listPublished()).length,0);
@@ -150,7 +168,7 @@ test('statement, lock, idle transaction and pool acquisition timeouts fail safel
   const lock=await owner.connect(); await lock.query('BEGIN'); await lock.query('SELECT * FROM app.staff_accounts WHERE id=$1 FOR UPDATE',[editor]);
   try {await assert.rejects(db.transaction(async tx=>{await tx.query("SET LOCAL lock_timeout='40ms'");await tx.query('UPDATE app.staff_accounts SET version=version+1 WHERE id=$1',[editor]);}),denied('unavailable'));}
   finally {await lock.query('ROLLBACK');lock.release();}
-  const config=isolatedConfig(url); config.max=1; config.connectionTimeoutMillis=1000;
+  const config=hosted?neonConfig(process.env.R2_NEON_RUNTIME_URL,{pooled:true,databases:[testName]}):isolatedConfig(url); config.max=1; config.connectionTimeoutMillis=1000;
   const tiny=new PostgresDatabase(config);
   let ready; const acquired=new Promise(r=>ready=r); let release;const held=new Promise(r=>release=r);
   const first=tiny.transaction(async tx=>{await tx.query('SELECT 1');ready();await held;});
@@ -181,7 +199,7 @@ test('last-admin protection and concurrent demotion cannot remove all active adm
   assert.equal((await owner.query("SELECT count(*)::int AS n FROM app.staff_accounts WHERE role='admin' AND active")).rows[0].n,1);
 });
 test('snapshot export partitions rows, detects drift, imports idempotently and reconciles exact data; rollback preserves audit',async()=>{
-  const sourceUrl=new URL(url);sourceUrl.pathname='/r2_source';const legacy=new Pool(isolatedConfig(sourceUrl.toString()));
+  const sourceUrl=new URL(url);sourceUrl.pathname='/'+sourceName;const legacy=new Pool(operatorConfig(sourceUrl.toString()));
   try {
     await legacy.query('CREATE TABLE public.pages(id text PRIMARY KEY,title text,precise numeric); CREATE TABLE public.certificate_requests(id int)');
     await legacy.query("INSERT INTO public.pages VALUES('one','Synthetic source',9007199254740992),('two','Quarantine fixture',NULL); INSERT INTO public.certificate_requests VALUES(1)");

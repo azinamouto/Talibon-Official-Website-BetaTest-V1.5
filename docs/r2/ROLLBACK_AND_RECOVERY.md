@@ -1,5 +1,7 @@
 # Rollback and recovery
 
+Increment 2.1 update (2026-11-02): synthetic import reconciliation/batch rollback and direct logical backup/restore now pass on the designated Neon development branch. Restore checks all nine operational tables, exact row digests, schema history, constraints, indexes, views, functions and effective privileges. The original database is never overwritten. See [the development procedure](NEON_MIGRATION_PLAN.md) and [qualification evidence](INCREMENT_2_1_REPORT.md). This does **not** qualify provider PITR, branch restore, cross-project disaster recovery, production data, RPO/RTO or production cutover. The following Increment 0 material remains historical planning.
+
 Status: proposed runbook. No backups, restores, migrations, production writes or release actions executed in Increment 0. RPO/RTO and retention values require municipal/ops approval; no recovery guarantee is asserted.
 
 ## Discovery rollback

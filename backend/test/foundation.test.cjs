@@ -13,7 +13,7 @@ const { RateLimiterGuard } = require('../dist/security/rate-limiter.guard');
 const { AllExceptionsFilter } = require('../dist/security/all-exceptions.filter');
 const { CacheControlMiddleware } = require('../dist/security/cache-control.middleware');
 const { SecurityHeadersMiddleware } = require('../dist/security/security-headers.middleware');
-const { configureApp, isAllowedOrigin } = require('./legacy-controller-harness.cjs');
+const { configureApp, isAllowedOrigin } = require('../dist/configure-app');
 
 const sessionId = '11111111-1111-4111-8111-111111111111';
 const token = `header.${Buffer.from(JSON.stringify({ session_id: sessionId })).toString('base64url')}.signature`;
@@ -75,7 +75,7 @@ test('production CORS uses exact origins, not hostname substrings', () => {
   assert.equal(isAllowedOrigin('https://talibon.gov.ph'), true);
   for (const origin of ['https://localhost.evil.test', 'https://evil-vercel.app', 'http://localhost:5173', 'https://talibon.gov.ph.evil.test']) assert.equal(isAllowedOrigin(origin), false);
 });
-test('Swagger is reachable and exposes validated request fields', async () => {
+test('Swagger documents retired legacy auth and cookie-based staff operations', async () => {
   const ui = await request('/api/docs/');
   assert.equal(ui.status, 200);
   assert.match(await ui.text(), /swagger-ui/);
@@ -83,8 +83,10 @@ test('Swagger is reachable and exposes validated request fields', async () => {
   const res = await request('/api/openapi.json');
   assert.equal(res.status, 200);
   const spec = await res.json();
-  assert.ok(spec.paths['/api/auth/login'].post);
-  assert.ok(spec.components.schemas.LoginDto.properties.email);
+  assert.deepEqual(Object.keys(spec.paths['/api/auth/login'].post.responses), ['410']);
+  assert.ok(spec.paths['/api/staff'].get.security.some(scheme => scheme.staffCookie));
+  assert.equal(spec.components.securitySchemes.staffCookie.in, 'cookie');
+  assert.equal(spec.components.securitySchemes.staffCookie.name, '__Secure-talgov-staff.session_token');
 });
 test('API defaults to v1 and rejects unsupported versions', async () => {
   const res = await fetch(base + '/api/default', { headers: { 'X-API-Version': '2' } });
@@ -94,7 +96,7 @@ test('API defaults to v1 and rejects unsupported versions', async () => {
 });
 test('CORS permits version header only for an allowed origin', async () => {
   for (const [origin, allowed] of [['https://talibon.gov.ph', true], ['https://evil.test', false]]) {
-    const res = await fetch(base + '/api/auth/login', { method: 'OPTIONS', headers: { Origin: origin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'X-API-Version,Content-Type' } });
+    const res = await fetch(base + '/api/default', { method: 'OPTIONS', headers: { Origin: origin, 'Access-Control-Request-Method': 'GET', 'Access-Control-Request-Headers': 'X-API-Version,Content-Type' } });
     assert.equal(res.headers.get('access-control-allow-origin'), allowed ? origin : null);
     if (allowed) assert.match(res.headers.get('access-control-allow-headers'), /X-API-Version/);
   }
@@ -105,52 +107,38 @@ test('unmarked routes require auth, and errors cannot be publicly cached', async
   assert.match(res.headers.get('cache-control'), /no-store/);
   assert.ok(res.headers.get('x-request-id'));
 });
-test('DTO validation rejects overposting before calling Auth', async () => {
+test('legacy login rejects all bodies before calling Supabase Auth', async () => {
   const res = await request('/api/auth/login', { email: 'a@example.test', password: 'correct', role: 'admin' });
-  assert.equal(res.status, 400);
+  assert.equal(res.status, 410);
   assert.equal(authCalls, 0);
 });
-test('login returns a session, invalid credentials fail, and tokens are never cached', async () => {
-  const res = await request('/api/auth/login', { email: 'a@example.test', password: 'correct' });
-  assert.equal(res.status, 200);
-  assert.equal((await res.json()).data.session.access_token, token);
-  assert.match(res.headers.get('cache-control'), /no-store/);
-  assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
-  assert.equal((await request('/api/auth/login', { email: 'a@example.test', password: 'wrong' })).status, 401);
+test('legacy login, refresh, session and logout endpoints are retired', async () => {
+  for (const [route, body, auth] of [
+    ['/api/auth/login', { email: 'a@example.test', password: 'correct' }],
+    ['/api/auth/refresh', { refresh_token: 'valid' }],
+    ['/api/auth/me', undefined, true],
+    ['/api/auth/logout', {}, true],
+  ]) {
+    const res = await request(route, body, auth);
+    assert.equal(res.status, 410);
+    assert.match(res.headers.get('cache-control'), /no-store/);
+  }
+  assert.equal(authCalls, 0);
 });
-test('refresh accepts a valid token and rejects an expired one', async () => {
-  assert.equal((await request('/api/auth/refresh', { refresh_token: 'valid' })).status, 200);
-  assert.equal((await request('/api/auth/refresh', { refresh_token: 'expired' })).status, 401);
+test('retired workflow and tracking endpoints do not inspect roles or expose applicant data', async () => {
+  for (const verifiedRole of ['citizen', 'admin']) {
+    role = verifiedRole; verified = true;
+    for (const route of ['/api/forms/certificate', '/api/forms/certificate/T-1']) {
+      const res = await request(route, undefined, true);
+      assert.equal(res.status, 410);
+      assert.doesNotMatch(await res.text(), /Secret|private|PII|remarks/);
+    }
+  }
+  assert.equal(authCalls, 0);
 });
-test('profile roles override stale claims and require verification', async () => {
-  assert.equal((await request('/api/forms/certificate', undefined, true)).status, 403);
-  role = 'admin';
-  assert.equal((await request('/api/forms/certificate', undefined, true)).status, 403);
-  verified = true;
-  assert.equal((await request('/api/forms/certificate', undefined, true)).status, 200);
-  deleted = '2026-01-01';
-  assert.equal((await request('/api/forms/certificate', undefined, true)).status, 403);
-  deleted = null;
-  profileError = { message: 'private database failure' };
-  const res = await request('/api/forms/certificate', undefined, true);
-  assert.equal(res.status, 503);
-  assert.doesNotMatch(await res.text(), /private database/);
-  profileError = null;
+test('retired legacy authentication is not rate-limited through the Supabase provider', async () => {
+  let response;
+  for (let i = 0; i < 12; i++) response = await request('/api/auth/login', { email: 'a@example.test', password: 'wrong' });
+  assert.equal(response.status, 410);
+  assert.equal(authCalls, 0);
 });
-test('tracking requires authentication and exposes no applicant data anonymously', async () => {
-  const res = await request('/api/forms/certificate/T-1');
-  assert.equal(res.status, 401);
-  assert.doesNotMatch(await res.text(), /Secret|private|PII|remarks/);
-});
-test('logout invalidates an otherwise verified access token at the API', async () => {
-  assert.equal((await request('/api/auth/me', undefined, true)).status, 200);
-  assert.equal((await request('/api/auth/logout', {}, true)).status, 200);
-  assert.equal((await request('/api/auth/me', undefined, true)).status, 401);
-});
-test('authentication rate limit returns 429 and Retry-After', async () => {
-  let res;
-  for (let i = 0; i < 12; i++) res = await request('/api/auth/login', { email: 'a@example.test', password: 'wrong' });
-  assert.equal(res.status, 429);
-  assert.ok(Number(res.headers.get('retry-after')) > 0);
-});
-

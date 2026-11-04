@@ -1,0 +1,28 @@
+.card { min-width: 0; background: #fff; border-radius: 24px; box-shadow: 0 1px 2px rgb(15 23 42 / 5%); }
+.heading { margin: 0; }
+.toggle { display: flex; align-items: center; gap: 16px; width: 100%; padding: 20px; border: 0; border-radius: 24px; background: #fff; color: #0f172a; text-align: left; font: inherit; cursor: pointer; }
+.toggle:hover { background: var(--talweb-background); }
+.gridIcon, .icon, .chevron { display: flex; flex: none; align-items: center; justify-content: center; color: #fff; }
+.gridIcon { width: 48px; height: 48px; border-radius: 12px; background: var(--talweb-primary); }
+.copy { flex: 1; min-width: 0; }
+.title { display: block; font-size: 18px; line-height: 1.35; font-weight: 700; }
+.subtitle { display: block; margin-top: 4px; font-size: 14px; line-height: 1.5; font-weight: 400; color: #334155; }
+.action { display: none; color: var(--talweb-deep); font-size: 14px; line-height: 1.5; font-weight: 600; }
+.chevron { width: 40px; height: 40px; border-radius: 12px; background: var(--talweb-deep); }
+.chevron svg { transition: transform 200ms ease; }
+.chevron[data-open='true'] svg { transform: rotate(180deg); }
+.panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 200ms ease; }
+.panel[data-open='true'] { grid-template-rows: 1fr; }
+.panelInner { min-height: 0; overflow: hidden; }
+.list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; list-style: none; margin: 0; padding: 4px 20px 20px; }
+.list li { min-width: 0; }
+.link { display: flex; align-items: center; gap: 12px; height: 48px; padding: 8px; border-radius: 12px; background: var(--talweb-background); color: var(--talweb-deep); text-decoration: none; }
+.link:hover { background: #e0f2fe; }
+.icon { width: 32px; height: 32px; border-radius: 8px; background: var(--talweb-primary); }
+.link:hover .icon { background: var(--talweb-deep); }
+.link > svg { flex: none; }
+.name { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #0f172a; font-size: 14px; line-height: 1.5; font-weight: 600; }
+.toggle:focus-visible, .link:focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 2px; }
+@media (min-width: 640px) { .list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .action { display: inline; } }
+@media (max-width: 639px) { .toggle { gap: 12px; } }
+@media (prefers-reduced-motion: reduce) { .panel, .chevron svg { transition: none; } }

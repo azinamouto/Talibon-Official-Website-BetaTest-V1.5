@@ -1,9 +1,30 @@
 import solidTheme from "../styles/SolidTheme.module.css";
 import { Link } from 'react-router-dom';
+import { ArrowRight, Hourglass, Info } from 'lucide-react';
+import styles from './PopularServices.module.css';
+
 export default function PopularServices() {
-  return <section className={`${solidTheme.section} bg-brand-bg px-4 py-10 text-center`} id="popular-services">
-    <h2 className="text-2xl font-bold">Electronic Services</h2>
-    <p className="mt-3">To Be Implemented</p>
-    <Link to="/e-services" className="ui-focus mt-4 inline-block underline">Electronic services information</Link>
-  </section>;
+  // Add a planned-services panel only after the LGU confirms its contents.
+  return (
+    <section className={`${solidTheme.section} ${styles.section}`} id="popular-services" aria-labelledby="electronic-services-heading">
+      <div className="site-container">
+        <div className={styles.message}>
+          <p className={styles.badge}><Hourglass size={18} aria-hidden="true" />Coming soon</p>
+          <h2 id="electronic-services-heading" className={styles.heading}>Electronic services</h2>
+          <p className={styles.description}>
+            We are preparing online services for Talibon residents. Until they open, you can check
+            requirements, fees and processing times in the Citizen's Charter and visit the office in person.
+          </p>
+          <div className={styles.actions}>
+            <Link to="/transparency/charter" className={`${styles.action} ${styles.primary}`}>
+              See how to get services today <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+            <Link to="/e-services" className={`${styles.action} ${styles.secondary}`}>
+              <Info size={18} aria-hidden="true" />Electronic services information
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

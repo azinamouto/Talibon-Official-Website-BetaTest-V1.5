@@ -1,5 +1,38 @@
 # Sprint 1 frontend foundation
 
+## Electronic services placeholder refinement — 4 November 2026
+
+The homepage `PopularServices` component now presents a centered "Coming soon"
+message with two actions: the existing Citizen's Charter route
+(`/transparency/charter`) and the unchanged electronic-services information route
+(`/e-services`). The dedicated information page remains unchanged. No confirmed
+planned-service list was found, so the optional panel and launch dates are omitted;
+there is no empty desktop column.
+
+Before: centered heading, "To Be Implemented", and an underlined information link.
+After: centered sentence-case heading, availability badge, citizen guidance, and two rounded
+buttons. Below 640px the buttons stack; at 768, 1280 and 1920px they wrap naturally
+beside each other. No data, backend, global tokens, hero or navigation changes.
+
+`PopularServices.module.css` reuses section-scoped solid-blue tokens for deep
+blue (`#00598A`), light fill (`#F0F9FF`) and white surfaces without changing global
+CMS-controlled branding. White/deep-blue contrast is approximately 7.5:1;
+deep-blue/light-fill is 7.0:1 and slate-700/white is 10.4:1. Links have 48px minimum
+height, 2px focus outlines with 2px offset and reduced-motion support.
+The message uses 90% opacity for a softer coming-soon appearance and returns to
+full opacity while a link has keyboard focus. Composited text retains AA contrast:
+approximately 5.96:1 for primary-button text and 7.69:1 for body text.
+
+React coverage checks content, preserved destinations and absent unconfirmed
+promises. Playwright coverage targets 360, 768, 1280 and 1920px, link bounds,
+keyboard order, focus styling and reduced motion, saving after screenshots.
+Restored onto `ui-changes-continue` after the earlier branch switch left this work
+in a stash, outside PR #101. TypeScript, production build, 21 Node tests, 71 React
+tests and all four targeted browser checks passed. Screenshots were generated at
+all four widths under ignored `frontend/test-results/electronic-services-*.png`.
+The existing large-bundle build warning remains. Browser checks use synthetic
+API responses and blocked external services. Local only; no deployment.
+
 Tickets: S1-FE-02, S1-FE-03, S1-FE-04, S1-FE-05. Integration handoff:
 [S1-INT-01](./SUPABASE_ENVIRONMENTS.md).
 
@@ -137,3 +170,65 @@ steps; mocked browser tests do not certify remote settings, migrations or RLS.
 The browser checks found and resolved dashboard query reset on reload, modal Tab
 wrap into browser chrome, and a mismatch between logout error wording and the
 installed SDK's local credential removal. No live data validation is claimed.
+
+## Municipal offices preview refinement - 4 November 2026
+
+Local only; no deployment. The supplied screenshot and written specification are
+the visual reference because the linked Claude artifact could not be retrieved.
+The centered introduction, four officials in their original order, titles, names,
+icons and existing directory route are preserved. The existing Abante Talibon!
+label also remains. The faded TALIBON watermark is removed from this section only.
+
+Scoped styling uses #F0F9FF, white 24px-radius cards, 120px primary-to-deep-blue
+icon bands, 24px body padding, prominent 20px names, role pills, permanent arrow
+tiles and a 52px deep-blue view-all link. The grid is one column below 640px,
+two from 640px and four from 1024px. Equal card heights and bottom-aligned roles
+allow long titles and names to wrap. Hover/focus lifts by 2px, with a stronger
+shadow and darker arrow; reduced motion removes the lift and transitions.
+
+The original office cards were not links and had no individual destinations.
+Each whole-card link therefore uses the existing /executive/directory route;
+no office-specific URLs were invented. Its accessible name combines the unchanged
+office title and official's name. The mayor's pill now says Municipal Mayor;
+the other three say Department head. All icons are decorative and hidden from AT.
+
+Exact files for this refinement:
+
+- `frontend/src/components/MunicipalOffices.tsx`
+- `frontend/src/components/MunicipalOffices.module.css` (new)
+- `frontend/test/react/municipal-offices.test.tsx` (new)
+- `frontend/test/browser/municipal-offices.spec.ts` (new)
+- `docs/FRONTEND_FOUNDATION.md` (this note)
+
+Before/after screenshots, retained locally in ignored review artifacts:
+
+| Width | Before | After |
+| --- | --- | --- |
+| 360px | [Before](../frontend/node_modules/.cache/municipal-offices/before-offices-360.png) | [After](../frontend/node_modules/.cache/municipal-offices/after-offices-360.png) |
+| 768px | [Before](../frontend/node_modules/.cache/municipal-offices/before-offices-768.png) | [After](../frontend/node_modules/.cache/municipal-offices/after-offices-768.png) |
+| 1280px | [Before](../frontend/node_modules/.cache/municipal-offices/before-offices-1280.png) | [After](../frontend/node_modules/.cache/municipal-offices/after-offices-1280.png) |
+| 1920px | [Before](../frontend/node_modules/.cache/municipal-offices/before-offices-1920.png) | [After](../frontend/node_modules/.cache/municipal-offices/after-offices-1920.png) |
+
+Contrast: white on deep blue 7.51:1; sky-950 on sky-100 12.10:1;
+slate-700 on white 10.35:1. All exceed AA normal-text requirements. Large white
+icons against primary blue exceed the 3:1 non-text requirement. Primary blue is
+not used as a small-white-text button background.
+
+Validation: TypeScript and production build passed; all 21 Node, 75 React and
+69 public browser tests passed. The existing large-bundle warning remains.
+Keyboard navigation through all four cards and the view-all link passed at
+360, 768, 1280 and 1920px, with no horizontal overflow. A focused normal-hover and
+reduced-motion rerun also passed at all four widths. Before/after screenshots were
+visually reviewed at all four widths. Header and main hero comparisons
+show zero changed pixels at these widths, and at 375 and 1440px in the existing
+protected-region audit. Protected comparisons use a fixed clock, reduced motion, matching network
+fixtures and blocked remote hero video/fonts, not arbitrary live-video frames.
+No global styles, design tokens, protected components or data sources change.
+
+SHA-256 checks against all 209 pre-task source files confirm that MunicipalOffices.tsx
+is the only changed existing source file and its offices array is byte-identical.
+MunicipalOffices.module.css is the sole new product source file for this task.
+
+Content discrepancy requiring LGU verification: this section still lists
+Hon. Michael I. Doria as Municipal Mayor, while Our Story lists Hon. Janette
+Aurestila-Garcia. Neither name or title was edited or independently reverified.

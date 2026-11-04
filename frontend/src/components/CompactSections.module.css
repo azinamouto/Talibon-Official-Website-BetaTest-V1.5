@@ -1,0 +1,61 @@
+/* Layout only: palette, content, links, state and motion remain with each section. */
+.tourism, .emergency { padding-block: 40px; }
+.tourismHeader { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.destinations { display: grid; gap: 32px; }
+.destination { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: center; gap: 32px; }
+.visual, .destinationCopy { min-width: 0; }
+.destinationImage { width: 100%; aspect-ratio: 2 / 1; max-height: 280px; overflow: hidden; border-radius: 16px; background: #eef2f5; }
+.destinationNumber { position: absolute; top: 0; left: 8px; font-size: clamp(64px, 7vw, 96px); line-height: 1; }
+.destinationCopy { display: grid; justify-items: start; gap: 16px; }
+.destinationTitle { display: grid; gap: 8px; }
+.tourismClosing { display: flex; justify-content: center; margin-top: 24px; }
+.emergencyHeader { text-align: center; margin-bottom: 24px; }
+.emergencyHeader h2 { margin-bottom: 12px; }
+.hotlineGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.hotlineCard { position: relative; min-width: 0; padding: 16px; border-radius: 16px; }
+.hotlineIcon { position: absolute; top: 16px; left: 16px; width: 40px; height: 40px; border-radius: 12px; }
+.hotlineContent { min-width: 0; }
+.agency { min-height: 64px; padding-left: 52px; }
+.numbers { display: grid; gap: 0; margin-top: 12px; }
+.call { min-height: 44px; width: fit-content; max-width: 100%; border-radius: 8px; }
+.call span { white-space: nowrap; }
+.call:focus-visible { outline: 2px solid var(--talweb-background, #f0f9ff); outline-offset: 4px; }
+.landline { margin-top: 24px; padding: 16px; border-radius: 12px; }
+.social { padding-block: 32px; }
+.socialPosts { gap: 16px; margin-top: 16px; }
+.socialPostBody { padding: 16px; }
+.socialStatus { margin-top: 16px; padding: 12px 16px; }
+.socialGroups { display: flex; flex-wrap: wrap; align-items: start; column-gap: 24px; row-gap: 12px; margin-top: 16px; padding-top: 12px; }
+.location { padding-block: 24px 32px; }
+.locationCard { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+.map { min-height: 280px; }
+.locationInfo { padding: 24px; min-width: 0; }
+.locationFacts { grid-column: 1 / -1; }
+.locationFact { padding: 12px 24px; }
+@media (min-width: 1024px) {
+  .reversed { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); }
+  .reversed .visual { order: 2; }
+  .reversed .destinationCopy { order: 1; }
+}
+@media (min-width: 1280px) { .hotlineGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1023px) {
+  .tourismHeader { align-items: start; flex-direction: column; gap: 12px; }
+  .destination { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .locationCard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .locationInfo { padding: 20px; }
+}
+@media (max-width: 639px) {
+  .tourism, .emergency { padding-block: 28px; }
+  .tourismHeader { margin-bottom: 20px; }
+  .destination { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .destinations { gap: 24px; }
+  .destinationCopy { gap: 12px; }
+  .hotlineGrid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .agency { min-height: 48px; }
+  .social { padding-block: 24px; }
+  .location { padding-block: 20px 24px; }
+  .locationCard { grid-template-columns: minmax(0, 1fr); }
+  .map { min-height: 240px; }
+  .locationInfo { padding: 16px; }
+  .locationFact { padding: 12px 16px; }
+}

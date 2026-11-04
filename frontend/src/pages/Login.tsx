@@ -1,3 +1,4 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 ﻿import { useEffect, useState, type FormEvent } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/SupabaseAuthContext';
@@ -45,7 +46,7 @@ export default function Login() {
   const recovering = view === 'reset' || auth.isPasswordRecovery;
   if (auth.loading && !recovering) return <AuthLoading />;
   if (auth.user && !recovering && !busy) {
-    if (auth.state === 'ERROR') return <div className="mx-auto max-w-lg p-6">
+    if (auth.state === 'ERROR') return <div className={`${sectionTheme.section} mx-auto max-w-lg p-6`}>
       <Alert tone="error">Your account could not be loaded. Check your connection.</Alert>
       <Button className="mt-4" onClick={() => void auth.refreshProfile()}>Try again</Button>
       <Button variant="secondary" className="ml-4" onClick={() => void auth.signOut()}>Sign out</Button>
@@ -53,7 +54,7 @@ export default function Login() {
     return <Navigate to={auth.profile?.is_verified && auth.profile.is_active !== false && STAFF_ROLES.includes(auth.profile.role) ? destination : '/access-denied'} replace />;
   }
   const title = view === 'forgot' ? 'Reset your password' : view === 'reset' ? 'Choose a new password' : 'Sign in';
-  return <main className="mx-auto flex min-h-[70vh] max-w-lg items-center px-4 py-12">
+  return <main className={`${sectionTheme.section} mx-auto flex min-h-[70vh] max-w-lg items-center px-4 py-12`}>
     <Card className="w-full space-y-6">
       <Link to="/" className="ui-focus text-action underline">Back to {appName}</Link>
       <h1 className="text-3xl font-bold">{title}</h1>

@@ -1,0 +1,75 @@
+.section {
+  composes: section from "../styles/SolidTheme.module.css";
+  padding-block: 24px;
+  background: var(--color-white);
+  border-block: 1px solid var(--brand-border);
+}
+
+.heading {
+  margin: 0 0 16px;
+  color: var(--color-slate-900);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 8px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.grid > li { min-width: 0; }
+
+.link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 8px 4px;
+  border-radius: 12px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.iconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--color-sky-600);
+  color: var(--color-white);
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.label {
+  color: var(--color-slate-900);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.link:hover .iconBox,
+.link:focus-visible .iconBox { background: var(--color-sky-700); }
+.link:hover .iconBox { transform: translateY(-3px); }
+.link:active .iconBox { transform: translateY(-1px); }
+.link:focus-visible { outline: 2px solid var(--color-sky-700); outline-offset: 2px; }
+
+@media (min-width: 768px) {
+  .grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+  .iconBox { width: 64px; height: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iconBox { transition: none; }
+  .link:hover .iconBox, .link:active .iconBox { transform: none; }
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, FileText, Download, Folder, Grid, List as ListIcon, ChevronRight } from 'lucide-react';
+import styles from './EnactedOrdinancesPage.module.css';
 
 interface Ordinance {
   id: string;
@@ -106,9 +107,9 @@ const EnactedOrdinancesPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-brand-bg pt-6 sm:pt-8 pb-20 relative overflow-hidden">
+    <div className={`${styles.section} min-h-screen bg-brand-bg pt-6 sm:pt-8 pb-20 relative overflow-hidden`}>
       {/* Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+      <div className="hidden absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <motion.div 
           animate={{ 
             scale: [1, 1.2, 1],
@@ -125,7 +126,7 @@ const EnactedOrdinancesPage: React.FC = () => {
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-brand-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-brand-primary/20">
+            <div className="w-12 h-12 bg-[var(--ordinances-sky-light)] rounded-2xl flex items-center justify-center text-brand-primary shadow-xs">
               <FileText size={24} />
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold text-brand-text tracking-tight uppercase font-display">Enacted Ordinances</h1>
@@ -143,8 +144,8 @@ const EnactedOrdinancesPage: React.FC = () => {
               onClick={() => setActiveYear(year)}
               className={`px-8 py-4 rounded-2xl font-bold text-sm tracking-widest transition-all ${
                 activeYear === year 
-                ? 'bg-brand-primary text-white shadow-xl shadow-brand-primary/20' 
-                : 'bg-white text-brand-muted hover:bg-brand-bg border border-brand-border'
+                ? 'bg-[var(--ordinances-sky)] text-brand-text shadow-xs'
+                : 'bg-white text-brand-muted hover:bg-[var(--ordinances-sky-light)] border border-brand-border'
               }`}
             >
               MUN - ORD {year}
@@ -168,13 +169,13 @@ const EnactedOrdinancesPage: React.FC = () => {
           <div className="flex items-center gap-2 p-1 bg-brand-bg rounded-2xl border border-brand-border">
             <button 
               onClick={() => setViewMode('list')}
-              className={`p-3 rounded-xl transition-all ${viewMode === 'list' ? 'bg-white text-brand-primary shadow-sm' : 'text-brand-muted hover:text-brand-text'}`}
+              className={`p-3 rounded-xl transition-all ${viewMode === 'list' ? 'bg-[var(--ordinances-sky-light)] text-brand-text shadow-xs' : 'text-brand-muted hover:text-brand-text'}`}
             >
               <ListIcon size={20} />
             </button>
             <button 
               onClick={() => setViewMode('grid')}
-              className={`p-3 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-white text-brand-primary shadow-sm' : 'text-brand-muted hover:text-brand-text'}`}
+              className={`p-3 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-[var(--ordinances-sky-light)] text-brand-text shadow-xs' : 'text-brand-muted hover:text-brand-text'}`}
             >
               <Grid size={20} />
             </button>
@@ -199,18 +200,18 @@ const EnactedOrdinancesPage: React.FC = () => {
                   key={ord.id}
                   className={viewMode === 'grid' 
                     ? "group pro-card p-8 flex flex-col items-center text-center hover:border-brand-primary/30 transition-all"
-                    : "group pro-card p-6 flex items-center gap-6 hover:border-brand-primary/30 transition-all"
+                    : `group pro-card ${styles.listCard} p-6 flex items-center gap-6 hover:border-brand-primary/30 transition-all`
                   }
                 >
                   <div className={viewMode === 'grid' ? "mb-8 relative" : "relative"}>
                     <div className="w-24 h-32 bg-brand-bg rounded-2xl flex flex-col items-center justify-center border border-brand-border group-hover:bg-brand-primary/5 transition-colors">
-                      <FileText size={40} className="text-brand-muted/30 group-hover:text-brand-primary/30 transition-colors" />
-                      <div className="absolute bottom-4 bg-brand-accent text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-lg shadow-brand-accent/20">PDF</div>
+                      <FileText size={40} className="text-brand-primary transition-colors" />
+                      <div className="absolute bottom-4 bg-[var(--ordinances-sky-light)] text-brand-text text-[10px] font-bold px-2 py-1 rounded-md shadow-xs">PDF</div>
                     </div>
                   </div>
 
                   <div className={viewMode === 'grid' ? "flex-1 flex flex-col" : "flex-1"}>
-                    <h3 className="text-lg font-extrabold text-brand-text leading-tight mb-4 group-hover:text-brand-primary transition-colors font-display">
+                    <h3 className="text-lg font-extrabold text-brand-text leading-tight mb-4 transition-colors font-display">
                       {ord.title}
                     </h3>
                     <div className="flex items-center justify-center gap-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">
@@ -225,8 +226,8 @@ const EnactedOrdinancesPage: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className={viewMode === 'grid'
-                      ? "mt-8 w-full py-4 bg-brand-bg text-brand-muted rounded-2xl font-bold text-[10px] tracking-widest hover:bg-brand-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
-                      : "px-8 py-4 bg-brand-bg text-brand-muted rounded-2xl font-bold text-[10px] tracking-widest hover:bg-brand-primary hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
+                      ? "mt-8 w-full py-4 bg-[var(--ordinances-sky-light)] text-brand-text rounded-2xl font-bold text-[10px] tracking-widest hover:bg-[var(--ordinances-sky)] transition-all flex items-center justify-center gap-2 group/btn"
+                      : "px-8 py-4 bg-[var(--ordinances-sky-light)] text-brand-text rounded-2xl font-bold text-[10px] tracking-widest hover:bg-[var(--ordinances-sky)] transition-all flex items-center justify-center gap-2 group/btn"
                     }
                   >
                     <Download size={14} className="group-hover/btn:scale-110 transition-transform" />

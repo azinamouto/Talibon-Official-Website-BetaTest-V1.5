@@ -1,3 +1,4 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useCallback, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
@@ -28,18 +29,18 @@ const NewsDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="py-32 flex flex-col items-center justify-center min-h-[60vh] bg-slate-50">
+      <div className={`${sectionTheme.section} py-32 flex flex-col items-center justify-center min-h-[60vh] bg-slate-50`}>
         <Loader2 className="w-10 h-10 text-sky-600 animate-spin mb-3" />
         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Loading Article Details...</p>
       </div>
     );
   }
 
-  if (resource.error) return <div className="max-w-3xl mx-auto p-8"><PublicState {...resource} /></div>;
+  if (resource.error) return <div className={`${sectionTheme.section} max-w-3xl mx-auto p-8`}><PublicState {...resource} /></div>;
 
   if (!item) {
     return (
-      <div className="py-20 px-4 max-w-3xl mx-auto text-center min-h-[60vh] flex flex-col items-center justify-center">
+      <div className={`${sectionTheme.section} py-20 px-4 max-w-3xl mx-auto text-center min-h-[60vh] flex flex-col items-center justify-center`}>
         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
           <Building2 size={32} />
         </div>
@@ -63,7 +64,7 @@ const NewsDetailPage: React.FC = () => {
   const paragraphs = item.content ? item.content.split(/\n+/).filter(p => p.trim().length > 0) : [];
 
   return (
-    <div className="py-3 sm:py-5 bg-brand-bg min-h-screen">
+    <div className={`${sectionTheme.section} py-3 sm:py-5 bg-brand-bg min-h-screen`}>
       <div className="max-w-[1500px] w-full mx-auto px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16">
         
         {/* Navigation Breadcrumb & Badges */}

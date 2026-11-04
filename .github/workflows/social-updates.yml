@@ -1,0 +1,35 @@
+name: Refresh public social previews
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: social-preview-cache
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: vars.SOCIAL_PREVIEWS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node ops/refresh-social-updates.mjs
+        env:
+          FACEBOOK_PAGE_ID: ${{ vars.FACEBOOK_PAGE_ID }}
+          FACEBOOK_GRAPH_API_VERSION: ${{ vars.FACEBOOK_GRAPH_API_VERSION }}
+          FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+      - name: Save refreshed cache
+        shell: bash
+        run: |
+          git add frontend/public/data/social-updates.json
+          if [ -d frontend/public/images/social ]; then git add frontend/public/images/social; fi
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Refresh cached public social previews'
+          git push

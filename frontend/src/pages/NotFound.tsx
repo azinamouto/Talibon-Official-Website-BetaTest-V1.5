@@ -1,3 +1,4 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
@@ -5,7 +6,7 @@ import { FileQuestion, Home, ArrowLeft } from "lucide-react";
 
 const NotFound: React.FC = () => {
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-6 bg-brand-bg relative overflow-hidden">
+    <div className={`${sectionTheme.section} min-h-[80vh] flex items-center justify-center p-6 bg-brand-bg relative overflow-hidden`}>
       <div className="absolute inset-0 bg-white/40 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#94a3b80a 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
       
       <motion.div 
@@ -33,7 +34,7 @@ const NotFound: React.FC = () => {
         <div className="space-y-3">
           <Link
             to="/"
-            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-black transition-all flex items-center justify-center gap-2 shadow-md"
+            className="w-full py-4 bg-action text-white rounded-2xl font-black text-xs tracking-widest hover:bg-action-hover transition-all flex items-center justify-center gap-2 shadow-md"
           >
             <Home size={16} />
             Return to Homepage

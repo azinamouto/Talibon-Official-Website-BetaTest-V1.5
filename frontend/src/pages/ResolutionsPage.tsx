@@ -1,3 +1,4 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, FileText, Calendar, User, ChevronDown, ChevronUp, Download, Filter, ArrowUpDown, Loader2 } from 'lucide-react';
@@ -126,7 +127,7 @@ const ResolutionsPage: React.FC = () => {
   }, [searchQuery, sortKey, sortOrder]);
 
   return (
-    <div className="pt-6 sm:pt-8 pb-20 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
+    <div className={`${sectionTheme.section} pt-6 sm:pt-8 pb-20 px-4 md:px-8 max-w-7xl mx-auto min-h-screen`}>
       {/* Header Section */}
       <div className="mb-16 relative">
         <motion.div
@@ -134,8 +135,8 @@ const ResolutionsPage: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           className="flex items-center gap-4 mb-6"
         >
-          <div className="w-12 h-1 bg-gold-500 rounded-full" />
-          <span className="text-sm font-black text-gold-500 uppercase tracking-[0.3em]">Legislative Archive</span>
+          <div className="w-12 h-1 bg-[var(--section-sky)] rounded-full" />
+          <span className="text-sm font-black text-gray-900 uppercase tracking-[0.3em]">Legislative Archive</span>
         </motion.div>
         <h1 className="text-5xl md:text-7xl font-black text-gray-900 uppercase tracking-tighter leading-none mb-8">
           Resolutions

@@ -1,6 +1,8 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import { motion } from "motion/react";
 import { Target, Eye, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import styles from "./About.module.css";
 
 export default function About() {
   const textShadowStyle = { textShadow: "0 2px 8px rgba(0,0,0,0.75)" };
@@ -12,7 +14,7 @@ export default function About() {
   return (
     <section 
       id="about" 
-      className="relative w-full overflow-hidden bg-cover bg-center py-20 sm:py-24 lg:py-32 text-white z-20"
+      className={`${solidTheme.photo} relative w-full overflow-hidden bg-cover bg-center py-20 sm:py-24 lg:py-32 text-white z-20`}
       style={{ backgroundImage: `url(${heritageBgImg})` }}
     >
       {/* Full-section gradient overlay to ensure high readability while maintaining full background picture */}
@@ -33,7 +35,7 @@ export default function About() {
           >
             <div className="space-y-4 sm:space-y-6">
               <span 
-                className="text-xs sm:text-sm font-extrabold uppercase tracking-[0.25em] text-amber-300 block"
+                className={`${styles.accent} text-xs sm:text-sm font-extrabold uppercase tracking-[0.25em] block`}
                 style={textShadowStyle}
               >
                 Our Story
@@ -55,7 +57,7 @@ export default function About() {
             <div>
               <Link 
                 to="/about/history"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm tracking-wide transition-all shadow-lg hover:shadow-amber-400/20 active:scale-95"
+                className={`${styles.history} inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm tracking-wide active:scale-95`}
               >
                 Explore History <ArrowUpRight size={18} className="shrink-0" />
               </Link>
@@ -65,7 +67,7 @@ export default function About() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10 pt-8 sm:pt-10 border-t border-white/20">
               <div className="space-y-2.5">
                 <div className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-white" style={textShadowStyle}>
-                  <Eye size={18} className="text-amber-300 shrink-0" style={filterShadowStyle} />
+                  <Eye size={18} className={`${styles.accent} shrink-0`} style={filterShadowStyle} />
                   <span>Vision</span>
                 </div>
                 <p className="text-sm sm:text-base text-sky-100/90 font-medium leading-[1.6]" style={textShadowStyle}>
@@ -74,7 +76,7 @@ export default function About() {
               </div>
               <div className="space-y-2.5">
                 <div className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-white" style={textShadowStyle}>
-                  <Target size={18} className="text-amber-300 shrink-0" style={filterShadowStyle} />
+                  <Target size={18} className={`${styles.accent} shrink-0`} style={filterShadowStyle} />
                   <span>Mission</span>
                 </div>
                 <p className="text-sm sm:text-base text-sky-100/90 font-medium leading-[1.6]" style={textShadowStyle}>
@@ -92,9 +94,9 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-5 flex flex-col items-center text-center justify-center lg:items-end lg:text-right"
           >
-            <div className="flex flex-col items-center lg:items-center text-center max-w-xs group">
+            <div className="flex flex-col items-center lg:items-center text-center max-w-xs lg:mr-8 group">
               {/* Mayor Portrait Image in a Clean Floating Avatar Circle */}
-              <div className="relative w-40 h-40 sm:w-48 sm:h-48 mb-5 rounded-full p-1 bg-gradient-to-tr from-amber-300 via-sky-300 to-amber-400 shadow-2xl">
+              <div className={`${styles.portraitRing} relative w-40 h-40 sm:w-48 sm:h-48 mb-5 rounded-full p-1 shadow-2xl`}>
                 <div className="w-full h-full rounded-full overflow-hidden bg-slate-900/80 border-2 border-slate-900">
                   <img 
                     src="https://talibon.gov.ph/wp-content/themes/yootheme/cache/28/MUNICIPAL-Mayoe2-28d8fb46.webp" 
@@ -108,7 +110,7 @@ export default function About() {
               {/* Title & Badge Details */}
               <div className="space-y-2">
                 <span 
-                  className="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-amber-400/20 text-amber-300 border border-amber-300/30"
+                  className={`${styles.mayorBadge} inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest`}
                   style={textShadowStyle}
                 >
                   Office of the Municipal Mayor
@@ -122,7 +124,7 @@ export default function About() {
                 </h3>
                 
                 <p 
-                  className="text-xs sm:text-sm font-semibold text-sky-200 tracking-wider uppercase"
+                  className={`${styles.position} text-xs sm:text-sm font-semibold tracking-wider uppercase`}
                   style={textShadowStyle}
                 >
                   Municipal Mayor • Talibon, Bohol

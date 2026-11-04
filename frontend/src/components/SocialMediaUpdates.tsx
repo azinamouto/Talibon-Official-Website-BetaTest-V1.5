@@ -1,107 +1,79 @@
-import { useState } from "react";
-import { ArrowRight, ExternalLink, Facebook } from "lucide-react";
+import solidTheme from "../styles/SolidTheme.module.css";
+import { useEffect, useState } from "react";
+import compact from "./CompactSections.module.css";
+import { BriefcaseBusiness, Camera, Facebook, Flame, MessageSquare, ShieldCheck, Users } from "lucide-react";
+import { OFFICIAL_FACEBOOK_URLS } from "../constants";
+import { parseSocialCache, type SocialCache } from "../services/socialUpdates";
 
-const facebookUrl = "https://www.facebook.com/profile.php?id=100092810378501";
-const channels = [
-  { name: "Information Office", url: facebookUrl },
-  { name: "Abante Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
-  { name: "SK Federation", url: "https://www.facebook.com/TalibonOfficialPage" },
-  { name: "PESO Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
-  { name: "PNP Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
-  { name: "BFP Talibon", url: "https://www.facebook.com/TalibonOfficialPage" },
-  { name: "Tourism Office", url: "https://www.facebook.com/TalibonOfficialPage" },
+const groups = [
+  { name: "Official", offices: [
+    { name: "Information Office", icon: MessageSquare, url: OFFICIAL_FACEBOOK_URLS.PIO },
+    { name: "Tourism", icon: Camera, url: OFFICIAL_FACEBOOK_URLS.MAIN },
+  ] },
+  { name: "Public safety", offices: [
+    { name: "PNP", icon: ShieldCheck, url: OFFICIAL_FACEBOOK_URLS.MAIN },
+    { name: "BFP", icon: Flame, url: OFFICIAL_FACEBOOK_URLS.MAIN },
+  ] },
+  { name: "Community", offices: [
+    { name: "SK Federation", icon: Users, url: OFFICIAL_FACEBOOK_URLS.MAIN },
+    { name: "PESO", icon: BriefcaseBusiness, url: OFFICIAL_FACEBOOK_URLS.MAIN },
+    { name: "Abante Talibon", icon: Facebook, url: OFFICIAL_FACEBOOK_URLS.MAIN },
+  ] },
 ];
+const dateFormat = new Intl.DateTimeFormat("en-PH", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Manila" });
 
 export default function SocialMediaUpdates() {
-  const [loadEmbed, setLoadEmbed] = useState(false);
+  const [cache, setCache] = useState<SocialCache | null>(null);
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${import.meta.env.BASE_URL}data/social-updates.json`, { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(8000)]) })
+      .then(response => { if (!response.ok) throw new Error("Cache unavailable"); return response.json(); })
+      .then(data => { setCache(parseSocialCache(data)); setState("ready"); })
+      .catch(() => { if (!controller.signal.aborted) setState("error"); });
+    return () => controller.abort();
+  }, []);
 
   return (
-    <section
-      id="social-updates"
-      aria-labelledby="social-updates-heading"
-      className="scroll-mt-40 bg-brand-surface py-10 sm:py-12 lg:py-16"
-    >
+    <section id="social-updates" aria-labelledby="social-updates-heading" className={`${solidTheme.section} ${compact.social} scroll-mt-40 bg-brand-surface`}>
       <div className="site-container">
-        <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
-          <div className="min-w-0">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand-primary">
-              Stay connected
-            </p>
-            <h2 id="social-updates-heading" className="font-display text-2xl font-bold tracking-tight text-brand-text sm:text-3xl">
-              Social media updates
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-brand-muted sm:text-base">
-              Follow Talibon's offices for announcements, community news and updates.
-            </p>
-
-            <ul className="mt-4 grid grid-cols-2 gap-x-5 sm:flex sm:max-w-2xl sm:flex-wrap sm:gap-x-7">
-              {channels.map(({ name, url }) => (
-                <li key={name} className="min-w-0">
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group inline-flex min-h-11 items-center gap-2 py-2 text-sm font-medium text-brand-text underline-offset-4 transition-colors hover:text-brand-primary hover:underline"
-                  >
-                    <span>{name}</span>
-                    <ExternalLink size={12} className="shrink-0 text-brand-muted group-hover:text-brand-primary" aria-hidden="true" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-action">Stay connected</p>
+            <h2 id="social-updates-heading" className="font-display text-2xl font-bold text-ink sm:text-3xl">Social media updates</h2>
+            <p className="mt-1 max-w-2xl leading-7 text-muted">Announcements, community news and updates from Talibon.</p>
           </div>
-
-          <div className="min-w-0 border-t border-brand-border pt-6 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
-            <div className="flex items-center gap-2.5">
-              <Facebook size={20} className="shrink-0 text-brand-primary" aria-hidden="true" />
-              <h3 className="font-display text-xl font-semibold tracking-tight text-brand-text sm:text-2xl">
-                Talibon on Facebook
-              </h3>
-            </div>
-            <p className="mt-2 text-sm leading-6 text-brand-muted">
-              Talibon Public Information Office
-            </p>
-
-            {loadEmbed ? (
-              <div className="mt-5">
-                <iframe
-                  src={"https://www.facebook.com/plugins/page.php?href=" + encodeURIComponent(facebookUrl) + "&tabs=timeline&width=500&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"}
-                  width="500"
-                  height="500"
-                  className="w-full max-w-[500px] border-0"
-                  scrolling="no"
-                  allowFullScreen
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  title="Talibon Facebook Feed"
-                />
+          <a href={OFFICIAL_FACEBOOK_URLS.PIO} target="_blank" rel="noopener noreferrer" className="ui-focus inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-action px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-action-hover active:bg-action-hover">
+            <Facebook size={18} aria-hidden="true" />Follow on Facebook
+          </a>
+        </div>
+        {cache && cache.posts.length > 0 ? <>
+          <div className={`${compact.socialPosts} grid md:grid-cols-3`}>
+            {cache.posts.map(post => <article key={post.id} className="min-w-0 overflow-hidden rounded-xl border border-brand-border">
+              {post.image ? <img src={`${import.meta.env.BASE_URL}${post.image}`} alt="" loading="lazy" width="640" height="360" className="aspect-video w-full bg-surface object-cover" /> :
+                <div className="flex items-center gap-2 border-b border-brand-border bg-surface px-5 py-4 text-sm text-muted"><MessageSquare size={18} className="text-action" aria-hidden="true" />Information Office update</div>}
+              <div className={compact.socialPostBody}>
+                <time dateTime={post.date} className="text-xs font-medium text-muted">{dateFormat.format(new Date(post.date))}</time>
+                <h3 className="mt-2 line-clamp-3 font-display text-lg font-semibold leading-7 text-ink">{post.title}</h3>
+                <a href={post.url} target="_blank" rel="noopener noreferrer" aria-label={`Read on Facebook: ${post.title}`} className="ui-focus mt-3 inline-flex min-h-11 items-center rounded text-sm font-semibold text-action underline-offset-4 hover:underline active:text-action-hover">Read on Facebook <span aria-hidden="true" className="ml-2">↗</span></a>
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setLoadEmbed(true)}
-                aria-describedby="facebook-privacy-note"
-                className="group mt-3 inline-flex min-h-11 items-center gap-2 py-2 text-sm font-semibold text-brand-text transition-colors hover:text-brand-primary"
-              >
-                <span className="border-b border-current pb-1">Load Facebook feed</span>
-                <ArrowRight size={16} className="text-brand-primary transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-              </button>
-            )}
-
-            <a
-              href={facebookUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 flex min-h-11 w-fit items-center gap-2 py-2 text-sm text-brand-muted underline-offset-4 transition-colors hover:text-brand-text hover:underline"
-            >
-              Open on Facebook
-              <ExternalLink size={13} aria-hidden="true" />
-            </a>
-            {!loadEmbed && (
-              <p id="facebook-privacy-note" className="mt-1 text-xs leading-5 text-brand-muted">
-                Loading the feed connects to Meta.
-              </p>
-            )}
+            </article>)}
           </div>
+          {cache.updatedAt && <p className="mt-3 text-xs text-muted">Last synced {dateFormat.format(new Date(cache.updatedAt))}. Visit Facebook for newer announcements.</p>}
+        </> : <p role="status" className={`${compact.socialStatus} rounded-lg bg-surface text-sm leading-6 text-muted`}>
+          {state === "loading" ? "Loading recent updates…" : state === "error" ? "Post previews are temporarily unavailable. Visit the Information Office on Facebook for the latest updates." : "Post previews are not available yet. Visit the Information Office on Facebook for the latest updates."}
+        </p>}
+        <div className={`${compact.socialGroups} border-t border-brand-border`}>
+          {groups.map(group => <div key={group.name}>
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">{group.name}</h3>
+            <ul className="flex flex-wrap gap-2">
+              {group.offices.map(({ name, icon: Icon, url }) => <li key={name}>
+                <a href={url} target="_blank" rel="noopener noreferrer" className="ui-focus inline-flex min-h-11 items-center gap-2 rounded-full border border-brand-border px-3 py-2 text-sm font-medium text-ink transition-colors hover:border-action hover:bg-surface hover:text-action active:bg-surface">
+                  <Icon size={16} className="text-action" aria-hidden="true" />{name}
+                </a>
+              </li>)}
+            </ul>
+          </div>)}
         </div>
       </div>
     </section>

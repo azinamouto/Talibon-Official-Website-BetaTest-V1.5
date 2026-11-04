@@ -1,0 +1,155 @@
+/* Existing section opt-in only. Never attach to Home, Hero, Navbar, BaseLayout
+   or the app root. Public information, auth and preview roots retain local scope. */
+.section {
+  composes: section from "./SolidTheme.module.css";
+  --section-sky: #0084d1;
+  --section-sky-light: #f0f9ff;
+  --section-blue-ink: #00598a;
+  --color-brand-primary: var(--section-blue-ink);
+  --color-brand-secondary: var(--section-sky-light);
+  --color-brand-accent: var(--section-blue-ink);
+  --color-brand-text: #171717;
+  --color-brand-muted: #404040;
+  --color-brand-bg: #f0f9ff;
+  --color-brand-surface: #ffffff;
+  --color-brand-border: #e5e7eb;
+  --color-action: var(--section-blue-ink);
+  --color-action-hover: var(--section-blue-ink);
+  --color-focus: var(--section-blue-ink);
+  --color-ink: #171717;
+  --color-muted: #404040;
+  --color-surface: #f0f9ff;
+  --color-dark-bg: #f0f9ff;
+  --color-dark-surface: #ffffff;
+  --color-dark-text: #171717;
+  --color-dark-muted: #404040;
+  --color-dark-border: #e5e7eb;
+  --color-blue-50: #f0f9ff;
+  --color-blue-100: var(--section-sky-light);
+  --color-blue-200: var(--section-sky);
+  --color-blue-500: var(--section-blue-ink);
+  --color-blue-600: var(--section-blue-ink);
+  --color-blue-700: var(--section-blue-ink);
+  --color-blue-900: #171717;
+  --color-sky-50: #f0f9ff;
+  --color-sky-100: var(--section-sky-light);
+  --color-sky-200: var(--section-sky);
+  --color-sky-300: var(--section-sky-light);
+  --color-sky-400: var(--section-sky);
+  --color-sky-500: var(--section-blue-ink);
+  --color-sky-600: var(--section-blue-ink);
+  --color-sky-700: var(--section-blue-ink);
+  --color-slate-50: #f0f9ff;
+  --color-slate-100: #f5f5f5;
+  --color-slate-200: #e5e7eb;
+  --color-slate-400: #525252;
+  --color-slate-500: #525252;
+  --color-slate-600: #404040;
+  --color-slate-700: #404040;
+  --color-slate-800: #262626;
+  --color-slate-900: #171717;
+  --color-gray-50: #f0f9ff;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e7eb;
+  --color-gray-400: #525252;
+  --color-gray-500: #525252;
+  --color-gray-600: #404040;
+  --color-gray-700: #404040;
+  --color-gray-900: #171717;
+  color: var(--color-ink);
+}
+
+/* Keep content surfaces white, including the existing optional dark classes. */
+.section :where(:global(.civic-card), :global(.pro-card), :global(.minimal-card)) {
+  background-color: #ffffff;
+  border-color: var(--color-brand-border);
+}
+
+.section :where(:global(.shadow-md), :global(.shadow-lg), :global(.shadow-xl), :global(.shadow-2xl),
+  :global(.hover\:shadow-md):hover, :global(.hover\:shadow-lg):hover, :global(.hover\:shadow-xl):hover,
+  :global(.civic-card):hover, :global(.pro-card):hover) {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
+}
+
+/* Text and icons use blue ink; filled accents use the light reference palette. */
+.section :where(:global(.bg-brand-primary), :global(.bg-brand-primary\/95), :global(.bg-brand-accent),
+  :global(.bg-blue-600), :global(.bg-sky-600), :global(.bg-action), :global(.minimal-button-primary), :global(.civic-button-primary), :global(.pro-button)) {
+  background-color: var(--section-blue-ink);
+  color: #ffffff;
+}
+
+.section :where(:global(.bg-brand-primary), :global(.bg-brand-primary\/95), :global(.bg-brand-accent),
+  :global(.bg-blue-600), :global(.bg-sky-600)) :where(:global(.text-white), :global(.text-white\/80), :global(.text-white\/85)) {
+  color: #ffffff;
+}
+
+.section :where(:global(.hover\:bg-brand-primary):hover, :global(.hover\:bg-brand-primary\/90):hover,
+  :global(.hover\:bg-blue-700):hover, :global(.hover\:bg-sky-700):hover, :global(.hover\:bg-action-hover):hover,
+  :global(.minimal-button-primary):hover, :global(.civic-button-primary):hover, :global(.pro-button):hover,
+  :global(.minimal-button-outline):hover) {
+  background-color: var(--section-blue-ink);
+  color: #ffffff;
+}
+
+.section :where(:global(.group):hover :global(.group-hover\:bg-brand-primary)) {
+  background-color: var(--section-blue-ink);
+}
+
+.section :where(:global(.group):hover :global(.group-hover\:text-white)) {
+  color: #ffffff;
+}
+
+.section :where(:global(.border-brand-primary), :global(.border-brand-accent)) {
+  border-color: var(--section-sky);
+}
+
+.section :where(h1, h2, h3, h4, h5, h6)[class*="text-brand-"],
+.section :where(h1, h2, h3, h4, h5, h6)[class*="text-blue-"] {
+  color: var(--color-ink);
+}
+
+.section :where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--section-blue-ink);
+  outline-offset: 3px;
+}
+
+/* Only zero-inset page roots opt in. BaseLayout and the fixed header stay intact. */
+@media (max-width: 1023px) {
+  .headerClearance {
+    margin-block-start: 24px;
+  }
+}
+
+/* Compact icon and filter buttons still need usable touch targets. */
+.section :where(button) {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+
+.section :where(button:has(> svg:only-child)) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section :where(:global(.transition-all), :global(.transition-colors), :global(.transition-transform),
+    :global(.transition-opacity)) {
+    transition: none;
+  }
+
+  .section :where(:global(.animate-pulse)) {
+    animation: none;
+  }
+
+  .section :where(:global(.civic-card):hover, [class*="hover:-translate"]:hover) {
+    translate: none;
+  }
+
+  .section :where([class*="hover:scale-"], [class*="group-hover:scale-"]) {
+    scale: none;
+  }
+}
+
+/* Existing fixed overlays and photo scrims retain their contrast treatment.
+   Success, warning, danger, disabled, and loading styles are not remapped. */

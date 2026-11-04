@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import { motion } from "motion/react";
 import { Building2, Briefcase, FileText, Calculator, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -51,7 +52,7 @@ export default function MunicipalOffices() {
   ];
 
   return (
-    <section id="offices" className="py-16 sm:py-20 bg-brand-bg relative overflow-hidden">
+    <section id="offices" className={`${solidTheme.offices} py-16 sm:py-20 bg-brand-bg relative overflow-hidden`}>
       <div className="site-container">
         <div className="text-center mb-12">
           <motion.span 

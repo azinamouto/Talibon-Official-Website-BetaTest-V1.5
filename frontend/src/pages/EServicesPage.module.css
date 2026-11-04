@@ -1,0 +1,14 @@
+/* FRONTEND_THEME.md: keep the palette local to this eligible section. */
+.card {
+  composes: section from "../styles/SolidTheme.module.css";
+  background-color: #ffffff;
+  background-image: none;
+  box-shadow: inset 0 4px 0 var(--talweb-primary);
+  background-size: 100% 4px;
+  background-repeat: no-repeat;
+  border-color: #e5e7eb;
+}
+
+.card:hover {
+  box-shadow: inset 0 4px 0 var(--talweb-primary), 0 4px 12px rgb(0 0 0 / 4%);
+}

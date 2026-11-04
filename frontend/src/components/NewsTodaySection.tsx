@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import React, { useCallback } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Newspaper, User, Calendar } from "lucide-react";
@@ -9,12 +10,12 @@ import { PublicState } from "./PublicContent";
 export default function NewsTodaySection() {
   const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<PublicNews>('news', { limit: 3 }, signal), []));
   const newsList = resource.data?.data || [];
-  if (resource.loading || resource.error) return <section className="site-container py-6"><PublicState {...resource} /></section>;
+  if (resource.loading || resource.error) return <section className={`${solidTheme.photo} site-container py-6`}><PublicState {...resource} /></section>;
   if (newsList.length === 0) return null;
 
   return (
     <section 
-      className="relative py-12 sm:py-16 text-white overflow-hidden bg-cover bg-center" 
+      className={`${solidTheme.photo} relative py-12 sm:py-16 text-white overflow-hidden bg-cover bg-center`}
       id="news-today"
       style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=2000')`
@@ -30,7 +31,7 @@ export default function NewsTodaySection() {
 
       {/* Decorative Ambient Glows */}
       <div className="absolute -top-24 right-1/4 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none z-0" />
-      <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-brand-secondary/10 rounded-full blur-3xl pointer-events-none z-0" />
 
       <div className="site-container relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">

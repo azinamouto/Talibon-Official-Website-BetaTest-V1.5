@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { http, HttpResponse } from 'msw';
 import { expect, it } from 'vitest';
@@ -33,17 +33,18 @@ it('shows cached previews without a Meta embed and keeps office groups compact',
   const { container } = render(<SocialMediaUpdates />);
   expect(await screen.findByRole('heading', { name: post.title })).toBeVisible();
   expect(screen.getByRole('link', { name: /Read on Facebook:/ })).toHaveAttribute('href', post.url);
-  expect(container.querySelector('img')).toHaveAttribute('src', '/images/social/one.jpg');
+  expect(container.querySelector('article img')).toHaveAttribute('src', '/images/social/one.jpg');
   expect(container.querySelector('iframe')).toBeNull();
-  expect(screen.getByRole('heading', { name: 'Public safety' })).toBeVisible();
-  expect(screen.getAllByRole('link', { name: 'Follow on Facebook' })).toHaveLength(1);
+  expect(screen.getByRole('button', { name: /More Talibon pages/ })).toHaveAttribute('aria-expanded', 'false');
+  expect(screen.queryByRole('heading', { name: 'Public safety' })).not.toBeInTheDocument();
+  expect(screen.getAllByRole('link', { name: /^Follow on Facebook/ })).toHaveLength(1);
 });
 
 it.each([200, 503])('has an honest compact fallback for empty or failed cache (%s)', async status => {
   server.use(http.get('*/data/social-updates.json', () => HttpResponse.json({ posts: [] }, { status })));
   render(<SocialMediaUpdates />);
   expect(await screen.findByText(/Visit the Information Office on Facebook/)).toBeVisible();
-  expect(screen.getByRole('link', { name: 'Follow on Facebook' })).toBeVisible();
+  expect(screen.getByRole('link', { name: /^Follow on Facebook/ })).toBeVisible();
 });
 
 it('rejects third-party images and unsafe permalinks, sorts dates and caps previews at three', () => {
@@ -52,14 +53,14 @@ it('rejects third-party images and unsafe permalinks, sorts dates and caps previ
   expect(parseSocialCache({ posts }).posts.map(item => item.id)).toEqual(['4', '3', '2']);
 });
 
-it('shows a local map before consent and removes the interactive map when closed', () => {
+it('loads the Google map automatically and keeps directions and office details outside it', () => {
   const { container } = render(<MemoryRouter><Location /></MemoryRouter>);
-  expect(screen.getByRole('img')).toHaveAttribute('src', '/images/talibon-map.svg');
-  expect(container.querySelector('iframe')).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: 'Open interactive map' }));
-  expect(screen.getByTitle('Google Maps — Talibon Municipal Hall')).toHaveAttribute('src', expect.stringContaining('www.google.com/maps'));
-  fireEvent.click(screen.getByRole('button', { name: 'Close map' }));
-  expect(container.querySelector('iframe')).toBeNull();
-  expect(screen.getByRole('link', { name: 'Get directions' })).toHaveAttribute('href', expect.stringContaining('destination=Talibon%20Municipal%20Hall'));
-  expect(screen.getByText('114.8 km')).toBeVisible();
+  expect(container.querySelector('iframe')).toHaveAttribute('loading', 'eager');
+  expect(screen.queryByRole('button', {name:'Tap to explore'})).not.toBeInTheDocument();
+  expect(screen.getByTitle(/Google Maps/)).toHaveAttribute('src', expect.stringContaining('www.google.com/maps'));
+  expect(screen.getByTitle(/Google Maps/)).toHaveAttribute('tabindex', '-1');
+  expect(screen.queryByRole('button', { name: 'Close map' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /^Get directions/ })).toHaveAttribute('href', expect.stringContaining('destination=Talibon%20Municipal%20Hall'));
+  expect(screen.getByText('114.8 km from Tagbilaran')).toBeVisible();
+  expect(screen.getByText('Confirm current hours before your visit.')).toBeVisible();
 });

@@ -1,4 +1,5 @@
 import solidTheme from "../styles/SolidTheme.module.css";
+import styles from "./Services.module.css";
 import { motion } from "motion/react";
 import { 
   FileText, 
@@ -12,8 +13,7 @@ import {
   ShieldCheck,
   Smartphone,
   Globe,
-  Search,
-  Building
+  Search
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -66,32 +66,16 @@ export default function Services() {
   return (
     <section 
       id="services" 
-      className={`${solidTheme.photo} relative py-14 sm:py-20 text-white overflow-hidden bg-cover bg-center`}
-      style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=2000')`
-      }}
+      className={`${solidTheme.section} ${styles.section} relative py-14 sm:py-20 text-white overflow-hidden`}
     >
-      {/* Immersive Real Estate & Architecture Overlay */}
-      <div 
-        className="absolute inset-0 z-0 pointer-events-none" 
-        style={{ 
-          background: "linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.94) 100%)" 
-        }} 
-      />
-
-      {/* Decorative Ambient Lighting */}
-      <div className="absolute -top-24 right-1/4 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none z-0" />
-      <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-brand-secondary/15 rounded-full blur-3xl pointer-events-none z-0" />
-
       <div className="site-container relative z-10">
         <div className="text-center mb-10 sm:mb-12">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Building size={15} className="text-sky-300" />
-            <span className="text-[11px] font-extrabold uppercase tracking-widest text-sky-300">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-white">
               MUNICIPAL SERVICES & REAL ESTATE
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-white via-sky-100 to-amber-200 bg-clip-text text-transparent uppercase tracking-tight font-display drop-shadow-sm">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight font-display">
             Digital Governance
           </h2>
           <p className="text-xs sm:text-sm text-slate-200 font-medium max-w-xl mx-auto mt-1.5 leading-relaxed drop-shadow-2xs">
@@ -107,18 +91,18 @@ export default function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.08 }}
-              className="group relative overflow-hidden rounded-2xl p-5 sm:p-6 bg-slate-900/80 backdrop-blur-md border border-white/10 hover:border-sky-400/40 hover:bg-slate-800/90 shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1"
+              className={`${styles.card} group relative overflow-hidden rounded-2xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1`}
             >
               <div className="space-y-3.5">
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center transition-transform group-hover:scale-105">
-                  <service.icon size={20} className={service.iconColor} />
+                <div className={`${styles.icon} w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105`}>
+                  <service.icon aria-hidden="true" size={20} className={service.iconColor} />
                 </div>
                 
                 <div>
-                  <h3 className="text-base font-bold mb-1 tracking-tight font-display text-white group-hover:text-sky-300 transition-colors">
+                  <h3 className="text-base font-bold mb-1 tracking-tight font-display">
                     {service.title}
                   </h3>
-                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                  <p className="text-sm font-medium leading-relaxed">
                     {service.description}
                   </p>
                 </div>
@@ -126,10 +110,10 @@ export default function Services() {
 
               <Link 
                 to={service.href}
-                className="mt-4 inline-flex items-center gap-1.5 text-[10px] font-black text-sky-400 hover:text-sky-300 uppercase tracking-widest transition-all group-hover:gap-2"
+                className={`${styles.action} mt-4 inline-flex items-center gap-1.5 font-bold transition-all group-hover:gap-2`}
               >
                 <span>Learn More</span>
-                <ArrowUpRight size={13} />
+                <ArrowUpRight aria-hidden="true" size={13} />
               </Link>
             </motion.div>
           ))}

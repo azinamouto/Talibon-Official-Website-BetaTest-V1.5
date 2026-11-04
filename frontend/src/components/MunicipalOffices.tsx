@@ -1,5 +1,5 @@
 import solidTheme from "../styles/SolidTheme.module.css";
-import { motion } from "motion/react";
+import styles from "./MunicipalOffices.module.css";
 import { Building2, Briefcase, FileText, Calculator, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -52,91 +52,39 @@ export default function MunicipalOffices() {
   ];
 
   return (
-    <section id="offices" className={`${solidTheme.offices} py-16 sm:py-20 bg-brand-bg relative overflow-hidden`}>
+    <section id="offices" aria-labelledby="municipal-offices-heading" className={`${solidTheme.section} ${styles.section}`}>
       <div className="site-container">
-        <div className="text-center mb-12">
-          <motion.span 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="section-label"
-          >
-            Abante Talibon!
-          </motion.span>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="section-title uppercase mb-6"
-          >
-            Municipal Offices & Departments
-          </motion.h2>
-
-          <motion.p 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-brand-muted font-normal text-sm sm:text-base max-w-2xl mx-auto mb-8"
-          >
-            Dedicated public servants committed to excellence and transparency in local governance.
-          </motion.p>
+        <div className={styles.intro}>
+          <span className={styles.label}>Abante Talibon!</span>
+          <h2 id="municipal-offices-heading" className={styles.heading}>Municipal offices and departments</h2>
+          <p>Dedicated public servants committed to excellence and transparency in local governance.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className={styles.grid}>
           {offices.map((office, idx) => (
-            <motion.div
-              key={office.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.08, duration: 0.5 }}
-              className="group flex flex-col h-full bg-brand-surface rounded-2xl border border-brand-border overflow-hidden hover:shadow-xl hover:shadow-black/5 transition-all duration-300"
-            >
-              {/* Top Colored Section with Icon Box */}
-              <div className={`h-32 flex items-center justify-center ${office.color} transition-colors duration-300 relative`}>
-                <div className={`w-14 h-14 rounded-2xl border ${office.boxBg} flex items-center justify-center shadow-xs transition-transform duration-300 group-hover:scale-110`}>
-                  <office.icon 
-                    size={24} 
-                    className={office.iconColor} 
-                  />
+            <Link key={office.title} to="/executive/directory" data-office-card
+              aria-labelledby={`municipal-office-title-${idx} municipal-office-person-${idx}`}
+              className={styles.card}>
+              <div className={styles.band}>
+                <office.icon size={44} strokeWidth={1.75} aria-hidden="true" />
+              </div>
+              <div className={styles.body}>
+                <h3 id={`municipal-office-title-${idx}`} className={styles.title}>{office.title}</h3>
+                <p id={`municipal-office-person-${idx}`} className={styles.name}>{office.officer}</p>
+                <div className={styles.bottom}>
+                  <span className={styles.pill}>{idx === 0 ? 'Municipal Mayor' : 'Department head'}</span>
+                  <span className={styles.arrow} aria-hidden="true"><ArrowRight size={20} aria-hidden="true" /></span>
                 </div>
               </div>
-
-              {/* Content Section */}
-              <div className="p-5 flex-1 flex flex-col">
-                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mb-1.5 leading-snug font-display group-hover:text-brand-primary transition-colors">
-                  {office.title}
-                </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mb-4">
-                  {office.officer}
-                </p>
-                
-                <div className="mt-auto pt-4 border-t border-brand-border flex items-center justify-between">
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${office.badgeTextColor}`}>
-                    Department Head
-                  </span>
-                  <div className={`w-7 h-7 rounded-full ${office.accentColor} flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0`}>
-                    <ArrowRight size={13} />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            </Link>
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <Link 
-            to="/executive/directory"
-            className="minimal-button-outline inline-flex text-xs py-2.5 px-5"
-          >
-            View All Offices & Departments <ArrowRight size={16} />
+        <div className={styles.viewAll}>
+          <Link to="/executive/directory" className={styles.button}>
+            View all offices and departments <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </div>
-      </div>
-
-      {/* Background Text - Embossment */}
-      <div className="absolute -bottom-12 left-0 text-[20vw] font-black text-brand-primary/[0.02] select-none pointer-events-none leading-none font-display tracking-tighter">
-        TALIBON
       </div>
     </section>
   );

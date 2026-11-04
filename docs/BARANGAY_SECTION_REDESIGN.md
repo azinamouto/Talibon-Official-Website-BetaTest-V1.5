@@ -146,3 +146,114 @@ directory records and external PSA availability are not established by this pass
 Protected viewport comparisons were pixel-identical at 360, 768 and 1280px.
 At 1920px, the only difference was 604 pixels inside the header’s live date/time
 text (x1585–1706, y13–20); protected source files retain their original hashes.
+
+## Grouped lists update - 4 November 2026
+
+This update supersedes the card-grid/preview behavior described above. All names
+are visible initially in two labelled Mainland/Island regions, directly on the
+light-blue section. Lists flow alphabetically through CSS columns; on mobile
+each group uses one column. Wide layouts use a 2:1 split; groups stack below lg.
+Groups with no matches are removed. No boxes, letter tiles or per-item subtitles
+remain. Poblacion stays in Mainland with the requested Town center badge.
+
+All, Mainland and Island chips retain full-data counts; the standalone Poblacion
+chip and Browse all/Show fewer controls are removed as requested. Search remains
+instant, case-insensitive and accent-insensitive. Filtered results announce
+Showing X of Y barangays using the full dataset total. Empty results provide the
+requested message and retain the existing reset action. Counts and description
+are derived from the unchanged data, currently 25 total / 17 Mainland / 8 Island.
+Every name retains its existing /about/barangays destination; no individual
+routes were invented. The PSA URL and new-tab attributes are unchanged.
+
+The Municipal offices section was also made smaller at the user's request;
+its officials, titles, order, icons and routes are unchanged. Full changed-file
+list, before/after captures and verification are recorded in the
+[latest compact-layout note](COMPACT_LAYOUT_AUDIT.md#grouped-barangays-and-smaller-municipal-offices---4-november-2026).
+The supplied image and written specification were used because the linked
+Claude artifact was unavailable. Local only; no deployment.
+
+## Interactive picker update - 4 November 2026
+
+This update supersedes the grouped-list presentation above. The same reference
+records now render as an alphabetical, wrapping native-radio picker with All,
+Mainland and Island filter radios, live search and a white selected-barangay
+card. Names, types and totals come from the unchanged data. The Poblacion default
+falls back to the first alphabetical record if unavailable; its type pill reads
+Mainland - Town center. No separate Poblacion filter or collapse is introduced.
+
+At 900px and above the details column is 400px wide with a 40px column gap,
+spanning the filter and chip rows. Below 900px the order is filters, details,
+chips. Search remains above the filters. A mobile pointer selection reveals the
+details card if it is off screen, without moving keyboard focus. Native radio
+Tab and arrow behavior is preserved; no custom keyboard handlers were added.
+
+Changing filters retains the selected barangay even when its chip disappears;
+the details card then says Not in the current filter. A single nonempty search
+match becomes selected automatically, with case/accent-insensitive matching.
+No results retain the requested message and existing reset action. All 25 chips
+are visible initially, and full filter counts remain 25/17/8 with current data.
+
+Selection is reflected in a shareable #barangay=slug hash using the existing
+BrowserRouter. Valid hashes restore the selection on load; invalid or malformed
+values are ignored. Hash updates replace the current history entry, preserve
+the pathname/query and do not add routes or custom global scrolling behavior.
+
+### Available data and routes
+
+The existing homepage reference contains only name and location. It has no
+captain/captain_name, contact_number, office_address or office_hours values.
+Consequently no official, phone, address or hours rows appear in the real card;
+no Name/Number placeholders or extra details were invented. Conditional rendering
+is ready for these existing full-directory field names if supplied in the source.
+Unit tests use isolated mocked fields to verify rendering, not production records.
+No new API or join to the full-directory feed was introduced.
+
+The current homepage links and application routing expose /about/barangays as
+the shared directory, not one existing route per barangay. Both View full
+directory and View barangay page retain that actual destination. Changing the
+selection updates the card and shareable hash; it cannot produce a distinct
+profile URL that does not exist. The PSA reference URL and new-tab attributes
+are unchanged. Individual profile routes require separate authorized work.
+
+### Changed files and review captures
+
+- `frontend/src/components/BarangaySelector.tsx`
+- `frontend/src/components/BarangaySelector.module.css`
+- `frontend/test/react/barangays.test.tsx`
+- `frontend/test/browser/barangays.spec.ts`
+- `frontend/test/browser/compact-directory.spec.ts`
+- `docs/BARANGAY_SECTION_REDESIGN.md` (this note)
+- `docs/COMPACT_LAYOUT_AUDIT.md` (cross-reference)
+
+| Width | Before | After |
+| --- | --- | --- |
+| 360px | [Before](../frontend/node_modules/.cache/barangay-picker/before-360.png) | [After](../frontend/node_modules/.cache/barangay-picker/after-360.png) |
+| 768px | [Before](../frontend/node_modules/.cache/barangay-picker/before-768.png) | [After](../frontend/node_modules/.cache/barangay-picker/after-768.png) |
+| 1280px | [Before](../frontend/node_modules/.cache/barangay-picker/before-1280.png) | [After](../frontend/node_modules/.cache/barangay-picker/after-1280.png) |
+| 1920px | [Before](../frontend/node_modules/.cache/barangay-picker/before-1920.png) | [After](../frontend/node_modules/.cache/barangay-picker/after-1920.png) |
+
+Captures are local ignored artifacts with synthetic API responses; the fixed
+header is hidden only for cropped section screenshots. No deployed data changes.
+
+### Validation
+
+TypeScript, the production build, 21 Node tests and all 88 React tests pass.
+Ten targeted browser checks pass across 320/360/375/768/1280/1920px, including
+native keyboard operation, selected state, single-result search, empty results,
+retained selection, valid hashes, current shared route, white details surface
+and responsive ordering. All 81 full public browser regressions pass. The mobile
+pointer-selection check also verifies the complete details card is brought into
+the viewport without manual scrolling. Protected hero/header comparisons show
+zero changed pixels at all their matching test widths under controlled fixtures.
+The details landmark uses aria-live=polite and aria-atomic=true; native checked
+states and accessible names are verified. Physical NVDA/VoiceOver testing is
+not claimed. The existing large-bundle warning remains.
+
+Text contrast: white/deep blue 7.51:1; sky-950/white 13.88:1;
+sky-950/sky-100 12.10:1; slate-700/white 10.35:1; slate-900/white 17.85:1.
+Visible controls meet 48/52px targets and use 3px deep-blue focus outlines.
+The search retains its 48px field and 2px primary-blue ring. All transitions
+are 150ms and disabled under reduced motion. No content slide animation is used.
+Source hashing confirms that only the two Barangay component files changed;
+all reference data, other sections, hero, header, navigation, globals, services
+and backend code remain untouched. Nothing deployed.

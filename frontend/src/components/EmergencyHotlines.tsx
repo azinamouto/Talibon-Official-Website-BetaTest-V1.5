@@ -1,6 +1,7 @@
 import solidTheme from "../styles/SolidTheme.module.css";
 import { motion } from "motion/react";
 import compact from "./CompactSections.module.css";
+import colors from "./EmergencyHotlines.module.css";
 import { Phone, ShieldAlert, HeartPulse, Flame, Siren } from "lucide-react";
 
 export default function EmergencyHotlines() {
@@ -10,49 +11,49 @@ export default function EmergencyHotlines() {
       label: "Municipal Disaster Risk Reduction & Management Office",
       numbers: ["0929-152-3330", "0917-323-0117"],
       icon: Siren,
-      color: "text-brand-accent",
-      bgColor: "bg-brand-accent/5"
+      color: colors.icon,
+      bgColor: colors.iconChip
     },
     {
       name: "PNP Station",
       label: "Talibon Municipal Police Station",
       numbers: ["0998-598-6433"],
       icon: ShieldAlert,
-      color: "text-brand-primary",
-      bgColor: "bg-brand-primary/5"
+      color: colors.icon,
+      bgColor: colors.iconChip
     },
     {
       name: "Rural Health Unit",
       label: "24/7 Emergency Medical Services",
       numbers: ["0946-336-0021"],
       icon: HeartPulse,
-      color: "text-emerald-500",
-      bgColor: "bg-emerald-500/5"
+      color: colors.icon,
+      bgColor: colors.iconChip
     },
     {
       name: "BFP Station",
       label: "Bureau of Fire Protection - Talibon",
       numbers: ["0945-862-7931"],
       icon: Flame,
-      color: "text-sky-500",
-      bgColor: "bg-sky-500/5"
+      color: colors.icon,
+      bgColor: colors.iconChip
     }
   ];
 
   return (
-    <section id="emergency" className={`${solidTheme.photo} ${compact.emergency} bg-brand-text relative overflow-hidden`}>
+    <section id="emergency" className={`${solidTheme.photo} ${compact.emergency} ${colors.section} relative overflow-hidden`}>
       {/* Background Text - Embossment */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-black text-white/[0.02] select-none pointer-events-none leading-none font-display tracking-tighter uppercase whitespace-nowrap">
         TALIBON
       </div>
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-accent/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-primary/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
+      <div className={`${colors.glow} absolute top-0 right-0 w-96 h-96 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2`} />
+      <div className={`${colors.glow} absolute bottom-0 left-0 w-96 h-96 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2`} />
 
       <div className="site-container relative z-10">
         <div className={compact.emergencyHeader}>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">Emergency Hotlines</h2>
-          <p className="text-white/60 font-normal text-base max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">Emergency Hotlines<span className={colors.emoji} role="img" aria-label="Siren">🚨</span></h2>
+          <p className={`${colors.description} font-normal text-base max-w-2xl mx-auto`}>
             Quick response for life-threatening situations. Our emergency teams are available 24/7 to serve the people of Talibon.
           </p>
         </div>
@@ -65,7 +66,7 @@ export default function EmergencyHotlines() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className={`${compact.hotlineCard} bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-500 group`}
+              className={`${compact.hotlineCard} ${colors.card} bg-white/5 border backdrop-blur-sm hover:bg-white/10 transition-all duration-500 group`}
             >
               <div className={`${compact.hotlineIcon} ${item.bgColor} flex items-center justify-center ${item.color} transition-transform group-hover:scale-110 duration-500`}>
                 <item.icon size={28} />
@@ -74,7 +75,7 @@ export default function EmergencyHotlines() {
               <div className={compact.hotlineContent}>
                 <div className={compact.agency}>
                   <h3 className="text-xl font-bold text-white mb-1 font-display uppercase tracking-tight">{item.name}</h3>
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-tight">{item.label}</p>
+                  <p className={`${colors.agency} text-[10px] font-bold uppercase tracking-widest leading-tight`}>{item.label}</p>
                 </div>
                 
                 <div className={compact.numbers}>
@@ -82,9 +83,9 @@ export default function EmergencyHotlines() {
                     <a 
                       key={num}
                       href={`tel:${num.replace(/-/g, '')}`}
-                      className={`${compact.call} flex items-center gap-3 text-white hover:text-brand-accent transition-colors group/link`}
+                      className={`${compact.call} ${colors.phone} flex items-center gap-3 text-white transition-colors group/link`}
                     >
-                      <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center group-hover/link:bg-brand-accent/20 transition-colors">
+                      <div className={`${colors.phoneChip} w-8 h-8 rounded-xl flex items-center justify-center transition-colors`}>
                         <Phone size={14} />
                       </div>
                       <span className="text-sm font-bold tracking-widest">{num}</span>
@@ -96,8 +97,8 @@ export default function EmergencyHotlines() {
           ))}
         </div>
 
-        <div className={`${compact.landline} bg-brand-accent/10 border border-brand-accent/20 text-center`}>
-          <p className="text-brand-accent font-bold text-xs tracking-[0.2em] uppercase">
+        <div className={`${compact.landline} ${colors.landline} border text-center`}>
+          <p className="text-white font-bold text-xs tracking-[0.2em] uppercase">
             Landline: (038) 510-1980
           </p>
         </div>

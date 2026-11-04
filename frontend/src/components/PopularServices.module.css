@@ -1,0 +1,64 @@
+.section {
+  /* Scoped solid-blue tokens: never override CMS branding or the protected hero. */
+  --services-deep: var(--talweb-deep);
+  --services-hover: #004b75;
+  --services-light: var(--talweb-background);
+  --services-tint: var(--talweb-card);
+  padding-block: 40px;
+  background: var(--talweb-background);
+  color: var(--color-ink, #0f172a);
+  scroll-margin-top: var(--navbar-height-desktop, 204px);
+}
+
+.message {
+  max-width: 72ch;
+  margin-inline: auto;
+  text-align: center;
+  opacity: 0.9;
+}
+.message:focus-within { opacity: 1; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--services-tint);
+  color: var(--services-deep);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.heading { margin: 0; font-size: clamp(28px, 3vw, 32px); font-weight: 700; line-height: 1.25; }
+.description { max-width: 66ch; margin: 12px auto 0; color: #334155; font-size: 16px; line-height: 1.65; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 24px; }
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+.primary { background: var(--services-deep); color: #fff; }
+.primary:hover, .primary:active { background: var(--services-hover); }
+.secondary { background: var(--services-tint); color: var(--services-deep); }
+.secondary:hover, .secondary:active { background: var(--services-light); }
+.action:focus-visible { outline: 2px solid var(--services-deep); outline-offset: 2px; }
+.badge svg, .action svg { flex-shrink: 0; }
+
+@media (max-width: 639px) {
+  .section { padding-block: 32px; scroll-margin-top: var(--navbar-height-mobile, 140px); }
+  .actions { flex-direction: column; align-items: stretch; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .action { transition: none; }
+}

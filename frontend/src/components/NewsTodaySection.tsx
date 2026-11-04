@@ -1,116 +1,72 @@
 import solidTheme from "../styles/SolidTheme.module.css";
-import React, { useCallback } from "react";
-import { motion } from "motion/react";
-import { ArrowRight, Newspaper, User, Calendar } from "lucide-react";
+import { useCallback, useState } from "react";
+import { ArrowRight, Newspaper, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
-import { listPublic, PublicNews } from "../services/publicApi";
+import { listPublic, type PublicNews } from "../services/publicApi";
 import { usePublicResource } from "../hooks/usePublicResource";
 import { PublicState } from "./PublicContent";
+import styles from "./NewsTodaySection.module.css";
 
+type HomepageNews = PublicNews & { status?: string; is_test?: boolean };
+const sampleTitles = new Set(["kirch pogi", "new website release"]);
+const dateFormat = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+const providedAuthor = (value?: string | null) => {
+  const author = value?.trim();
+  return author && !/^municipal admin(?:istrator)?$/i.test(author) ? author : null;
+};
+function articleDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : { iso: date.toISOString().slice(0, 10), label: dateFormat.format(date) };
+}
+function NewsImage({ src, title }: { src?: string | null; title: string }) {
+  const [failed, setFailed] = useState(false);
+  return <div className={styles.imageFrame}>
+    {src?.trim() && !failed ? <img src={src.trim()} alt={title} className={styles.image} loading="lazy" width="640" height="360" referrerPolicy="no-referrer" onError={() => setFailed(true)} />
+      : <div className={styles.placeholder} data-news-placeholder aria-hidden="true"><Newspaper size={44} strokeWidth={1.75} aria-hidden="true" /></div>}
+  </div>;
+}
 export default function NewsTodaySection() {
-  const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<PublicNews>('news', { limit: 3 }, signal), []));
-  const newsList = resource.data?.data || [];
-  if (resource.loading || resource.error) return <section className={`${solidTheme.photo} site-container py-6`}><PublicState {...resource} /></section>;
-  if (newsList.length === 0) return null;
-
-  return (
-    <section 
-      className={`${solidTheme.photo} relative py-12 sm:py-16 text-white overflow-hidden bg-cover bg-center`}
-      id="news-today"
-      style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=2000')`
-      }}
-    >
-      {/* Immersive Dark Gradient & Ambient Light Overlay */}
-      <div 
-        className="absolute inset-0 z-0 pointer-events-none" 
-        style={{ 
-          background: "linear-gradient(180deg, rgba(15, 23, 42, 0.90) 0%, rgba(15, 23, 42, 0.95) 100%)" 
-        }} 
-      />
-
-      {/* Decorative Ambient Glows */}
-      <div className="absolute -top-24 right-1/4 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none z-0" />
-      <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-brand-secondary/10 rounded-full blur-3xl pointer-events-none z-0" />
-
-      <div className="site-container relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Newspaper size={15} className="text-sky-300" />
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-sky-300">
-                MUNICIPAL PRESS & OFFICIAL ANNOUNCEMENTS
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-black bg-gradient-to-r from-white via-sky-100 to-amber-200 bg-clip-text text-transparent uppercase tracking-tight font-display drop-shadow-sm">
-              NEWS TODAY
-            </h2>
-            <p className="text-xs sm:text-sm text-sky-100/90 font-medium max-w-xl mt-1.5 leading-relaxed drop-shadow-2xs">
-              Official press releases, governance accomplishments, and community news from the Municipality of Talibon.
-            </p>
-          </div>
-
-          <Link
-            to="/news"
-            className="px-4 py-2.5 bg-[#3A8FC2] hover:bg-[#2B82B8] text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all inline-flex items-center gap-2 self-start md:self-auto shadow-lg border border-sky-300/30 hover:scale-105 active:scale-95"
-          >
-            <span>View All News</span>
-            <ArrowRight size={14} />
-          </Link>
+  const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<HomepageNews>('news', { limit: 3 }, signal), []));
+  const newsList = (resource.data?.data || []).filter(item =>
+    (!item.status || item.status === 'published') && !item.is_test &&
+    !sampleTitles.has(item.title.trim().toLowerCase().replace(/\s+/g, ' ')));
+  // The public endpoint supplies published records in date order. For the
+  // two-card presentation, explicitly place the newest record in the large card.
+  const items = newsList.length === 2 ? [...newsList].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0)) : newsList;
+  return <section id="news-today" aria-labelledby="news-announcements-heading" className={`${solidTheme.section} ${styles.section}`}>
+    <div className="site-container">
+      <div className={styles.header}>
+        <div>
+          <p className={styles.label}>Press and official announcements</p>
+          <h2 id="news-announcements-heading" className={styles.heading}>News and announcements</h2>
+          <p className={styles.description}>Official press releases, governance accomplishments, and community news from the Municipality of Talibon.</p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-          {newsList.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-slate-900/80 backdrop-blur-md rounded-2xl border border-white/10 p-4 shadow-xl flex flex-col justify-between space-y-4 hover:border-sky-400/40 hover:shadow-sky-500/10 transition-all duration-300 group hover:-translate-y-1"
-            >
-              <Link to={`/news/view/${item.id}`} className="block space-y-3 h-full flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="aspect-[16/9] max-h-44 relative overflow-hidden rounded-xl border border-white/10 shadow-inner bg-slate-950">
-                    <img
-                      src={item.image_url || "http://talibon.gov.ph/wp-content/uploads/2025/09/Talibon-Official-Seal-v4-2003-to-2023-.png"}
-                      alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-2.5 right-2.5 px-2.5 py-1 bg-slate-950/80 backdrop-blur-md border border-white/15 rounded-lg text-[10px] font-black text-amber-300 tracking-wider uppercase shadow-md flex items-center gap-1">
-                      <Calendar size={10} className="text-amber-300" />
-                      {new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 text-[10px] font-bold text-sky-200/80 uppercase tracking-wider">
-                    {item.author && (
-                      <span className="flex items-center gap-1">
-                        <User size={11} className="text-sky-400" />
-                        {item.author}
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors font-display tracking-tight leading-snug line-clamp-2">
-                    {item.title}
-                  </h3>
-
-                  <p className="text-xs text-slate-300 font-normal leading-relaxed line-clamp-2">
-                    {item.summary || item.content}
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-white/10 flex items-center gap-1.5 text-xs font-black text-sky-400 uppercase tracking-widest group-hover:text-sky-300 group-hover:gap-2.5 transition-all">
-                  <span>Read Article</span>
-                  <ArrowRight size={13} />
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+        <Link to="/news" className={styles.button}>View all news <ArrowRight size={18} aria-hidden="true" /></Link>
       </div>
-    </section>
-  );
+      {resource.loading || resource.error ? <PublicState {...resource} /> : items.length === 0
+        ? <p role="status" className={styles.empty}>No news yet. Check back soon.</p>
+        : <div className={styles.grid} data-count={items.length} data-authors={items.some(item => providedAuthor(item.author))}>
+          {items.map(item => {
+            const date = articleDate(item.date);
+            const author = providedAuthor(item.author);
+            const category = item.category?.trim();
+            return <Link key={item.id} to={`/news/view/${item.id}`} aria-labelledby={`news-headline-${item.id}`} className={styles.card} data-news-card>
+              <NewsImage key={item.image_url || ''} src={item.image_url} title={item.title} />
+              <div className={styles.body}>
+                <div className={styles.metadata}>
+                  <div className={styles.meta}>
+                    {category && <span className={styles.category}>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</span>}
+                    {date && <time dateTime={date.iso} className={styles.date}><Calendar size={16} aria-hidden="true" />{date.label}</time>}
+                  </div>
+                  {author && <p className={styles.author}>{author}</p>}
+                </div>
+                <h3 id={`news-headline-${item.id}`} className={styles.title}>{item.title}</h3>
+                <p className={styles.excerpt}>{item.summary || item.content}</p>
+                <span className={styles.read} aria-hidden="true">Read article <ArrowRight size={18} aria-hidden="true" /></span>
+              </div>
+            </Link>;
+          })}
+        </div>}
+    </div>
+  </section>;
 }

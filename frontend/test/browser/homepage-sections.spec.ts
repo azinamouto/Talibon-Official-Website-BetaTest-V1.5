@@ -17,20 +17,13 @@ for (const width of [375, 1440]) {
     await expect(social.locator('iframe')).toHaveCount(0);
     const location = page.locator('#location');
     await location.scrollIntoViewIfNeeded();
-    await expect(location.getByRole('img')).toBeVisible();
-    expect(await location.getByRole('img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
-    await expect(location.locator('iframe')).toHaveCount(0);
+    await expect(location.locator('iframe')).toHaveCount(1);
+    await expect(location.locator('iframe')).toHaveAttribute('loading', 'eager');
     expect(await location.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     expect(await social.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     await page.screenshot({ path: `test-results/homepage-location-${width}.png`, fullPage: false });
     await social.screenshot({ path: `test-results/homepage-social-${width}.png` });
-    const open = location.getByRole('button', { name: 'Open interactive map' });
-    await open.focus();
-    await expect(open).toBeFocused();
-    await page.keyboard.press('Enter');
-    await expect(location.locator('iframe')).toHaveCount(1);
-    await location.getByRole('button', { name: 'Close map' }).click();
-    await expect(location.locator('iframe')).toHaveCount(0);
-    await expect(location.getByRole('link', { name: 'Get directions' })).toBeVisible();
+    await expect(location.getByRole('button', { name: 'Close map' })).toHaveCount(0);
+    await expect(location.getByRole('link', { name: /^Get directions/ })).toBeVisible();
   });
 }

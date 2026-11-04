@@ -1,0 +1,11 @@
+.section { background: var(--talweb-deep); }
+.card { background: #fff; color: var(--talweb-text); box-shadow: 0 1px 3px rgb(15 23 42 / 10%), 0 1px 2px rgb(15 23 42 / 6%); }
+.card:hover { background: var(--talweb-background); }
+.card h3 { color: #0f172a; font-size: 18px; }
+.card p { color: #334155; }
+.icon { background: var(--talweb-primary); color: #fff; }
+.icon svg { color: #fff; }
+.action { min-height: 44px; color: var(--talweb-deep); font-size: 14px; }
+.action:hover { text-decoration: underline; }
+.section .action:focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .card, .action, .icon { transition: none; } .card:hover { transform: none; } }

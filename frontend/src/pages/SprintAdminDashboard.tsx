@@ -1,3 +1,4 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { LayoutDashboard, Users, FileText, Newspaper, Briefcase, BarChart3, ShieldCheck } from 'lucide-react';
@@ -24,7 +25,7 @@ function Overview({ preview, identity }: { preview: boolean; identity: AdminIden
   }, [preview, identity]);
   return <section><h2 className="text-2xl font-bold">Municipal overview</h2><p className="mt-2 text-slate-600">Manage public information and municipal accounts from one workspace.</p>
     <Failure message={counts.error} />{counts.error && <Button onClick={counts.reload}>Retry overview</Button>}{counts.loading && <p role="status" className="py-6">Loading overview…</p>}
-    <div className="my-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{counts.data?.map(([label, value]) => <article key={label} className="rounded-xl border border-slate-200 bg-slate-50 p-5"><h3 className="capitalize text-slate-600">{label}</h3><p className="mt-3 text-3xl font-bold text-emerald-900">{value}</p><p className="mt-1 text-xs text-slate-500">{preview ? 'Sample count' : 'Total records'}</p></article>)}</div>
+    <div className="my-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{counts.data?.map(([label, value]) => <article key={label} className="rounded-xl border border-slate-200 bg-slate-50 p-5"><h3 className="capitalize text-slate-600">{label}</h3><p className="mt-3 text-3xl font-bold text-brand-text">{value}</p><p className="mt-1 text-xs text-slate-500">{preview ? 'Sample count' : 'Total records'}</p></article>)}</div>
     <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5"><h3 className="flex items-center gap-2 font-bold"><ShieldCheck size={20} /> Access follows your role</h3><p className="mt-2">Only permitted sections are available. Changes are checked by the server on every request.</p></div>
   </section>;
 }
@@ -36,7 +37,7 @@ function DashboardShell({ identity, preview = false }: { identity: AdminIdentity
   return <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6"><header className="mb-6 flex flex-wrap items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-widest text-emerald-700">Talibon · Administration</p><h1 className="mt-1 text-3xl font-bold">Admin dashboard</h1></div><span className="rounded-full bg-emerald-100 px-4 py-2 text-sm text-emerald-900">{preview ? 'Layout preview' : identity.profile.role.replaceAll('_', ' ')}</span></header>
     {preview && <p role="status" className="mb-5 rounded-lg bg-amber-50 p-4 text-amber-900">Mock data — Week 7 layout preview. No real records are read or changed.</p>}
     <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]"><nav aria-label="Admin sections" className="flex flex-wrap gap-2 self-start rounded-xl border border-slate-200 bg-white p-3 lg:flex-col">{allowed.map(({ id, label, icon: Icon }) => <Link key={id} to={`?tab=${id}`} aria-current={tab === id ? 'page' : undefined} className={`ui-focus flex min-h-11 items-center gap-3 rounded-lg px-4 py-3 font-medium ${tab === id ? 'bg-emerald-800 text-white' : 'text-slate-700 hover:bg-slate-100'}`}><Icon size={19} />{label}</Link>)}</nav>
-      <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 sm:p-7">
+      <div className={`${sectionTheme.section} min-w-0 rounded-xl border border-slate-200 bg-white p-5 sm:p-7`}>
         {!selected ? <Failure message="You do not have access to this section." /> : preview && tab !== 'overview' ? <section><h2 className="text-2xl font-bold">{selected.label}</h2><p className="mt-4">Layout preview only. Sign in to use this section with authorized data.</p></section>
           : tab === 'overview' ? <Overview preview={preview} identity={identity} />
           : tab === 'users' ? <AdminUsers identity={identity} />
@@ -65,7 +66,7 @@ export default function SprintAdminDashboard() {
     window.addEventListener('admin-access-invalidated', invalidate);
     return () => { controller.abort(); window.removeEventListener('admin-access-invalidated', invalidate); };
   }, [user?.id, revision]);
-  if (error) return <main className="mx-auto max-w-xl p-6"><Failure message={error} /><Button onClick={() => setRevision(value => value + 1)}>Reload permissions</Button><Link className="ml-4 underline" to="/login">Sign in</Link></main>;
+  if (error) return <main className={`${sectionTheme.section} mx-auto max-w-xl p-6`}><Failure message={error} /><Button onClick={() => setRevision(value => value + 1)}>Reload permissions</Button><Link className="ml-4 underline" to="/login">Sign in</Link></main>;
   if (!identity) return <p role="status" className="p-12 text-center">Checking dashboard permissions…</p>;
   return <DashboardShell identity={identity} />;
 }

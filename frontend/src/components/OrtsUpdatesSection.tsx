@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import React, { useCallback } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, RefreshCw, Calendar, Tag } from "lucide-react";
@@ -9,11 +10,11 @@ import { PublicState } from "./PublicContent";
 export default function OrtsUpdatesSection() {
   const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<PublicNews>('news', { limit: 3, category: 'UPDATE' }, signal), []));
   const ortsItems = resource.data?.data || [];
-  if (resource.loading || resource.error) return <section className="site-container py-6"><PublicState {...resource} /></section>;
+  if (resource.loading || resource.error) return <section className={`${solidTheme.section} site-container py-6`}><PublicState {...resource} /></section>;
   if (ortsItems.length === 0) return null;
 
   return (
-    <section className="py-8 sm:py-10 bg-brand-surface border-t border-brand-border/40" id="orts-updates">
+    <section className={`${solidTheme.section} py-8 sm:py-10 bg-brand-surface border-t border-brand-border/40`} id="orts-updates">
       <div className="site-container">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
           <div>

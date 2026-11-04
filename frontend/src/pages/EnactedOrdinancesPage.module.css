@@ -1,0 +1,60 @@
+/* FRONTEND_THEME.md: limit these tokens to the municipal ordinances page. */
+.section {
+  composes: section from "../styles/SolidTheme.module.css";
+  --ordinances-sky: var(--talweb-primary);
+  --ordinances-sky-light: var(--talweb-background);
+  --color-brand-primary: var(--talweb-deep);
+  --color-brand-text: #171717;
+  --color-brand-muted: #404040;
+  --color-brand-border: #e5e7eb;
+  --color-brand-bg: var(--talweb-background);
+  color: var(--color-brand-text);
+}
+
+.section :global(.pro-card) {
+  background-color: #ffffff;
+  border-color: var(--color-brand-border);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
+}
+
+.section :global(.pro-card):hover {
+  border-color: var(--ordinances-sky);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 4%);
+}
+
+.section :is(a, button, input):focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 3px;
+}
+
+.listCard > div:nth-child(2) {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Keep list mode and its download action inside narrow viewports. */
+@media (max-width: 639px) {
+  .listCard {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .listCard > div:first-child {
+    flex: 0 0 96px;
+  }
+
+  .listCard > div:nth-child(2) {
+    flex: 1 1 0;
+  }
+
+  .listCard > div:nth-child(2) > div {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .listCard > a {
+    flex-basis: 100%;
+    min-inline-size: 0;
+  }
+}

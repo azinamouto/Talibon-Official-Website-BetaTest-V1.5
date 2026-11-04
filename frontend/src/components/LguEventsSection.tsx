@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Calendar, Clock, MapPin, ArrowRight, PartyPopper } from "lucide-react";
@@ -29,7 +30,7 @@ export default function LguEventsSection() {
 
   return (
     <section 
-      className="relative py-12 sm:py-16 text-white overflow-hidden bg-cover bg-center" 
+      className={`${solidTheme.photo} relative py-12 sm:py-16 text-white overflow-hidden bg-cover bg-center`}
       id="lgu-events"
       style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=2000')`
@@ -45,13 +46,13 @@ export default function LguEventsSection() {
 
       {/* Festive Ambient Glow Effects */}
       <div className="absolute -top-24 left-1/4 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none z-0" />
-      <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-brand-secondary/15 rounded-full blur-3xl pointer-events-none z-0" />
 
       <div className="site-container relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <PartyPopper size={15} className="text-amber-300" />
+              <PartyPopper size={15} className="text-brand-primary" />
               <span className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">
                 TALIBON FESTIVITIES & CIVIC GATHERINGS
               </span>

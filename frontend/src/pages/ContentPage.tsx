@@ -1,3 +1,4 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { AlertCircle } from "lucide-react";
@@ -43,7 +44,7 @@ const ContentPage: React.FC<ContentPageProps> = ({
   };
 
   return (
-    <main className="pb-12 min-h-screen bg-brand-bg relative overflow-hidden break-words">
+    <main className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 min-h-screen bg-brand-bg relative overflow-hidden break-words`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 15 }}

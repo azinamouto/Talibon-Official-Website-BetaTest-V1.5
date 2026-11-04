@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import { motion } from "motion/react";
 import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, ArrowUpRight, Globe, ArrowRight, LogIn } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -49,7 +50,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className={solidTheme.section}>
             <span className="text-[10px] font-bold tracking-[0.4em] uppercase mb-8 block text-brand-primary">Contact Us</span>
             <div className="space-y-6">
               <div className="flex items-start gap-4">
@@ -68,7 +69,7 @@ export default function Footer() {
           </div>
 
           {/* Hotlines */}
-          <div>
+          <div className={solidTheme.section}>
             <span className="text-[10px] font-bold tracking-[0.4em] uppercase mb-8 block text-brand-primary">Emergency</span>
             <div className="space-y-4">
               {hotlines.map((hotline, i) => (
@@ -81,7 +82,7 @@ export default function Footer() {
           </div>
 
           {/* Gov Links */}
-          <div>
+          <div className={solidTheme.section}>
             <span className="text-[10px] font-bold tracking-[0.4em] uppercase mb-8 block text-brand-primary">Government</span>
             <div className="space-y-4">
               {govLinks.map((link, i) => (

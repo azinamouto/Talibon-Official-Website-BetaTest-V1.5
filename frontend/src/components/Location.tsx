@@ -1,88 +1,45 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import { useState } from "react";
-import { ArrowRight, ExternalLink, MapPin } from "lucide-react";
+import compact from "./CompactSections.module.css";
+import { Clock3, MapPin, Navigation, X } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const destination = "Talibon Municipal Hall, Poblacion, Talibon, Bohol, Philippines";
 
 export default function Location() {
   const [loadMap, setLoadMap] = useState(false);
-  const mapsUrl = "https://www.google.com/maps/place/Talibon,+Bohol";
-
   return (
-    <section
-      id="location"
-      aria-labelledby="location-heading"
-      className="scroll-mt-40 border-t border-brand-border bg-brand-surface py-10 sm:py-12 lg:py-16"
-    >
+    <section id="location" aria-labelledby="location-heading" className={`${solidTheme.section} ${compact.location} scroll-mt-40 bg-surface`}>
       <div className="site-container">
-        <div className="grid gap-7 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
-          <div className="min-w-0">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand-primary">
-              Find us
-            </p>
-            <h2 id="location-heading" className="font-display text-2xl font-bold tracking-tight text-brand-text sm:text-3xl">
-              Location
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-brand-muted sm:text-base sm:leading-7">
-              Talibon is a first-class municipality situated in the northernmost part of Bohol, Philippines, approximately 114.8 kilometers from Tagbilaran City.
-            </p>
-
-            <dl className="mt-5 flex flex-wrap gap-x-10 gap-y-4">
-              <div>
-                <dt className="text-xs leading-5 text-brand-muted">Coordinates</dt>
-                <dd className="mt-1 text-base font-semibold text-brand-text">10.12°N, 124.28°E</dd>
+        <div className={`${compact.locationCard} overflow-hidden rounded-xl border border-brand-border bg-brand-surface`}>
+          <div className={`${compact.map} relative bg-[#dcebf0]`}>
+            <img src={`${import.meta.env.BASE_URL}images/talibon-map.svg`} alt="Street map of Talibon town centre, with a pin at the Municipal Hall on Carlos P. Garcia Avenue." width="960" height="600" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+            {loadMap ? <>
+              <iframe id="talibon-interactive-map" src={`https://www.google.com/maps?q=${encodeURIComponent(destination)}&output=embed`} className="absolute inset-0 h-full w-full border-0" allowFullScreen referrerPolicy="no-referrer-when-downgrade" title="Google Maps — Talibon Municipal Hall" />
+              <button type="button" onClick={() => setLoadMap(false)} className="ui-focus absolute right-4 top-4 inline-flex min-h-11 items-center gap-2 rounded-lg border border-brand-border bg-white px-3 text-sm font-semibold text-ink shadow-sm hover:bg-surface active:bg-surface"><X size={16} aria-hidden="true" />Close map</button>
+            </> : <>
+              <div className="absolute bottom-12 left-4 right-4 flex flex-col items-start gap-2 sm:left-6">
+                <button type="button" onClick={() => setLoadMap(true)} aria-describedby="map-privacy-note" className="ui-focus inline-flex min-h-11 items-center gap-2 rounded-lg border border-brand-border bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm transition-colors hover:bg-surface active:bg-surface"><MapPin size={18} className="text-action" aria-hidden="true" />Open interactive map</button>
+                <p id="map-privacy-note" className="rounded bg-white/95 px-2 py-1 text-xs text-muted">Opens a map from Google.</p>
               </div>
-              <div>
-                <dt className="text-xs leading-5 text-brand-muted">Land area</dt>
-                <dd className="mt-1 text-base font-semibold text-brand-text">140.46 km²</dd>
-              </div>
-            </dl>
+              <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="ui-focus absolute bottom-0 right-0 inline-flex min-h-11 items-center bg-white/95 px-3 text-xs text-muted underline hover:text-action">© OpenStreetMap contributors</a>
+            </>}
           </div>
-
-          <div className="min-w-0 border-t border-brand-border pt-6 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
-            <div className="flex items-center gap-2.5">
-              <MapPin size={20} className="shrink-0 text-brand-primary" aria-hidden="true" />
-              <h3 className="font-display text-xl font-semibold tracking-tight text-brand-text sm:text-2xl">
-                Explore Talibon
-              </h3>
-            </div>
-            <p className="mt-2 text-sm leading-6 text-brand-muted">
-              Find your way around the municipality.
-            </p>
-
-            {loadMap ? (
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15707.382483838237!2d124.321852028686!3d10.152377484462102!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3307cc27f5e8e8e9%3A0x63359784347716cc!2sTalibon%2C%20Bohol!5e0!3m2!1sen!2sph!4v1713290000000!5m2!1sen!2sph"
-                className="mt-5 h-72 w-full border-0 sm:h-80"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Google Maps - Talibon, Bohol"
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setLoadMap(true)}
-                aria-describedby="map-privacy-note"
-                className="group mt-3 inline-flex min-h-11 items-center gap-2 py-2 text-sm font-semibold text-brand-text transition-colors hover:text-brand-primary"
-              >
-                <span className="border-b border-current pb-1">Load interactive map</span>
-                <ArrowRight size={16} className="text-brand-primary transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-              </button>
-            )}
-
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 flex min-h-11 w-fit items-center gap-2 py-2 text-sm text-brand-muted underline-offset-4 transition-colors hover:text-brand-text hover:underline"
-            >
-              Open in Google Maps
-              <ExternalLink size={13} aria-hidden="true" />
-            </a>
-            {!loadMap && (
-              <p id="map-privacy-note" className="mt-1 text-xs leading-5 text-brand-muted">
-                Loading the map connects to Google.
-              </p>
-            )}
+          <div className={`${compact.locationInfo} flex flex-col justify-center`}>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-action">Find us</p>
+            <h2 id="location-heading" className="font-display text-2xl font-bold text-ink sm:text-3xl">Visit Municipal Hall</h2>
+            <p className="mt-2 leading-7 text-muted">Your local government, in the heart of Talibon.</p>
+            <address className="mt-4 flex gap-3 text-sm not-italic leading-6 text-ink"><MapPin size={20} className="mt-1 shrink-0 text-action" aria-hidden="true" /><span>Municipal Hall, Poblacion<br />Talibon, Bohol, 6325, Philippines</span></address>
+            <div className="mt-3 flex gap-3 text-sm leading-6"><Clock3 size={20} className="mt-1 shrink-0 text-action" aria-hidden="true" /><div><p className="font-semibold text-ink">Office hours</p><p className="text-muted">Confirm current hours before your visit.</p><Link to="/executive/directory" className="ui-focus inline-flex min-h-11 items-center rounded font-medium text-action underline-offset-4 hover:underline active:text-action-hover">Contact the municipal offices</Link></div></div>
+            <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`} target="_blank" rel="noopener noreferrer" className="ui-focus mt-4 inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-lg bg-action px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-action-hover active:bg-action-hover"><Navigation size={18} aria-hidden="true" />Get directions</a>
           </div>
+          <dl className={`${compact.locationFacts} grid border-t border-brand-border sm:grid-cols-3`}>
+            {[
+              { label: "Municipality coordinates", value: "10.12°N, 124.28°E" },
+              { label: "Land area", value: "140.46 km²" },
+              { label: "From Tagbilaran City", value: "114.8 km" },
+            ].map(({ label, value }) => <div key={label} className={`${compact.locationFact} max-sm:border-b max-sm:border-brand-border last:border-0 sm:border-r sm:border-brand-border`}><dt className="text-xs text-muted">{label}</dt><dd className="mt-1 text-base font-semibold text-ink">{value}</dd></div>)}
+          </dl>
         </div>
       </div>
     </section>

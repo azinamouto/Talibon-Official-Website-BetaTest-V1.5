@@ -1,0 +1,79 @@
+/* Explicit section opt-in. NEVER attach to Home, Hero, Navbar, BaseLayout,
+   the app root, or any ancestor of the protected hero/header/branding. */
+.section {
+  --talweb-primary: #0084d1;
+  --talweb-deep: #00598a;
+  --talweb-background: #f0f9ff;
+  --talweb-card: #ffffff;
+  --talweb-text: #171717;
+  --talweb-muted: #334155;
+  --color-brand-primary: var(--talweb-deep);
+  --color-brand-secondary: var(--talweb-primary);
+  --color-brand-accent: var(--talweb-primary);
+  --color-brand-bg: var(--talweb-background);
+  --color-brand-surface: var(--talweb-card);
+  --color-brand-text: var(--talweb-text);
+  --color-brand-muted: var(--talweb-muted);
+  --color-brand-border: #dce6ed;
+  --color-action: var(--talweb-deep);
+  --color-action-hover: var(--talweb-deep);
+  --color-focus: var(--talweb-deep);
+  --color-ink: var(--talweb-text);
+  --color-muted: var(--talweb-muted);
+  --color-surface: var(--talweb-background);
+  --color-sky-50: var(--talweb-background);
+  --color-sky-100: var(--talweb-background);
+  --color-sky-200: var(--talweb-background);
+  --color-sky-300: var(--talweb-primary);
+  --color-sky-400: var(--talweb-primary);
+  --color-sky-500: var(--talweb-primary);
+  --color-sky-600: var(--talweb-primary);
+  --color-sky-700: var(--talweb-deep);
+  --color-sky-800: var(--talweb-deep);
+  --color-sky-900: var(--talweb-deep);
+  --color-blue-50: var(--talweb-background);
+  --color-blue-100: var(--talweb-background);
+  --color-blue-200: var(--talweb-background);
+  --color-blue-500: var(--talweb-primary);
+  --color-blue-600: var(--talweb-deep);
+  --color-blue-700: var(--talweb-deep);
+  --color-blue-800: var(--talweb-deep);
+  --color-blue-900: var(--talweb-deep);
+}
+
+/* Small text uses deep blue; primary blue is reserved for suitable accents. */
+.section :where(:global(.text-brand-primary), :global(.text-brand-accent), :global(.text-sky-600), :global(.text-sky-500)) { color: var(--talweb-deep); }
+.section :where(svg:global(.text-brand-primary), svg:global(.text-brand-accent)) { color: var(--talweb-primary); }
+.section :where(:global(.bg-brand-primary), :global(.bg-brand-accent), :global(.bg-action), :global(.minimal-button-primary), :global(.civic-button-primary), :global(.pro-button), :global(.bg-blue-600)) {
+  background-color: var(--talweb-deep);
+  color: var(--talweb-card);
+}
+.section :where(:global(.minimal-button-primary), :global(.civic-button-primary), :global(.pro-button), :global(.bg-action)):hover { filter: brightness(.92); }
+.section :where(:global(.minimal-button-outline)):hover { background-color: var(--talweb-background); color: var(--talweb-deep); }
+.section :where([class*="bg-clip-text"]) { background-image: none; color: var(--talweb-deep); }
+.section :where([class*="from-brand-"]) { background-image: none; }
+.section :where(a, button, input, select, textarea):focus-visible { outline-color: var(--talweb-deep); }
+.section :where([class*="bg-[var(--downloads-sky)]"], [class*="bg-[var(--ordinances-sky)]"], [class*="bg-[var(--privacy-sky)]"], a[class*="bg-[var(--downloads-sky-light)]"], a[class*="bg-[var(--ordinances-sky-light)]"], button[class*="bg-[var(--ordinances-sky-light)]"]) {
+  background-color: var(--talweb-deep);
+  color: #ffffff;
+}
+.section :where(a[class*="hover:bg-[var(--downloads-sky)]"], a[class*="hover:bg-[var(--ordinances-sky)]"]):hover { background-color: var(--talweb-deep); color: #ffffff; }
+.section :where([class*="bg-[#3A8FC2]"], [class*="bg-[#3a8fc2]"]) { background-color: var(--talweb-deep); color: #ffffff; }
+.section :where([class*="hover:bg-[#2B82B8]"], [class*="hover:bg-[#4FA8D8]"]):hover { background-color: var(--talweb-deep); filter: brightness(.92); }
+
+/* Existing photo/dark atmospheres and semantic state indicators are preserved. */
+.photo { composes: section; --color-brand-text: #0f172a; }
+.photo :where([class*="bg-clip-text"]) { color: #ffffff; }
+.photo :where(:global(.text-brand-primary), :global(.text-brand-accent)) { color: var(--talweb-background); }
+.photo :where(svg:global(.text-brand-primary), svg:global(.text-brand-accent)) { color: var(--talweb-primary); }
+.photo :where(svg:global(.text-sky-300), svg:global(.text-sky-400)) { color: var(--talweb-primary); }
+.photo :where(:global(.text-sky-300), :global(.text-sky-400), :global(.text-amber-300):not(svg)) { color: var(--talweb-background); }
+.photo :where(a, button):focus-visible { outline-color: var(--talweb-background); }
+
+/* Office-category colors are decorative, not success/warning/error states. */
+.offices { composes: section; }
+.offices :where([class*="bg-emerald-"], [class*="bg-purple-"], [class*="bg-blue-"], [class*="bg-sky-"]) { background-color: var(--talweb-background); }
+.offices :where([class*="text-emerald-"], [class*="text-purple-"], [class*="text-blue-"], [class*="text-sky-"]) { color: var(--talweb-deep); }
+.offices :where(svg) { color: var(--talweb-primary); }
+.offices :where([class*="border-emerald-"], [class*="border-purple-"]) { border-color: var(--color-brand-border); }
+

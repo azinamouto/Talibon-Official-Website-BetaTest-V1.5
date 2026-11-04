@@ -1,0 +1,24 @@
+/* FRONTEND_THEME.md: local tokens keep shared and protected components intact. */
+.section {
+  composes: section from "../styles/SolidTheme.module.css";
+  --downloads-sky: var(--talweb-primary);
+  --downloads-sky-light: var(--talweb-background);
+  /* Darker blue for readable icons and visible control/focus boundaries. */
+  --color-brand-primary: var(--talweb-deep);
+  --color-brand-text: #171717;
+  --color-brand-muted: #404040;
+  --color-brand-border: #e5e7eb;
+  --color-brand-bg: var(--talweb-background);
+}
+
+.section :is(a, button, input):focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 3px;
+}
+
+/* Audit correction: expose the existing Resources marker below the header. */
+@media (max-width: 1023px) {
+  .section {
+    margin-block-start: 24px;
+  }
+}

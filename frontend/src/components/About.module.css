@@ -1,0 +1,26 @@
+.accent { color: var(--talweb-background); }
+svg.accent { color: var(--talweb-primary); }
+
+.history {
+  background: var(--talweb-deep);
+  color: #ffffff;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.history:hover { background: var(--talweb-deep); filter: brightness(.92); }
+.history:focus-visible { outline: 2px solid var(--talweb-background); outline-offset: 4px; }
+
+.portraitRing { background: var(--talweb-primary); }
+
+.mayorBadge {
+  background: rgba(15, 23, 42, .72);
+  color: var(--talweb-background);
+  border: 1px solid rgb(0 132 209 / .45);
+}
+
+.position { color: var(--talweb-background); }
+
+@media (prefers-reduced-motion: reduce) {
+  .history { transition: none; }
+  .history:active { transform: none; }
+}

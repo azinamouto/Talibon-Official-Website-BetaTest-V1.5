@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Download, FileText, FileSpreadsheet, FileArchive, Search, Filter, ExternalLink, Building2, Briefcase, FileCheck, Landmark, Target, Activity } from 'lucide-react';
 import { formsApi } from '../services/api';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import styles from './DownloadsPage.module.css';
 
 interface DownloadItem {
   id: string | number;
@@ -92,9 +93,9 @@ const DownloadsPage: React.FC = () => {
   };
 
   return (
-    <div className="pb-12 min-h-screen bg-brand-bg relative overflow-hidden">
+    <div className={`${styles.section} pb-12 min-h-screen bg-brand-bg relative overflow-hidden`}>
       {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+      <div className="hidden absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-brand-primary/5 rounded-full blur-[80px]" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-brand-secondary/5 rounded-full blur-[100px]" />
       </div>
@@ -107,8 +108,8 @@ const DownloadsPage: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-2.5 mb-3"
           >
-            <div className="w-8 h-1 bg-brand-primary rounded-full" />
-            <span className="text-xs font-bold text-brand-primary uppercase tracking-widest">Resources</span>
+            <div className="w-8 h-1 bg-[var(--downloads-sky)] rounded-full" />
+            <span className="text-xs font-bold text-brand-text uppercase tracking-widest">Resources</span>
           </motion.div>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
             <div>
@@ -142,8 +143,8 @@ const DownloadsPage: React.FC = () => {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all border ${
                   selectedCategory === cat 
-                  ? 'bg-brand-primary text-white border-brand-primary shadow-xs' 
-                  : 'bg-white text-brand-muted border-brand-border hover:border-brand-primary/30 hover:text-brand-primary'
+                  ? 'bg-[var(--downloads-sky)] text-brand-text border-brand-primary shadow-xs'
+                  : 'bg-white text-brand-muted border-brand-border hover:bg-[var(--downloads-sky-light)] hover:border-brand-primary hover:text-brand-text'
                 }`}
               >
                 {cat}
@@ -174,7 +175,7 @@ const DownloadsPage: React.FC = () => {
                 className="p-4 rounded-xl border border-brand-border bg-white flex flex-col group hover:border-brand-primary/40 shadow-xs transition-all"
               >
                 <div className="flex justify-between items-start mb-3">
-                  <div className="w-10 h-10 bg-brand-primary/5 rounded-lg border border-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all">
+                  <div className="w-10 h-10 bg-[var(--downloads-sky-light)] rounded-lg border border-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:bg-[var(--downloads-sky)] transition-all">
                     {getIcon(item.category)}
                   </div>
                   <span className="text-[10px] font-bold text-brand-muted bg-gray-100 px-2 py-0.5 rounded border border-brand-border/40 uppercase tracking-wider">
@@ -182,7 +183,7 @@ const DownloadsPage: React.FC = () => {
                   </span>
                 </div>
                 
-                <h3 className="text-sm font-bold text-brand-text mb-2 group-hover:text-brand-primary transition-colors leading-snug font-display">
+                <h3 className="text-sm font-bold text-brand-text mb-2 transition-colors leading-snug font-display">
                   {item.title}
                 </h3>
                 
@@ -200,7 +201,7 @@ const DownloadsPage: React.FC = () => {
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 w-full py-2 bg-brand-text hover:bg-brand-text/90 text-white font-bold text-[11px] uppercase tracking-wider rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-xs group/btn"
+                  className="mt-3 w-full py-2 bg-[var(--downloads-sky-light)] hover:bg-[var(--downloads-sky)] text-brand-text font-bold text-[11px] uppercase tracking-wider rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-xs group/btn"
                 >
                   <Download size={14} className="transition-transform group-hover/btn:-translate-y-0.5" />
                   <span>Download File</span>
@@ -229,21 +230,21 @@ const DownloadsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <motion.div 
               whileHover={{ y: -2 }}
-              className="p-5 rounded-xl bg-brand-primary group overflow-hidden relative shadow-xs"
+              className="p-5 rounded-xl bg-white ring-1 ring-inset ring-brand-border group overflow-hidden relative shadow-xs"
             >
-              <div className="absolute top-0 right-0 p-4 opacity-10 text-white transform translate-x-1/4 -translate-y-1/4">
+              <div className="absolute top-0 right-0 p-4 opacity-10 text-brand-primary transform translate-x-1/4 -translate-y-1/4">
                 <Target size={140} />
               </div>
               <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white mb-1.5 tracking-tight font-display">GAD-IMS Portal</h3>
-                <p className="text-white/85 text-xs font-medium mb-4 leading-relaxed">
+                <h3 className="text-lg font-bold text-brand-text mb-1.5 tracking-tight font-display">GAD-IMS Portal</h3>
+                <p className="text-brand-muted text-xs font-medium mb-4 leading-relaxed">
                   Access comprehensive Gender and Development data, reports, and management tools for the Municipality.
                 </p>
                 <div className="flex flex-wrap gap-2.5">
-                  <a href="/executive/gad-ims" className="bg-white text-brand-primary font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-brand-secondary transition-all shadow-xs">
+                  <a href="/executive/gad-ims" className="bg-[var(--downloads-sky-light)] text-brand-text font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-[var(--downloads-sky)] transition-all shadow-xs">
                     GO TO GAD-IMS
                   </a>
-                  <a href="#" className="bg-brand-primary-dark/30 text-white border border-white/20 font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-white/10 transition-all flex items-center gap-1.5">
+                  <a href="#" className="bg-white text-brand-text border border-brand-border font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-[var(--downloads-sky-light)] hover:border-brand-primary transition-all flex items-center gap-1.5">
                     <Download size={13} /> MANUAL
                   </a>
                 </div>
@@ -263,10 +264,10 @@ const DownloadsPage: React.FC = () => {
                   Browse and download enacted municipal ordinances, resolutions, and legislative documents.
                 </p>
                 <div className="flex flex-wrap gap-2.5">
-                  <a href="/legislative/ordinances" className="bg-brand-primary text-white font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-brand-secondary transition-all shadow-xs">
+                  <a href="/legislative/ordinances" className="bg-[var(--downloads-sky-light)] text-brand-text font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-[var(--downloads-sky)] transition-all shadow-xs">
                     ORDINANCES
                   </a>
-                  <a href="/legislative/resolutions" className="bg-white text-brand-text border border-brand-border font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:border-brand-primary hover:text-brand-primary transition-all">
+                  <a href="/legislative/resolutions" className="bg-white text-brand-text border border-brand-border font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-[var(--downloads-sky-light)] hover:border-brand-primary transition-all">
                     RESOLUTIONS
                   </a>
                 </div>

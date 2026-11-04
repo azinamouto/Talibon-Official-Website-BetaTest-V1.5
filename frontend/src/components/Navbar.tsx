@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X, Globe, ChevronDown, ArrowUpRight, Phone, Mail, MapPin, Search, Accessibility, Bell, Clock, LogIn, LayoutDashboard, LogOut, User, Volume2, VolumeX } from "lucide-react";
+import { Menu, X, Globe, ChevronDown, ArrowUpRight, Phone, Mail, MapPin, Search, Bell, Clock, LogIn, LayoutDashboard, LogOut, User, Volume2, VolumeX } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
@@ -184,8 +184,9 @@ export default function Navbar() {
 
       {/* Tier 1: Utility Navigation */}
       <div className="bg-brand-bg/50 border-b border-brand-border backdrop-blur-md relative z-30">
-        <div className="site-container h-7 sm:h-8 flex justify-between items-center text-[9px] sm:text-[11px]">
-          <div className="flex items-center gap-2 sm:gap-4 divide-x divide-brand-border/60">
+        <div className="site-container h-7 sm:h-8 flex justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] items-center text-[9px] sm:text-[11px]">
+          <div className="hidden lg:block" aria-hidden="true" />
+          <div className="flex items-center gap-2 sm:gap-4 xl:gap-6 divide-x divide-brand-border/60">
             <div className="flex items-center gap-2 sm:gap-3">
               <Link to="/" onClick={handleHomeClick} className="font-extrabold text-brand-text hover:text-brand-primary transition-colors tracking-tight text-[10px] sm:text-xs">GOVPH</Link>
               <a 
@@ -198,7 +199,7 @@ export default function Navbar() {
               </a>
             </div>
             
-            <nav className="hidden lg:flex items-center gap-3 xl:gap-5 pl-2 sm:pl-4">
+            <nav className="hidden lg:flex items-center gap-4 xl:gap-8 pl-2 sm:pl-4 xl:pl-6">
               {topNavLinks.map((link) => (
                 <div 
                   key={link.name} 
@@ -263,7 +264,7 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="hidden sm:flex items-center gap-3 pl-2 sm:pl-4 border-l border-brand-border/60">
+            <div className="hidden sm:flex items-center gap-3 pl-2 sm:pl-4 xl:pl-6 border-l border-brand-border/60">
               {isUserAuthenticated && user ? (
                 <div className="flex items-center gap-3">
                   {/* Administrator Identity Badge */}
@@ -299,8 +300,8 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 text-brand-text font-semibold text-[9px] sm:text-[10px]">
-            <div className="hidden xl:block whitespace-nowrap">{formatTime(currentTime)} (PST)</div>
+          <div className="flex items-center justify-self-end gap-2 sm:gap-3 text-brand-text font-semibold text-[9px] sm:text-[10px]">
+            <div className="hidden min-[1600px]:block whitespace-nowrap">{formatTime(currentTime)} (PST)</div>
             <div className="flex items-center gap-2 sm:gap-2.5 pl-2 sm:pl-3 border-l border-brand-border/60">
               <button 
                 onClick={() => setLanguage(language === 'en' ? 'ceb' : 'en')}
@@ -309,7 +310,6 @@ export default function Navbar() {
                 <Globe size={11} />
                 {language === 'en' ? 'EN' : 'CEB'}
               </button>
-              <button className="hover:text-brand-primary text-brand-text transition-colors"><Accessibility size={14} /></button>
               <button 
                 onClick={toggleAudio}
                 title={isAudioMuted ? "Unmute Audio" : "Mute Audio"}

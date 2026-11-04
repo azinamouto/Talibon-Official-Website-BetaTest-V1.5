@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import { useState, useEffect } from "react";
 import { Sun, CloudRain, Wind, Waves, Thermometer, Navigation } from "lucide-react";
 
@@ -22,7 +23,7 @@ export default function WeatherWidget() {
 
   return (
     <section 
-      className="relative w-full overflow-hidden bg-cover bg-center py-12 sm:py-16 lg:py-20 text-white z-20"
+      className={`${solidTheme.photo} relative w-full overflow-hidden bg-cover bg-center py-12 sm:py-16 lg:py-20 text-white z-20`}
       style={{ backgroundImage: `url('https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&w=3840&q=90')` }}
     >
       {/* Light subtle overlay for soft contrast */}

@@ -44,10 +44,10 @@ const SECTION_ICONS: Record<string, React.ReactNode> = {
 };
 
 const MOCK_CHART_DATA = [
-  { name: 'Health', value: 400, color: '#2563eb' },
-  { name: 'Education', value: 300, color: '#3b82f6' },
-  { name: 'Economy', value: 300, color: '#60a5fa' },
-  { name: 'Governance', value: 200, color: '#93c5fd' },
+  { name: 'Health', value: 400, color: 'var(--talweb-deep)' },
+  { name: 'Education', value: 300, color: 'var(--talweb-primary)' },
+  { name: 'Economy', value: 300, color: 'var(--talweb-background)' },
+  { name: 'Governance', value: 200, color: 'var(--talweb-card)' },
 ];
 
 const MOCK_BAR_DATA = [
@@ -179,7 +179,7 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
                         <Tooltip 
                           contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#0f172a' }}
                         />
-                        <Bar dataKey="budget" fill="#3A8FC2" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="budget" fill="var(--talweb-primary)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -199,7 +199,7 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
                           dataKey="value"
                         >
                           {MOCK_CHART_DATA.map((entry, index) => (
-                            <Cell key={`recharts-pie-cell-${index}`} fill={entry.color} />
+                            <Cell key={`recharts-pie-cell-${index}`} fill={entry.color} stroke="var(--talweb-deep)" strokeWidth={1.5} />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -209,7 +209,7 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
                   <div className="flex flex-wrap gap-3 justify-center">
                     {MOCK_CHART_DATA.map(d => (
                       <div key={`chart-legend-${d.name}`} className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color, border: '1px solid var(--talweb-deep)' }} />
                         <span className="text-[8px] font-bold uppercase tracking-wider text-brand-muted">{d.name}</span>
                       </div>
                     ))}

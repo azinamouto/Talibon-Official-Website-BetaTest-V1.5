@@ -1,3 +1,4 @@
+import sectionTheme from "../../styles/SectionTheme.module.css";
 import { useState } from 'react';
 import { adminService, roles, AdminApiError, type AdminIdentity, type AdminUser } from '../../services/adminService';
 import { Button } from '../ui/Button';
@@ -57,7 +58,7 @@ export function AdminUsers({ identity }: { identity: AdminIdentity }) {
         </div></td></tr>)}</tbody></table></div>
       {!list.data.data.length && <p className="p-4">No users match these filters.</p>}
       <Pagination page={page} pages={list.data.pagination.totalPages} onChange={setPage} /></>}
-    <Modal open={!!pending} title={pending?.action === 'role' ? 'Confirm role assignment' : 'Confirm deactivation'} onClose={() => { if (!busy) setPending(null); }}>
+    <Modal className={sectionTheme.section} open={!!pending} title={pending?.action === 'role' ? 'Confirm role assignment' : 'Confirm deactivation'} onClose={() => { if (!busy) setPending(null); }}>
       {pending && <><p className="mb-4">{pending.user.full_name || pending.user.email} ({pending.user.email}) — current role: {pending.user.role}.</p>
         {pending.action === 'role' ? <><Field label="New role"><select className={control} disabled={busy || stale} value={role} onChange={e => setRole(e.target.value)}>{roles.map(role => <option key={role}>{role}</option>)}</select></Field><p className="my-3">This changes access permissions but does not verify the account.</p></> : <p>This blocks future authenticated access and preserves account history. Reactivation is not available here.</p>}
         <Failure message={error} />

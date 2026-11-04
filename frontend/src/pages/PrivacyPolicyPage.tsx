@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { ShieldCheck, Lock, Database, Globe, Eye, Server, RefreshCw, Trash2, Mail, Phone, MapPin, ExternalLink, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { clearLocalRequests, getLocalRequests } from "../services/certificateService";
+import styles from "./PrivacyPolicyPage.module.css";
 
 export default function PrivacyPolicyPage() {
   const [cleared, setCleared] = React.useState(false);
@@ -17,12 +18,12 @@ export default function PrivacyPolicyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-surface py-12 px-4 sm:px-6 lg:px-8">
+    <div className={`${styles.section} min-h-screen bg-brand-surface py-12 px-4 sm:px-6 lg:px-8`}>
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Header */}
         <div className="bg-white border border-brand-border rounded-2xl p-6 sm:p-10 shadow-xs">
-          <div className="flex items-center gap-3 text-brand-primary mb-3">
+          <div className="flex items-center gap-3 text-brand-text mb-3">
             <ShieldCheck size={28} className="text-brand-primary" />
             <span className="text-xs font-black uppercase tracking-widest">Republic of the Philippines • RA 10173</span>
           </div>
@@ -48,7 +49,7 @@ export default function PrivacyPolicyPage() {
         {/* Section 1: Statutory Mandate & Purpose */}
         <section className="bg-white border border-brand-border rounded-2xl p-6 sm:p-8 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-lg bg-[var(--privacy-sky)] text-brand-text flex items-center justify-center font-bold text-xs">
               01
             </div>
             <h2 className="text-lg font-bold text-slate-900 font-display">Statutory Mandate & Commitment</h2>
@@ -64,7 +65,7 @@ export default function PrivacyPolicyPage() {
         {/* Section 2: Browser Storage & Cookies */}
         <section className="bg-white border border-brand-border rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-lg bg-[var(--privacy-sky)] text-brand-text flex items-center justify-center font-bold text-xs">
               02
             </div>
             <h2 className="text-lg font-bold text-slate-900 font-display">Browser Storage & Cookie Inventory</h2>
@@ -96,28 +97,28 @@ export default function PrivacyPolicyPage() {
                 <tr>
                   <td className="p-3 font-bold text-slate-900">talibon_local_certificate_requests</td>
                   <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded font-bold">Functional</span></td>
+                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">Functional</span></td>
                   <td className="p-3 font-sans text-xs">Stores minimal ticket IDs and status stubs for citizen status tracking without requiring an account.</td>
                   <td className="p-3 font-sans">30 Days (auto-purged)</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-slate-900">remember_me_email</td>
                   <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded font-bold">User Opt-In</span></td>
+                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">User Opt-In</span></td>
                   <td className="p-3 font-sans text-xs">Pre-fills staff email on login form only when the "Remember Me" checkbox is checked.</td>
                   <td className="p-3 font-sans">Persistent until unchecked</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-slate-900">language</td>
                   <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded font-bold">Functional</span></td>
+                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">Functional</span></td>
                   <td className="p-3 font-sans text-xs">Remembers your preferred language selection (English or Cebuano).</td>
                   <td className="p-3 font-sans">Persistent</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-slate-900">talibon_notifications</td>
                   <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded font-bold">Functional</span></td>
+                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">Functional</span></td>
                   <td className="p-3 font-sans text-xs">Tracks read/unread notification badge state in the top navigation.</td>
                   <td className="p-3 font-sans">Persistent</td>
                 </tr>
@@ -166,7 +167,7 @@ export default function PrivacyPolicyPage() {
         {/* Section 3: Third-Party Integrations & Privacy Facades */}
         <section className="bg-white border border-brand-border rounded-2xl p-6 sm:p-8 shadow-xs space-y-5">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-lg bg-[var(--privacy-sky)] text-brand-text flex items-center justify-center font-bold text-xs">
               03
             </div>
             <h2 className="text-lg font-bold text-slate-900 font-display">Third-Party Content & Privacy Facades</h2>
@@ -201,7 +202,7 @@ export default function PrivacyPolicyPage() {
         {/* Section 4: Citizen Data Rights */}
         <section className="bg-white border border-brand-border rounded-2xl p-6 sm:p-8 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-lg bg-[var(--privacy-sky)] text-brand-text flex items-center justify-center font-bold text-xs">
               04
             </div>
             <h2 className="text-lg font-bold text-slate-900 font-display">Your Rights Under RA 10173</h2>
@@ -228,7 +229,7 @@ export default function PrivacyPolicyPage() {
         {/* Section 5: Data Protection Officer Contact */}
         <section className="bg-white border border-brand-border rounded-2xl p-6 sm:p-8 shadow-xs space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-lg bg-[var(--privacy-sky)] text-brand-text flex items-center justify-center font-bold text-xs">
               05
             </div>
             <h2 className="text-lg font-bold text-slate-900 font-display">Data Protection Officer (DPO) Contact</h2>

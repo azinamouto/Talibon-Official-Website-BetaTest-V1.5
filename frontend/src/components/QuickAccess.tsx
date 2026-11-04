@@ -1,51 +1,33 @@
-import { motion } from "motion/react";
-import { 
-  FileText, 
-  FileCheck, 
-  CreditCard, 
-  Search, 
-  Map, 
-  Download, 
-  BookOpen 
-} from "lucide-react";
-import { Link } from "react-router-dom";
+﻿import { BookOpen, ClipboardPenLine, Download, HandHelping, Map, Monitor } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import styles from './QuickAccess.module.css';
+
+const quickLinks = [
+  { name: 'Apply for a permit', icon: ClipboardPenLine, href: '/services' },
+  { name: 'Request a service', icon: HandHelping, href: '/services' },
+  { name: 'Use online services', icon: Monitor, href: '/e-services' },
+  { name: 'Plan a visit', icon: Map, href: '/tourism/spots' },
+  { name: 'Download forms', icon: Download, href: '/downloads' },
+  { name: "Read the Citizen's Charter", icon: BookOpen, href: '/transparency/charter' },
+];
 
 export default function QuickAccess() {
-  const quickLinks = [
-    { name: "Permit Information", icon: FileText, href: "/services" },
-    { name: "Service Information", icon: FileCheck, href: "/services" },
-    { name: "Electronic Services", icon: CreditCard, href: "/e-services" },
-    { name: "Tourism Guide", icon: Map, href: "/tourism/spots" },
-    { name: "Downloadables", icon: Download, href: "/downloads" },
-    { name: "Citizen's Charter", icon: BookOpen, href: "/transparency/charter" },
-  ];
-
   return (
-    <section className="py-10 sm:py-12 bg-white border-y border-brand-border">
+    <section className={styles.section} aria-labelledby="quick-links-heading">
       <div className="site-container">
-        <div className="mx-auto grid w-full max-w-2xl grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6 sm:gap-x-4">
-          {quickLinks.map((link, idx) => (
-            <motion.div
-              key={link.name}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.04 }}
-            >
-              <Link
-                to={link.href}
-                className="flex flex-col items-center gap-2.5 group p-1.5 rounded-2xl transition-all duration-300"
-              >
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-brand-surface shadow-xs border border-brand-border flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white group-hover:border-brand-primary transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-md group-hover:shadow-brand-primary/20">
-                  <link.icon size={24} className="sm:w-7 sm:h-7 transition-colors" />
-                </div>
-                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-brand-text group-hover:text-brand-primary transition-colors text-center max-w-[105px] leading-tight">
-                  {link.name}
-                </span>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+        <h2 id="quick-links-heading" className={styles.heading}>What do you need today?</h2>
+        <nav aria-labelledby="quick-links-heading">
+          <ul className={styles.grid}>
+            {quickLinks.map(({ name, icon: Icon, href }) => (
+              <li key={name}>
+                <Link to={href} className={styles.link}>
+                  <span className={styles.iconBox}><Icon size={28} aria-hidden="true" /></span>
+                  <span className={styles.label}>{name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
     </section>
   );

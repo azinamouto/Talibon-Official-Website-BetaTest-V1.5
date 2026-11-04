@@ -3,13 +3,14 @@ import { createPortal } from 'react-dom';
 import { Button } from './Button';
 
 interface ModalProps {
+  className?: string;
   open: boolean;
   title: string;
   onClose: () => void;
   children: ReactNode;
 }
 /** Native modal dialog supplies focus containment, inert background and Escape support. */
-export function Modal({ open, title, onClose, children }: ModalProps) {
+export function Modal({ open, title, onClose, children, className = '' }: ModalProps) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useEffect(() => {
@@ -37,7 +38,7 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     }}
-    className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-panel bg-white p-panel text-ink shadow-xl backdrop:bg-slate-950/60">
+    className={`m-auto w-[calc(100%-2rem)] max-w-lg rounded-panel bg-white p-panel text-ink shadow-xl backdrop:bg-slate-950/60 ${className}`}>
     <div className="mb-4 flex items-start justify-between gap-4">
       <h2 id={titleId} className="text-xl font-bold">{title}</h2>
       <Button variant="secondary" onClick={onClose} aria-label={`Close ${title}`}>Close</Button>

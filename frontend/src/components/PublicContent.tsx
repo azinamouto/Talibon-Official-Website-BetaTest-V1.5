@@ -1,9 +1,10 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Pagination } from '../services/publicApi';
 
 export function PublicShell({ title, children }: { title: string; children: React.ReactNode }) {
-  return <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 min-h-[60vh] break-words">
+  return <div className={`${sectionTheme.section} max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 min-h-[60vh] break-words`}>
     <nav aria-label="Public content" className="flex flex-wrap gap-5 text-brand-primary font-semibold"><Link to="/services">Services</Link><Link to="/news">News & updates</Link></nav>
     <h1 className="text-3xl font-bold text-brand-text">{title}</h1>{children}
   </div>;

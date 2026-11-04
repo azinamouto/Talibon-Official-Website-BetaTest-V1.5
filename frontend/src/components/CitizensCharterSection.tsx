@@ -1,94 +1,114 @@
-import { motion } from "motion/react";
-import { Download, ArrowRight, BookOpen, HeartPulse, Sprout, ShieldCheck, Globe, FileText, CreditCard, Scale, Briefcase, Landmark, Shovel, MapPin, Trash2, Camera, Users, Cross } from "lucide-react";
+import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Baby, BookOpen, ChevronDown, Download, ExternalLink, FileText, Flower2, HardHat, Search, Stethoscope, Store, type LucideIcon } from 'lucide-react';
+import { charterGroups, charterTasks, charterPdf, matchesCharterOffice, type CharterOffice } from '../data/charterDirectory';
+import styles from './CitizensCharterSection.module.css';
+import intro from './CharterIntro.module.css';
+import officeStyles from './OfficeDirectory.module.css';
 
-export default function CitizensCharterSection() {
-  const offices = [
-    { name: "Mayor's Office", services: 5, desc: "Issues permits, clearances, business licenses, and handles executive services.", icon: Landmark },
-    { name: "SB Office", services: 5, desc: "Reviews barangay ordinances, accredits NGOs, and processes tricycle franchises.", icon: Scale },
-    { name: "MSWDO", services: 7, desc: "Provides social protection services for senior citizens, PWDs, and families in crisis.", icon: HeartPulse },
-    { name: "HRMO", services: 5, desc: "Issues service records, employment certificates, and salary adjustments for LGU employees.", icon: Users },
-    { name: "Budget Office", services: 3, desc: "Certifies obligation requests and reviews barangay and SK budgets.", icon: FileText },
-    { name: "Assessor's Office", services: 4, desc: "Issues tax declarations, land certifications, and processes property transfers.", icon: MapPin },
-    { name: "Accounting Office", services: 3, desc: "Processes and approves disbursement vouchers and financial documents.", icon: CreditCard },
-    { name: "Treasurer's Office", services: 8, desc: "Handles business registrations, tax collections, and treasury services.", icon: Landmark },
-    { name: "Agriculture Office", services: 7, desc: "Provides agricultural support services including AI and crop programs.", icon: Sprout },
-    { name: "Engineering Office", services: 5, desc: "Issues building permits, certificates of occupancy, and oversees infrastructure.", icon: Shovel },
-    { name: "LCRO", services: 12, desc: "Processes civil registry documents including birth, marriage, and death certificates.", icon: FileText },
-    { name: "MPDO", services: 4, desc: "Issues locational clearances and coordinates comprehensive land use planning.", icon: Globe },
-    { name: "LDRRMO", services: 5, desc: "Responds to emergencies, provides ambulance services, and conducts training.", icon: ShieldCheck },
-    { name: "RHU", services: 6, desc: "Provides primary healthcare services including prenatal care and consultations.", icon: HeartPulse },
-    { name: "Solid Waste Office", services: 3, desc: "Manages waste collection, disposal, and environmental sanitation.", icon: Trash2 },
-    { name: "Tourism Office", services: 3, desc: "Facilitates ecotourism activities and tourist coordination.", icon: Camera },
-    { name: "PESO", services: 4, desc: "Facilitates employment programs including SPES and GIP.", icon: Briefcase },
-    { name: "Cemetery Office", services: 4, desc: "Administers burial lot availments and niche reservations.", icon: Cross },
-  ];
+const taskIcons: Record<string, LucideIcon> = {
+  'Birth, marriage or death certificate': Baby,
+  'Business permit': Store,
+  'Building permit': HardHat,
+  'Tax declaration': FileText,
+  'Medical consultation': Stethoscope,
+  'Burial lot': Flower2,
+};
 
-  const pdfUrl = "http://talibon.gov.ph/wp-content/uploads/2026/02/2025-CITIZENS-CHARTER-FINALE.pdf";
-
-  return (
-    <section id="charter" className="py-12 sm:py-16 bg-brand-surface relative overflow-hidden border-y border-brand-border/60">
-      <div className="site-container">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 sm:mb-10">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen size={15} className="text-brand-primary" />
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-brand-primary">
-                RA 11032 — ANTI-RED TAPE AUTHORITY
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-brand-text uppercase tracking-tight font-display">
-              Citizen's Charter 2026
-            </h2>
-            <p className="text-xs sm:text-sm text-brand-muted font-medium mt-1.5 leading-relaxed">
-              Official guide to government services — requirements, step-by-step procedures, fees, and processing times for each municipal office.
-            </p>
-          </div>
-
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2.5 bg-brand-primary hover:bg-brand-accent text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all inline-flex items-center gap-2 self-start md:self-auto shadow-md border border-brand-primary/30 hover:scale-105 active:scale-95 shrink-0"
-          >
-            <span>Download Full Charter (PDF)</span>
-            <Download size={14} />
-          </a>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {offices.map((office, idx) => (
-            <motion.div
-              key={office.name}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.03 }}
-              className="p-3.5 sm:p-4 rounded-2xl bg-brand-bg border border-brand-border/80 hover:border-brand-primary/40 hover:shadow-md transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5"
-            >
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-colors duration-300">
-                    <office.icon size={16} />
-                  </div>
-                  <span className="px-2 py-0.5 bg-brand-primary/10 text-brand-primary text-[9px] font-black rounded-full uppercase tracking-wider">
-                    {office.services} {office.services === 1 ? 'service' : 'services'}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-brand-text mb-1 font-display uppercase tracking-tight group-hover:text-brand-primary transition-colors">
-                    {office.name}
-                  </h3>
-                  <p className="text-[11px] sm:text-xs text-brand-muted font-normal leading-relaxed line-clamp-2">
-                    {office.desc}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+function OfficeCard({ office }: { office: CharterOffice }) {
+  const Icon = office.icon;
+  const nameId = `charter-office-${office.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const actionId = `${nameId}-action`;
+  const action = <>
+    {office.contacts ? 'Find office contacts' : office.page ? 'Read office guide (PDF)' : 'Browse full charter (PDF)'}
+    {office.contacts ? <ArrowRight size={16} aria-hidden="true" /> : <ExternalLink size={16} aria-hidden="true" />}
+    {!office.contacts && <span className={styles.srOnly}> (opens in a new tab)</span>}
+  </>;
+  return <li className={officeStyles.cardItem}><article className={officeStyles.card} aria-labelledby={nameId}>
+    <div className={officeStyles.cardHeading}>
+      <span className={officeStyles.icon}><Icon size={24} aria-hidden="true" /></span>
+      <div><h4 id={nameId}>{office.name}</h4>{office.acronym && <p className={officeStyles.acronym}>{office.acronym}</p>}</div>
+    </div>
+    <ul className={officeStyles.previews}>{office.services.map(service => <li key={service}>{service}</li>)}</ul>
+    {office.contacts
+      ? <Link id={actionId} className={officeStyles.cardAction} aria-labelledby={`${nameId} ${actionId}`} to="/executive/directory">{action}</Link>
+      : <a id={actionId} className={officeStyles.cardAction} aria-labelledby={`${nameId} ${actionId}`} href={`${charterPdf}${office.page ? `#page=${office.page}` : ''}`} target="_blank" rel="noopener noreferrer">{action}</a>}
+  </article></li>;
 }
 
+function InternalOfficeGroup({ name, offices }: { name: string; offices: CharterOffice[] }) {
+  const [open, setOpen] = useState(false);
+  return <details className={officeStyles.internal} onToggle={event => setOpen(event.currentTarget.open)}>
+    <summary className={officeStyles.summary} aria-expanded={open}>
+      <span><h3>{name}</h3><small>Staff services and legislative matters · {offices.length} offices</small></span>
+      <span className={officeStyles.chevron}><ChevronDown size={20} aria-hidden="true" /></span>
+    </summary>
+    <ul className={officeStyles.grid} aria-label={name}>{offices.map(office => <OfficeCard key={office.name} office={office} />)}</ul>
+  </details>;
+}
+
+export default function CitizensCharterSection() {
+  const [query, setQuery] = useState('');
+  const resultsRef = useRef<HTMLParagraphElement>(null);
+  const searching = query.trim().length > 0;
+  const groups = charterGroups.map(group => ({ ...group, offices: group.offices.filter(office => matchesCharterOffice(office, query)) }));
+  const count = groups.reduce((sum, group) => sum + group.offices.length, 0);
+
+  return <section id="charter" aria-labelledby="charter-title" className={`${styles.section} ${intro.section}`}>
+    <div className={intro.top}>
+    <div className="site-container">
+      <header className={intro.header}>
+        <p className={intro.eyebrow}><BookOpen size={16} aria-hidden="true" /> Your guide to municipal services</p>
+        <h2 id="charter-title">Citizen’s Charter</h2>
+        <p>Find the right office and check the official guide for requirements, steps, fees, and processing times.</p>
+      </header>
+      <div className={intro.controls}>
+        <div className={intro.searchField}>
+          <label htmlFor="charter-search">Search offices and services</label>
+          <div className={intro.searchInput}><Search size={20} aria-hidden="true" />
+            <input id="charter-search" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder='Try “birth certificate” or “LCRO”' />
+          </div>
+        </div>
+        <a className={intro.download} href={charterPdf} target="_blank" rel="noopener noreferrer">
+          <Download size={18} aria-hidden="true" /> Download full charter <span className={intro.fileSize}>(PDF, 7.0 MB)</span>
+          <span className={styles.srOnly}>Opens in a new tab</span>
+        </a>
+      </div>
+      <div className={intro.tasks}>
+        <h3>Start with a task</h3>
+        <p>Open a PDF guide, or find office contacts. PDFs open in a new tab.</p>
+        <ul className={intro.taskList} aria-label="Start with a task">{charterTasks.map(task => {
+          const Icon = taskIcons[task.label];
+          const content = <>
+            <span className={intro.taskIcon}><Icon size={28} aria-hidden="true" /></span>
+            <span className={intro.taskCopy}>
+              <strong className={intro.taskTitle}>{task.label}</strong>
+              <span className={intro.taskType}>{task.page ? <ExternalLink size={16} aria-hidden="true" /> : <ArrowRight size={16} aria-hidden="true" />}{task.page ? 'PDF guide' : 'Find the office'}</span>
+            </span>
+            {task.page && <span className={styles.srOnly}> (opens in a new tab)</span>}
+          </>;
+          return <li key={task.label}>
+            {task.page ? <a className={intro.taskCard} href={`${charterPdf}#page=${task.page}`} target="_blank" rel="noopener noreferrer">{content}</a>
+              : <button className={intro.taskCard} type="button" onClick={() => { setQuery(task.search ?? ''); resultsRef.current?.focus(); }}>{content}</button>}
+          </li>;
+        })}</ul>
+      </div>
+    </div>
+    </div>
+    <section className={`site-container ${officeStyles.directory}`} aria-labelledby="office-directory-title">
+      <div className={officeStyles.results}>
+        <h2 id="office-directory-title">Browse offices by purpose</h2>
+        <p ref={resultsRef} className={searching ? undefined : styles.srOnly} tabIndex={-1} role="status" aria-live="polite">{searching ? `${count} matching ${count === 1 ? 'office' : 'offices'}` : 'Browse offices by purpose'}</p>
+        {searching && <button type="button" onClick={() => setQuery('')}>Clear search</button>}
+      </div>
+      {count === 0 && <div className={styles.empty}><h3>No offices found</h3><p>Try a service such as “birth”, an office name, or its acronym.</p><button type="button" onClick={() => setQuery('')}>Show all offices</button></div>}
+      {groups.filter(group => group.offices.length > 0).map(group => {
+        const grid = <ul className={officeStyles.grid} aria-label={group.name}>{group.offices.map(office => <OfficeCard key={office.name} office={office} />)}</ul>;
+        return group.internal && !searching
+          ? <InternalOfficeGroup key={group.name} name={group.name} offices={group.offices} />
+          : <div className={officeStyles.group} key={group.name}><h3>{group.name}</h3>{grid}</div>;
+      })}
+      <p className={styles.source}>Official municipal PDF · Link and file size checked 4 November 2026. Confirm current requirements with the office before visiting.</p>
+    </section>
+  </section>;
+}

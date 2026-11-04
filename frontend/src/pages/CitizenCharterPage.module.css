@@ -1,0 +1,39 @@
+/* FRONTEND_THEME.md: scope the palette to the standalone charter page. */
+.section {
+  composes: section from "../styles/SolidTheme.module.css";
+  --charter-sky: var(--talweb-primary);
+  --charter-sky-light: var(--talweb-background);
+  /* Match Downloadables' accessible blue for icons, links, and focus. */
+  --color-brand-primary: var(--talweb-deep);
+  --color-brand-text: #171717;
+  --color-brand-muted: #404040;
+  --color-brand-border: #e5e7eb;
+}
+
+.pdfButton {
+  background-color: var(--talweb-deep);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+}
+
+.pdfButton:hover,
+.pdfButton:active {
+  background-color: var(--talweb-deep);
+  filter: brightness(.92);
+}
+
+.pdfButton:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 3px;
+}
+
+/* The existing PDF tile fills on group hover; keep its explicit SVG color readable. */
+.section :global(.group):hover > div:first-child { background-color: var(--talweb-deep); }
+.section :global(.group):hover > div:first-child svg { color: #ffffff; }
+
+/* Audit correction: the approved title was clipped by the fixed header. */
+@media (max-width: 1023px) {
+  .section {
+    margin-block-start: 24px;
+  }
+}

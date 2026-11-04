@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { listPublic, PublicService } from '../services/publicApi';
@@ -7,7 +8,7 @@ import GovernmentServicesView from '../pages/about/GovernmentServicesView';
 
 export default function ServiceNavigator() {
   const resource = usePublicResource(useCallback((signal: AbortSignal) => listPublic<PublicService>('services', { limit: 6 }, signal), []));
-  return <section className="py-12 bg-brand-surface">
+  return <section className={`${solidTheme.section} py-12 bg-brand-surface`}>
     <div className="site-container space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-4"><h2 className="text-2xl font-bold">Municipal services</h2><Link to="/services" className="text-brand-primary font-semibold">View all services ?</Link></div>
       <PublicState {...resource} />

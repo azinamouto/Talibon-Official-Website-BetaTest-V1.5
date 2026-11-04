@@ -1,3 +1,4 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import { motion } from "motion/react";
 import { 
   FileText, 
@@ -30,7 +31,7 @@ export default function Services() {
       title: "Real Property Tax",
       description: "View published finance information.",
       href: "/transparency/finance",
-      iconColor: "text-amber-400"
+      iconColor: "text-sky-400"
     },
     {
       icon: Users,
@@ -44,7 +45,7 @@ export default function Services() {
       title: "Building Permits",
       description: "Visit the appropriate municipal office for building permit assistance.",
       href: "/forms/building",
-      iconColor: "text-indigo-400"
+      iconColor: "text-sky-400"
     },
     {
       icon: HeartPulse,
@@ -58,14 +59,14 @@ export default function Services() {
       title: "Agriculture",
       description: "Support for farmers and fisherfolk.",
       href: "/executive/directory",
-      iconColor: "text-teal-400"
+      iconColor: "text-sky-400"
     }
   ];
 
   return (
     <section 
       id="services" 
-      className="relative py-14 sm:py-20 text-white overflow-hidden bg-cover bg-center"
+      className={`${solidTheme.photo} relative py-14 sm:py-20 text-white overflow-hidden bg-cover bg-center`}
       style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=2000')`
       }}
@@ -80,7 +81,7 @@ export default function Services() {
 
       {/* Decorative Ambient Lighting */}
       <div className="absolute -top-24 right-1/4 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none z-0" />
-      <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute -bottom-24 left-1/4 w-96 h-96 bg-brand-secondary/15 rounded-full blur-3xl pointer-events-none z-0" />
 
       <div className="site-container relative z-10">
         <div className="text-center mb-10 sm:mb-12">

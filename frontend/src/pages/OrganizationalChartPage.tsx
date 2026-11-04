@@ -1,3 +1,4 @@
+import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { User, Users, Loader2 } from 'lucide-react';
@@ -95,7 +96,7 @@ const OrganizationalChartPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="pb-20 flex items-center justify-center min-h-screen bg-brand-bg">
+      <div className={`${sectionTheme.section} pb-20 flex items-center justify-center min-h-screen bg-brand-bg`}>
         <Loader2 className="w-12 h-12 text-brand-primary animate-spin" />
       </div>
     );
@@ -103,7 +104,7 @@ const OrganizationalChartPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="pb-20 px-4 max-w-7xl mx-auto min-h-screen bg-brand-bg pt-6">
+      <div className={`${sectionTheme.section} pb-20 px-4 max-w-7xl mx-auto min-h-screen bg-brand-bg pt-6`}>
         <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl font-bold">
           {error}
         </div>
@@ -113,7 +114,7 @@ const OrganizationalChartPage: React.FC = () => {
 
   if (!data) {
     return (
-      <div className="pb-20 px-4 max-w-7xl mx-auto min-h-screen bg-brand-bg pt-6 flex flex-col items-center justify-center text-center">
+      <div className={`${sectionTheme.section} pb-20 px-4 max-w-7xl mx-auto min-h-screen bg-brand-bg pt-6 flex flex-col items-center justify-center text-center`}>
         <Users className="w-16 h-16 text-brand-muted/30 mb-4" />
         <h2 className="text-2xl font-bold text-brand-text mb-2">Structure Not Found</h2>
         <p className="text-brand-muted max-w-md">The organizational chart is currently being updated. Please check back later.</p>
@@ -122,7 +123,7 @@ const OrganizationalChartPage: React.FC = () => {
   }
 
   return (
-    <div className="pb-12 px-4 md:px-6 max-w-6xl mx-auto min-h-screen bg-brand-bg relative overflow-hidden">
+    <div className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 px-4 md:px-6 max-w-6xl mx-auto min-h-screen bg-brand-bg relative overflow-hidden`}>
       <div className="relative z-10">
         <div className="mb-6 text-center">
           <span className="section-label">Executive Structure</span>

@@ -1,4 +1,6 @@
+import solidTheme from "../styles/SolidTheme.module.css";
 import { motion } from "motion/react";
+import compact from "./CompactSections.module.css";
 import { Phone, ShieldAlert, HeartPulse, Flame, Siren } from "lucide-react";
 
 export default function EmergencyHotlines() {
@@ -38,7 +40,7 @@ export default function EmergencyHotlines() {
   ];
 
   return (
-    <section id="emergency" className="py-32 bg-brand-text relative overflow-hidden">
+    <section id="emergency" className={`${solidTheme.photo} ${compact.emergency} bg-brand-text relative overflow-hidden`}>
       {/* Background Text - Embossment */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-black text-white/[0.02] select-none pointer-events-none leading-none font-display tracking-tighter uppercase whitespace-nowrap">
         TALIBON
@@ -48,14 +50,14 @@ export default function EmergencyHotlines() {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-primary/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
 
       <div className="site-container relative z-10">
-        <div className="text-center mb-20">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight mb-6 font-display">Emergency Hotlines</h2>
+        <div className={compact.emergencyHeader}>
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">Emergency Hotlines</h2>
           <p className="text-white/60 font-normal text-base max-w-2xl mx-auto">
             Quick response for life-threatening situations. Our emergency teams are available 24/7 to serve the people of Talibon.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={compact.hotlineGrid}>
           {hotlines.map((item, idx) => (
             <motion.div
               key={item.name}
@@ -63,24 +65,24 @@ export default function EmergencyHotlines() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-500 group"
+              className={`${compact.hotlineCard} bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-500 group`}
             >
-              <div className={`w-14 h-14 rounded-2xl ${item.bgColor} flex items-center justify-center ${item.color} mb-8 transition-transform group-hover:scale-110 duration-500`}>
+              <div className={`${compact.hotlineIcon} ${item.bgColor} flex items-center justify-center ${item.color} transition-transform group-hover:scale-110 duration-500`}>
                 <item.icon size={28} />
               </div>
               
-              <div className="space-y-4">
-                <div>
+              <div className={compact.hotlineContent}>
+                <div className={compact.agency}>
                   <h3 className="text-xl font-bold text-white mb-1 font-display uppercase tracking-tight">{item.name}</h3>
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-tight">{item.label}</p>
                 </div>
                 
-                <div className="space-y-2 pt-4">
+                <div className={compact.numbers}>
                   {item.numbers.map((num) => (
                     <a 
                       key={num}
                       href={`tel:${num.replace(/-/g, '')}`}
-                      className="flex items-center gap-3 text-white hover:text-brand-accent transition-colors group/link"
+                      className={`${compact.call} flex items-center gap-3 text-white hover:text-brand-accent transition-colors group/link`}
                     >
                       <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center group-hover/link:bg-brand-accent/20 transition-colors">
                         <Phone size={14} />
@@ -94,7 +96,7 @@ export default function EmergencyHotlines() {
           ))}
         </div>
 
-        <div className="mt-20 p-8 rounded-[2.5rem] bg-brand-accent/10 border border-brand-accent/20 text-center">
+        <div className={`${compact.landline} bg-brand-accent/10 border border-brand-accent/20 text-center`}>
           <p className="text-brand-accent font-bold text-xs tracking-[0.2em] uppercase">
             Landline: (038) 510-1980
           </p>

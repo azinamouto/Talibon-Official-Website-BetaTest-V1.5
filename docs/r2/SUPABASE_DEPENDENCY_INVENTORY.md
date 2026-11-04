@@ -1,5 +1,9 @@
 # Supabase dependency inventory
 
+## Increment 4 CMS delta (2026-11-04)
+
+Staff photo/document workflows now use `/api/admin/media` and Neon S3/PostgreSQL only. The legacy `FileUpload.tsx` uploader is retired and no longer calls Supabase Storage or returns fake success URLs. Media requests bypass legacy Supabase audit persistence because media mutations audit atomically in PostgreSQL. Other legacy/public Supabase dependencies remain in the application and package trees; this is not the WP5 whole-application exclusion claim. No hosted Supabase object permissions or production data were changed. See [media operations](MEDIA_OPERATIONS.md).
+
 Status: repository inspection completed at R1 `fd2fe689b2f442f22409ca9c7a2699e3cd0c25be`; deployed account inventory pending credentials. See [machine-readable source inventory](evidence/source-inventory.json) for file/line references, literal table/RPC calls, SQL declarations and migration SHA-256 values. The lexical scan covers tracked runtime source, workflows, ops, edge functions, package manifests/locks and example environments; it is not an import-graph or live-bucket audit.
 
 ## Increment 3 authentication delta (2026-11-02)

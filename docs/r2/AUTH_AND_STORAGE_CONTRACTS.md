@@ -1,5 +1,9 @@
 # Auth and storage contracts and provider gates
 
+## Increment 4 implementation update (2026-11-04)
+
+The storage proposal below is historical. Increment 4 implements private Neon S3 storage with authenticated server-mediated upload/download, a 2 MiB cap, no presigned read grants, per-download publication checks, pending-upload recovery, transactional metadata/audit, and admin/fresh-MFA logical deletion with retained private objects. The existing Better Auth policy is unchanged. Live SDK/private-bucket qualification passed on an isolated Singapore child branch. See [media operations](MEDIA_OPERATIONS.md) and [Increment 4 evidence](INCREMENT_4_REPORT.md) for exact contracts, migration tools and remaining release gates.
+
 Checked 2026-11-01 using official provider documentation. These are application-owned proposed interfaces, **not invented Neon SDK method names**. No account, credential, hosted API or integration was exercised. No Neon SDK is present in the three baseline lockfiles.
 
 ## Increment 3 authentication update (2026-11-02)

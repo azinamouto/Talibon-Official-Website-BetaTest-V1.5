@@ -1,4 +1,6 @@
 import { PublicFormsController } from './api/forms/public-forms.controller';
+import { MediaController, PublicMediaController } from './api/media/media.controller';
+import { MediaService } from './api/media/media.service';
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from "@nestjs/common";
 import { APP_GUARD, APP_FILTER } from "@nestjs/core";
 import { AuditMiddleware } from "./security/audit.middleware";
@@ -38,6 +40,7 @@ import { HealthController } from './api/health/health.controller';
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule],
   controllers: [
+    MediaController, PublicMediaController,
     HealthController,
     PublicFormsController,
     SearchController,
@@ -54,6 +57,7 @@ import { HealthController } from './api/health/health.controller';
     TourismController,
   ],
   providers: [
+    MediaService,
     SearchService,
     ReportsService,
     UsersService,

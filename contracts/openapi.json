@@ -1,6 +1,623 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/api/admin/media": {
+      "get": {
+        "operationId": "MediaController_list_1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "summary": "List staff photo/document metadata, 50 per page",
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/options": {
+      "get": {
+        "operationId": "MediaController_options_1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/uploads": {
+      "post": {
+        "operationId": "MediaController_upload_1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}/edit": {
+      "post": {
+        "operationId": "MediaController_edit_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}/publish": {
+      "post": {
+        "operationId": "MediaController_publish_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}/unpublish": {
+      "post": {
+        "operationId": "MediaController_unpublish_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}/delete": {
+      "post": {
+        "operationId": "MediaController_remove_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}/download": {
+      "get": {
+        "operationId": "MediaController_download_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}/preview": {
+      "get": {
+        "operationId": "MediaController_preview_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication."
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/media/{id}/download": {
+      "get": {
+        "operationId": "PublicMediaController_download_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": "Approved published media not found."
+          },
+          "503": {
+            "description": "Storage unavailable or checksum verification failed."
+          }
+        },
+        "tags": [
+          "Published media"
+        ]
+      }
+    },
     "/api/auth/signup": {
       "post": {
         "operationId": "AuthController_signup_1",
@@ -6000,7 +6617,7 @@
   },
   "info": {
     "title": "Talibon Municipal API",
-    "description": "Send X-API-Version: 1 (default when omitted). Legacy auth and administration routes return 410. Staff operations use Better Auth HttpOnly cookies and MFA. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: Sprint 1 authentication, Sprint 2 About/content, Sprint 4 admin and Sprint 5 search endpoints. Other APIs remain in the live document.",
+    "description": "Send X-API-Version: 1 (default when omitted). Legacy auth and administration routes return 410. Staff operations use Better Auth HttpOnly cookies and MFA. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: legacy authentication/content/admin/search contracts, R2 staff authentication and Increment 4 photo/document media. Other APIs remain in the live document.",
     "version": "1",
     "contact": {}
   },
@@ -6020,6 +6637,88 @@
       }
     },
     "schemas": {
+      "UploadDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "altText": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "uploadId": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "base64": {
+            "type": "string",
+            "description": "Canonical base64; decoded file maximum 2 MiB."
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "altText",
+          "categoryId",
+          "uploadId",
+          "sourceId",
+          "filename",
+          "mime",
+          "base64"
+        ]
+      },
+      "EditDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "altText": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "altText",
+          "categoryId",
+          "version"
+        ]
+      },
+      "VersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
       "SignupDto": {
         "type": "object",
         "properties": {

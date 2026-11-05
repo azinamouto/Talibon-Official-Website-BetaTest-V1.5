@@ -2,43 +2,32 @@ import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, FileText, Calendar, User, ChevronDown, ChevronUp, Download, Filter, ArrowUpDown, Loader2 } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { legislativeApi } from '../services/api';
 
 interface Resolution {
   id?: string;
   no: string;
   date: string;
-  author: string;
+  author?: string;
   title: string;
-  file_url?: string;
+  file_url: string;
 }
 
-const MOCK_RESOLUTIONS: Resolution[] = [
-  {
-    id: "r1",
-    no: "101",
-    date: "2024-03-15",
-    author: "Hon. Maria Santos",
-    title: "A Resolution Requesting Additional Funding for Coastal Defense Facilities from the Department of Public Works and Highways",
-    file_url: "#"
-  },
-  {
-    id: "r2",
-    no: "102",
-    date: "2024-03-20",
-    author: "Hon. Jose Reyes",
-    title: "A Resolution Expressing Strong Support for the Cooperative Livelihood Expansion of Talibon Seaweed Farmers",
-    file_url: "#"
-  },
-  {
-    id: "r3",
-    no: "85",
-    date: "2023-11-10",
-    author: "Hon. Antonio Cruz",
-    title: "A Resolution Approving the Annual Barangay Investment Plans for the 25 Barangays of Talibon",
-    file_url: "#"
+function isResolution(value: unknown): value is Resolution {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Record<string, unknown>;
+  if (typeof record.no !== 'string' || !record.no.trim() || typeof record.title !== 'string' || !record.title.trim() ||
+      typeof record.date !== 'string' || Number.isNaN(Date.parse(record.date)) ||
+      typeof record.file_url !== 'string' || !record.file_url.trim() || record.file_url.trim() === '#' ||
+      (record.author !== undefined && typeof record.author !== 'string') ||
+      (record.id !== undefined && typeof record.id !== 'string')) return false;
+  try {
+    const url = new URL(record.file_url, window.location.origin);
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch {
+    return false;
   }
-];
+}
 
 type SortKey = 'no' | 'date' | 'title';
 type SortOrder = 'asc' | 'desc';
@@ -46,42 +35,21 @@ type SortOrder = 'asc' | 'desc';
 const ResolutionsPage: React.FC = () => {
   const [resolutions, setResolutions] = useState<Resolution[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('no');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      setResolutions(MOCK_RESOLUTIONS);
-      setLoading(false);
-      return;
-    }
-
-    const fetchResolutions = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('resolutions')
-        .select('*')
-        .order('no', { ascending: false });
-
-      if (error) {
-        console.warn("Error fetching resolutions:", error);
-        setResolutions(MOCK_RESOLUTIONS);
-      } else {
-        setResolutions(data as Resolution[]);
-      }
-      setLoading(false);
-    };
-
-    fetchResolutions();
-
-    // Subscribe to changes
-    const channel = supabase
-      .channel('resolutions-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'resolutions' }, () => fetchResolutions())
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
+    const controller = new AbortController();
+    legislativeApi.getResolutions(controller.signal).then(result => {
+      if (!controller.signal.aborted) setResolutions(Array.isArray(result) ? result.filter(isResolution) : []);
+    }).catch(() => {
+      if (!controller.signal.aborted) setError(true);
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
+    });
+    return () => controller.abort();
   }, []);
 
   const handleSort = (key: SortKey) => {
@@ -97,7 +65,7 @@ const ResolutionsPage: React.FC = () => {
     let result = resolutions.filter(res => 
       res.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       res.no.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      res.author.toLowerCase().includes(searchQuery.toLowerCase())
+      (res.author || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     result.sort((a, b) => {
@@ -179,6 +147,10 @@ const ResolutionsPage: React.FC = () => {
             <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
             <p className="text-sm font-black text-gray-400 uppercase tracking-widest">Loading Resolutions...</p>
           </div>
+        ) : error ? (
+          <div role="alert" className="p-8 text-center text-red-800">
+            Resolutions are temporarily unavailable. Please try again later.
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -253,9 +225,11 @@ const ResolutionsPage: React.FC = () => {
                         </h3>
                       </td>
                       <td className="px-8 py-8 text-right">
-                        <button className="p-3 bg-gray-50 rounded-xl text-gray-300 group-hover:text-blue-600 group-hover:bg-blue-100 transition-all">
+                        <a href={res.file_url} target="_blank" rel="noopener noreferrer" aria-label={`Open resolution ${res.no}`}>
+                          <span className="inline-flex p-3 bg-gray-50 rounded-xl text-gray-300 group-hover:text-blue-600 group-hover:bg-blue-100 transition-all">
                           <FileText size={20} />
-                        </button>
+                          </span>
+                        </a>
                       </td>
                     </motion.tr>
                   ))
@@ -265,7 +239,7 @@ const ResolutionsPage: React.FC = () => {
                       <div className="flex flex-col items-center gap-4">
                         <Search size={48} className="text-gray-200" />
                         <p className="text-lg font-black text-gray-400 uppercase tracking-widest">
-                          No resolutions found matching your search.
+                          {resolutions.length ? 'No resolutions found matching your search.' : 'No published resolutions are currently available.'}
                         </p>
                         <button 
                           onClick={() => setSearchQuery('')}
@@ -304,9 +278,9 @@ const ResolutionsPage: React.FC = () => {
                 <User size={12} />
                 {res.author || 'N/A'}
               </div>
-              <button className="p-2 bg-gray-50 rounded-lg text-blue-600">
+              <a href={res.file_url} target="_blank" rel="noopener noreferrer" aria-label={`Open resolution ${res.no}`} className="p-2 bg-gray-50 rounded-lg text-blue-600">
                 <FileText size={18} />
-              </button>
+              </a>
             </div>
           </div>
         ))}

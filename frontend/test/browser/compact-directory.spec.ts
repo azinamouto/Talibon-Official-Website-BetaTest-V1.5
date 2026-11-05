@@ -7,7 +7,6 @@ for (const width of [360, 768, 1280, 1920]) test(`interactive directory and comp
   await page.setViewportSize({ width, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
   await page.goto('/');
   await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}header{opacity:0!important}[style*="opacity"]{opacity:1!important}[style*="transform"]{transform:none!important}' });

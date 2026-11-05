@@ -12,7 +12,6 @@ for (const width of [360, 768, 1280, 1920]) test(`our story with the real photos
     if (url.includes('MUNICIPAL-Mayoe2-28d8fb46.webp')) return route.fulfill({ path: resolve(artifacts, 'mayor.webp'), contentType: 'image/webp' });
     return new URL(url).hostname === '127.0.0.1' ? route.continue() : route.abort();
   });
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
   await page.goto('/');
   await page.addStyleTag({ content: 'html {scroll-behavior:auto!important} header {opacity:0!important;transition:none!important;animation:none!important} #about [style*="opacity"] {opacity:1!important;transform:none!important}' });

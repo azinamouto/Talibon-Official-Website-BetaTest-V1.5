@@ -6,10 +6,10 @@ export default function InteractiveMap() {
   const { data, loading, error, retry } = usePublicResource(loadMapLocations);
   if (loading) return <p role="status">Loading public locations...</p>;
   if (error) return <div role="alert"><p>Public locations are unavailable. Please try again.</p><button className="ui-focus underline" onClick={retry}>Retry locations</button></div>;
-  if (!data?.length) return <p role="status">No public locations have been posted yet.</p>;
+  if (!data?.length) return <p role="status">No public tourism locations are currently available.</p>;
   const points: MapPoint[] = data.flatMap(item => {
     const position = coordinates(item.google_maps_link);
-    return position ? [{ id: item.id, name: item.name, position }] : [];
+    return position ? [{ id: String(item.id), name: item.name, position }] : [];
   });
   const counts = [['With verified coordinates', points.length], ['Coordinates not available', data.length - points.length]] as const;
   return <div className="space-y-6">

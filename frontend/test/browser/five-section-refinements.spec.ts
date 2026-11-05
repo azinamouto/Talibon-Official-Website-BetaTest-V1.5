@@ -18,7 +18,6 @@ for (const width of [375, 768, 1280, 1440]) test(`five sections and protected he
     if (url.hostname === 'www.google.com') { googleRequests.push(url.href); return route.fulfill({contentType:'text/html',body:'<!doctype html><title>Google Maps fixture</title><p>Municipal Hall map fixture</p>'}); }
     return route.abort();
   });
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({json:[]}));
   await context.route('**/api/**', route => route.fulfill({json:[]}));
   await context.route('**/data/social-updates.json', route => route.fulfill({json:{posts:[]}}));
   await page.goto('/');

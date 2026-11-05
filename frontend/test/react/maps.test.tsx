@@ -16,7 +16,7 @@ vi.mock('react-leaflet', () => ({
   Popup: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 afterEach(() => { crashMap = false; vi.useRealTimers(); vi.restoreAllMocks(); });
-const endpoint = 'http://127.0.0.1:54321/rest/v1/tourism_spots';
+const endpoint = 'http://localhost:5173/api/tourism/spots';
 const records = [
   { id: 'one', name: 'Published destination', description: 'Published description', location: 'Published address', google_maps_link: 'https://www.google.com/maps?q=10.15,124.33' },
   { id: 'two', name: 'No coordinates destination', description: 'Another description', location: 'Second address', google_maps_link: null },
@@ -34,7 +34,7 @@ it.each([
 it('loads directory records over HTTP, charts actual counts, and preserves addresses when tiles fail', async () => {
   server.use(http.get(endpoint, ({ request }) => {
     const url = new URL(request.url);
-    expect(url.searchParams.get('deleted_at')).toBe('is.null');
+    expect(request.headers.get('x-api-version')).toBe('1');
     return HttpResponse.json(records);
   }));
   render(<TourismMapPage />);
@@ -58,7 +58,7 @@ it('shows a graceful API error then retries successfully without sample records'
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
   server.use(http.get(endpoint, () => HttpResponse.json([])));
   fireEvent.click(screen.getByRole('button', { name: 'Retry locations' }));
-  expect(await screen.findByText('No public locations have been posted yet.')).toBeVisible();
+  expect(await screen.findByText('No public tourism locations are currently available.')).toBeVisible();
 }, 20000);
 it('shows address-only data without fabricating coordinates', async () => {
   server.use(http.get(endpoint, () => HttpResponse.json([records[1]])));

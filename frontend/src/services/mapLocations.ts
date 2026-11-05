@@ -1,10 +1,15 @@
-import { supabase } from '../lib/supabase';
+import { publicGet } from './publicApi';
 
 export interface MapLocation {
-  id: string; name: string; description: string; location: string; google_maps_link: string | null;
+  id: string | number;
+  name: string;
+  description?: string | null;
+  location?: string | null;
+  google_maps_link?: string | null;
 }
+
 /** Only explicit place coordinates, never a map viewport or invented offsets. */
-export function coordinates(link: string | null): [number, number] | null {
+export function coordinates(link: string | null | undefined): [number, number] | null {
   if (!link) return null;
   try {
     const url = new URL(link);
@@ -17,12 +22,17 @@ export function coordinates(link: string | null): [number, number] | null {
     return Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? [lat, lng] : null;
   } catch { return null; }
 }
+
 export async function loadMapLocations(signal: AbortSignal): Promise<MapLocation[]> {
-  const { data, error } = await supabase.from('tourism_spots')
-    .select('id,name,description,location,google_maps_link').is('deleted_at', null)
-    .order('name', { ascending: true })
-    .abortSignal(AbortSignal.any([signal, AbortSignal.timeout(15000)]));
-  if (error) throw error;
-  if (!Array.isArray(data)) throw new Error('Location data unavailable');
-  return data;
+  const locations = await publicGet<unknown>('tourism/spots', signal);
+  if (!Array.isArray(locations)) throw new Error('Location data unavailable.');
+  return locations.filter((value): value is MapLocation => {
+    if (!value || typeof value !== 'object') return false;
+    const location = value as Record<string, unknown>;
+    return (typeof location.id === 'string' || (typeof location.id === 'number' && Number.isFinite(location.id))) &&
+      typeof location.name === 'string' &&
+      (location.description === undefined || location.description === null || typeof location.description === 'string') &&
+      (location.location === undefined || location.location === null || typeof location.location === 'string') &&
+      (location.google_maps_link === undefined || location.google_maps_link === null || typeof location.google_maps_link === 'string');
+  });
 }

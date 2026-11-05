@@ -118,7 +118,7 @@ export default function BudgetView({ data }: BudgetViewProps) {
         </div>
       </motion.div>
 
-      {/* Render uploaded documents if published in Supabase */}
+      {/* Render documents published through the municipal CMS */}
       {Array.isArray(data.documents) && data.documents.length > 0 && (
         <div className="space-y-3">
           <div className="px-1">
@@ -188,4 +188,3 @@ export default function BudgetView({ data }: BudgetViewProps) {
     </div>
   );
 }
-

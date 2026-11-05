@@ -7,7 +7,8 @@ const events = [{ id: 'event-1', source: 'authentication', action: 'mfa.success'
 
 async function isolate(context: BrowserContext) {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
+  await context.route('**/api/admin/media?page=*', route => route.fulfill({ json: { data: [], hasMore: false } }));
+  await context.route('**/api/admin/media/options', route => route.fulfill({ json: { categories: [], sources: [] } }));
 }
 
 async function staffSession(context: BrowserContext, role: 'admin' | 'editor') {
@@ -20,22 +21,18 @@ async function staffSession(context: BrowserContext, role: 'admin' | 'editor') {
   } }));
 }
 
-test('preview dashboard remains responsive and does not request protected data', async ({ page, context }, info) => {
+test('R2 staff portal remains responsive with authorized records', async ({ page, context }, info) => {
   await isolate(context);
-  const protectedRequests: string[] = [];
-  page.on('request', request => {
-    const path = new URL(request.url()).pathname;
-    if (path === '/api/staff' || path === '/api/staff/audit' || path.startsWith('/api/admin/')) protectedRequests.push(request.url());
-  });
+  await staffSession(context, 'admin');
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto('/admin-preview');
-  await expect(page.getByText(/Mock data.*Week 7/)).toBeVisible();
-  await expect(page.getByText('128', { exact: true })).toBeVisible();
+  await page.goto('/admin');
+  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
+  await expect(page.getByText('editor@example.test')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: info.outputPath('admin-mobile.png'), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: info.outputPath('admin-desktop.png'), fullPage: true });
-  expect(protectedRequests).toEqual([]);
+  await expect(page.getByRole('heading', { name: 'Staff audit' })).toBeVisible();
 });
 
 test('staff portal redirects unauthenticated visitors to staff-only sign in', async ({ page, context }) => {

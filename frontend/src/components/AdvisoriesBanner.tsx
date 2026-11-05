@@ -3,11 +3,12 @@ import { motion } from "motion/react";
 import { AlertTriangle, Bell, ArrowRight, ShieldAlert, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { newsService } from "../services/newsService";
-import { NewsItem } from "../services/cmsService";
+import type { NewsItem } from "../services/newsService";
 
 export default function AdvisoriesBanner() {
   const [advisories, setAdvisories] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     async function loadAdvisories() {
@@ -30,7 +31,7 @@ export default function AdvisoriesBanner() {
         });
         setAdvisories(filtered);
       } catch (err) {
-        console.warn("Failed to load advisories:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -44,7 +45,11 @@ export default function AdvisoriesBanner() {
   return (
     <section className="py-6 bg-brand-bg relative z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {advisories.length > 0 ? (
+        {error ? (
+          <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-4 text-center text-sm font-semibold text-red-800">
+            Municipal advisories are temporarily unavailable. Please try again later.
+          </p>
+        ) : advisories.length > 0 ? (
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}

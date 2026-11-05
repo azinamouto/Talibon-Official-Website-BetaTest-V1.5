@@ -2,17 +2,33 @@ import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { User, Users, Loader2 } from 'lucide-react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { executiveApi } from '../services/api';
 
-const MOCK_OFFICIALS = [
-  { id: "of1", level: 1, name: "Hon. Janette A. Garcia", role: "Municipal Mayor", display_order: 1 },
-  { id: "of2", level: 2, name: "Hon. Epifanio G. Evardone", role: "Municipal Vice Mayor", display_order: 1 },
-  { id: "of3", level: 2, name: "Hon. Cecilio C. Garcia", role: "SB Member", display_order: 2 },
-  { id: "of4", level: 2, name: "Hon. Gonzalo D. Castro Jr.", role: "SB Member", display_order: 3 },
-  { id: "of5", level: 3, name: "Dr. Maria Luisa M. Reyes", role: "Municipal Health Officer", display_order: 1 },
-  { id: "of6", level: 3, name: "Engr. Romeo A. Valenzuela", role: "Municipal Engineer", display_order: 2 },
-  { id: "of7", level: 3, name: "Mrs. Elsa B. Torralba", role: "Municipal Treasurer", display_order: 3 }
-];
+interface Official {
+  name: string;
+  role: string;
+  image_url?: string;
+}
+interface OrganizationalChart {
+  mayor: Official;
+  level2: Official[];
+  departments: Official[];
+}
+
+function isOfficial(value: unknown): value is Official {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.name === 'string' && typeof record.role === 'string' &&
+    (record.image_url === undefined || typeof record.image_url === 'string');
+}
+
+function isOrganizationalChart(value: unknown): value is OrganizationalChart {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Record<string, unknown>;
+  return isOfficial(record.mayor) &&
+    Array.isArray(record.level2) && record.level2.every(isOfficial) &&
+    Array.isArray(record.departments) && record.departments.every(isOfficial);
+}
 
 const DEPARTMENT_LOGOS: Record<string, string> = {
   "Office Of Municipal Agriculturist": "http://talibon.gov.ph/wp-content/uploads/2025/10/1.png",
@@ -38,61 +54,26 @@ const DEPARTMENT_LOGOS: Record<string, string> = {
 };
 
 const OrganizationalChartPage: React.FC = () => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<OrganizationalChart | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      const structuredData = {
-        mayor: MOCK_OFFICIALS.find((o: any) => o.level === 1) || { name: 'N/A', role: 'Municipal Mayor' },
-        level2: MOCK_OFFICIALS.filter((o: any) => o.level === 2),
-        departments: MOCK_OFFICIALS.filter((o: any) => o.level === 3)
-      };
-      setData(structuredData);
-      setLoading(false);
-      return;
-    }
-
-    const fetchOfficials = async () => {
-      setLoading(true);
-      const { data: officials, error: supabaseError } = await supabase
-        .from('officials')
-        .select('*')
-        .order('level', { ascending: true })
-        .order('display_order', { ascending: true });
-      
-      if (supabaseError) {
-        console.warn("Error fetching officials:", supabaseError);
-        const structuredData = {
-          mayor: MOCK_OFFICIALS.find((o: any) => o.level === 1) || { name: 'N/A', role: 'Municipal Mayor' },
-          level2: MOCK_OFFICIALS.filter((o: any) => o.level === 2),
-          departments: MOCK_OFFICIALS.filter((o: any) => o.level === 3)
-        };
-        setData(structuredData);
-      } else if (officials && officials.length > 0) {
-        const structuredData = {
-          mayor: officials.find((o: any) => o.level === 1) || { name: 'N/A', role: 'Municipal Mayor' },
-          level2: officials.filter((o: any) => o.level === 2),
-          departments: officials.filter((o: any) => o.level === 3)
-        };
-        setData(structuredData);
-      } else {
-        setData(null);
-      }
-      setLoading(false);
-    };
-
-    fetchOfficials();
-
-    // Subscribe
-    const channel = supabase
-      .channel('officials-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'officials' }, () => fetchOfficials())
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, []);
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    executiveApi.getChart(controller.signal).then(result => {
+      if (controller.signal.aborted) return;
+      if (isOrganizationalChart(result)) setData(result);
+      else setError('The organizational chart response is invalid.');
+    }).catch(() => {
+      if (!controller.signal.aborted) setError('The organizational chart is temporarily unavailable.');
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
+    });
+    return () => controller.abort();
+  }, [attempt]);
 
   if (loading) {
     return (
@@ -108,6 +89,7 @@ const OrganizationalChartPage: React.FC = () => {
         <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl font-bold">
           {error}
         </div>
+        <button className="mt-4 underline" onClick={() => setAttempt(value => value + 1)}>Retry</button>
       </div>
     );
   }

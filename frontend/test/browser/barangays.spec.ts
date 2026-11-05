@@ -4,7 +4,6 @@ import { resolve } from 'node:path';
 const artifacts = resolve('node_modules/.cache/barangay-picker');
 test.beforeEach(async ({ context }) => {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
 });
 for (const width of [320, 360, 375, 768, 1280, 1920]) test(`barangay picker, native keys and responsive details at ${width}px`, async ({ page }) => {

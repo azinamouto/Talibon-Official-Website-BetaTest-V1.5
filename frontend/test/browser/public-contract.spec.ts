@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 
 test('public catalog and news render the shared contract server and search opens its service', async ({ page, context, request }) => {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   const services = await (await request.get('/api/services')).json();
   const news = await (await request.get('/api/news')).json();
   await page.goto('/services');

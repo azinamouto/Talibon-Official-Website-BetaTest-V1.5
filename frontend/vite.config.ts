@@ -19,6 +19,7 @@ export default defineConfig(({mode}) => {
 
   return {
     plugins: [react(), tailwindcss()],
+    envPrefix: [],
     define: {
       // AI features fail closed until a server-side endpoint is available.
       "process.env.GEMINI_API_KEY": "undefined",

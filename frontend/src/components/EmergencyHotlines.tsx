@@ -52,7 +52,7 @@ export default function EmergencyHotlines() {
 
       <div className="site-container relative z-10">
         <div className={compact.emergencyHeader}>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">Emergency Hotlines<span className={colors.emoji} role="img" aria-label="Siren">🚨</span></h2>
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">Emergency Hotlines<span className={colors.emoji} role="img" aria-label="Siren"></span></h2>
           <p className={`${colors.description} font-normal text-base max-w-2xl mx-auto`}>
             Quick response for life-threatening situations. Our emergency teams are available 24/7 to serve the people of Talibon.
           </p>

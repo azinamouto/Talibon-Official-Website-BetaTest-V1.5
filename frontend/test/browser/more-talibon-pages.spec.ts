@@ -17,7 +17,6 @@ for (const width of [360, 768, 1280, 1920]) test(`more pages disclosure and unch
     return route.abort();
   });
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await context.route('**/data/social-updates.json', route => route.fulfill({ json: { posts: [] } }));
   await page.goto('/');
   await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}header{opacity:0!important}' });

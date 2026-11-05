@@ -18,7 +18,6 @@ for (const width of [360, 768, 1280, 1920]) test(`municipal office cards, keyboa
     return route.abort();
   });
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await page.goto('/');
   await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}[style*="opacity"]{opacity:1!important}[style*="transform"]{transform:none!important}' });
   mkdirSync(artifacts, { recursive: true });

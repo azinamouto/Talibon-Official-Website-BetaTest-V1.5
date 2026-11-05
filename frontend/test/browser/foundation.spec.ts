@@ -4,7 +4,6 @@ const staff = { id: '11111111-1111-4111-8111-111111111111', role: 'admin' as con
 
 async function isolate(context: BrowserContext) {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
 }
 
 test('protected staff URL redirects to staff-only login without a citizen session', async ({ page, context }) => {

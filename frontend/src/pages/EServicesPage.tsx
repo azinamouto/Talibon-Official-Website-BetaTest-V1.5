@@ -1,5 +1,3 @@
-export type { CertificateRequest, TimelineEvent } from '../services/certificateService';
-
 import styles from './EServicesPage.module.css';
 
 export default function EServicesPage() {

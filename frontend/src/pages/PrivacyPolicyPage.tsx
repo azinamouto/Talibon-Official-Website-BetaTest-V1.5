@@ -1,22 +1,11 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { ShieldCheck, Lock, Database, Globe, Eye, Server, RefreshCw, Trash2, Mail, Phone, MapPin, ExternalLink, CheckCircle } from "lucide-react";
+import { ShieldCheck, Lock, Database, Globe, Eye, Server, Mail, Phone, MapPin, ExternalLink, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { clearLocalRequests, getLocalRequests } from "../services/certificateService";
 import styles from "./PrivacyPolicyPage.module.css";
 
 export default function PrivacyPolicyPage() {
-  const [cleared, setCleared] = React.useState(false);
-  const [requestCount, setRequestCount] = React.useState(() => getLocalRequests().length);
-
-  const handleClearLocalData = () => {
-    clearLocalRequests();
-    setRequestCount(0);
-    setCleared(true);
-    setTimeout(() => setCleared(false), 4000);
-  };
-
   return (
     <div className={`${styles.section} min-h-screen bg-brand-surface py-12 px-4 sm:px-6 lg:px-8`}>
       <div className="max-w-4xl mx-auto space-y-8">
@@ -58,7 +47,7 @@ export default function PrivacyPolicyPage() {
             The Local Government Unit (LGU) of Talibon, Bohol is committed to protecting citizen privacy in compliance with Republic Act No. 10173, otherwise known as the <strong>Data Privacy Act of 2012 (DPA)</strong>, its Implementing Rules and Regulations (IRR), and issuances by the National Privacy Commission (NPC).
           </p>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-            This portal operates exclusively as a public government service gateway to facilitate online municipal transactions, document requests, local governance transparency, and disaster advisories.
+            This website provides public municipal information and staff administration tools. Citizen e-services, application submissions, and online payments are not currently available.
           </p>
         </section>
 
@@ -71,7 +60,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-lg font-bold text-slate-900 font-display">Browser Storage & Cookie Inventory</h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-            Digital Talibon Core does <strong>not</strong> set tracking cookies, behavioral profiling cookies, or advertising cookies. The application utilizes modern browser client storage (<code className="text-brand-primary font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">localStorage</code> and <code className="text-brand-primary font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">sessionStorage</code>) solely for functional and security purposes.
+            The application uses local storage for the selected language. Staff authentication is managed by the same-origin API; credentials are not stored in local storage by the frontend.
           </p>
 
           {/* Storage Table */}
@@ -88,27 +77,6 @@ export default function PrivacyPolicyPage() {
               </thead>
               <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
                 <tr>
-                  <td className="p-3 font-bold text-slate-900">sb-*-auth-token</td>
-                  <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold">Strictly Necessary</span></td>
-                  <td className="p-3 font-sans text-xs">Stores encrypted Supabase JWT authentication session for municipal staff & administrators.</td>
-                  <td className="p-3 font-sans">Until sign-out</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-slate-900">talibon_local_certificate_requests</td>
-                  <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">Functional</span></td>
-                  <td className="p-3 font-sans text-xs">Stores minimal ticket IDs and status stubs for citizen status tracking without requiring an account.</td>
-                  <td className="p-3 font-sans">30 Days (auto-purged)</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-slate-900">remember_me_email</td>
-                  <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">User Opt-In</span></td>
-                  <td className="p-3 font-sans text-xs">Pre-fills staff email on login form only when the "Remember Me" checkbox is checked.</td>
-                  <td className="p-3 font-sans">Persistent until unchecked</td>
-                </tr>
-                <tr>
                   <td className="p-3 font-bold text-slate-900">language</td>
                   <td className="p-3 font-sans">localStorage</td>
                   <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">Functional</span></td>
@@ -116,52 +84,16 @@ export default function PrivacyPolicyPage() {
                   <td className="p-3 font-sans">Persistent</td>
                 </tr>
                 <tr>
-                  <td className="p-3 font-bold text-slate-900">talibon_notifications</td>
-                  <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-[var(--privacy-sky-light)] text-brand-text rounded font-bold">Functional</span></td>
-                  <td className="p-3 font-sans text-xs">Tracks read/unread notification badge state in the top navigation.</td>
-                  <td className="p-3 font-sans">Persistent</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-slate-900">cms_data:*</td>
-                  <td className="p-3 font-sans">localStorage</td>
-                  <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded font-bold">Offline Cache</span></td>
-                  <td className="p-3 font-sans text-xs">Public municipal news, tourism, and downloadable forms cached for offline resilience.</td>
-                  <td className="p-3 font-sans">Until updated</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-slate-900">auth_notification / logout_error</td>
-                  <td className="p-3 font-sans">sessionStorage</td>
+                  <td className="p-3 font-bold text-slate-900">Staff session</td>
+                  <td className="p-3 font-sans">Server-managed cookie</td>
                   <td className="p-3 font-sans"><span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded font-bold">Strictly Necessary</span></td>
-                  <td className="p-3 font-sans text-xs">Transient flash messages shown when redirecting expired sessions. Purged immediately on render.</td>
-                  <td className="p-3 font-sans">Single redirect</td>
+                  <td className="p-3 font-sans text-xs">Maintains the authenticated staff session through same-origin API requests.</td>
+                  <td className="p-3 font-sans">Managed by the API</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          {/* Citizen Storage Management Control */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <Trash2 size={16} className="text-brand-primary" /> Manage Local Request Data
-              </h4>
-              <p className="text-xs text-slate-500 font-medium mt-1">
-                You currently have <strong>{requestCount}</strong> request ticket(s) cached on this device. You can clear this history anytime.
-              </p>
-            </div>
-            <button
-              onClick={handleClearLocalData}
-              className="px-4 py-2 bg-white border border-slate-300 hover:border-red-400 hover:text-red-600 rounded-xl text-xs font-bold transition-all shadow-2xs shrink-0 flex items-center gap-1.5"
-            >
-              <Trash2 size={14} /> Clear Local Data
-            </button>
-          </div>
-          {cleared && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-bold flex items-center gap-2">
-              <CheckCircle size={16} /> Local request history and functional caches have been cleared from this browser.
-            </div>
-          )}
         </section>
 
         {/* Section 3: Third-Party Integrations & Privacy Facades */}

@@ -16,7 +16,6 @@ for (const width of [360, 768, 1280, 1920]) test(`connect with Talibon layout an
     }
     return route.abort();
   });
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
   await context.route('**/data/social-updates.json', route => route.fulfill({ json: { posts: [] } }));
   await page.goto('/');

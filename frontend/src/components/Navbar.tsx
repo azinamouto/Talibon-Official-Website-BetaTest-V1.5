@@ -3,8 +3,7 @@ import { Menu, X, Globe, ChevronDown, ArrowUpRight, Phone, Mail, MapPin, Search,
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import { supabase, isSupabaseConfigured } from "../lib/supabase";
-import { useAuth } from "../contexts/StaffAuthContext";
+import { useStaffAuth } from "../contexts/StaffAuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import GlobalSearch from "./GlobalSearch";
 import { useUI } from "../contexts/UIContext";
@@ -12,7 +11,7 @@ import { useIsScrolled } from "../hooks/useIsScrolled";
 
 export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
-  const { user, profile, signOut, state } = useAuth();
+  const { staff, signOut } = useStaffAuth();
   const { isNavigationOpen: isOpen, setNavigationOpen: setIsOpen } = useUI();
   const [isAudioMuted, setIsAudioMuted] = useState(true);
 
@@ -32,7 +31,6 @@ export default function Navbar() {
     setIsAudioMuted(nextMuted);
     window.dispatchEvent(new CustomEvent('hero-audio-toggle', { detail: { muted: nextMuted } }));
   };
-  const [dynamicNavLinks, setDynamicNavLinks] = useState<any[]>([]);
   const location = useLocation();
   
   const handleHomeClick = (e: React.MouseEvent) => {
@@ -45,40 +43,9 @@ export default function Navbar() {
   const isScrolled = useIsScrolled(80);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const isUserAuthenticated = state === "AUTHENTICATED" && profile !== null && profile.is_verified;
+  const isUserAuthenticated = staff !== null;
 
-  useEffect(() => {
-    if (!isSupabaseConfigured) {
-      return;
-    }
-
-    const fetchNav = async () => {
-      const { data, error } = await supabase
-        .from('navigation')
-        .select('*')
-        .order('order', { ascending: true });
-      
-      if (error) {
-        console.warn("Error fetching navigation:", error);
-      } else {
-        setDynamicNavLinks(data);
-      }
-    };
-
-    fetchNav();
-
-    const channel = supabase
-      .channel('nav-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'navigation' }, () => fetchNav())
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, []);
-
-  const getSubLinks = (sectionName: string, defaultLinks: any[]) => {
-    const dynamicLinks = dynamicNavLinks.filter(l => l.section === sectionName);
-    return dynamicLinks.length > 0 ? dynamicLinks : defaultLinks;
-  };
+  const getSubLinks = (_sectionName: string, defaultLinks: any[]) => defaultLinks;
 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileSubMenu, setMobileSubMenu] = useState<string | null>(null);
@@ -265,19 +232,19 @@ export default function Navbar() {
             </nav>
 
             <div className="hidden sm:flex items-center gap-3 pl-2 sm:pl-4 xl:pl-6 border-l border-brand-border/60">
-              {isUserAuthenticated && user ? (
+              {isUserAuthenticated && staff ? (
                 <div className="flex items-center gap-3">
                   {/* Administrator Identity Badge */}
                   <div className="flex items-center gap-1.5">
                     <div className="w-6 h-6 rounded-full bg-blue-50 border border-blue-100 text-blue-600 font-extrabold flex items-center justify-center text-[10px] shadow-sm">
-                      {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+                      {staff?.role.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="text-[9px] font-black text-brand-text tracking-tight leading-none">
-                        {profile?.full_name || user.email?.split("@")[0]}
+                        Staff
                       </span>
                       <span className="text-[7px] font-black text-brand-primary uppercase tracking-widest mt-0.5 leading-none">
-                        {profile?.role?.replace("_", " ") || "Staff"}
+                        {staff?.role.replace("_", " ")}
                       </span>
                     </div>
                   </div>

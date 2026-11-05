@@ -15,10 +15,5 @@ export default defineConfig({
     command: 'npm run dev -- --host 127.0.0.1 --port 5174 --strictPort',
     url: 'http://127.0.0.1:5174',
     reuseExistingServer: false,
-    env: {
-      VITE_SUPABASE_URL: 'http://127.0.0.1:54321',
-      VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_browser_test_only',
-      VITE_ENABLE_MOCK_DATA: 'false',
-    },
   },
 });

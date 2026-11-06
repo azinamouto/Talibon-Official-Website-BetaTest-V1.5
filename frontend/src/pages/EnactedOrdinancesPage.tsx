@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { legislativeApi } from '../services/api';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, FileText, Download, Folder, Grid, List as ListIcon, ChevronRight } from 'lucide-react';
 import styles from './EnactedOrdinancesPage.module.css';
@@ -10,94 +10,49 @@ interface Ordinance {
   year: string;
   file_url: string;
   file_size?: string;
-  created_at: string;
-  barangay_id?: string;
+  created_at?: string;
 }
 
-const MOCK_ORDINANCES: Ordinance[] = [
-  {
-    id: "o1",
-    title: "Ordinance No. 2024-01: An Ordinance Prescribing Guidelines for Solid Waste Management and Penalties for Violators",
-    year: "2024",
-    file_url: "#",
-    file_size: "1.2 MB",
-    created_at: new Date().toISOString()
-  },
-  {
-    id: "o2",
-    title: "Ordinance No. 2024-02: Regulation of Single-Use Plastic Bags and Encouragement of Biodegradable Alternatives",
-    year: "2024",
-    file_url: "#",
-    file_size: "890 KB",
-    created_at: new Date().toISOString()
-  },
-  {
-    id: "o3",
-    title: "Ordinance No. 2023-05: Standardizing Safety Guidelines and Licensing for Local Motorized Tricycles and Sea Vessels",
-    year: "2023",
-    file_url: "#",
-    file_size: "2.1 MB",
-    created_at: new Date().toISOString()
+function isOrdinance(value: unknown): value is Ordinance {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Record<string, unknown>;
+  if (typeof record.id !== 'string' || typeof record.title !== 'string' || !record.title.trim() ||
+      typeof record.year !== 'string' || !/^\d{4}$/.test(record.year) ||
+      typeof record.file_url !== 'string' || !record.file_url.trim() || record.file_url.trim() === '#' ||
+      (record.file_size !== undefined && typeof record.file_size !== 'string') ||
+      (record.created_at !== undefined && typeof record.created_at !== 'string')) return false;
+  try {
+    const url = new URL(record.file_url, window.location.origin);
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch {
+    return false;
   }
-];
+}
 
 const EnactedOrdinancesPage: React.FC = () => {
   const [ordinances, setOrdinances] = useState<Ordinance[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeYear, setActiveYear] = useState<string>('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      setOrdinances(MOCK_ORDINANCES);
-      const yearsList = Array.from(new Set(MOCK_ORDINANCES.map(o => o.year))).sort((a, b) => b.localeCompare(a));
-      setActiveYear(yearsList[0] || "");
-      setLoading(false);
-      return;
-    }
-
-    const fetchOrdinances = async () => {
-      setLoading(true);
-      // Fetch only macro (municipal) ordinances for the main site
-      const { data, error } = await supabase
-        .from('ordinances')
-        .select('*')
-        .is('barangay_id', null)
-        .order('year', { ascending: false })
-        .order('title', { ascending: true });
-
-      if (error) {
-        console.warn("Error fetching ordinances:", error);
-        setOrdinances(MOCK_ORDINANCES);
-        const yearsList = Array.from(new Set(MOCK_ORDINANCES.map(o => o.year))).sort((a, b) => b.localeCompare(a));
-        setActiveYear(yearsList[0] || "");
-      } else {
-        const docs = data as Ordinance[];
-        setOrdinances(docs);
-        
-        if (docs.length > 0 && !activeYear) {
-          const yearsList = Array.from(new Set(docs.map(o => o.year))).sort((a, b) => b.localeCompare(a));
-          setActiveYear(yearsList[0]);
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchOrdinances();
-
-    // Setup Realtime subscription
-    const channel = supabase
-      .channel('ordinances-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'ordinances' }, () => {
-        fetchOrdinances();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []); // Only on mount
+    const controller = new AbortController();
+    setLoading(true);
+    setError(false);
+    legislativeApi.getOrdinances(controller.signal).then(result => {
+      if (controller.signal.aborted) return;
+      const records = Array.isArray(result) ? result.filter(isOrdinance) : [];
+      setOrdinances(records);
+      setActiveYear(records.map(item => item.year).sort((a, b) => b.localeCompare(a))[0] || '');
+    }).catch(() => {
+      if (!controller.signal.aborted) setError(true);
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
+    });
+    return () => controller.abort();
+  }, []);
 
   const years = Array.from(new Set(ordinances.map(o => o.year))).sort((a, b) => b.localeCompare(a));
   
@@ -188,6 +143,10 @@ const EnactedOrdinancesPage: React.FC = () => {
             <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-brand-muted font-bold uppercase tracking-widest text-xs">Loading records...</p>
           </div>
+        ) : error ? (
+          <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-800">
+            Ordinances are temporarily unavailable. Please try again later.
+          </div>
         ) : filteredOrdinances.length > 0 ? (
           <div className={viewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" : "space-y-4"}>
             <AnimatePresence mode="popLayout">
@@ -215,9 +174,9 @@ const EnactedOrdinancesPage: React.FC = () => {
                       {ord.title}
                     </h3>
                     <div className="flex items-center justify-center gap-4 text-[10px] font-bold text-brand-muted uppercase tracking-widest">
-                      <span>{ord.file_size || '2 MB'}</span>
-                      <span className="w-1 h-1 bg-brand-border rounded-full" />
-                      <span>{new Date(ord.created_at).toLocaleDateString()}</span>
+                      {ord.file_size && <span>{ord.file_size}</span>}
+                      {ord.created_at && <><span className="w-1 h-1 bg-brand-border rounded-full" />
+                      <span>{new Date(ord.created_at).toLocaleDateString()}</span></>}
                     </div>
                   </div>
 
@@ -241,7 +200,9 @@ const EnactedOrdinancesPage: React.FC = () => {
           <div className="text-center py-32 pro-card border-dashed border-brand-border">
             <Folder className="mx-auto text-brand-muted/20 mb-6" size={64} />
             <h3 className="text-2xl font-extrabold text-brand-text mb-2 font-display">No ordinances found</h3>
-            <p className="text-brand-muted font-medium">Try adjusting your search or selecting a different year.</p>
+            <p className="text-brand-muted font-medium">
+              {ordinances.length ? 'Try adjusting your search or selecting a different year.' : 'No published ordinances are currently available.'}
+            </p>
           </div>
         )}
       </div>

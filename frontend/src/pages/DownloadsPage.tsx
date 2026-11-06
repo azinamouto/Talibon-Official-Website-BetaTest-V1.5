@@ -2,8 +2,7 @@ import layout from "../styles/InnerPageLayout.module.css";
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Download, FileText, FileSpreadsheet, FileArchive, Search, Filter, ExternalLink, Building2, Briefcase, FileCheck, Landmark, Target, Activity } from 'lucide-react';
-import { formsApi } from '../services/api';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { formsApi, type DownloadableForm } from '../services/api';
 import styles from './DownloadsPage.module.css';
 
 interface DownloadItem {
@@ -15,64 +14,51 @@ interface DownloadItem {
   fileType?: 'PDF' | 'DOCX' | 'XLSX' | 'ZIP';
 }
 
+function downloadableItem(item: DownloadableForm): DownloadItem | null {
+  const url = item.file_url || item.url;
+  if (!url || url.trim() === '#' || !item.title.trim()) return null;
+  try {
+    const parsed = new URL(url, window.location.origin);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+    const extension = parsed.pathname.split('.').pop()?.toUpperCase();
+    const fileType = ['PDF', 'DOCX', 'XLSX', 'ZIP'].includes(extension || '')
+      ? extension as DownloadItem['fileType']
+      : undefined;
+    return {
+      id: item.id,
+      title: item.title,
+      url,
+      category: item.category || 'General',
+      fileSize: item.file_size || undefined,
+      fileType,
+    };
+  } catch {
+    return null;
+  }
+}
+
 const DownloadsPage: React.FC = () => {
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchDownloads = async () => {
       try {
-        const [permits, buildings, zoning] = await Promise.all([
-          formsApi.getBusinessPermits(),
-          formsApi.getBuildingPermits(),
-          formsApi.getZoningClearance()
-        ]);
-
-        let liveDownloadables: DownloadItem[] = [];
-        if (isSupabaseConfigured) {
-          try {
-            const { data, error } = await supabase
-              .from("downloadables")
-              .select("*")
-              .eq("status", "published");
-            if (!error && data) {
-              liveDownloadables = (data as any[]).map(item => ({
-                id: item.id,
-                title: item.title,
-                url: item.file_url,
-                category: item.category || 'General',
-                fileSize: item.file_size || '1.2 MB',
-                fileType: 'PDF'
-              }));
-            }
-          } catch (e) {
-            console.warn("Failed to fetch live downloadables from Supabase", e);
-          }
-        }
-
-        const combined: DownloadItem[] = [
-          ...liveDownloadables,
-          ...(Array.isArray(permits?.data) ? permits.data : []).map((item: any) => ({ ...item, id: `business-${item.id}`, category: 'Business' })),
-          ...(Array.isArray(buildings?.data) ? buildings.data : []).map((item: any) => ({ ...item, id: `building-${item.id}`, category: 'Building' })),
-          ...(Array.isArray(zoning?.data) ? zoning.data : []).map((item: any) => ({ ...item, id: `zoning-${item.id}`, category: 'Zoning' })),
-          // Adding hardcoded common forms for completeness
-          { id: 'tax-dec', title: 'Tax Declaration Application', url: '#', category: 'Assessor', fileSize: '450 KB', fileType: 'PDF' },
-          { id: 'residency', title: 'Barangay Residency Request Form', url: '#', category: 'Barangay', fileSize: '120 KB', fileType: 'PDF' },
-          { id: 'civil-reg', title: 'Birth Certificate Request Form', url: '#', category: 'Civil Registrar', fileSize: '310 KB', fileType: 'PDF' },
-          { id: 'gad-manual', title: 'GAD-IMS Implementation Manual', url: '#', category: 'GAD', fileSize: '2.4 MB', fileType: 'PDF' },
-        ];
-
-        setDownloads(combined);
-      } catch (error) {
-        console.error("Failed to fetch downloads:", error);
+        const files = await formsApi.getDownloadable(controller.signal);
+        if (!controller.signal.aborted) setDownloads(files.map(downloadableItem).filter((item): item is DownloadItem => item !== null));
+      } catch {
+        if (!controller.signal.aborted) setError(true);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
-    fetchDownloads();
+    void fetchDownloads();
+    return () => controller.abort();
   }, []);
 
   const categories = ['all', ...Array.from(new Set(downloads.map(d => d.category)))];
@@ -163,6 +149,10 @@ const DownloadsPage: React.FC = () => {
               </div>
             ))}
           </div>
+        ) : error ? (
+          <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-800">
+            Downloadable files are temporarily unavailable. Please try again later.
+          </div>
         ) : filteredDownloads.length > 0 ? (
           <div className={layout.cards}>
             {filteredDownloads.map((item, idx) => (
@@ -177,9 +167,9 @@ const DownloadsPage: React.FC = () => {
                   <div className={`${styles.iconTile} w-10 h-10 bg-[var(--downloads-sky-light)] rounded-lg border border-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:bg-[var(--downloads-sky)] transition-all`}>
                     {getIcon(item.category)}
                   </div>
-                  <span className="text-[10px] font-bold text-brand-muted bg-gray-100 px-2 py-0.5 rounded border border-brand-border/40 uppercase tracking-wider">
-                    {item.fileType || 'PDF'}
-                  </span>
+                  {item.fileType && <span className="text-[10px] font-bold text-brand-muted bg-gray-100 px-2 py-0.5 rounded border border-brand-border/40 uppercase tracking-wider">
+                    {item.fileType}
+                  </span>}
                 </div>
                 
                 <h3 className="text-sm font-bold text-brand-text mb-4 transition-colors leading-snug font-display">
@@ -212,7 +202,9 @@ const DownloadsPage: React.FC = () => {
           <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-brand-border">
             <Search className="mx-auto text-brand-border mb-3" size={40} />
             <h3 className="text-base font-bold text-brand-text mb-1 font-display">No files found</h3>
-            <p className="text-brand-muted font-medium text-xs">No downloadable files match your current search criteria.</p>
+            <p className="text-brand-muted font-medium text-xs">
+              {downloads.length ? 'No downloadable files match your current search criteria.' : 'No downloadable files are currently published.'}
+            </p>
           </div>
         )}
 
@@ -242,9 +234,6 @@ const DownloadsPage: React.FC = () => {
                 <div className="flex flex-wrap gap-2.5">
                   <a href="/executive/gad-ims" className="bg-[var(--downloads-sky-light)] text-brand-text font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-[var(--downloads-sky)] transition-all shadow-xs">
                     GO TO GAD-IMS
-                  </a>
-                  <a href="#" className="bg-white text-brand-text border border-brand-border font-bold px-4 py-2 rounded-lg text-[11px] uppercase tracking-wider hover:bg-[var(--downloads-sky-light)] hover:border-brand-primary transition-all flex items-center gap-1.5">
-                    <Download size={13} /> MANUAL
                   </a>
                 </div>
               </div>

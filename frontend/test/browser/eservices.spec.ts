@@ -4,7 +4,6 @@ import { test, expect } from '@playwright/test';
 // Historical schemas and assistant components retain unit/React coverage.
 test.beforeEach(async ({ context }) => {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
 });
 const types = ['Barangay Clearance', 'Certificate of Indigency', 'Business Permit', 'Building Permit', 'Zoning Clearance'];
@@ -39,7 +38,7 @@ for (const width of [375, 1280]) test(`anonymous navigation and placeholder fit 
   await expect(page).toHaveURL(/\/e-services$/);
   await expect(page.getByRole('heading', { name: 'To Be Implemented', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  expect(await page.evaluate(() => localStorage.getItem('sb-127-auth-token'))).toBeNull();
+  expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /auth|token|request|submission|payment/i.test(key)))).toEqual([]);
   await page.screenshot({ path: `test-results-eservices/r2-placeholder-${width}.png`, fullPage: true });
 });
 test('registration controls are absent while staff login and recovery remain', async ({ page }) => {

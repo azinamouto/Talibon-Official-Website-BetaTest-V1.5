@@ -9,7 +9,6 @@ for (const width of [360, 768, 1280, 1920]) test(`news states, cards and keyboar
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
-  await context.route('http://127.0.0.1:54321/**', route => route.fulfill({ json: [] }));
   await context.route('**/test-news-image.svg', route => route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="640" height="360" fill="#b7e7fc"/></svg>' }));
   await context.route('**/test-news-broken.jpg', route => route.fulfill({ status: 404, body: '' }));
   let count = 3;

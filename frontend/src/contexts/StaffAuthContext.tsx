@@ -1,6 +1,11 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 type Staff = { id: string; role: 'admin' | 'editor' };
+function isStaff(value: unknown): value is Staff {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.id === 'string' && (record.role === 'admin' || record.role === 'editor');
+}
 export async function staffRequest<T = unknown>(path: string, body?: unknown): Promise<T> {
   const response = await fetch(path, { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
     headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
@@ -15,7 +20,11 @@ export function StaffAuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   async function refresh() {
     setError(null);
-    try { setStaff(await staffRequest<Staff>('/api/staff/me')); }
+    try {
+      const current = await staffRequest<unknown>('/api/staff/me');
+      if (!isStaff(current)) throw new Error('Invalid staff session response.');
+      setStaff(current);
+    }
     catch (reason) {
       setStaff(null);
       if (!(reason instanceof Error && reason.message === 'Sign in and complete MFA to continue.')) {
@@ -32,11 +41,4 @@ export function useStaffAuth() {
   const value = useContext(Context);
   if (!value) throw new Error('StaffAuthProvider is required');
   return value;
-}
-/** Navbar compatibility contains no provider tokens or citizen identities. */
-export function useAuth() {
-  const { staff, loading, signOut } = useStaffAuth();
-  return { user: staff ? { id: staff.id, email: '', user_metadata: { full_name: 'Staff' } } : null,
-    profile: staff ? { ...staff, full_name: 'Staff', is_verified: true } : null,
-    state: loading ? 'INITIALIZING' : staff ? 'AUTHENTICATED' : 'UNAUTHENTICATED', signOut };
 }

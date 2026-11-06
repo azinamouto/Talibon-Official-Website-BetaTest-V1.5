@@ -24,7 +24,6 @@ import ServiceInfoPage from "./pages/ServiceInfoPage";
 import Login from "./pages/StaffLogin";
 import StaffPortal from "./pages/StaffPortal";
 import EServicesPage from "./pages/EServicesPage";
-import AdminDashboard, { AdminPreview } from "./pages/SprintAdminDashboard";
 import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
 import TourismMapPage from "./pages/TourismMapPage";
@@ -68,7 +67,6 @@ import DelicaciesView from "./pages/tourism/DelicaciesView";
 
 
 import BaseLayout from "./layouts/BaseLayout";
-import { ProtectedRoute, STAFF_ROLES } from "./routes/RouteGuards";
 import { UIProvider } from "./contexts/UIContext";
 import { AppConfigProvider } from "./contexts/AppConfigContext";
 import ErrorPage from "./pages/ErrorPage";
@@ -147,7 +145,6 @@ const router = createBrowserRouter(createRoutesFromElements(
                       <Route path="/access-denied" element={<AccessDenied />} />
                       <Route path="*" element={<NotFound />} />
                     </Route>
-                    {import.meta.env.DEV && import.meta.env.VITE_DASHBOARD_PREVIEW === "true" && <Route path="/admin-preview" element={<AdminPreview />} />}
                     <Route>
                       <Route path="/admin" element={<StaffPortal />} />
                       <Route path="/dashboard" element={<StaffPortal />} />

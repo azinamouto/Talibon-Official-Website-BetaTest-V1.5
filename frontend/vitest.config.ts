@@ -7,7 +7,6 @@ export default defineConfig({
     environmentOptions: { jsdom: { url: 'http://localhost:5173' } },
     include: ['test/react/**/*.test.{ts,tsx}'],
     setupFiles: ['./test/react/setup.ts'],
-    env: { VITE_SUPABASE_URL: 'http://127.0.0.1:54321', VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test_only' },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html', 'lcov'],

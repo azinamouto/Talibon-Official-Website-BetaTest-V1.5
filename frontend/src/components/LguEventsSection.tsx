@@ -1,32 +1,35 @@
 import solidTheme from "../styles/SolidTheme.module.css";
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { Calendar, Clock, MapPin, ArrowRight, PartyPopper } from "lucide-react";
+import { Calendar, ArrowRight, PartyPopper } from "lucide-react";
 import { Link } from "react-router-dom";
 import { eventService } from "../services/eventService";
-import { EventItem } from "../services/cmsService";
+import type { EventItem } from "../services/eventService";
 
 export default function LguEventsSection() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
     async function fetchEvents() {
       try {
-        const data = await eventService.getEvents();
-        setEvents(data.slice(0, 3));
-      } catch (err) {
-        console.warn("Error fetching LGU Events:", err);
+        const data = await eventService.getEvents(controller.signal);
+        if (!controller.signal.aborted) setEvents(data.slice(0, 3));
+      } catch {
+        if (!controller.signal.aborted) setError(true);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     }
 
-    fetchEvents();
+    void fetchEvents();
+    return () => controller.abort();
   }, []);
 
-  if (loading) return null;
-  if (events.length === 0) return null;
+  if (loading || (events.length === 0 && !error)) return null;
+  if (error) return <p role="alert" className="site-container py-4 text-center text-sm text-brand-muted">Festivities are temporarily unavailable.</p>;
 
   return (
     <section 
@@ -85,47 +88,24 @@ export default function LguEventsSection() {
               className="bg-slate-900/80 backdrop-blur-md rounded-2xl border border-white/10 p-4 shadow-xl flex flex-col justify-between space-y-4 hover:border-sky-400/40 hover:shadow-sky-500/10 transition-all duration-300 group hover:-translate-y-1"
             >
               <div className="space-y-3">
-                <div className="aspect-[16/9] max-h-44 relative overflow-hidden rounded-xl border border-white/10 shadow-inner">
-                  <img
-                    src={evt.banner_image || "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=800"}
-                    alt={evt.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
+                <div className="aspect-[16/9] max-h-44 relative flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-slate-800 shadow-inner">
+                  <Calendar aria-hidden="true" size={40} className="text-sky-300/70" />
                   <div className="absolute top-2.5 right-2.5 px-2.5 py-1 bg-slate-950/80 backdrop-blur-md border border-white/15 rounded-lg text-[10px] font-black text-amber-300 tracking-wider uppercase shadow-md">
-                    {new Date(evt.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    {evt.date}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <h3 className="text-sm sm:text-base font-bold text-white font-display tracking-tight leading-snug group-hover:text-sky-300 transition-colors">
-                    {evt.title}
+                    {evt.name}
                   </h3>
-
-                  <p className="text-xs text-slate-300 font-normal leading-relaxed line-clamp-2">
-                    {evt.description}
-                  </p>
                 </div>
 
                 <div className="pt-2 space-y-1.5 border-t border-white/10 text-xs font-medium text-slate-200">
                   <div className="flex items-center gap-2 text-slate-300">
                     <Calendar size={13} className="text-sky-400 shrink-0" />
-                    <span className="line-clamp-1">{new Date(evt.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })}</span>
+                    <span className="line-clamp-1">{evt.date}</span>
                   </div>
-
-                  {evt.time && (
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <Clock size={13} className="text-sky-400 shrink-0" />
-                      <span>{evt.time}</span>
-                    </div>
-                  )}
-
-                  {evt.venue && (
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <MapPin size={13} className="text-sky-400 shrink-0" />
-                      <span className="line-clamp-1">{evt.venue}</span>
-                    </div>
-                  )}
                 </div>
               </div>
 

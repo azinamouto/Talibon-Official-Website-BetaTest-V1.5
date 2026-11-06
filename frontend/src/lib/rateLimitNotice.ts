@@ -4,7 +4,7 @@
  * NOTE FOR PRODUCTION SECURITY:
  * Client-side debouncing and throttling improve user experience and reduce accidental multi-clicks,
  * but do NOT replace server-side rate limiting or API gateway protection.
- * Server-side rate limiting (e.g. NGINX limit_req, Supabase Edge Functions / Postgres RLS rate limits)
+ * Server-side rate limiting (for example, reverse-proxy and API/database enforcement)
  * is required for true abuse prevention against malicious API calls.
  */
 

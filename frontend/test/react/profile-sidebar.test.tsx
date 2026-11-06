@@ -1,11 +1,10 @@
 import {render,screen,within} from '@testing-library/react';
 import {MemoryRouter} from 'react-router-dom';
-import {expect,it,vi} from 'vitest';
+import {expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import ProfileView from '../../src/pages/about/ProfileView';
 import {ABOUT_NAV_LINKS,resolveAboutNavigation} from '../../src/data/aboutNavigation';
-vi.mock('../../src/lib/supabase',()=>({isSupabaseConfigured:false,supabase:{}}));
 const data=JSON.parse(readFileSync(resolve('test/fixtures/about-profile.json'),'utf8'));
 it('preserves every paragraph and character without interpreting header or footnote lines',()=>{
   const original=JSON.stringify(data);

@@ -1,3 +1,4 @@
+import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 
 interface Order {
@@ -12,7 +13,7 @@ interface OrdersViewProps {
 
 export default function OrdersView({ data }: OrdersViewProps) {
   return (
-    <div className="grid grid-cols-1 gap-2.5">
+    <div className={layout.reports}>
       {Array.isArray(data) && data.map((order: Order, idx: number) => (
         <div key={`${order.id}-${idx}`} className="p-3.5 sm:p-4 rounded-xl border border-brand-border bg-white shadow-xs group">
           <p className="text-[9px] font-bold text-brand-primary uppercase tracking-wider mb-1">

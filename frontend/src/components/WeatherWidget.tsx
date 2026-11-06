@@ -1,4 +1,5 @@
 import solidTheme from "../styles/SolidTheme.module.css";
+import styles from "./WeatherWidget.module.css";
 import { useState, useEffect } from "react";
 import { Sun, CloudRain, Wind, Waves, Thermometer, Navigation } from "lucide-react";
 
@@ -23,13 +24,11 @@ export default function WeatherWidget() {
 
   return (
     <section 
-      className={`${solidTheme.photo} relative w-full overflow-hidden bg-cover bg-center py-12 sm:py-16 lg:py-20 text-white z-20`}
-      style={{ backgroundImage: `url('https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&w=3840&q=90')` }}
+      className={`${solidTheme.photo} ${styles.section} relative w-full overflow-hidden bg-cover bg-center py-12 sm:py-16 lg:py-20 text-white z-20`}
     >
-      {/* Light subtle overlay for soft contrast */}
+      {/* Separate scrim keeps all content and its original geometry untouched. */}
       <div 
-        className="absolute inset-0 z-0 pointer-events-none" 
-        style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 100%)" }} 
+        className={`${styles.overlay} absolute inset-0 z-0 pointer-events-none`}
       />
 
       {/* Content Container */}

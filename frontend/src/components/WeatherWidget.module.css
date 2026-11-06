@@ -1,0 +1,26 @@
+.section {
+  isolation: isolate;
+  /* The repository's weather JPGs cannot decode. Use the approved token-only
+     fallback until a valid, optimized sky photograph (2400px+) is supplied. */
+  background-color: var(--talweb-deep);
+  background-image: linear-gradient(115deg, var(--talweb-primary), var(--talweb-deep));
+  background-size: cover;
+  background-position: center 40%;
+  background-repeat: no-repeat;
+}
+.overlay {
+  background:
+    linear-gradient(to top, color-mix(in srgb, var(--talweb-deep) 22%, transparent), transparent 75%),
+    linear-gradient(to right,
+      color-mix(in srgb, var(--talweb-deep) 52%, transparent),
+      color-mix(in srgb, var(--talweb-deep) 62%, transparent) 55%,
+      color-mix(in srgb, var(--talweb-deep) 72%, transparent));
+}
+@media (max-width: 1023px) {
+  .section { background-position: center 30%; }
+  .overlay {
+    background: linear-gradient(to bottom,
+      color-mix(in srgb, var(--talweb-deep) 52%, transparent),
+      color-mix(in srgb, var(--talweb-deep) 72%, transparent));
+  }
+}

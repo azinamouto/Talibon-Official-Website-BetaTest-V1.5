@@ -1,3 +1,4 @@
+import layout from "../styles/InnerPageLayout.module.css";
 import { usePublicResource } from '../hooks/usePublicResource';
 import { coordinates, loadMapLocations } from '../services/mapLocations';
 import PublicMapCanvas, { type MapPoint } from './PublicMapCanvas';
@@ -16,11 +17,11 @@ export default function InteractiveMap() {
     <section aria-labelledby="location-summary" className="rounded-xl border bg-white p-6">
       <h2 id="location-summary" className="text-xl font-bold">Public location coverage</h2>
       <p>{data.length} locations from the municipal tourism directory. Counts describe the listed records, not all destinations in Talibon.</p>
-      <table className="mt-4 w-full text-left"><caption className="sr-only">Availability of coordinates in the public directory</caption>
+      <div className={layout.tableScroll}><table className="mt-4 w-full text-left"><caption className="sr-only">Availability of coordinates in the public directory</caption>
         <thead><tr><th scope="col">Location information</th><th scope="col">Count</th></tr></thead>
         <tbody>{counts.map(([label, count]) => <tr key={label}><th scope="row" className="py-2 font-normal">{label}
           <span aria-hidden="true" className="mt-1 block h-3 rounded bg-brand-primary" style={{ width: `${count / data.length * 100}%` }} /></th><td>{count}</td></tr>)}</tbody>
-      </table>
+      </table></div>
     </section>
     {points.length ? <PublicMapCanvas points={points} /> : <p role="status">Map coordinates are not available for these locations yet. View their published addresses below.</p>}
     <ul aria-label="Public locations" className="grid gap-4 sm:grid-cols-2">{data.map(item => {

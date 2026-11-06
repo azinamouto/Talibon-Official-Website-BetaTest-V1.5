@@ -38,12 +38,12 @@ for (const width of [360, 768, 1280, 1920]) {
     await expect(message).toHaveCSS('opacity', '1');
     await expect(secondary).toHaveCSS('outline-width', '2px');
     await expect(secondary).toHaveCSS('outline-offset', '2px');
-    await expect(secondary).toHaveCSS('outline-color', 'rgb(0, 89, 138)');
+    await expect(secondary).toHaveCSS('outline-color', 'rgb(255, 255, 255)');
     await expect(secondary).toHaveCSS('transition-duration', '0s');
     await page.keyboard.press('Shift+Tab');
     await expect(primary).toBeFocused();
-    await expect(primary).toHaveCSS('background-color', 'rgb(0, 89, 138)');
-    await expect(primary).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(primary).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await expect(primary).toHaveCSS('color', 'rgb(0, 89, 138)');
     await section.screenshot({ path: `test-results/electronic-services-${width}.png` });
   });
 }

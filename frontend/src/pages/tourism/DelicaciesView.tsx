@@ -1,3 +1,4 @@
+import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 
 interface Delicacy {
@@ -12,7 +13,7 @@ interface DelicaciesViewProps {
 
 export default function DelicaciesView({ data }: DelicaciesViewProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className={layout.cards}>
       {Array.isArray(data) && data.map((item: Delicacy, idx: number) => (
         <div key={`${item.name}-${idx}`} className="civic-card p-8 group hover:-translate-y-2">
           <div className="aspect-square bg-brand-bg rounded-[2rem] mb-6 overflow-hidden border-2 border-brand-primary/5 shadow-inner relative">

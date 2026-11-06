@@ -1,3 +1,4 @@
+import { GadImsHeader } from "./components/GadImsSystem";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -49,6 +50,7 @@ import HymnView from "./pages/about/HymnView";
 import ExecutiveMandateView from "./pages/executive/MandateView";
 import VisionMissionView from "./pages/executive/VisionMissionView";
 import DirectoryView from "./pages/executive/DirectoryView";
+import directoryStyles from "./pages/executive/DirectoryView.module.css";
 import GadImsView from "./pages/executive/GadImsView";
 
 import LegislativeMandateView from "./pages/legislative/MandateView";
@@ -95,25 +97,25 @@ const router = createBrowserRouter(createRoutesFromElements(
                       {/* About Talibon */}
                       <Route path="/about" element={<Navigate to="/about/profile" replace />} />
                       <Route path="/about/mayor" element={<Navigate to="/about/mayors" replace />} />
-                      <Route path="/about/profile" element={<ContentPage title="Brief Profile" fetchData={aboutApi.getProfile} renderContent={(data) => <ProfileView data={data} />} />} />
+                      <Route path="/about/profile" element={<ContentPage standardLayout title="Brief Profile" fetchData={aboutApi.getProfile} renderContent={(data) => <ProfileView data={data} />} />} />
                       <Route path="/about/seal" element={<OfficialSealPage />} />
-                      <Route path="/about/history" element={<ContentPage title="Brief History" fetchData={aboutApi.getHistory} renderContent={(data) => <HistoryView data={data} />} />} />
-                      <Route path="/about/mayors" element={<ContentPage title="List of Mayors" fetchData={aboutApi.getMayors} renderContent={(data) => <MayorsView data={data} />} />} />
-                      <Route path="/about/departments" element={<ContentPage title="Departments" fetchData={aboutApi.getDepartments} renderContent={(data) => <DepartmentsView data={data} />} />} />
-                      <Route path="/about/barangays" element={<ContentPage title="Barangay Profiles" fetchData={aboutApi.getBarangays} renderContent={(data) => <BarangaysView data={data} />} />} />
-                      <Route path="/about/demographics" element={<ContentPage title="Demographics" fetchData={aboutApi.getDemographics} renderContent={(data) => <DemographicsView data={data} />} />} />
-                      <Route path="/about/location" element={<ContentPage title="Location" fetchData={aboutApi.getLocation} renderContent={(data) => <LocationView data={data} />} />} />
-                      <Route path="/about/vicinity" element={<ContentPage title="Vicinity Map" fetchData={aboutApi.getVicinityMap} renderContent={(data) => <VicinityView data={data} />} />} />
-                      <Route path="/about/industry" element={<ContentPage title="Industry" fetchData={aboutApi.getIndustry} renderContent={(data) => <IndustryView data={data} />} />} />
-                      <Route path="/about/services" element={<ContentPage title="Government Services" fetchData={aboutApi.getServices} renderContent={(data) => <GovernmentServicesView data={data} />} />} />
-                      <Route path="/about/hymn" element={<ContentPage title="Talibon Hymn" fetchData={aboutApi.getHymn} renderContent={(data) => <HymnView data={data} />} />} />
+                      <Route path="/about/history" element={<ContentPage standardLayout title="Brief History" fetchData={aboutApi.getHistory} renderContent={(data) => <HistoryView data={data} />} />} />
+                      <Route path="/about/mayors" element={<ContentPage standardLayout title="List of Mayors" fetchData={aboutApi.getMayors} renderContent={(data) => <MayorsView data={data} />} />} />
+                      <Route path="/about/departments" element={<ContentPage standardLayout title="Departments" fetchData={aboutApi.getDepartments} renderContent={(data) => <DepartmentsView data={data} />} />} />
+                      <Route path="/about/barangays" element={<ContentPage standardLayout pageHeader={<></>} title="Barangay Profiles" fetchData={aboutApi.getBarangays} renderContent={(data) => <BarangaysView data={data} />} />} />
+                      <Route path="/about/demographics" element={<ContentPage standardLayout title="Demographics" fetchData={aboutApi.getDemographics} renderContent={(data) => <DemographicsView data={data} />} />} />
+                      <Route path="/about/location" element={<ContentPage standardLayout title="Location" fetchData={aboutApi.getLocation} renderContent={(data) => <LocationView data={data} />} />} />
+                      <Route path="/about/vicinity" element={<ContentPage standardLayout title="Vicinity Map" fetchData={aboutApi.getVicinityMap} renderContent={(data) => <VicinityView data={data} />} />} />
+                      <Route path="/about/industry" element={<ContentPage standardLayout title="Industry" fetchData={aboutApi.getIndustry} renderContent={(data) => <IndustryView data={data} />} />} />
+                      <Route path="/about/services" element={<ContentPage standardLayout title="Government Services" fetchData={aboutApi.getServices} renderContent={(data) => <GovernmentServicesView data={data} />} />} />
+                      <Route path="/about/hymn" element={<ContentPage standardLayout title="Talibon Hymn" fetchData={aboutApi.getHymn} renderContent={(data) => <HymnView data={data} />} />} />
 
                       {/* Executive */}
                       <Route path="/executive/mandate" element={<ContentPage title="Executive Mandate" fetchData={executiveApi.getMandate} renderContent={(data) => <ExecutiveMandateView data={data} />} />} />
                       <Route path="/executive/vision-mission" element={<ContentPage title="Vision & Mission" fetchData={executiveApi.getVisionMission} renderContent={(data) => <VisionMissionView data={data} />} />} />
                       <Route path="/executive/chart" element={<OrganizationalChartPage />} />
-                      <Route path="/executive/directory" element={<ContentPage title="Directory of Departments" fetchData={executiveApi.getDirectory} renderContent={(data) => <DirectoryView data={data} />} />} />
-                      <Route path="/executive/gad-ims" element={<ContentPage title="Talibon GAD-IMS" fetchData={executiveApi.getGadIms} renderContent={(data) => <GadImsView data={data} />} />} />
+                      <Route path="/executive/directory" element={<div className={directoryStyles.page}><ContentPage standardLayout title="Directory of departments" fetchData={executiveApi.getDirectory} renderContent={(data) => <DirectoryView data={data} />} /></div>} />
+                      <Route path="/executive/gad-ims" element={<ContentPage standardLayout pageHeader={<GadImsHeader />} title="Talibon GAD-IMS" fetchData={executiveApi.getGadIms} renderContent={(data) => <GadImsView data={data} />} />} />
 
                       {/* Legislative */}
                       <Route path="/legislative/mandate" element={<ContentPage title="Legislative Mandate" fetchData={legislativeApi.getMandate} renderContent={(data) => <LegislativeMandateView data={data} />} />} />
@@ -128,16 +130,16 @@ const router = createBrowserRouter(createRoutesFromElements(
                       {/* Transparency */}
                       <Route path="/transparency/charter" element={<CitizenCharterPage />} />
                       <Route path="/transparency/disclosure" element={<FullDisclosurePage />} />
-                      <Route path="/transparency/infrastructure" element={<ContentPage title="Infrastructure Projects" fetchData={transparencyApi.getInfrastructure} renderContent={(data) => <InfrastructureView data={data} />} />} />
-                      <Route path="/transparency/finance" element={<ContentPage title="Finance Reports" fetchData={transparencyApi.getFinanceReports} renderContent={(data) => <FinanceView data={data} />} />} />
-                      <Route path="/transparency/orders" element={<ContentPage title="Executive Orders" fetchData={transparencyApi.getExecutiveOrders} renderContent={(data) => <OrdersView data={data} />} />} />
-                      <Route path="/transparency/budget" element={<ContentPage title="Budget and Finances" fetchData={transparencyApi.getBudget} renderContent={(data) => <BudgetView data={data} />} />} />
-                      <Route path="/transparency/biddings" element={<ContentPage title="Biddings" fetchData={transparencyApi.getBiddings} renderContent={(data) => <BiddingsView data={data} />} />} />
+                      <Route path="/transparency/infrastructure" element={<ContentPage spacingLayout title="Infrastructure Projects" fetchData={transparencyApi.getInfrastructure} renderContent={(data) => <InfrastructureView data={data} />} />} />
+                      <Route path="/transparency/finance" element={<ContentPage spacingLayout title="Finance Reports" fetchData={transparencyApi.getFinanceReports} renderContent={(data) => <FinanceView data={data} />} />} />
+                      <Route path="/transparency/orders" element={<ContentPage spacingLayout title="Executive Orders" fetchData={transparencyApi.getExecutiveOrders} renderContent={(data) => <OrdersView data={data} />} />} />
+                      <Route path="/transparency/budget" element={<ContentPage spacingLayout title="Budget and Finances" fetchData={transparencyApi.getBudget} renderContent={(data) => <BudgetView data={data} />} />} />
+                      <Route path="/transparency/biddings" element={<ContentPage spacingLayout title="Biddings" fetchData={transparencyApi.getBiddings} renderContent={(data) => <BiddingsView data={data} />} />} />
 
                       {/* Tourism */}
-                      <Route path="/tourism/spots" element={<ContentPage title="Tourist Spots" fetchData={tourismApi.getSpots} renderContent={(data) => <SpotsView data={data} />} />} />
-                      <Route path="/tourism/festivities" element={<ContentPage title="Festivities" fetchData={tourismApi.getFestivities} renderContent={(data) => <FestivitiesView data={data} />} />} />
-                      <Route path="/tourism/delicacies" element={<ContentPage title="Local Delicacies" fetchData={tourismApi.getDelicacies} renderContent={(data) => <DelicaciesView data={data} />} />} />
+                      <Route path="/tourism/spots" element={<ContentPage spacingLayout title="Tourist Spots" fetchData={tourismApi.getSpots} renderContent={(data) => <SpotsView data={data} />} />} />
+                      <Route path="/tourism/festivities" element={<ContentPage spacingLayout title="Festivities" fetchData={tourismApi.getFestivities} renderContent={(data) => <FestivitiesView data={data} />} />} />
+                      <Route path="/tourism/delicacies" element={<ContentPage spacingLayout title="Local Delicacies" fetchData={tourismApi.getDelicacies} renderContent={(data) => <DelicaciesView data={data} />} />} />
 
                       {/* Forms */}
 

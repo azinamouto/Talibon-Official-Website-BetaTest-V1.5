@@ -1,0 +1,45 @@
+import { expect, test } from '@playwright/test';
+for (const width of [375, 768, 1280, 1920]) test(`three scoped UI fixes at ${width}px`, async ({ page, context }) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await context.route('**/api/**', route => route.fulfill({ json: [] }));
+  await context.route('**/api/executive/directory', route => route.fulfill({ json: [{ department: "Mayor's Office", contact: '038-123-4567' }, { department: "Treasurer's Office", contact: '038-123-4568' }] }));
+  await page.goto('/');
+  const electronic = page.locator('#popular-services');
+  await electronic.scrollIntoViewIfNeeded();
+  await expect(electronic).toHaveCSS('background-color', 'rgb(0, 89, 138)');
+  await expect(electronic.locator('h2')).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await electronic.screenshot({ path: `test-results/three-fixes-electronic-${width}.png` });
+  const offices = page.locator('#offices');
+  await offices.scrollIntoViewIfNeeded();
+  const boxes = await offices.locator('[aria-roledescription="slide"]:not([inert]) [data-office-card]').evaluateAll(cards => cards.map(card => { const r = card.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; }));
+  expect(new Set(boxes.map(b => b.x)).size).toBe(width >= 1024 ? 4 : width >= 640 ? 2 : 1);
+  expect(new Set(boxes.map(b => b.height)).size).toBe(1);
+  expect(boxes[0].x).toBeCloseTo(width >= 1024 ? 32 : width >= 640 ? 24 : 16, 0);
+  if (width >= 1024) {
+    expect(boxes[0].width).toBe(292);
+    expect(Math.round(boxes[3].x + boxes[3].width)).toBe(width - 32);
+  }
+  await offices.screenshot({ path: `test-results/three-fixes-offices-${width}.png` });
+  await page.goto('/executive/directory');
+  const heading = page.getByRole('heading', { name: 'Directory of departments', exact: true });
+  await expect(heading).toBeVisible();
+  const cards = page.locator('main article');
+  await expect(cards).toHaveCount(19);
+  const rects = await cards.evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, height: r.height }; }));
+  expect(new Set(rects.map(r => r.x)).size).toBe(width >= 1024 ? 3 : width >= 640 ? 2 : 1);
+  expect(new Set(rects.map(r => Math.round(r.height))).size).toBe(1);
+  expect((await heading.boundingBox())!.x).toBe(rects[0].x);
+  const headerBottom = await page.locator('header').evaluate(el => el.getBoundingClientRect().bottom);
+  expect((await heading.boundingBox())!.y).toBeGreaterThan(headerBottom);
+  const phone = page.getByRole('link', { name: /Call Mayor/ });
+  await phone.focus();
+  await expect(phone).toHaveCSS('outline-style', 'solid');
+  await expect(phone).toHaveAttribute('href', 'tel:0381234567');
+  await page.screenshot({ path: `test-results/three-fixes-directory-${width}.png`, fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await context.route('**/api/executive/directory', route => route.fulfill({ json: [] }));
+  await page.reload();
+  await expect(page.getByText('No content available at this time.')).toBeVisible();
+});

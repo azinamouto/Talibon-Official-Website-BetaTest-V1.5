@@ -6,7 +6,25 @@
 .label { display: block; margin-bottom: 12px; color: var(--talweb-deep); font-size: 16px; font-weight: 600; }
 .heading { color: #0f172a; font-size: 32px; font-weight: 700; line-height: 1.15; margin-bottom: 12px; }
 .intro p { max-width: 720px; margin-inline: auto; color: var(--talweb-muted); font-size: 18px; line-height: 1.6; }
-.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; grid-auto-rows: 1fr; }
+.slideshow { min-width: 0; }
+.viewport { overflow: hidden; padding: 4px; margin: -4px; touch-action: pan-y; }
+.track { display: flex; align-items: stretch; gap: var(--office-gap, 16px); }
+.track[data-moving="true"] { transition: transform 360ms ease-in-out; }
+.slide { display: flex; flex: 0 0 var(--office-card-width, 292px); min-width: 0; }
+.slide .card { width: 100%; }
+.slide[inert] :global(.icon-float) { animation: none; will-change: auto; }
+.controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.controls > button { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--color-brand-border); background: var(--talweb-card); color: var(--talweb-deep); font-size: 14px; font-weight: 600; cursor: pointer; }
+.controls > button:hover:not(:disabled) { background: var(--talweb-background); border-color: var(--talweb-deep); }
+.controls > button:disabled { cursor: not-allowed; }
+.dots { display: flex; align-items: center; }
+.dots button { display: grid; place-items: center; width: 32px; min-width: 32px; height: 44px; border: 0; background: transparent; cursor: pointer; }
+.dots button span { display: block; width: 8px; height: 8px; border-radius: 999px; background: var(--talweb-deep); opacity: .3; }
+.dots button[aria-current] span { width: 24px; opacity: 1; }
+.controls button:focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 2px; }
+.progress { width: 240px; max-width: 100%; height: 3px; margin: 16px auto 0; background: var(--color-brand-border); overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--talweb-deep); transform-origin: left; animation: office-progress 4500ms linear forwards; }
+@keyframes office-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .card {
   display: flex;
   flex-direction: column;
@@ -33,12 +51,12 @@
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 44px; padding: 10px 20px; border-radius: 12px; background: var(--talweb-deep); color: #fff; font-size: 14px; font-weight: 700; line-height: 1.5; text-decoration: none; transition: background-color 160ms ease; }
 .button svg { flex: none; }
 .button:hover { background: #00466e; }
-@media (min-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .heading { font-size: 48px; } }
-@media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 640px) { .heading { font-size: 48px; } }
 @media (prefers-reduced-motion: reduce) {
   .card, .arrow, .button { transition: none; }
   .card:hover, .card:focus-visible { transform: none; }
+  .track[data-moving="true"] { transition: none; }
+  .progress span { animation: none; transform: scaleX(0); }
 }
 
-.section > :global(.site-container) { max-width: 1280px; }
 .band svg { width: 36px; height: 36px; }

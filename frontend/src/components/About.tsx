@@ -19,10 +19,9 @@ export default function About() {
 
     >
       <img src={heritageBgImg} alt="" loading="lazy" width="2000" height="1330" className={styles.background} />
-      {/* Full-section gradient overlay to ensure high readability while maintaining full background picture */}
+      {/* Directional scrims preserve the coastal colors while protecting text. */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{ background: "linear-gradient(to right, rgba(15, 23, 42, 0.90) 0%, rgba(15, 23, 42, 0.75) 50%, rgba(15, 23, 42, 0.60) 100%)" }}
+        className={`${styles.overlay} absolute inset-0 z-0 pointer-events-none`}
       />
 
       <div className="site-container relative z-10">

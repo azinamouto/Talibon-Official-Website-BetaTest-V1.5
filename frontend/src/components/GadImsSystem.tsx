@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  ClipboardList, Users, Database, Search, 
-  BarChart3, Activity, FileCheck, Landmark, 
-  GraduationCap, Settings, ChevronRight, Info,
-  Globe, UserPlus, ExternalLink
-} from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import styles from './GadImsSystem.module.css';
 import { 
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
   CartesianGrid, Tooltip, PieChart, Pie, Cell 
@@ -28,21 +23,6 @@ interface GadImsData {
   sections: Section[];
 }
 
-const SECTION_ICONS: Record<string, React.ReactNode> = {
-  overview: <Info size={18} />,
-  governance: <Landmark size={18} />,
-  "data-entry": <UserPlus size={18} />,
-  "data-modules": <Database size={18} />,
-  analysis: <Search size={18} />,
-  budgeting: <BarChart3 size={18} />,
-  me: <Activity size={18} />,
-  reporting: <ClipboardList size={18} />,
-  barangay: <Users size={18} />,
-  knowledge: <GraduationCap size={18} />,
-  admin: <Settings size={18} />,
-  annexes: <FileCheck size={18} />,
-};
-
 const MOCK_CHART_DATA = [
   { name: 'Health', value: 400, color: 'var(--talweb-deep)' },
   { name: 'Education', value: 300, color: 'var(--talweb-primary)' },
@@ -57,119 +37,56 @@ const MOCK_BAR_DATA = [
   { year: '2024', budget: 75 },
 ];
 
+export function GadImsHeader() {
+  return <div className={styles.header}>
+    <div>
+      <h1 className="text-2xl sm:text-3xl font-bold text-brand-text font-display tracking-tight">Talibon GAD-IMS</h1>
+      <p className={styles.tagline}>Mainstreaming Gender-Responsive Governance through Data</p>
+    </div>
+    <a className={styles.access} href="https://tagad-sys.vercel.app/" target="_blank" rel="noopener noreferrer">Access GAD-IMS</a>
+  </div>;
+}
+
 const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
   const [activeTab, setActiveTab] = useState(data?.sections?.[0]?.id || "overview");
-
-  // Inject Data Entry tab if not in data sections
+  const reducedMotion = useReducedMotion();
   const sections = data?.sections ? [
     ...data.sections.slice(0, 2),
     ...data.sections.slice(2)
   ] : [];
 
   if (!data?.sections || data.sections.length === 0) {
-    return (
-      <div className="p-12 text-center bg-gray-50 rounded-[2rem] border border-brand-border">
-        <Database size={48} className="mx-auto text-brand-muted mb-4 opacity-50" />
-        <h3 className="text-xl font-bold text-brand-text mb-2 tracking-tight">GAD-IMS Database Offline</h3>
-        <p className="text-sm text-brand-muted font-medium max-w-md mx-auto">
-          The Gender and Development Integrated Management System data has not been seeded yet. 
-          Please contact the system administrator to initialize the GAD database.
-        </p>
-      </div>
-    );
+    return <div className="p-12 text-center bg-gray-50 rounded-[2rem] border border-brand-border">
+      <h3 className="text-xl font-bold text-brand-text mb-2 tracking-tight">GAD-IMS Database Offline</h3>
+      <p className="text-sm text-brand-muted font-medium max-w-md mx-auto">
+        The Gender and Development Integrated Management System data has not been seeded yet.
+        Please contact the system administrator to initialize the GAD database.
+      </p>
+    </div>;
   }
-
   const activeSection = sections.find(s => s.id === activeTab);
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row gap-5 bg-brand-surface border border-brand-border rounded-2xl p-4 lg:p-6 shadow-xs relative overflow-hidden">
-        {/* Sidebar Navigation */}
-        <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-4">
-          <div className="px-1 py-1 space-y-1.5 pb-2">
-            <h2 className="text-sm font-bold leading-tight uppercase tracking-tight text-brand-text font-display">Talibon GAD-IMS</h2>
-            <p className="text-[10px] font-medium text-brand-muted uppercase tracking-wider leading-relaxed">
-              Mainstreaming Gender-Responsive Governance through Data
-            </p>
-            <div className="pt-0.5">
-              <a
-                href="https://tagad-sys.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-brand-primary font-bold text-xs uppercase tracking-wider underline underline-offset-4 hover:text-brand-primary/80 transition-colors"
-              >
-                <span>Access GAD-IMS</span>
-                <ExternalLink size={13} className="shrink-0" />
-              </a>
-            </div>
-          </div>
-        
-        <nav className="flex flex-col gap-1 p-1.5 bg-brand-bg rounded-xl border border-brand-border/50">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => setActiveTab(section.id)}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg transition-all text-left relative group ${
-                activeTab === section.id 
-                  ? 'bg-brand-bg text-brand-text shadow-xs border border-brand-border' 
-                  : 'text-brand-muted hover:text-brand-text hover:bg-brand-bg/50'
-              }`}
-            >
-              <span className={`transition-colors p-1.5 rounded-md ${activeTab === section.id ? 'bg-brand-primary text-white' : 'bg-brand-bg text-brand-muted group-hover:bg-brand-surface transition-all'}`}>
-                {SECTION_ICONS[section.id] || <ChevronRight size={14} />}
-              </span>
-              <div className="flex flex-col">
-                <span className="text-[11px] font-bold uppercase tracking-wider leading-none">
-                  {section.title.split('. ')[1] || section.title}
-                </span>
-              </div>
-              {activeTab === section.id && (
-                <motion.div 
-                  layoutId="active-nav-bg"
-                  className="absolute left-1 w-1 h-5 bg-brand-primary rounded-full"
-                />
-              )}
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col gap-6 relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="flex-1 flex flex-col gap-6"
-          >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-brand-border relative">
-              <div className="space-y-1 max-w-xl">
-                <h1 className="text-xl md:text-2xl font-bold text-brand-text uppercase tracking-tight leading-tight">
-                  {activeSection?.title}
-                </h1>
-                <p className="text-xs text-brand-muted font-medium">
-                  Open the GAD-IMS Management System
-                </p>
-              </div>
-              <a
-                href="https://tagad-sys.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-brand-primary font-bold text-xs uppercase tracking-wider underline underline-offset-4 hover:text-brand-primary/80 transition-colors py-1 shrink-0"
-              >
-                <span>Access GAD-IMS</span>
-                <ExternalLink size={14} className="shrink-0" />
-              </a>
-            </div>
-
-            {/* Dashboard Visualization Overlay (Optional based on section) */}
+  return <div className={styles.layout}>
+    <aside className={styles.sidebar}>
+      <p className={styles.menuLabel}>Sections</p>
+      <nav aria-label="GAD-IMS sections" className={styles.menu}>
+        {sections.map(section => <button key={section.id} type="button"
+          onClick={() => setActiveTab(section.id)} aria-current={activeTab === section.id ? 'true' : undefined}
+          className={styles.menuItem}>
+          {section.title.split('. ')[1] || section.title}
+        </button>)}
+      </nav>
+    </aside>
+    <section className={styles.content} aria-labelledby="gad-active-heading">
+      <AnimatePresence mode="wait">
+        <motion.div key={activeTab}
+          initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          exit={reducedMotion ? undefined : { opacity: 0, y: -10 }}
+          transition={{ duration: reducedMotion ? 0 : 0.25, ease: 'easeOut' }} className={styles.contentFlow}>
+          <h2 id="gad-active-heading" className={styles.sectionHeading}>{activeSection?.title}</h2>
             {activeTab === 'reporting' || activeTab === 'budgeting' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 bg-brand-bg border border-brand-border rounded-xl relative overflow-hidden">
+              <div className={`${styles.metrics} bg-brand-bg border border-brand-border rounded-xl relative overflow-hidden`}>
                 <div className="space-y-4 relative z-10">
-                  <h4 className="text-[9px] font-bold uppercase tracking-widest text-brand-muted">System Dashboard / Metrics</h4>
+                  <h3 className="text-[9px] font-bold uppercase tracking-widest text-brand-muted">System Dashboard / Metrics</h3>
                   <div className="h-[180px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={MOCK_BAR_DATA}>
@@ -185,7 +102,7 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
                   </div>
                 </div>
                 <div className="space-y-4 relative z-10">
-                  <h4 className="text-[9px] font-bold uppercase tracking-widest text-brand-muted">Gender Sector Distribution</h4>
+                  <h3 className="text-[9px] font-bold uppercase tracking-widest text-brand-muted">Gender Sector Distribution</h3>
                   <div className="h-[180px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -218,58 +135,23 @@ const GadImsSystem: React.FC<{ data: GadImsData }> = ({ data }) => {
               </div>
             ) : null}
 
-            {activeTab === 'data-entry' ? (
-              <div className="flex-1 mt-2">
-                <p>Online services are to be implemented.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                {activeSection?.content.map((sub, idx) => (
-                  <motion.div 
-                    key={`gad-subsection-${idx}`} 
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="bg-brand-surface border border-brand-border rounded-xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all duration-300 group relative overflow-hidden"
-                  >
-                    <div className="relative z-10">
-                      <h3 className="text-xs font-bold text-brand-text uppercase tracking-wider pb-3 mb-4 border-b border-brand-border flex items-center justify-between">
-                        {sub.subTitle}
-                      </h3>
-                      <ul className="space-y-3">
-                        {sub.items.map((item, i) => (
-                          <li key={`gad-item-${idx}-${i}`} className="flex gap-3 text-xs text-brand-muted font-medium leading-relaxed group/item">
-                            <div className="mt-1 flex flex-col items-center">
-                              <div className="w-1.5 h-1.5 rounded-full bg-brand-primary group-hover/item:scale-125 transition-transform shrink-0" />
-                              <div className="w-px h-full bg-brand-border/60 mt-1" />
-                            </div>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="absolute top-1/2 -right-4 -translate-y-1/2 opacity-[0.03] group-hover:scale-105 transition-transform duration-700">
-                      <Database size={80} />
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
 
-            {/* Background Narrative Decoration */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] pointer-events-none select-none">
-              {activeTab && SECTION_ICONS[activeTab] && (
-                <div className="scale-[15]">
-                  {SECTION_ICONS[activeTab]}
-                </div>
-              )}
+          {activeTab === 'data-entry' ? (
+            <div className="flex-1 mt-2"><p>Online services are to be implemented.</p></div>
+          ) : (
+            <div className={styles.cards}>
+              {activeSection?.content.map((sub, idx) => <motion.div key={`gad-subsection-${idx}`}
+                initial={reducedMotion ? false : { opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: reducedMotion ? 0 : undefined, delay: reducedMotion ? 0 : idx * 0.05 }}
+                className={styles.card}>
+                <h3>{sub.subTitle}</h3>
+                <ul className={styles.items}>{sub.items.map((item, i) => <li key={`gad-item-${idx}-${i}`}>{item}</li>)}</ul>
+              </motion.div>)}
             </div>
-          </motion.div>
-        </AnimatePresence>
-      </main>
-    </div>
-  </div>
-);
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </section>
+  </div>;
 };
-
 export default GadImsSystem;

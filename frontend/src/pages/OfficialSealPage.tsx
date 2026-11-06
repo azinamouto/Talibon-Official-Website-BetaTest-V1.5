@@ -11,8 +11,8 @@ const OfficialSealPage: React.FC = () => {
   const sealUrl = "http://talibon.gov.ph/wp-content/uploads/2025/09/Talibon-Official-Seal-v4-2003-to-2023-.png";
 
   return (
-    <ContentPage title="Official Seal" fetchData={aboutApi.getSeal} renderContent={(data) => <div className="bg-white pb-24 flex flex-col items-center relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
+    <ContentPage standardLayout title="Official Seal" fetchData={aboutApi.getSeal} renderContent={(data) => <div className="bg-white pb-24 flex flex-col items-center relative overflow-hidden">
+      <div className="w-full relative z-10">
 
         <div className="flex flex-col items-center justify-center space-y-6">
           <motion.div

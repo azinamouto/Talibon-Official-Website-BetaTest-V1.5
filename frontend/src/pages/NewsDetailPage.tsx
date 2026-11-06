@@ -1,3 +1,4 @@
+import layout from "../styles/InnerPageLayout.module.css";
 import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useCallback, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
@@ -29,18 +30,18 @@ const NewsDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={`${sectionTheme.section} py-32 flex flex-col items-center justify-center min-h-[60vh] bg-slate-50`}>
+      <div className={`${sectionTheme.section} ${layout.page} site-container flex flex-col items-center justify-center min-h-[60vh] bg-slate-50`}>
         <Loader2 className="w-10 h-10 text-sky-600 animate-spin mb-3" />
         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Loading Article Details...</p>
       </div>
     );
   }
 
-  if (resource.error) return <div className={`${sectionTheme.section} max-w-3xl mx-auto p-8`}><PublicState {...resource} /></div>;
+  if (resource.error) return <div className={`${sectionTheme.section} ${layout.page} site-container`}><PublicState {...resource} /></div>;
 
   if (!item) {
     return (
-      <div className={`${sectionTheme.section} py-20 px-4 max-w-3xl mx-auto text-center min-h-[60vh] flex flex-col items-center justify-center`}>
+      <div className={`${sectionTheme.section} ${layout.page} site-container text-center min-h-[60vh] flex flex-col items-center justify-center`}>
         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
           <Building2 size={32} />
         </div>
@@ -64,11 +65,11 @@ const NewsDetailPage: React.FC = () => {
   const paragraphs = item.content ? item.content.split(/\n+/).filter(p => p.trim().length > 0) : [];
 
   return (
-    <div className={`${sectionTheme.section} py-3 sm:py-5 bg-brand-bg min-h-screen`}>
-      <div className="max-w-[1500px] w-full mx-auto px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16">
+    <div className={`${sectionTheme.section} ${layout.page} bg-brand-bg min-h-screen`}>
+      <div className="site-container">
         
         {/* Navigation Breadcrumb & Badges */}
-        <div className="flex items-center justify-between mb-5 pb-3 border-b border-brand-border/60">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-brand-border/60">
           <button
             onClick={() => navigate(-1)}
             className="inline-flex items-center gap-1.5 text-xs font-extrabold text-brand-text hover:text-sky-600 bg-white px-3 py-1.5 rounded-lg border border-brand-border shadow-2xs hover:border-sky-300 transition-all uppercase tracking-wider group"
@@ -84,7 +85,7 @@ const NewsDetailPage: React.FC = () => {
         </div>
 
         {/* Full-Width Unboxed Article Layout */}
-        <article className="space-y-5">
+        <article className={`${layout.flow} ${layout.reading}`}>
           
           {/* Article Header Section */}
           <div className="space-y-3">
@@ -187,7 +188,7 @@ const NewsDetailPage: React.FC = () => {
 
           {/* Full-Width Article Content */}
           <div className="pt-1 space-y-4 max-w-none">
-            <div className="text-brand-text text-sm sm:text-base leading-relaxed space-y-3.5 font-sans max-w-5xl">
+            <div className="text-brand-text text-sm sm:text-base leading-relaxed space-y-3.5 font-sans">
               {paragraphs.map((p, idx) => (
                 <p key={idx} className={`${idx === 0 ? "first-letter:text-2xl first-letter:font-black first-letter:text-sky-600 first-letter:mr-1.5 first-letter:float-left" : ""}`}>
                   {p}

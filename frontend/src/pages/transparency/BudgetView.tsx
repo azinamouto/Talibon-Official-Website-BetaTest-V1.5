@@ -1,3 +1,4 @@
+import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 import { Clock, ShieldCheck, Building2, FileText, Download, ExternalLink, Info } from "lucide-react";
 import { motion } from "motion/react";
@@ -130,7 +131,7 @@ export default function BudgetView({ data }: BudgetViewProps) {
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className={layout.reports}>
             {data.documents.map((doc, idx) => (
               <div 
                 key={doc.id || idx}

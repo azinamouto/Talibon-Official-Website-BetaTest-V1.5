@@ -1,0 +1,27 @@
+.page { padding-bottom: 24px; }
+.header { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 24px; }
+.header h1 { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.2; color: var(--talweb-text); }
+.header p { margin-top: 12px; max-width: 60ch; font-size: 16px; line-height: 1.65; color: var(--color-brand-muted); }
+.search { flex: 0 1 384px; min-width: 240px; }
+.search input { width: 100%; min-height: 48px; padding: 12px 16px; background: var(--talweb-card); border: 1px solid var(--color-brand-border); border-radius: 12px; color: var(--talweb-text); font: inherit; }
+.search input::placeholder { color: var(--color-brand-muted); }
+.search input:hover { border-color: var(--talweb-deep); }
+.count { margin-bottom: 16px; font-size: 14px; color: var(--color-brand-muted); }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: stretch; }
+.card { min-width: 0; padding: 24px; background: var(--talweb-card); border: 1px solid var(--color-brand-border); border-radius: 16px; }
+.card h2 { margin: 0 0 12px; font-size: 20px; font-weight: 700; line-height: 1.35; color: var(--talweb-text); overflow-wrap: anywhere; }
+.card dl { display: grid; gap: 8px; font-size: 14px; line-height: 1.5; color: var(--color-brand-muted); }
+.card dl > div { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 0 8px; }
+.card dd { margin: 0; font-weight: 500; overflow-wrap: anywhere; }
+.empty { grid-column: 1 / -1; padding: 48px 24px; background: var(--talweb-card); border: 1px solid var(--color-brand-border); border-radius: 16px; text-align: center; color: var(--color-brand-muted); }
+.empty p + p { margin-top: 8px; }
+.pagination { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--color-brand-border); color: var(--color-brand-muted); font-size: 14px; }
+.pagination nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.pagination button { min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--color-brand-border); border-radius: 12px; background: var(--talweb-card); color: var(--talweb-text); font-weight: 600; cursor: pointer; }
+.pagination button:hover:not(:disabled) { background: var(--talweb-background); border-color: var(--talweb-deep); }
+.pagination button[aria-current] { background: var(--talweb-deep); color: var(--talweb-card); border-color: var(--talweb-deep); }
+.pagination button:disabled { background: var(--color-brand-border); color: var(--color-brand-muted); cursor: not-allowed; }
+.page :is(input,button):focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 3px; }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media (max-width: 767px) { .header { flex-direction: column; align-items: stretch; gap: 24px; } .search { flex: auto; min-width: 0; } }

@@ -1,0 +1,10 @@
+.standard {
+  margin-block-start: 0;
+  padding-top: calc(max(0px, var(--navbar-height-mobile) - 125px) + 32px);
+  /* Unlike overflow:hidden, clip does not trap the era navigation's sticky position. */
+  overflow: clip;
+}
+.body p { max-inline-size: 75ch; }
+@media (min-width: 1024px) {
+  .standard { padding-top: calc(max(0px, var(--navbar-height-desktop) - 142px) + 32px); }
+}

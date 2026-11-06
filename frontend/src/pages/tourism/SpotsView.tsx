@@ -1,3 +1,4 @@
+import layout from "../../styles/InnerPageLayout.module.css";
 import React, { useState, useEffect } from "react";
 import { MapPin, Clock, Phone, ExternalLink, X, Eye, ArrowLeft, Search, Compass, Sparkles } from "lucide-react";
 
@@ -62,7 +63,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
       : `${selectedSpot.name} is one of Talibon's premier tourist destinations, showcasing pristine natural landscapes, rich marine ecosystems, and welcoming local hospitality. Visitors can enjoy guided eco-tours, island hopping, photography opportunities, and memorable local experiences.`;
 
     return (
-      <div className="space-y-8 animate-fadeIn w-full">
+      <div className={`${layout.flow} animate-fadeIn w-full`}>
         {/* Top Navigation & Breadcrumb Header Bar */}
         <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <button
@@ -115,7 +116,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
         </div>
 
         {/* 2-Column Responsive Layout for Content & Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Main Column (8 cols): Description & Photo Gallery */}
           <div className="lg:col-span-8 space-y-8">
@@ -249,7 +250,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className={layout.flow}>
       {/* Search & Filter Header Bar */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
         {/* Search Input */}
@@ -309,7 +310,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className={layout.cards}>
           {filteredSpots.map((spot: Spot, idx: number) => (
             <div 
               key={`${spot.id}-${idx}`} 

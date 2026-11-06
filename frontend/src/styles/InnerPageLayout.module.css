@@ -1,0 +1,24 @@
+/* Spacing and width only. Opt in at inner-page roots, never the navbar or Home. */
+.page {
+  margin-block-start: 0;
+  padding-top: calc(max(0px, var(--navbar-height-mobile) - 125px) + 32px);
+  padding-bottom: 48px;
+  min-width: 0;
+}
+main.page { margin-block-start: 0; }
+.flow > * + * { margin-block-start: 24px; }
+.reading p { max-inline-size: 75ch; }
+.cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: stretch; }
+.cards > * { min-width: 0; overflow-wrap: anywhere; }
+.reports { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; width: 100%; }
+.reports > * { min-width: 0; gap: 16px; }
+.reports > * > :first-child { min-width: 0; overflow-wrap: anywhere; }
+@media (min-width: 640px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) {
+  .page { padding-top: calc(max(0px, var(--navbar-height-desktop) - 142px) + 32px); }
+  .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1536px) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.tableScroll { width: 100%; min-width: 0; overflow-x: auto; }
+.tableScroll :is(th, td) { padding: 8px 16px; }

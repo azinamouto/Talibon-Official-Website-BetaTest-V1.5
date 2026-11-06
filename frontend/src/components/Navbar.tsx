@@ -1,3 +1,4 @@
+import { ABOUT_NAV_LINKS } from "../data/aboutNavigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, Globe, ChevronDown, ArrowUpRight, Phone, Mail, MapPin, Search, Bell, Clock, LogIn, LayoutDashboard, LogOut, User, Volume2, VolumeX } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -75,18 +76,7 @@ export default function Navbar() {
     { 
       name: t('about'), 
       href: "#",
-      subLinks: getSubLinks("ABOUT", [
-        { name: "Brief Profile", href: "/about/profile" },
-        { name: "Official Seal", href: "/about/seal" },
-        { name: "Brief History", href: "/about/history" },
-        { name: "List of Mayors", href: "/about/mayors" },
-        { name: "Vicinity Map", href: "/about/vicinity" },
-        { name: "Demographics", href: "/about/demographics" },
-        { name: "Location", href: "/about/location" },
-        { name: "Industry", href: "/about/industry" },
-        { name: "Government Services", href: "/services" },
-        { name: "Talibon Hymn", href: "/about/hymn" },
-      ])
+      subLinks: getSubLinks("ABOUT", ABOUT_NAV_LINKS)
     },
     { 
       name: "Local Government", 

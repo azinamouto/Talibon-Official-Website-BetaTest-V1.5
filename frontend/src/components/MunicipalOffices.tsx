@@ -1,3 +1,4 @@
+import OfficeSlideshow from "./OfficeSlideshow";
 import solidTheme from "../styles/SolidTheme.module.css";
 import styles from "./MunicipalOffices.module.css";
 import { Building2, Briefcase, FileText, Calculator, ArrowRight } from "lucide-react";
@@ -60,17 +61,17 @@ export default function MunicipalOffices() {
           <p>Dedicated public servants committed to excellence and transparency in local governance.</p>
         </div>
 
-        <div className={styles.grid}>
+        <OfficeSlideshow>
           {offices.map((office, idx) => (
             <Link key={office.title} to="/executive/directory" data-office-card
-              aria-labelledby={`municipal-office-title-${idx} municipal-office-person-${idx}`}
+              aria-label={`${office.title} ${office.officer}`}
               className={styles.card}>
               <div className={styles.band}>
-                <office.icon size={44} strokeWidth={1.75} aria-hidden="true" />
+                <office.icon className="icon-float" size={44} strokeWidth={1.75} aria-hidden="true" />
               </div>
               <div className={styles.body}>
-                <h3 id={`municipal-office-title-${idx}`} className={styles.title}>{office.title}</h3>
-                <p id={`municipal-office-person-${idx}`} className={styles.name}>{office.officer}</p>
+                <h3 className={styles.title}>{office.title}</h3>
+                <p className={styles.name}>{office.officer}</p>
                 <div className={styles.bottom}>
                   <span className={styles.pill}>{idx === 0 ? 'Municipal Mayor' : 'Department head'}</span>
                   <span className={styles.arrow} aria-hidden="true"><ArrowRight size={20} aria-hidden="true" /></span>
@@ -78,7 +79,7 @@ export default function MunicipalOffices() {
               </div>
             </Link>
           ))}
-        </div>
+        </OfficeSlideshow>
 
         <div className={styles.viewAll}>
           <Link to="/executive/directory" className={styles.button}>

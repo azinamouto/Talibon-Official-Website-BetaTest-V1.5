@@ -1,3 +1,4 @@
+import layout from "../styles/InnerPageLayout.module.css";
 import React, { useCallback } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { listPublic, PublicNews } from '../services/publicApi';
@@ -14,7 +15,7 @@ export default function NewsCategoryPage() {
   const resource = usePublicResource(useCallback((signal: AbortSignal) =>
     category && !filter ? Promise.resolve({ data: [], pagination: { page, limit: 12, total: 0, totalPages: 0 } }) :
       listPublic<PublicNews>('news', { page, limit: 12, q, category: filter || '' }, signal), [page, q, filter, category]));
-  return <PublicShell title="News & Updates">
+  return <PublicShell standardSpacing title="News & Updates">
     <nav aria-label="News categories" className="flex flex-wrap gap-4 text-brand-primary">
       <Link to="/news">All news</Link><Link to="/news/articles">Articles</Link><Link to="/news/updates">Updates</Link><Link to="/news/announcements">Announcements</Link>
     </nav>
@@ -30,7 +31,7 @@ export default function NewsCategoryPage() {
     <PublicState {...resource} />
     {!resource.loading && !resource.error && resource.data && <>
       {resource.data.data.length === 0 ? <p role="status" className="civic-card p-8">No news found. Try another search or category.</p> :
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={layout.cards}>
           {resource.data.data.map(item => <article key={item.id} className="civic-card overflow-hidden">
             {item.image_url && /^https?:\/\//i.test(item.image_url) && <img src={item.image_url} alt="" loading="lazy" className="w-full h-48 object-cover" />}
             <div className="p-6 space-y-3">

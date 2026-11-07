@@ -148,3 +148,27 @@ test('passive PDF upload, publication, preview and attachment download',async()=
   const response=await fetch(base+`/api/media/${row.id}/download`);assert.equal(response.status,200);assert.match(response.headers.get('content-type'),/application\/pdf/);assert.match(response.headers.get('content-disposition'),/attachment; filename="test.pdf"/);
   const preview=await fetch(base+`/api/admin/media/${row.id}/preview`,{headers:{cookie:'test=admin'}});assert.equal(preview.status,200);assert.match(preview.headers.get('content-security-policy'),/sandbox/);
 });
+
+
+test('public listing excludes drafts and revoked approvals without exposing storage metadata',async()=>{
+ const publisher=await actor('editor');
+ const created=await service.upload(publisher,upload(),'public-list-create');
+ assert.ok(!(await service.listPublic('photo',1)).data.some(x=>x.id===created.id));
+ await service.change(publisher,created.id,created.version,'publish',{},'public-list-publish');
+ const response=await fetch(base+'/api/media?kind=photo');assert.equal(response.status,200);
+ const listed=(await response.json()).data.find(x=>x.id===created.id);assert.ok(listed);
+ for(const key of ['object_key','source_id','created_by','sha256','upload_id'])assert.equal(listed[key],undefined);
+ assert.equal((await fetch(base+'/api/media?kind=invalid')).status,400);
+ await owner.query('UPDATE app.content_sources SET approved=false WHERE id=$1',[input.sourceId]);
+ try {assert.ok(!(await service.listPublic('photo',1)).data.some(x=>x.id===created.id));assert.equal((await fetch(base+listed.download_url)).status,404);}
+ finally {await owner.query('UPDATE app.content_sources SET approved=true WHERE id=$1',[input.sourceId]);}
+});
+
+test('two API instances enforce one atomic shared rate budget under concurrency',async()=>{
+ const {RateLimiterGuard}=require('../dist/security/rate-limiter.guard');const {Reflector}=require('@nestjs/core');
+ const a=new RateLimiterGuard(new Reflector()),b=new RateLimiterGuard(new Reflector());a.configure(db);b.configure(db);
+ const ctx={getHandler:()=>function(){},getClass:()=>class{},switchToHttp:()=>({getRequest:()=>({path:'/api/news',method:'GET',ip:'203.0.113.9',headers:{}}),getResponse:()=>({setHeader(){}})})};
+ const results=await Promise.allSettled(Array.from({length:125},(_,i)=>(i%2?a:b).canActivate(ctx)));
+ assert.equal(results.filter(x=>x.status==='fulfilled').length,120);
+ assert.equal(results.filter(x=>x.status==='rejected'&&x.reason.getStatus()===429).length,5);
+});

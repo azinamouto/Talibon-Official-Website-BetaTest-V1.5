@@ -21,6 +21,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   release:
+    if: vars.R2_PRODUCTION_QUALIFIED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     environment: production
@@ -34,8 +35,9 @@ jobs:
       PGPORT: ${{ secrets.PRODUCTION_PGPORT }}
       PGUSER: ${{ secrets.PRODUCTION_PGUSER }}
       PGPASSWORD: ${{ secrets.PRODUCTION_PGPASSWORD }}
-      PGDATABASE: postgres
-      PGSSLMODE: require
+      PGDATABASE: ${{ vars.PRODUCTION_PGDATABASE }}
+      PGSSLMODE: verify-full
+      PGCHANNELBINDING: require
       PGCONNECT_TIMEOUT: '15'
     steps:
       - uses: actions/checkout@v4
@@ -56,8 +58,10 @@ jobs:
           [[ "$VERCEL_CLI_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           node --input-type=module -e "import {origin} from './ops/http.mjs'; origin(process.env.PRODUCTION_URL)"
           [[ "$STAGING_EVIDENCE" == https://* && "$BACKUP_EVIDENCE" == https://* && "$OFFICIAL_DATA_EVIDENCE" == https://* ]]
+      - run: node ops/check-runtime.mjs
       - run: npm ci && npm ci --prefix backend && npm ci --prefix frontend
       - run: npm run lint:backend && npm test --prefix backend && npm run test:ops
+      - run: npm run lint:frontend && npm test --prefix frontend && npm run test:react --prefix frontend && npm run build && node ops/check-runtime.mjs --artifacts
       - name: Verify migrated database before deployment
         run: |
           set -euo pipefail

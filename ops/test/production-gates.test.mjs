@@ -34,11 +34,12 @@ test('release verifies official data and requires approval evidence', () => {
 });
 test('unsafe client-defined checkout is disabled at both layers', () => {
   assert.match(get('backend/src/api/payments/payments.controller.ts'), /ServiceUnavailableException/);
-  assert.match(get('frontend/src/services/submissionPaymentService.ts'), /submissionPaymentsEnabled = false/);
+  assert.match(get('frontend/src/App.tsx'), /path="\/payment\/\*" element=\{<EServicesPage \/>\}/);
+  assert.match(get('backend/src/security/deferred-routes.middleware.ts'), /payment/);
   assert.doesNotMatch(get('frontend/src/components/PaymentButton.tsx'), /paymentService\.createCheckoutSession/);
 });
 test('staff may not inspect the unscoped submission queue', () => {
-  const source = get('backend/src/api/forms/forms.controller.ts');
+  const source = get('archive/r1/backend/src/api/forms/forms.controller.ts');
   assert.doesNotMatch(source, /@Roles\([^)]*'staff'[^)]*\)/);
 });
 
@@ -53,4 +54,24 @@ test('R2 production binding cannot load transaction or notification providers', 
   assert.doesNotMatch(routes, /import (PaymentReturn|PaymentSuccess|BusinessPermitPage|BuildingPermitPage|ZoningClearancePage)/);
   assert.doesNotMatch(get('backend/src/api/notifications/email-worker.ts'), /NestFactory|processPending/);
   assert.doesNotMatch(get('supabase/functions/send-status-email/index.ts'), /createClient|fetch\(|Deno.env/);
+});
+
+test('database backup is explicitly gated, encrypted, checksummed and retains grants', () => {
+  const workflow = get('.github/workflows/database-backup.yml');
+  assert.match(workflow, /if: vars\.PRODUCTION_BACKUP_ENABLED == 'true'/);
+  assert.match(workflow, /PGSSLMODE: verify-full/);
+  assert.match(workflow, /pg_dump --format=custom --no-owner/);
+  assert.doesNotMatch(workflow, /--no-privileges|--no-acl|SUPABASE_|supabase db dump/i);
+  assert.match(workflow, /age -r "\$AGE_RECIPIENT" -o ops\/backups\/database\.tar\.age/);
+  assert.match(workflow, /sha256sum database\.tar\.age > database\.tar\.age\.sha256/);
+  assert.match(workflow, /retention-days: 30/);
+});
+
+
+test('production SPA restricts scripts to self and production runtime pins supported Node',()=>{
+ const config=JSON.parse(get('vercel.json'));
+ const csp=config.headers[0].headers.find(x=>x.key==='Content-Security-Policy').value;
+ assert.match(csp,/script-src 'self';/);assert.doesNotMatch(csp,/unsafe-eval/);assert.match(csp,/object-src 'none'/);
+ assert.match(get('backend/src/configure-app.ts'),/NODE_ENV !== 'production'/);
+ assert.match(JSON.parse(get('backend/package.json')).engines.node,/>=22.16.0/);
 });

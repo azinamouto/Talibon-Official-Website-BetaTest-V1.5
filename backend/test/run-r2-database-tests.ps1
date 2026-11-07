@@ -24,7 +24,7 @@ try {
   & node --test --test-timeout=60000 (Join-Path $PSScriptRoot 'r2-database.integration.cjs')
   if ($LASTEXITCODE -ne 0) {throw 'R2 database integration tests failed'}
   $archive=Join-Path $scratch 'r2.dump'
-  & (Join-Path $pgBin 'pg_dump.exe') -h 127.0.0.1 -p $port -U postgres -d r2_test -Fc -f $archive
+  & (Join-Path $pgBin 'pg_dump.exe') -h 127.0.0.1 -p $port -U postgres -d r2_test --format=custom --no-owner -f $archive
   if ($LASTEXITCODE -ne 0) {throw 'R2 backup failed'}
   & (Join-Path $pgBin 'pg_restore.exe') -h 127.0.0.1 -p $port -U postgres -d r2_restore --exit-on-error --single-transaction $archive
   if ($LASTEXITCODE -ne 0) {throw 'R2 restore failed'}

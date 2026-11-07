@@ -37,11 +37,11 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
     const csp = [
       "default-src 'self'",
       "media-src 'self' data: blob: https: http: https://talibon.gov.ph https://*.talibon.gov.ph",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://connect.facebook.net",
+      "script-src 'self' ",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: blob: https: http:",
-      "connect-src 'self' https://*.supabase.co https://*.run.app https://api.stripe.com https://*.google.com https://*.facebook.com wss: ws:",
+      "connect-src 'self' https://*.run.app https://api.stripe.com https://*.google.com https://*.facebook.com wss: ws:",
       "frame-src 'self' https://www.facebook.com https://web.facebook.com https://www.google.com https://maps.google.com https://js.stripe.com",
       "frame-ancestors 'self' https:",
       "base-uri 'self'",

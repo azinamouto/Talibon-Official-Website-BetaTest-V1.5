@@ -73,7 +73,7 @@ const ContentPage: React.FC<ContentPageProps> = ({
                 </button>
               </div>
             </div>
-          ) : data && (!Array.isArray(data) || data.length > 0) ? (
+          ) : data && (Array.isArray(data) ? data.length > 0 : typeof data !== 'object' || Object.keys(data).length > 0) ? (
             <div className="min-h-[400px]">{renderContent(data)}</div>
           ) : (
             <div className="py-24 text-center text-brand-muted font-bold uppercase tracking-widest">

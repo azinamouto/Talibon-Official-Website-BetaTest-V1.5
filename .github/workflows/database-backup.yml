@@ -15,8 +15,13 @@ jobs:
     timeout-minutes: 30
     environment: production-operations
     env:
-      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-      SUPABASE_CLI_VERSION: ${{ vars.SUPABASE_CLI_VERSION }}
+      PGHOST: ${{ secrets.PRODUCTION_PGHOST }}
+      PGPORT: ${{ secrets.PRODUCTION_PGPORT }}
+      PGUSER: ${{ secrets.PRODUCTION_PGUSER }}
+      PGPASSWORD: ${{ secrets.PRODUCTION_PGPASSWORD }}
+      PGDATABASE: ${{ vars.PRODUCTION_PGDATABASE }}
+      PGSSLMODE: verify-full
+      PGCHANNELBINDING: require
       AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
     steps:
       - uses: actions/checkout@v4
@@ -24,24 +29,19 @@ jobs:
         with:
           node-version: 22
       - name: Install encryption tool
-        run: sudo apt-get update && sudo apt-get install -y age
+        run: sudo apt-get update && sudo apt-get install -y age postgresql-client
       - name: Dump and encrypt (plaintext never uploaded)
         shell: bash
         run: |
           set -euo pipefail
-          : "${SUPABASE_DB_URL:?}" "${AGE_RECIPIENT:?}"
-          [[ "$SUPABASE_CLI_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          : "${PGHOST:?}" "${PGUSER:?}" "${PGPASSWORD:?}" "${PGDATABASE:?}" "${AGE_RECIPIENT:?}"
           umask 077
           scratch=$(mktemp -d)
           trap 'rm -rf -- "$scratch"' EXIT
           mkdir -p ops/backups
-          # Supabase's CLI excludes provider-owned internals that plain pg_dump cannot restore.
-          npx --yes "supabase@$SUPABASE_CLI_VERSION" db dump --db-url "$SUPABASE_DB_URL" --role-only -f "$scratch/roles.sql"
-          npx --yes "supabase@$SUPABASE_CLI_VERSION" db dump --db-url "$SUPABASE_DB_URL" -f "$scratch/schema.sql"
-          npx --yes "supabase@$SUPABASE_CLI_VERSION" db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -x storage.buckets_vectors -x storage.vector_indexes -f "$scratch/data.sql"
-          npx --yes "supabase@$SUPABASE_CLI_VERSION" db dump --db-url "$SUPABASE_DB_URL" --schema supabase_migrations -f "$scratch/history_schema.sql"
-          npx --yes "supabase@$SUPABASE_CLI_VERSION" db dump --db-url "$SUPABASE_DB_URL" --schema supabase_migrations --data-only --use-copy -f "$scratch/history_data.sql"
-          tar -C "$scratch" -cf - roles.sql schema.sql data.sql history_schema.sql history_data.sql | age -r "$AGE_RECIPIENT" > ops/backups/database.tar.age
+          # Auth tables, application schemas and all R2 ledgers travel together.
+          pg_dump --format=custom --no-owner --file="$scratch/database.dump"
+          age -r "$AGE_RECIPIENT" -o ops/backups/database.tar.age "$scratch/database.dump"
           test -s ops/backups/database.tar.age
           cd ops/backups
           sha256sum database.tar.age > database.tar.age.sha256

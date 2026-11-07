@@ -1,0 +1,10 @@
+archive/
+supabase/
+docs/
+Agent/
+.agents/
+backend/test/
+frontend/test/
+.env*
+backend/.env*
+frontend/.env*

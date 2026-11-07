@@ -33,6 +33,16 @@ jobs:
           $pg = Get-ChildItem 'C:/Program Files/PostgreSQL/*/bin/psql.exe' | Sort-Object FullName -Descending | Select-Object -First 1
           if (!$pg) { throw 'PostgreSQL tools are required' }
           Split-Path $pg.FullName | Out-File -FilePath $env:GITHUB_PATH -Append
-      - name: Replay migrations and verify RLS
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --prefix backend
+      - name: Rehearse R2 database, staff MFA and private media
         shell: pwsh
-        run: ./backend/test/run-database-tests.ps1
+        run: |
+          npm --prefix backend run test:r2:db
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          npm --prefix backend run test:auth:db
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          npm --prefix backend run test:media:db
+          exit $LASTEXITCODE

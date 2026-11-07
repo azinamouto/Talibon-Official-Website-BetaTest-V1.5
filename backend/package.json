@@ -18,7 +18,7 @@
     "notifications:work": "node dist/api/notifications/email-worker.js",
     "dev": "npm run build:tsc && node dist/main.js",
     "build": "npm run build:tsc",
-    "build:tsc": "tsc -p tsconfig.json && node --input-type=commonjs -e \"require('node:fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))\"",
+    "build:tsc": "node scripts/clean-build.cjs && tsc -p tsconfig.json && node --input-type=commonjs -e \"require('node:fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))\"",
     "build:serverless": "npm run build:tsc",
     "start": "node dist/main.js",
     "start:dev": "npm run dev",
@@ -26,7 +26,6 @@
     "clean": "npx rimraf dist",
     "test": "npm run build:tsc && jest --runInBand && node --test --test-timeout=120000 test/*.test.cjs",
     "test:load": "npm run build:tsc && node --test test/load/metrics.test.cjs && node test/load/run.cjs",
-    "test:db": "powershell -NoProfile -ExecutionPolicy Bypass -File test/run-database-tests.ps1",
     "test:unit": "npm run build:tsc && jest --runInBand",
     "contracts:export": "npm run build:tsc && node scripts/export-openapi.cjs",
     "contracts:check": "npm run build:tsc && node scripts/export-openapi.cjs --check"
@@ -37,8 +36,7 @@
     "@nestjs/config": "4.0.4",
     "@nestjs/core": "^11.1.17",
     "@nestjs/platform-express": "^11.1.17",
-    "@nestjs/swagger": "11.4.7",
-    "@supabase/supabase-js": "^2.101.1",
+    "@nestjs/swagger": "^11.4.8",
     "axios": "^1.15.0",
     "better-auth": "1.7.15",
     "class-transformer": "^0.5.1",
@@ -64,5 +62,8 @@
     "typescript": "~5.7.3",
     "typescript-eslint": "8.70.0",
     "vite": "^6.1.1"
+  },
+  "engines": {
+    "node": ">=22.16.0 <23"
   }
 }

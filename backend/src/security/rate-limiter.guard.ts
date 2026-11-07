@@ -1,3 +1,6 @@
+import { createHash } from 'node:crypto';
+import { connectionConfig, PostgresDatabase } from '../database/postgres';
+import { clientIp } from './client-ip';
 import {
   Injectable,
   CanActivate,
@@ -11,6 +14,7 @@ import { Reflector } from "@nestjs/core";
 import { Request, Response } from "express";
 
 export enum RateLimitCategory {
+  PUBLIC_MEDIA = "PUBLIC_MEDIA",
   PUBLIC_READ = "PUBLIC_READ",
   AUTHENTICATION = "AUTHENTICATION",
   CITIZEN_SUBMISSION = "CITIZEN_SUBMISSION",
@@ -27,6 +31,7 @@ interface RateLimitConfig {
 }
 
 const CATEGORY_LIMITS: Record<RateLimitCategory, RateLimitConfig> = {
+  [RateLimitCategory.PUBLIC_MEDIA]: { max: 60, windowMs: 60 * 1000 },
   [RateLimitCategory.PUBLIC_READ]: { max: 120, windowMs: 60 * 1000 },
   [RateLimitCategory.AUTHENTICATION]: { max: 10, windowMs: 60 * 1000 },
   [RateLimitCategory.CITIZEN_SUBMISSION]: { max: 15, windowMs: 60 * 1000 },
@@ -40,101 +45,41 @@ const CATEGORY_LIMITS: Record<RateLimitCategory, RateLimitConfig> = {
 export const RATE_LIMIT_KEY = "rate_limit_category";
 export const RateLimit = (category: RateLimitCategory) => SetMetadata(RATE_LIMIT_KEY, category);
 
-interface ClientRecord {
-  timestamps: number[];
-}
-
 @Injectable()
 export class RateLimiterGuard implements CanActivate {
-  private tracker: Map<string, ClientRecord> = new Map();
-
-  private readonly cleanupTimer: ReturnType<typeof setInterval>;
-
-  onModuleDestroy() { clearInterval(this.cleanupTimer); }
-
-  constructor(@Inject(Reflector) private reflector: Reflector) {
-    // Periodic cleanup of stale tracking records every 5 minutes
-    this.cleanupTimer = setInterval(() => this.cleanup(), 5 * 60 * 1000);
-    this.cleanupTimer.unref();
-  }
-
-  canActivate(context: ExecutionContext): boolean {
-    const http = context.switchToHttp();
-    const req = http.getRequest<Request>();
-    const res = http.getResponse<Response>();
-
-    // Skip non-API requests (static files, SPA routes)
-    if (!req.path || !req.path.startsWith("/api")) {
-      return true;
+  private database: PostgresDatabase;
+  constructor(@Inject(Reflector) private reflector: Reflector) {}
+  configure(database: PostgresDatabase) { this.database = database; }
+  async onModuleDestroy() { await this.database?.close(); }
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest<Request>();
+    const res = context.switchToHttp().getResponse<Response>();
+    if (!req.path?.startsWith('/api') || req.path === '/api/health') return true;
+    const category = this.reflector.getAllAndOverride<RateLimitCategory>(RATE_LIMIT_KEY,
+      [context.getHandler(), context.getClass()]) ||
+      (['GET','HEAD','OPTIONS'].includes(req.method) ? RateLimitCategory.PUBLIC_READ : RateLimitCategory.ADMIN_MUTATION);
+    const config = CATEGORY_LIMITS[category];
+    const key = 'http:' + createHash('sha256').update(category + ':' + clientIp(req)).digest('hex');
+    let record: { attempts: number; retry: number };
+    try {
+      this.database ??= new PostgresDatabase(connectionConfig(process.env.DATABASE_URL));
+      record = await this.database.transaction(async tx => {
+        // Existing shared throttle contract; separate namespace from authentication.
+        await tx.query("DELETE FROM app.staff_auth_throttle WHERE key LIKE 'http:%' AND started_at < now()-interval '1 day'");
+        const [row] = await tx.query(`INSERT INTO app.staff_auth_throttle(key,attempts) VALUES($1,1)
+          ON CONFLICT(key) DO UPDATE SET
+          attempts=CASE WHEN staff_auth_throttle.started_at<=now()-interval '1 minute' THEN 1 ELSE LEAST(staff_auth_throttle.attempts+1,1000000) END,
+          started_at=CASE WHEN staff_auth_throttle.started_at<=now()-interval '1 minute' THEN now() ELSE staff_auth_throttle.started_at END
+          RETURNING attempts, GREATEST(1,ceil(extract(epoch FROM started_at+interval '1 minute'-now())))::int AS retry`, [key]);
+        return row as { attempts: number; retry: number };
+      });
+    } catch { throw new HttpException('Rate limiting is temporarily unavailable.', 503); }
+    res.setHeader('X-RateLimit-Limit', config.max);
+    res.setHeader('X-RateLimit-Remaining', Math.max(0,config.max-record.attempts));
+    if (record.attempts > config.max) {
+      res.setHeader('Retry-After',record.retry);
+      throw new HttpException({ statusCode: HttpStatus.TOO_MANY_REQUESTS, message: 'Please retry later.', retryAfter: record.retry },429);
     }
-
-    const category = this.reflector.getAllAndOverride<RateLimitCategory>(RATE_LIMIT_KEY, [
-      context.getHandler(),
-      context.getClass()
-    ]) || RateLimitCategory.PUBLIC_READ;
-
-    const config = CATEGORY_LIMITS[category] || CATEGORY_LIMITS[RateLimitCategory.PUBLIC_READ];
-
-    // Determine client IP accurately
-    const clientIp = (
-      req.ip ||
-      req.socket?.remoteAddress ||
-      "unknown"
-    ).toString().trim();
-
-    const trackerKey = `${category}:${clientIp}`;
-    const now = Date.now();
-    const windowStart = now - config.windowMs;
-
-    let record = this.tracker.get(trackerKey);
-    if (!record) {
-      if (this.tracker.size >= 10000) {
-        this.cleanup();
-        if (this.tracker.size >= 10000) {
-          throw new HttpException('Rate limiter capacity reached. Please retry later.', 503);
-        }
-      }
-      record = { timestamps: [] };
-      this.tracker.set(trackerKey, record);
-    }
-
-    // Filter out timestamps outside current time window
-    record.timestamps = record.timestamps.filter(t => t > windowStart);
-
-    const currentCount = record.timestamps.length;
-
-    // Set rate limit headers
-    res.setHeader("X-RateLimit-Limit", config.max);
-    res.setHeader("X-RateLimit-Remaining", Math.max(0, config.max - currentCount - 1));
-
-    if (currentCount >= config.max) {
-      const oldestInWindow = record.timestamps[0] || now;
-      const retryAfterSeconds = Math.ceil((oldestInWindow + config.windowMs - now) / 1000) || 60;
-
-      res.setHeader("Retry-After", retryAfterSeconds);
-
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.TOO_MANY_REQUESTS,
-          error: "Too Many Requests",
-          message: "Rate limit exceeded. Please wait before submitting additional requests.",
-          retryAfter: retryAfterSeconds
-        },
-        HttpStatus.TOO_MANY_REQUESTS
-      );
-    }
-
-    record.timestamps.push(now);
     return true;
-  }
-
-  private cleanup() {
-    const now = Date.now();
-    for (const [key, record] of this.tracker.entries()) {
-      record.timestamps = record.timestamps.filter(t => t > now - 10 * 60 * 1000);
-      if (record.timestamps.length === 0) {
-        this.tracker.delete(key);
-      }
-    }
   }
 }

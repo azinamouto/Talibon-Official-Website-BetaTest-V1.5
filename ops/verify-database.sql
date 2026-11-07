@@ -1,29 +1,14 @@
 \set ON_ERROR_STOP on
 BEGIN READ ONLY;
-SET LOCAL statement_timeout = '60s';
+SET LOCAL statement_timeout = '30s';
 DO $$
 DECLARE item text;
 BEGIN
-  FOREACH item IN ARRAY ARRAY['roles','profiles','news','pages','services_cms',
-    'certificate_requests','workflow_history','payments','notifications',
-    'security_audit_events','form_email_jobs','form_email_attempts','admin_user_audit'] LOOP
-    IF to_regclass('public.' || item) IS NULL THEN
-      RAISE EXCEPTION 'Missing required table: %', item;
-    END IF;
+  FOREACH item IN ARRAY ARRAY['published_content','published_media','staff_accounts','media_assets','audit_events','staff_auth_audit','staff_session_assurance'] LOOP
+    IF to_regclass('app.' || item) IS NULL THEN RAISE EXCEPTION 'Missing R2 relation: %',item; END IF;
   END LOOP;
-  IF EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-    WHERE n.nspname='public' AND c.relkind IN ('r','p') AND NOT c.relrowsecurity) THEN
-    RAISE EXCEPTION 'Public table missing RLS';
-  END IF;
-  IF EXISTS (SELECT 1 FROM pg_constraint c JOIN pg_namespace n ON n.oid=c.connamespace
-    WHERE n.nspname='public' AND NOT c.convalidated) THEN
-    RAISE EXCEPTION 'Unvalidated public constraint';
-  END IF;
-  IF EXISTS (SELECT 1 FROM public.profiles p LEFT JOIN auth.users u ON p.id=u.id WHERE u.id IS NULL) THEN
-    RAISE EXCEPTION 'Orphaned profiles';
-  END IF;
-  IF to_regprocedure('public.is_api_session_active(uuid,uuid)') IS NULL THEN
-    RAISE EXCEPTION 'Missing session verification function';
-  END IF;
+  IF EXISTS (SELECT 1 FROM pg_constraint c JOIN pg_namespace n ON n.oid=c.connamespace WHERE n.nspname='app' AND NOT c.convalidated) THEN RAISE EXCEPTION 'Unvalidated constraint'; END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname='talgov_runtime' AND (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR rolcanlogin)) THEN RAISE EXCEPTION 'Unsafe runtime role'; END IF;
+  IF has_table_privilege('talgov_runtime','app.public_content','INSERT,UPDATE,DELETE') THEN RAISE EXCEPTION 'Runtime can mutate retained content'; END IF;
 END $$;
-COMMIT;
+ROLLBACK;

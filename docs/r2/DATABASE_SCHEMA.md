@@ -8,7 +8,7 @@ Status: static source inventory and design, not a live catalog, approved DDL or 
 
 ## Source of truth and drift
 
-Eight migrations under `supabase/migrations/` are the documented fresh-project chain. They require Supabase auth/storage schemas and roles; `backend/test/supabase-stubs.sql` supplies local test substitutes, not a production compatibility layer. `DATABASE/` and `supabase/legacy-migrations/` contain competing historical layouts. Do not replay them into Neon or apply the canonical baseline over a populated source.
+Eight migrations under `supabase/migrations/` are the documented legacy fresh-project chain. They require Supabase auth/storage schemas and roles; the historical local harness and stubs are retained under `archive/r1/backend/test/` and are not part of active R2 tests or runtime. `DATABASE/` and `supabase/legacy-migrations/` contain competing historical layouts. Do not replay them into Neon or apply the canonical baseline over a populated source.
 
 Observed runtime targets without a table declaration in this chain include `municipal_services`, `citizen_charters`, `transparency_documents`, `service_requests`, `service_request_history`, `citizen_notification_preferences`, and `notification_delivery_logs`. Some originate in legacy services/edge code. Establish import reachability and inspect the deployed catalog before deciding whether they are aliases, old tables or broken paths. `citizen_charters` must not be silently treated as `citizens_charter_cms`. The old README also mentions `dynamic_pages`, whereas the canonical chain creates `pages`.
 

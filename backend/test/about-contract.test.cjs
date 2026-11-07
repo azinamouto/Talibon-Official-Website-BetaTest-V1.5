@@ -1,10 +1,10 @@
-const { test } = require('node:test');
-const assert = require('node:assert/strict');
-require('reflect-metadata');
-const { AboutService } = require('../dist/api/about/about.service');
-const { aboutContracts } = require('../dist/api/about/about.contract');
-const methods = { profile: 'getProfile', seal: 'getSeal', history: 'getHistory', mayors: 'getMayors', departments: 'getDepartments', 'vicinity-map': 'getVicinityMap', barangays: 'getBarangays', industry: 'getIndustry', hymn: 'getHymn', demographics: 'getDemographics', location: 'getLocation' };
-test('About editorial responses match the shared OpenAPI examples', () => {
-  const service = new AboutService();
-  for (const [path, method] of Object.entries(methods)) assert.deepEqual(service[method](), aboutContracts[path].example, path);
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {AboutService}=require('../dist/api/about/about.service');
+test('About endpoints return honest empty states and propagate publication failures',async()=>{
+ const service=new AboutService({list:async()=>({data:[]})});
+ for(const method of Object.getOwnPropertyNames(AboutService.prototype).filter(x=>x.startsWith('get'))) {
+   const value=await service[method]();assert.deepEqual(value,['getMayors','getDepartments','getBarangays','getServices'].includes(method)?[]:{});
+ }
+ const failed=new AboutService({list:async()=>{throw new Error('unavailable');}});await assert.rejects(failed.getProfile(),/unavailable/);
 });

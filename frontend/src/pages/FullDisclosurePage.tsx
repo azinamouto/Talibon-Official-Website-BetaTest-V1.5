@@ -1,3 +1,4 @@
+import layout from "../styles/InnerPageLayout.module.css";
 import React from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink } from 'lucide-react';
@@ -7,7 +8,7 @@ const FullDisclosurePage: React.FC = () => {
   const imageUrl = "https://talibon.gov.ph/wp-content/themes/yootheme/cache/e8/RegistrationCert_page-0001-e8213d59.webp";
 
   return (
-    <div className={`${styles.section} pt-8 pb-12 px-4 md:px-6 max-w-5xl mx-auto`}>
+    <div className={`${styles.section} ${layout.page} ${layout.reading} site-container`}>
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

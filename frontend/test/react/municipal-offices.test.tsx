@@ -1,7 +1,12 @@
 import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { expect, it } from 'vitest';
+import { beforeEach, afterEach, expect, it, vi } from 'vitest';
 import MunicipalOffices from '../../src/components/MunicipalOffices';
+
+beforeEach(() => {
+  vi.stubGlobal('ResizeObserver', class {observe(){} disconnect(){}});
+});
+afterEach(() => vi.unstubAllGlobals());
 
 it('preserves the four officials in order with one accessible directory link per card and correct elected role', () => {
   render(<MemoryRouter><MunicipalOffices /></MemoryRouter>);

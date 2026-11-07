@@ -10,6 +10,13 @@ export default function ScrollToTop() {
       const scrollToHash = () => {
         const element = document.getElementById(id);
         if (element) {
+          // About's sticky era navigation supplies its own CSS scroll clearance.
+          // Leave every other route's existing offset and behavior unchanged.
+          if (element.hasAttribute("data-mayoral-era")) {
+            element.scrollIntoView({ block: "start", behavior:
+              window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+            return;
+          }
           const yOffset = -130;
           const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
           window.scrollTo({ top: y, behavior: "smooth" });

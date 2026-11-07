@@ -1,3 +1,4 @@
+import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 import { Calendar, Clock, MapPin } from "lucide-react";
 
@@ -16,7 +17,7 @@ interface FestivitiesViewProps {
 
 export default function FestivitiesView({ data }: FestivitiesViewProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 pb-8">
+    <div className={layout.cards}>
       {Array.isArray(data) && data.map((fest: Festivity, idx: number) => (
         <div
           key={`${fest.name}-${idx}`}

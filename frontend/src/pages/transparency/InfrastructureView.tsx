@@ -1,3 +1,4 @@
+import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 
 interface Project {
@@ -13,7 +14,7 @@ interface InfrastructureViewProps {
 
 export default function InfrastructureView({ data }: InfrastructureViewProps) {
   return (
-    <div className="grid grid-cols-1 gap-3">
+    <div className={layout.cards}>
       {Array.isArray(data) && data.map((project: Project, idx: number) => (
         <div key={`${project.id}-${idx}`} className="p-3.5 sm:p-4 rounded-xl border border-brand-border bg-white shadow-xs group">
           <div className="flex justify-between items-start gap-3 mb-2">

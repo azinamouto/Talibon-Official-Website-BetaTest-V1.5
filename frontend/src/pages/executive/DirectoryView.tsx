@@ -1,49 +1,31 @@
-import React from "react";
-import { Phone, Building2 } from "lucide-react";
+import { Phone, Building2 } from 'lucide-react';
+import { charterGroups } from '../../data/charterDirectory';
+import styles from './DirectoryView.module.css';
 
-interface DirectoryEntry {
-  department: string;
-  contact: string;
-}
+interface DirectoryEntry { department: string; contact?: string }
+const officeKey = (name: string) => name.replace(/[\u2019']/g, '').toLowerCase().trim();
 
-interface DirectoryViewProps {
-  data: DirectoryEntry[];
-}
-
-export default function DirectoryView({ data }: DirectoryViewProps) {
-  return (
-    <div className="max-w-4xl mx-auto space-y-3">
-      {Array.isArray(data) && data.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {data.map((dept: DirectoryEntry, idx: number) => (
-            <div 
-              key={`${dept.department}-${idx}`} 
-              className="flex justify-between items-center gap-3 p-4 bg-white border border-brand-border rounded-xl shadow-xs hover:border-brand-primary/40 transition-all group"
-            >
-              <div className="flex items-center gap-3 min-w-0 flex-1">
-                <div className="w-9 h-9 rounded-lg bg-brand-primary/5 border border-brand-primary/10 flex items-center justify-center shrink-0 text-brand-primary">
-                  <Building2 size={18} />
-                </div>
-                <h3 className="text-xs sm:text-sm font-bold text-brand-text group-hover:text-brand-primary transition-colors leading-snug">
-                  {dept.department}
-                </h3>
-              </div>
-              <a 
-                href={`tel:${dept.contact}`}
-                className="flex items-center gap-1.5 text-xs font-bold text-brand-primary bg-brand-primary/5 hover:bg-brand-primary hover:text-white px-3 py-2 rounded-lg border border-brand-primary/10 transition-all shrink-0"
-              >
-                <Phone size={13} />
-                <span className="font-mono">{dept.contact}</span>
-              </a>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 text-brand-muted font-bold text-xs uppercase tracking-wider">
-          No directory entries found.
-        </div>
-      )}
-    </div>
-  );
+export default function DirectoryView({ data }: { data: DirectoryEntry[] }) {
+  const contacts = Array.isArray(data) ? data : [];
+  // Reuse the existing Charter roster and retain directory-only offices.
+  // TODO: Replace API placeholder contacts with LGU-verified phone numbers.
+  // Never assign another office's contact to offices without supplied numbers.
+  const entries: DirectoryEntry[] = charterGroups.flatMap(group => group.offices).map(office =>
+    contacts.find(entry => officeKey(entry.department) === officeKey(office.name)) || { department: office.name });
+  for (const contact of contacts) {
+    if (!entries.some(entry => officeKey(entry.department) === officeKey(contact.department))) entries.push(contact);
+  }
+  return <div className={styles.grid}>
+    {entries.length ? entries.map(entry => <article key={entry.department} className={styles.card}>
+      <div className={styles.identity}>
+        <span className={styles.icon}><Building2 size={18} aria-hidden="true" /></span>
+        <h2>{entry.department}</h2>
+      </div>
+      {entry.contact ? <a href={`tel:${entry.contact.replace(/[^+\d]/g, '')}`} className={styles.phone}
+        aria-label={`Call ${entry.department}: ${entry.contact}`}>
+        <Phone size={13} aria-hidden="true" /><span>{entry.contact}</span>
+      </a> : <p className={styles.unavailable}>Contact number not listed</p>}
+    </article>) : <p className={styles.empty}>No directory entries found.</p>}
+  </div>;
 }
 

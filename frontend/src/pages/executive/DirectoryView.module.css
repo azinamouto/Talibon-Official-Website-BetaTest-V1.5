@@ -1,0 +1,20 @@
+.page main { margin-block-start: 0; padding-top: calc(max(0px, var(--navbar-height-mobile) - 125px) + 32px); }
+.page h1 { text-transform: none; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; grid-auto-rows: 1fr; }
+.card { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; min-width: 0; padding: 16px; background: var(--color-brand-surface); border: 1px solid var(--color-brand-border); border-radius: 12px; box-shadow: var(--shadow-xs); transition: border-color 160ms ease, box-shadow 160ms ease; }
+.identity { display: flex; align-items: center; gap: 12px; width: 100%; }
+.icon { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: none; border-radius: 8px; background: var(--talweb-background); border: 1px solid var(--color-brand-border); color: var(--talweb-deep); }
+.identity h2 { font-size: 16px; font-weight: 700; line-height: 1.5; color: var(--talweb-text); overflow-wrap: anywhere; }
+.phone { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: auto; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--color-brand-border); background: var(--talweb-background); color: var(--talweb-deep); font-size: 14px; font-weight: 600; text-decoration: none; }
+.phone svg { flex: none; }
+.phone:hover { background: var(--talweb-deep); color: var(--talweb-card); }
+.phone:focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 2px; }
+.card:hover, .card:focus-within { border-color: var(--talweb-deep); box-shadow: var(--shadow-md); }
+.unavailable { margin-top: auto; min-height: 44px; display: flex; align-items: center; color: var(--talweb-muted); font-size: 14px; }
+.empty { grid-column: 1 / -1; color: var(--talweb-muted); padding-block: 32px; }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) {
+  .page main { padding-top: calc(max(0px, var(--navbar-height-desktop) - 142px) + 32px); }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } }

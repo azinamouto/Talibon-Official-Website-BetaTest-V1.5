@@ -47,7 +47,7 @@ export default function TransparencyGovernance() {
             <div className={styles.seal}><img src="https://ncda.gov.ph/wp-content/uploads/2023/06/freedom-of-information-logo.jpg" alt="FOI" referrerPolicy="no-referrer" /></div>
           </div>
         </header>
-        <ul className={styles.grid} aria-label="Transparency documents">
+        <ul className={`${styles.grid} icon-float-group`} aria-label="Transparency documents">
           {items.map((item, idx) => {
             const titleId = `transparency-document-${idx}`;
             const actionId = `${titleId}-action`;
@@ -55,7 +55,7 @@ export default function TransparencyGovernance() {
               initial={reducedMotion ? false : { opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               transition={{ delay: reducedMotion ? 0 : idx * 0.08 }}>
-              <span className={styles.icon}><item.icon size={28} aria-hidden="true" /></span>
+              <span className={styles.icon}><item.icon className="icon-float" size={28} aria-hidden="true" /></span>
               <h3 id={titleId}>{item.title}</h3>
               <p>{item.desc}</p>
               <Link id={actionId} to={item.href} aria-labelledby={`${titleId} ${actionId}`} className={styles.action}>

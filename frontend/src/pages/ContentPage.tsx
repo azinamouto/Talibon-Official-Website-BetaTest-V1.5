@@ -1,6 +1,8 @@
+import layout from "../styles/InnerPageLayout.module.css";
+import styles from "./ContentPage.module.css";
 import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { AlertCircle } from "lucide-react";
 import { SkeletonLoader } from "../components/SkeletonLoader";
 import { ERROR_MESSAGES } from "../constants";
@@ -9,6 +11,9 @@ interface ContentPageProps {
   title: string;
   fetchData: () => Promise<any>;
   renderContent: (data: any) => React.ReactNode;
+  standardLayout?: boolean;
+  spacingLayout?: boolean;
+  pageHeader?: React.ReactNode;
   skeletonType?: "text" | "card" | "image";
 }
 
@@ -16,8 +21,13 @@ const ContentPage: React.FC<ContentPageProps> = ({
   title, 
   fetchData, 
   renderContent,
+  standardLayout = false,
+  spacingLayout = false,
+  pageHeader,
   skeletonType = "text"
 }) => {
+  const wideLayout = standardLayout || spacingLayout;
+  const reducedMotion = useReducedMotion();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,17 +54,17 @@ const ContentPage: React.FC<ContentPageProps> = ({
   };
 
   return (
-    <main className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 min-h-screen bg-brand-bg relative overflow-hidden break-words`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <main className={`${sectionTheme.section} ${sectionTheme.headerClearance} ${standardLayout ? styles.standard : spacingLayout ? layout.page : ""} ${spacingLayout ? "" : "pb-12"} min-h-screen bg-brand-bg relative overflow-hidden break-words`}>
+      <div className={wideLayout ? "site-container relative z-10" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"}>
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={pageHeader && reducedMotion ? false : { opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: pageHeader && reducedMotion ? 0 : 0.4 }}
         >
-          <div className="mb-6">
+          {pageHeader ?? <div className="mb-6">
             <span className="section-label">Information</span>
-            <h1 className="text-2xl sm:text-3xl font-bold text-brand-text font-display uppercase tracking-tight">{title}</h1>
-          </div>
+            <h1 className={`text-2xl sm:text-3xl font-bold text-brand-text font-display tracking-tight ${standardLayout ? "" : "uppercase"}`}>{title}</h1>
+          </div>}
 
           {loading ? (
             <div role="status" aria-label="Loading content"><SkeletonLoader count={3} type={skeletonType} /></div>
@@ -73,8 +83,10 @@ const ContentPage: React.FC<ContentPageProps> = ({
                 </button>
               </div>
             </div>
-          ) : data && (Array.isArray(data) ? data.length > 0 : typeof data !== 'object' || Object.keys(data).length > 0) ? (
-            <div className="min-h-[400px]">{renderContent(data)}</div>
+                   ) : data && (Array.isArray(data) ? data.length > 0 : typeof data !== 'object' || Object.keys(data).length > 0) ? (
+            <div className={`min-h-[400px] ${standardLayout ? styles.body : spacingLayout ? layout.reading : ""}`}>
+              {renderContent(data)}
+            </div>
           ) : (
             <div className="py-24 text-center text-brand-muted font-bold uppercase tracking-widest">
               No content available at this time.

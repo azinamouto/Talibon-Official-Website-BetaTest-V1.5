@@ -40,6 +40,10 @@ export class MediaService {
   list(actor: StaffPrincipal, page: number) { return this.run(async repo => {
     const rows = await repo.listStaff(actor,page); return { data: rows.slice(0,50).map(mediaView), hasMore: rows.length > 50 };
   }); }
+  listPublic(kind: string, page: number) { return this.run(async repo => {
+    const rows = await repo.listPublic(kind,page);
+    return { data: rows.slice(0,50).map(row => ({ ...row, download_url: `/api/media/${row.id}/download` })), hasMore: rows.length > 50 };
+  }); }
   options(actor: StaffPrincipal) { return this.run(repo => repo.options(actor)); }
   upload(actor: StaffPrincipal, input: UploadDto, request: string) { return this.run(async (repo,store) => {
     if (!await repo.throttle(actor)) throw new HttpException('Upload limit reached. Retry in one minute.', 429);

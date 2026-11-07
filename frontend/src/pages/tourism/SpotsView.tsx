@@ -48,11 +48,11 @@ export default function SpotsView({ data }: SpotsViewProps) {
   // Filter spots by category and search query
   const filteredSpots = spots.filter((spot) => {
     const matchesCategory = selectedCategory === "ALL" || spot.category === selectedCategory;
-    const matchesSearch = searchQuery.trim() === "" || 
+    const matchesSearch = searchQuery.trim() === "" ||
       spot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (spot.location && spot.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (spot.description && spot.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    
+
     return matchesCategory && matchesSearch;
   });
 
@@ -86,12 +86,12 @@ export default function SpotsView({ data }: SpotsViewProps) {
         {/* Full-Width Featured Image Banner */}
         <div className="relative w-full h-72 sm:h-96 md:h-[420px] rounded-3xl overflow-hidden bg-slate-900 shadow-lg">
           <img
-            src={selectedSpot.featured_image || `https://picsum.photos/seed/${encodeURIComponent(selectedSpot.name)}/1200/600`}
+            src={selectedSpot.featured_image || undefined}
             alt={selectedSpot.name}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
-          
+
           {selectedSpot.category && (
             <span className="absolute top-6 left-6 bg-brand-primary/95 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full shadow-md">
               {selectedSpot.category}
@@ -116,8 +116,8 @@ export default function SpotsView({ data }: SpotsViewProps) {
         </div>
 
         {/* 2-Column Responsive Layout for Content & Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
           {/* Main Column (8 cols): Description & Photo Gallery */}
           <div className="lg:col-span-8 space-y-8">
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-4">
@@ -142,10 +142,10 @@ export default function SpotsView({ data }: SpotsViewProps) {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {selectedSpot.gallery_images.map((imgUrl, i) => (
                     <div key={i} className="aspect-square rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 group">
-                      <img 
-                        src={imgUrl} 
-                        alt={`Gallery photo ${i + 1}`} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      <img
+                        src={imgUrl}
+                        alt={`Gallery photo ${i + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   ))}
@@ -264,7 +264,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
             className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all text-slate-800 placeholder:text-slate-400 font-medium"
           />
           {searchQuery && (
-            <button 
+            <button
               onClick={() => setSearchQuery("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
             >
@@ -312,19 +312,19 @@ export default function SpotsView({ data }: SpotsViewProps) {
       ) : (
         <div className={layout.cards}>
           {filteredSpots.map((spot: Spot, idx: number) => (
-            <div 
-              key={`${spot.id}-${idx}`} 
+            <div
+              key={`${spot.id}-${idx}`}
               className="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden group"
             >
               <div className="aspect-[16/10] bg-slate-100 relative overflow-hidden">
-                <img 
-                  src={spot.featured_image || `https://picsum.photos/seed/${encodeURIComponent(spot.name)}/800/500`} 
-                  alt={spot.name} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                  referrerPolicy="no-referrer" 
+                <img
+                  src={spot.featured_image || undefined}
+                  alt={spot.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
-                
+
                 {spot.category && (
                   <span className="absolute top-3.5 left-3.5 bg-brand-primary/95 backdrop-blur-xs text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
                     {spot.category}

@@ -4,7 +4,6 @@ import { MediaService } from './api/media/media.service';
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from "@nestjs/common";
 import { APP_GUARD, APP_FILTER } from "@nestjs/core";
 import { AuditMiddleware } from "./security/audit.middleware";
-import { AuthModule } from "./api/auth/auth.module";
 import { ConfigModule } from '@nestjs/config';
 import { validateEnvironment } from './config/environment';
 
@@ -20,7 +19,8 @@ import { TransparencyController } from "./api/transparency/transparency.controll
 import { TransparencyService } from "./api/transparency/transparency.service";
 import { TourismController } from "./api/tourism/tourism.controller";
 import { TourismService } from "./api/tourism/tourism.service";
-import { SupabaseService } from "./supabase.service";
+import { PublicContentService } from './database/public-content.service';
+import { PublicCatalogController } from './api/content/public-catalog.controller';
 import { RateLimiterGuard } from "./security/rate-limiter.guard";
 import { StaffGuard } from "./authentication/staff.guard";
 import { CacheControlMiddleware } from "./security/cache-control.middleware";
@@ -29,23 +29,17 @@ import { ContentService } from './api/content/content.service';
 import { PageContentController } from './api/content/pages.controller';
 import { NewsContentController } from './api/content/news.controller';
 import { ServiceContentController } from './api/content/services.controller';
-import { ReportsController } from './api/admin/reports.controller';
-import { ReportsService } from './api/admin/reports.service';
-import { UsersController } from './api/admin/users.controller';
-import { UsersService } from './api/admin/users.service';
 import { SearchController } from './api/search/search.controller';
 import { SearchService } from './api/search/search.service';
 import { HealthController } from './api/health/health.controller';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment }), AuthModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment })],
   controllers: [
-    MediaController, PublicMediaController,
+    MediaController, PublicMediaController, PublicCatalogController,
     HealthController,
     PublicFormsController,
     SearchController,
-    ReportsController,
-    UsersController,
     AboutController,
     ExecutiveController,
     LegislativeController,
@@ -59,9 +53,7 @@ import { HealthController } from './api/health/health.controller';
   providers: [
     MediaService,
     SearchService,
-    ReportsService,
-    UsersService,
-    SupabaseService,
+    PublicContentService,
     AboutService,
     ExecutiveService,
     LegislativeService,

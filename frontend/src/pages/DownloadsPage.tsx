@@ -1,5 +1,6 @@
-import layout from "../styles/InnerPageLayout.module.css";
 import React, { useEffect, useState } from 'react';
+import PublishedPhotos from '../components/PublishedPhotos';
+import layout from '../styles/InnerPageLayout.module.css';
 import { motion } from 'motion/react';
 import { Download, FileText, FileSpreadsheet, FileArchive, Search, Filter, ExternalLink, Building2, Briefcase, FileCheck, Landmark, Target, Activity } from 'lucide-react';
 import { formsApi, type DownloadableForm } from '../services/api';
@@ -39,6 +40,8 @@ function downloadableItem(item: DownloadableForm): DownloadItem | null {
 
 const DownloadsPage: React.FC = () => {
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,10 +49,11 @@ const DownloadsPage: React.FC = () => {
 
   useEffect(() => {
     const controller = new AbortController();
+    setLoading(true); setError(false);
     const fetchDownloads = async () => {
       try {
-        const files = await formsApi.getDownloadable(controller.signal);
-        if (!controller.signal.aborted) setDownloads(files.map(downloadableItem).filter((item): item is DownloadItem => item !== null));
+        const files = await formsApi.getDownloadablePage(page,controller.signal);
+        if (!controller.signal.aborted) { setDownloads(files.data.map(downloadableItem).filter((item): item is DownloadItem => item !== null)); setHasMore(files.hasMore); }
       } catch {
         if (!controller.signal.aborted) setError(true);
       } finally {
@@ -59,7 +63,7 @@ const DownloadsPage: React.FC = () => {
 
     void fetchDownloads();
     return () => controller.abort();
-  }, []);
+  }, [page]);
 
   const categories = ['all', ...Array.from(new Set(downloads.map(d => d.category)))];
 
@@ -207,6 +211,12 @@ const DownloadsPage: React.FC = () => {
             </p>
           </div>
         )}
+
+        <div className="flex gap-4 mt-4">
+          {page > 1 && <button className="min-h-11 underline" onClick={() => setPage(page-1)}>Previous documents</button>}
+          {hasMore && !loading && !error && <button className="min-h-11 underline" onClick={() => setPage(page+1)}>Next documents</button>}
+        </div>
+        <PublishedPhotos />
 
         {/* GAD Links Section */}
         <div className="mt-12">

@@ -7,7 +7,7 @@ export const MEDIA_REPOSITORY = Symbol('MediaRepository');
 export const STAFF_REPOSITORY = Symbol('StaffRepository');
 export const AUDIT_REPOSITORY = Symbol('AuditRepository');
 
-// Deliberately not imported by AppModule until the auth/storage/cutover gates are met.
+// Generic repository factory retained for tools. HTTP services use lazy bounded PostgreSQL pools.
 @Module({})
 export class DatabaseModule {
   static register(): DynamicModule {

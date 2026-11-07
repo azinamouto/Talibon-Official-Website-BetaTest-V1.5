@@ -242,3 +242,45 @@ test('snapshot export partitions rows, detects drift, imports idempotently and r
     await assert.rejects(importBundle(owner,unsafe,randomUUID()));
   } finally {await legacy.end();}
 });
+
+
+test('R2 HTTP public reads use approved Neon views with filters, pagination, search and failure isolation',async()=>{
+  require('reflect-metadata');
+  const {NestFactory}=require('@nestjs/core');
+  const {AppModule}=require('../dist/app.module');
+  const {configureApp}=require('../dist/configure-app');
+  const {PublicContentService}=require('../dist/database/public-content.service');
+  const id=randomUUID(), draft=randomUUID();
+  await owner.query(`INSERT INTO app.public_content(id,kind,legacy_id,slug,title,body,source_id,publication,published_at)
+    VALUES($1::uuid,'news',$1::text,'increment-five-test','Synthetic uniqueverify news',$3,$4,'published',now()),
+    ($2::uuid,'news',$2::text,'increment-five-draft','Synthetic uniqueverify draft',$3,$4,'draft',NULL)`,
+    [id,draft,JSON.stringify({summary:'Synthetic API fixture',category:'UPDATE'}),source]);
+  process.env.NODE_ENV='test';
+  const app=await NestFactory.create(AppModule,{logger:false,bodyParser:false,abortOnError:false});
+  // This foundation-only suite has no auth schema. Rate limiting is independently tested on the combined media DB.
+  const {RateLimiterGuard}=require('../dist/security/rate-limiter.guard');
+  const originalGuard=RateLimiterGuard.prototype.canActivate;
+  RateLimiterGuard.prototype.canActivate=async()=>true;
+  const content=app.get(PublicContentService);content.configure(db);configureApp(app);
+  await app.listen(0,'127.0.0.1');const base=await app.getUrl();
+  try {
+    for(const path of ['/api/news?q=uniqueverify&limit=1','/api/public-content/news?q=uniqueverify&limit=1']) {
+      const response=await fetch(base+path);assert.equal(response.status,200);
+      const body=await response.json();assert.equal(body.pagination.total,1);assert.equal(body.data[0].id,id);
+    }
+    assert.equal((await fetch(base+'/api/news/'+draft)).status,404);
+    assert.equal((await fetch(base+'/api/public-content/staff_accounts')).status,400);
+    const search=await (await fetch(base+'/api/search?q=uniqueverify')).json();
+    assert.equal(search.meta.total,1);assert.equal(search.data[0].id,id);
+    assert.equal((await fetch(base+'/api/health/ready')).status,503);
+    assert.equal((await fetch(base+'/api/news',{method:'POST'})).status,410);
+    assert.equal((await fetch(base+'/api/admin/media')).status,401);
+    await owner.query('UPDATE app.content_sources SET approved=false WHERE id=$1',[source]);
+    const withdrawn=await (await fetch(base+'/api/news?q=uniqueverify')).json();assert.equal(withdrawn.pagination.total,0);
+  } finally {
+    await owner.query('UPDATE app.content_sources SET approved=true WHERE id=$1',[source]);
+    // The service owns its pool in production; this harness lends the shared suite pool.
+    content.configure(undefined);await app.close();RateLimiterGuard.prototype.canActivate=originalGuard;
+    await owner.query('DELETE FROM app.public_content WHERE id=ANY($1::uuid[])',[[id,draft]]);
+  }
+});

@@ -77,10 +77,10 @@ export default function BudgetView({ data }: BudgetViewProps) {
             </div>
             <div className="space-y-1">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                Official Certification Notice
+                Publication status
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                {data.message || "The official Annual Budget, Appropriation Ordinances, and Financial Disclosures for the Municipal Government of Talibon are currently being prepared for posting in compliance with the DILG Full Disclosure Policy and SGLG requirements."}
+                {data.message || "Approved budget documents are not yet available."}
               </p>
             </div>
           </div>

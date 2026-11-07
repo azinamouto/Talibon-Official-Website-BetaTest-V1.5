@@ -25,6 +25,11 @@ export class MediaRepository extends PgRepositories {
       return row.attempts <= 10;
     });
   }
+  listPublic(kind: string, page: number) {
+    return this.mediaDb.transaction(tx => tx.query(`SELECT p.id,p.kind,p.title,p.description,p.alt_text,p.mime,p.bytes::int AS bytes,p.published_at,c.title AS category
+      FROM app.published_media p JOIN app.media_categories c ON c.id=p.category_id
+      WHERE ($1='' OR p.kind=$1) ORDER BY p.published_at DESC,p.id LIMIT 51 OFFSET $2`, [kind,(page-1)*50]), true);
+  }
   listStaff(actor: StaffPrincipal, page: number) {
     return this.mediaDb.transaction(async tx => {
       await this.actor(tx, actor);

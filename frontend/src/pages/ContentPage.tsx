@@ -83,8 +83,10 @@ const ContentPage: React.FC<ContentPageProps> = ({
                 </button>
               </div>
             </div>
-          ) : data && (!Array.isArray(data) || data.length > 0) ? (
-            <div className={`min-h-[400px] ${standardLayout ? styles.body : spacingLayout ? layout.reading : ""}`}>{renderContent(data)}</div>
+                   ) : data && (Array.isArray(data) ? data.length > 0 : typeof data !== 'object' || Object.keys(data).length > 0) ? (
+            <div className={`min-h-[400px] ${standardLayout ? styles.body : spacingLayout ? layout.reading : ""}`}>
+              {renderContent(data)}
+            </div>
           ) : (
             <div className="py-24 text-center text-brand-muted font-bold uppercase tracking-widest">
               No content available at this time.

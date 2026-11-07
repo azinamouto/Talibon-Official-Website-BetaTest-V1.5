@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 test.beforeEach(async ({ context }) => {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
+  await context.route('**/api/media?**', route => route.fulfill({ json: { data: [], hasMore: false } }));
   await context.route('**/api/staff/me', route => route.fulfill({ status: 401, json: { message: 'Unauthorized' } }));
 });
 

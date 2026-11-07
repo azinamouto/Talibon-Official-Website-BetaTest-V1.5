@@ -19,17 +19,17 @@ export default function FestivitiesView({ data }: FestivitiesViewProps) {
   return (
     <div className={layout.cards}>
       {Array.isArray(data) && data.map((fest: Festivity, idx: number) => (
-        <div 
-          key={`${fest.name}-${idx}`} 
+        <div
+          key={`${fest.name}-${idx}`}
           className="bg-brand-surface rounded-xl sm:rounded-2xl border border-brand-border p-3.5 sm:p-4 shadow-2xs flex flex-col justify-between space-y-3 hover:border-brand-primary/40 transition-all group"
         >
           <div className="space-y-2.5">
             <div className="aspect-[16/9] max-h-44 sm:max-h-48 relative overflow-hidden rounded-lg sm:rounded-xl border border-brand-border/50 bg-white">
-              <img 
-                src={fest.banner_image || `https://picsum.photos/seed/${encodeURIComponent(fest.name)}/800/600`} 
-                alt={fest.name} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                referrerPolicy="no-referrer" 
+              <img
+                src={fest.banner_image || undefined}
+                alt={fest.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                referrerPolicy="no-referrer"
               />
               <div className="absolute top-2 left-2 bg-brand-primary text-white px-2.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider shadow-xs">
                 {fest.date}
@@ -40,7 +40,7 @@ export default function FestivitiesView({ data }: FestivitiesViewProps) {
               <h3 className="text-sm sm:text-base font-bold text-brand-text group-hover:text-brand-primary transition-colors font-display tracking-tight leading-snug">
                 {fest.name}
               </h3>
-              
+
               <p className="text-[11px] sm:text-xs text-brand-muted leading-relaxed font-normal line-clamp-3">
                 {fest?.description}
               </p>

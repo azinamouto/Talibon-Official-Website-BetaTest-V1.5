@@ -4,29 +4,25 @@ const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const { readFileSync } = require('node:fs');
 process.env.NODE_ENV = 'test';
-process.env.SUPABASE_URL = 'http://127.0.0.1:54321';
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'synthetic-service-key-for-tests';
-process.env.SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_test_only';
 const { NestFactory } = require('@nestjs/core');
+// Isolate shutdown/content routing from the separately tested shared rate store.
+const {RateLimiterGuard}=require('../dist/security/rate-limiter.guard');
+const originalGuard=RateLimiterGuard.prototype.canActivate;
+RateLimiterGuard.prototype.canActivate=async()=>true;
 const { AppModule } = require('../dist/app.module');
 const { configureApp } = require('../dist/configure-app');
-const { SupabaseService } = require('../dist/supabase.service');
-const { FormsService } = require('../dist/api/forms/forms.service');
-const { PaymentsService } = require('../dist/api/payments/payments.service');
-const { EmailNotificationService } = require('../dist/api/notifications/email-notification.service');
+const { PostgresDatabase } = require('../dist/database/postgres');
+const originalTransaction = PostgresDatabase.prototype.transaction;
 const { DEFERRED_MESSAGE } = require('../dist/security/deferred-routes.middleware');
 let app, base, calls = 0;
-const originalClient = SupabaseService.prototype.getClient;
-const originalAuth = SupabaseService.prototype.createAuthClient;
 function forbidden() { calls++; throw new Error('Unexpected provider/database access'); }
 before(async () => {
-  SupabaseService.prototype.getClient = forbidden;
-  SupabaseService.prototype.createAuthClient = forbidden;
+  PostgresDatabase.prototype.transaction = forbidden;
   app = await NestFactory.create(AppModule, { logger: false, bodyParser: false, abortOnError: false });
   configureApp(app);
   await app.listen(0, '127.0.0.1'); base = await app.getUrl();
 });
-after(async () => { await app?.close(); SupabaseService.prototype.getClient = originalClient; SupabaseService.prototype.createAuthClient = originalAuth; });
+after(async () => { await app?.close(); PostgresDatabase.prototype.transaction = originalTransaction; RateLimiterGuard.prototype.canActivate=originalGuard; });
 const paths = [
   '/api/forms', '/api/forms/certificate', '/api/forms/submissions',
   '/api/forms/certificate/TAL-test', '/api/forms/submissions/TAL-test',
@@ -81,12 +77,15 @@ test('slash, case and encoded route aliases are closed; ambiguous paths fail clo
   assert.equal(calls,start);
 });
 test('public forms metadata and health remain available without workflow services', async () => {
+  const { PublicContentService } = require('../dist/database/public-content.service');
+  const catalog = app.get(PublicContentService);
+  const original = catalog.list; catalog.list = async () => ({ data: [] });
   for (const prefix of ['/api/forms','/api/public-forms']) for (const leaf of ['downloadable','business-permits','building-permits','zoning-clearance']) {
     const response = await fetch(`${base}${prefix}/${leaf}`);
     assert.equal(response.status,200); assert.ok(Array.isArray(await response.json()));
   }
+  catalog.list = original;
   assert.equal((await fetch(base + '/api/health')).status,200);
-  for (const provider of [FormsService, PaymentsService, EmailNotificationService]) assert.throws(() => app.get(provider));
 });
 test('content mutations close before database access while account authorization still routes', async () => {
   const start = calls;

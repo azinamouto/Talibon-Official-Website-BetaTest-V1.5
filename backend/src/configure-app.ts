@@ -66,7 +66,7 @@ export function configureApp(app: INestApplication) {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-API-Version'],
     exposedHeaders: ['X-Request-Id', 'Retry-After'],
   });
-  SwaggerModule.setup('api/docs', app, () => createApiDocument(app), {
+  if (process.env.NODE_ENV !== 'production') SwaggerModule.setup('api/docs', app, () => createApiDocument(app), {
     jsonDocumentUrl: 'api/openapi.json',
     swaggerOptions: { persistAuthorization: false },
   });

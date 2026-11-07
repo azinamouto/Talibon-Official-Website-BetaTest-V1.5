@@ -50,5 +50,9 @@ export const formsApi = {
   getBusinessPermits: () => get<DownloadableForm[]>('forms/business-permits'),
   getBuildingPermits: () => get<DownloadableForm[]>('forms/building-permits'),
   getZoningClearance: () => get<DownloadableForm[]>('forms/zoning-clearance'),
-  getDownloadable: (signal?: AbortSignal) => get<DownloadableForm[]>('forms/downloadable', signal),
+  getDownloadable: async (signal?: AbortSignal): Promise<DownloadableForm[]> => (await formsApi.getDownloadablePage(1,signal)).data,
+  getDownloadablePage: async (page: number, signal?: AbortSignal): Promise<{data: DownloadableForm[]; hasMore: boolean}> => {
+    const result = await get<{ data: { id: string; title: string; category: string; bytes: number; download_url: string }[]; hasMore: boolean }>(`media?kind=document&page=${page}`, signal);
+    return { data: result.data.map(item => ({ id: item.id, title: item.title, category: item.category, file_size: `${item.bytes} bytes`, file_url: item.download_url })), hasMore: result.hasMore };
+  },
 };

@@ -1,3 +1,4 @@
+import { clientIp } from '../security/client-ip';
 import { Pool } from 'pg';
 import { createHash, randomUUID } from 'node:crypto';
 import { connectionConfig } from '../database/postgres';
@@ -106,7 +107,7 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
         !req.is('application/json'))) { res.status(403).json({ message: 'Access denied.' }); return; }
       if (req.method === 'POST') {
         await this.pool.query("DELETE FROM app.staff_auth_throttle WHERE started_at<now()-interval '1 day'");
-        const identities = [`ip:${req.ip || req.socket.remoteAddress || 'unknown'}`];
+        const identities = [`ip:${clientIp(req)}`];
         if (typeof req.body?.email === 'string') identities.push(`account:${req.body.email.trim().toLowerCase()}`);
         for (const identity of identities) {
           const key = createHash('sha256').update(identity).digest('hex');
@@ -183,7 +184,7 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
         if (!session || session.user.twoFactorEnabled) { res.status(403).json({ message: 'Access denied.' }); return; }
       }
       // The caller cannot supply the provider's IP header. Express resolves only configured trusted proxies.
-      headers.set('x-talgov-client-ip', req.ip || req.socket.remoteAddress || 'unknown');
+      headers.set('x-talgov-client-ip', clientIp(req));
       headers.set('origin', this.options.origin);
       headers.set('content-type', 'application/json');
       const response = await this.auth.handler(new globalThis.Request(`${this.options.origin}${req.path}`, {

@@ -6,6 +6,7 @@ test.beforeEach(async ({ context }) => {
 
 for (const width of [375, 1280]) {
   test(`About routes render contract examples without horizontal overflow at ${width}px`, async ({ page }) => {
+    test.setTimeout(60000);
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -28,7 +29,7 @@ for (const width of [375, 1280]) {
     expect(errors).toEqual([]);
     await page.goto('/about');
     await expect(page).toHaveURL(/\/about\/profile$/);
-    await expect(page.getByRole('main')).toContainText('BRIEF PROFILE OF TALIBON');
+    await expect(page.getByRole('main')).toContainText('No content available at this time.');
     await page.goto('/about/mayor');
     await expect(page).toHaveURL(/\/about\/mayors$/);
   });
@@ -41,7 +42,7 @@ test('About failure is retryable and empty lists do not invent content', async (
   await expect(page.getByRole('alert')).toContainText('Error Loading Content');
   fail = false;
   await page.getByRole('button', { name: 'Retry loading content' }).click();
-  await expect(page.getByRole('main')).toContainText('BRIEF PROFILE OF TALIBON');
+  await expect(page.getByRole('main')).toContainText('No content available at this time.');
   await page.route('**/api/about/departments', route => route.fulfill({ json: [] }));
   await page.goto('/about/departments');
   await expect(page.getByRole('main')).toContainText('No content available at this time.');

@@ -1,0 +1,12 @@
+{
+  "project": "misty-silence-69777617",
+  "organization": "org-patient-mud-50407342",
+  "region": "aws-ap-southeast-1",
+  "database": "neondb",
+  "branch": null,
+  "name": "staging-talgov-r2",
+  "endpoint": null,
+  "host": null,
+  "databaseOwner": "neondb_owner",
+  "migrationLogin": null
+}

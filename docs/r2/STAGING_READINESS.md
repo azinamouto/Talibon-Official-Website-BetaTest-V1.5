@@ -547,3 +547,70 @@ claimed. BACKUPENVSUPA.txt remains a filename-only unresolved hygiene concern.
 No source or child dependency edits, hosted connections, database writes,
 migrations, deployments, commits, pushes, rebases or merges were performed.
 No environment values or BACKUPENVSUPA.txt contents were inspected or printed.
+
+
+## Staging migration runner implementation - 2026-11-08
+
+Local implementation and disposable PostgreSQL 18 safety tests: PASS. Hosted
+staging readiness remains FAIL; no hosted migration or connection was performed.
+
+Added a dedicated staging-only CLI, immutable ordered SHA-256 manifest, live
+Neon API target verification, explicit apply acknowledgment, advisory locking,
+atomic five-migration/history transaction and catalog/privilege drift checks.
+Preflight defaults to a read-only transaction. Existing SQL, development runners,
+production source and frontend are unchanged. The staging branch/endpoint/owner
+allowlist remains unset because no approved staging identity was supplied; the
+CLI fails closed before connecting. See [operator instructions](STAGING_MIGRATIONS.md)
+for prerequisites, exact commands, approval boundaries and nondestructive recovery.
+
+Validation: backend TypeScript build and 12/12 local Node tests passed (11 safety
+subtests plus suite). Coverage includes ordered success, repeat execution, changed
+file/history rejection, concurrency, late metadata and fifth-migration SQL failure
+rollback, wrong target/owner, missing approval, drift, unsafe roles and fixed-log
+redaction. No synthetic LGU records were inserted. Hosted qualification, external
+authorization, recovery proof and all other readiness blockers remain outstanding.
+
+All 35769 pre-existing report bytes preserved (SHA-256
+2118e601fc685157261501446d2314ca28447c666f452c42a52c39462a045ebf).
+
+## Neon restricted migrator compatibility - 2026-11-08
+
+Local verification: **PASS, 39 tests passed / 0 failed / 0 skipped** (38
+subtests plus parent), disposable loopback PostgreSQL 18.6. Hosted readiness
+remains **FAIL / NOT VERIFIED**. This supersedes the previous database-owner
+migration model only; previous audit evidence and other blockers remain intact.
+
+`databaseOwner` is pinned to `neondb_owner`; `migrationLogin` is separately
+pinned and must match URL username, session_user and current_user. Public schema
+ownership must remain `pg_database_owner`. The restricted migrator receives
+CONNECT/CREATE on the database and USAGE/CREATE on public without grant options,
+and owns the TalGov objects. Elevated flags, memberships, unsafe database/schema
+grants and non-owner default ACL recipients are rejected. Missing global
+function ACL rows are evaluated through PostgreSQL's built-in defaults; PUBLIC
+EXECUTE must be revoked globally, not merely per schema.
+
+All five unchanged migrations apply and repeat idempotently against the unchanged
+catalog baseline. Tests cover ownership and session substitution, URL username,
+all elevated migrator flags, memberships, CREATE/TEMP and grant-option drift,
+missing global defaults (including ineffective schema-local revoke), runtime SQL
+permission denials, catalog drift, checksum/history protection, advisory locking,
+late verification failure and fifth-migration SQL failure atomic rollback.
+Node syntax checks and git diff --check also passed. An initial expanded test
+fixture failed after ownership transfer removed explicit grants; its restoration
+was corrected, and the final complete suite passed without weakened assertions.
+
+Changed in this increment only: staging `runner.cjs`, `target.cjs`, `target.json`,
+`backend/test/staging-database.integration.cjs`, `STAGING_MIGRATIONS.md`, and this
+appendix. Existing work was retained. No frontend, production backend, migration
+SQL, manifest, or catalog baseline edits were made. No hosted connections, hosted
+role provisioning/SQL, commits, pushes or deployments were performed. Role and
+SQL writes occurred only within the explicitly requested disposable local tests.
+
+Next manual steps are specified in [STAGING_MIGRATIONS.md](STAGING_MIGRATIONS.md):
+obtain approvals, pin the isolated staging identity/migrator, verify managed
+ownership, provision restricted roles/grants, globally revoke migrator default
+PUBLIC function EXECUTE, inject secrets securely, then obtain hosted preflight
+and separate apply authorization. No hosted step was performed here. Target
+branch/endpoint/host/migrationLogin remain unset and fail closed. Recovery proof,
+storage/runtime isolation, incident closure, packaging and municipal/DPO/IT
+approval gates remain outstanding.

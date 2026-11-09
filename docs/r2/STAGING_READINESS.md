@@ -1,5 +1,288 @@
 # TAL.GOV R2 staging readiness
 
+## Pre-apply qualification - 2026-11-09
+
+**NO-GO for apply.** Supersedes historical five-migration and preflight-not-run summaries below. Operator reports successful hosted preflight: `{"mode":"preflight","applied":0,"pending":6}`. Actual execution timestamp, exit status and candidate/target evidence reference still need attaching; this session did not rerun hosted preflight.
+
+Local candidate: branch `feat/talgov-r2-staging-qualification`, HEAD `2344709d6b1d721a27a95b66e14ec2fa184bea1d` plus existing uncommitted/untracked work. All six normalized-LF SQL checksums match the ordered manifest, including `content/001_content_policy.sql`. Current raw manifest SHA-256: `a1554cb00e1c48746c581fc1270df31bf8ec9d1312c198b26de174f2f46f9d41`. The historical manifest hash covers five files; no recorded six-file preflight hash was found to prove unchanged bytes since that run. No SQL, manifest, target or executable code was edited here.
+
+Local target pins: project `misty-silence-69777617`, branch `br-steep-sea-ao0qw05a` (`staging-talgov-r2`), endpoint `ep-sparkling-bird-ao5precf`, database `neondb`, restricted login `talgov_staging_migrator`. Local assertions PASS: six checksums, three denied branches, off-target hosts, default branch and endpoint/branch mismatch rejection. The hosted entry point verifies metadata before connection and again within the transaction, with no target override. These guards constrain this runner; they do not establish credential-wide access restrictions. Live target was not reverified here: both required process credentials are absent (presence-only check).
+
+Remaining gates:
+
+1. Recovery: latest ALZA decision conditionally accepts disposable staging loss. Accepted DB/object/dependency inventory, baseline timestamp, isolated destination/recreation procedure, RPO/RTO, retention, recovery owner/independent-reviewer acceptance and escalation contact remain incomplete. No backup, restore or PITR verification is inferred.
+2. Security: historical credential revocation/rotation, access-log review evidence, security-owner acceptance and existing dependency/install-scope disposition remain pending.
+3. Review/freeze: both review columns remain PENDING. Accept exact six-file candidate and manifest/catalog/runner hashes, attach hosted preflight evidence, record named operator, enforcing owner, maintenance/write/control-plane freeze window and escalation contact.
+4. Authorization: historical authority explicitly covered five migrations. Current request requires explicit deployment authorization after all gates; six-migration apply is not authorized by this qualification.
+
+After records are accepted and credentials securely injected, safe next hosted command: `node backend/scripts/r2-staging-migrate.cjs --preflight`. Expected empty result: `{"mode":"preflight","applied":0,"pending":6}`. Do not run `--apply` until every gate and explicit deployment authorization are satisfied. No hosted operation or deployment occurred here.
+
+## Final CMS database scope decision - 2026-11-09
+
+**FINAL: retain the existing five-migration chain and all 20 application tables**, including `app.import_batches` and `app.content_asset_links`. Do not prepare an alternative 18-table baseline. The approved CMS/auth architecture and supporting tooling require this scope; the chain creates no deferred e-services, payments, permit-processing, chatbot or legacy Supabase tables. This decision does not activate page/news/service editing or authorize a new CMS architecture.
+
+This is the current scope/readiness summary and supersedes conflicting historical scope or missing/expired owner-authorization language below. Reuse the existing staging runner, unchanged SQL, manifest checksums and catalog baseline, and the recorded validated 41-test suite (41 passed, no failures/skips). All five normalized-LF SQL checksums were rechecked for this documentation update; no new suite run or hosted result is claimed. Existing changes are preserved.
+
+**Readiness: local qualification recorded; hosted preflight and apply BLOCKED.** The recorded ALZA owner authorization covers provisioning, inspection, preflight and the five-migration apply on the pinned staging target; do not request it again. It is not independent review, recovery acceptance or security evidence.
+
+Remaining mandatory prerequisites:
+
+1. Secure process injection of `R2_STAGING_DATABASE_URL` and `NEON_API_KEY` for the pinned restricted migrator/direct verified-TLS target; neither variable is present in this execution environment (presence-only check).
+2. Accept protected target/role/ACL and empty database/object inventory evidence with its actual timestamp. Supplied observations are not independent verification; do not repeat provisioning just because signatures are pending.
+3. Complete recovery-owner and independent-reviewer acceptance: empty baseline, isolated recovery destination, retention, RPO/RTO, failure-evidence preservation and escalation contact. Do not claim a restore rehearsal or incident closure.
+4. Record historical credential revocation/rotation and access-log review evidence with security-owner acceptance, plus the existing dependency/install-scope disposition. No unrelated audit or production remediation is undertaken here.
+5. Complete both existing review columns against the exact candidate/hashes, ordered manifest and catalog, and record named operator, escalation contact and maintenance/write/control-plane freeze window. Before apply, record successful preflight evidence and both apply reviews/window under the already granted owner authority.
+
+**Exact next executable action:** complete the existing recovery and two-person review records with genuine protected evidence and securely inject the two credentials. Once all preflight gates above are satisfied, run from the repository root:
+
+```powershell
+node backend/scripts/r2-staging-migrate.cjs --preflight
+if ($LASTEXITCODE -ne 0) { throw 'Staging preflight rejected' }
+```
+
+Expected empty-target result: `{"mode":"preflight","applied":0,"pending":5}`. Retain sanitized output, timestamp, exit status and candidate/target references. Only after successful preflight and the apply-specific gates use the existing acknowledgment/`--apply` procedure in `STAGING_MIGRATIONS.md`. No hosted preflight/apply, real LGU data, commit, push or deployment occurred in this scope-decision update.
+
+
+## Owner-authorized execution assessment - 2026-11-09
+
+**Authorization recorded / execution assessment timestamp: 2026-11-09 01:51:47 Asia/Shanghai (UTC+08:00), 2026-11-08 17:51:47 UTC.** This is the actual agent recording timestamp, not a claimed time of owner signature, hosted inspection or migration execution.
+
+**Owner authorization: GRANTED. Hosted preflight/apply: BLOCKED by unsatisfied prerequisites.** This section supersedes historical statements that owner staging provisioning, inspection, preflight or apply permission is missing or expired. It does not supersede security, recovery, independent-review or target guards.
+
+Authority and source: AJ Rienze Josol, ALZA CTO, repository owner and Neon project owner; explicit directive in this session, titled TALGOV R2 - OWNER-AUTHORIZED STAGING EXECUTION. Codex is authorized to perform technical staging provisioning, hosted inspection, migration preflight and the five existing schema migrations against the ALZA-owned target below, and to prepare focused synthetic Better Auth/photo/document CMS tests; hosted-write tests remain conditional on authorization and technical safety. The directive covers this execution task and specifies no separate clock expiry. No additional permission for these same actions is required.
+
+Exact scope: project misty-silence-69777617; staging-talgov-r2 / br-steep-sea-ao0qw05a; endpoint ep-sparkling-bird-ao5precf; database neondb; restricted migration login talgov_staging_migrator. Never use neondb_owner as the migration login. Excluded: main, development, production, actual LGU records, deployments, external integrations, unrelated refactors, commits and pushes. Target guards, verified TLS and checksum protections remain mandatory. Existing edits are preserved.
+
+Candidate inspected: feat/talgov-r2-staging-qualification, HEAD 2344709d6b1d721a27a95b66e14ec2fa184bea1d plus existing uncommitted/untracked work. Local target pins match the directive. All five SQL checksums recomputed over UTF-8 normalized to LF match the ordered manifest. No SQL, target, runner or catalog was changed by this assessment. Hashes below identify inspected bytes; they are not independent review signatures.
+
+| Gate | Current result |
+|---|---|
+| Owner provisioning / inspection / preflight / five-migration apply authority | GRANTED by the explicit directive above; separate operations are expressly covered |
+| Hosted access | BLOCKED: presence-only checks found both R2_STAGING_DATABASE_URL and NEON_API_KEY absent; no Neon connector exposed. No secret files/stores read, no credential values printed |
+| Live identity, roles, ACLs, empty baseline | NOT REVERIFIED: supplied owner observations retained as supplied evidence; no hosted request or database connection made |
+| Recovery acceptance | PENDING: owner/reviewer acceptance, complete DB/object inventory, baseline timestamp, isolated destination, retention and RPO/RTO not established |
+| Security incident | PENDING: FINAL_BACKEND_MIGRATION_REPORT.md identifies historical production service-role JWT exposure at commit 356e294; no revocation/rotation, access-log review or ALZA security-owner acceptance evidenced. Remediation of production is outside this directive |
+| Dependency/install-scope disposition | PENDING reviewer acceptance; historical root cleanup is not a fresh child dependency audit |
+| Independent review | PENDING: both review columns in STAGING_MIGRATIONS.md are unsigned; owner execution authorization is not a second person's checksum/candidate review |
+| Freeze / escalation | PENDING: enforcing owner, maintenance/write and control-plane freeze window and escalation contact are not recorded; no freeze inferred from this directive |
+| Hosted runner | --preflight NOT RUN; --apply NOT RUN; zero migrations applied by this session. Live history/catalog/ownership/permissions remain unverified |
+
+The existing runbook explicitly requires recovery, incident and two-person review before preflight even though the CLI does not enforce those external records. No approval variable was generated and no gate was weakened. To resume, securely inject the two required process variables and supply the outstanding recovery, incident/dependency disposition, review and freeze evidence. Owner permission need not be requested again. Additional provisioning is not justified solely by an unsigned record.
+
+### Local validation in this execution
+
+- Backend TypeScript build: exit 0.
+- Disposable PostgreSQL staging suite: exit 0; 41 passed, 0 failed, 0 skipped. This is local migration/guard evidence, not hosted apply or recovery qualification.
+- Retained disposable evidence: backend/node_modules/.cache/talgov-staging-7b3f5ac2be8e48918b049e4e1dccd899. Server log confirms shutdown at 2026-11-09 01:52:04.626 UTC+08:00; postmaster.pid is absent.
+- node --test backend/test/media.test.cjs backend/test/local-staging-fixture.test.cjs: exit 0; 6 passed, 0 failed, 0 skipped (4 synthetic media checks plus 2 fixture guards). No hosted storage used.
+- Better Auth and CMS workflow integration: prepared in STAGING_MIGRATIONS.md, not executed in this session. Hosted auth/CMS writes remain blocked.
+- git diff --check reports existing Markdown hard-break trailing spaces in historical owner records. Those pre-existing bytes were preserved; newly inserted sections add no trailing whitespace.
+
+### Inspected candidate SHA-256 (raw file bytes)
+
+| File | SHA-256 |
+|---|---|
+| backend/scripts/r2-staging-migrate.cjs | c496b0aac80746a851605d432e45c06adedee1fe0da2926b76c87699a5b660ae |
+| backend/scripts/staging/target.cjs | 27dc20130e0e2b04863c21fb5be49c7910990cc3d5fffa776cf496d4f037a68e |
+| backend/scripts/staging/runner.cjs | cf000d75ed6967fadb9c89fecef66eeb7c3f3e614bd71b00e68566bae8dedda7 |
+| backend/scripts/staging/catalog.cjs | 380493cdd853ec0397f46e96ea0ff39729f3320501974e5a5c967a23733063ea |
+| backend/scripts/staging/target.json | 0aebfad186d737cdca3560767ac7af063f2eb91f5d1f8a2e144933c7facec856 |
+| backend/scripts/staging/manifest.json | 1c5b6b19c7f61181e9627cf630aebae065ec8d9ca5b82ca5603f019123f58064 |
+| backend/scripts/staging/catalog.json | 4689f00f3d6eab0ed894a258a62cc98d768ca991ed5e0bd7ea2807660175b5ff |
+| backend/test/staging-database.integration.cjs | 75cb4e247b2272b7a94c791081bcab13b9b028483b4dad9571254dbd6a479c52 |
+| backend/test/local-staging-fixture.cjs | e72ddaba3877bfdc85f314f8850e60a3c93e7df11ccec547dd76f45cbb7f7c4e |
+| backend/test/local-staging-fixture.test.cjs | 851a2c3140ce9719b16782156e69417656e4b8aa52009d4e692ad9d7e9c66eed |
+| backend/test/run-staging-database-tests.ps1 | 6ea6afd6691d592d2bb19e5ebb63d600c05d7ea841f16f8fd96fc2e95459605a |
+| backend/test/staff-auth.integration.cjs | c427f6b8b44b1f28bdedaf75ab94da0b7c61959510036701705fc9b5347fda55 |
+| backend/test/media.integration.cjs | 3b05005d631dcd4967bee21fd1930bab36e09a0baf466613448a21d504da73f6 |
+| backend/test/media.test.cjs | 2477d4ef415a81864a3bdcb8db3f9cf34cea9270100cf47cb06c94c98f590edf |
+
+
+## Final preflight preparation - 2026-11-09 (Asia/Shanghai, UTC+08:00)
+
+**BLOCKED for the first hosted preflight. Preparation only; no hosted run.**
+This dated assessment supersedes earlier outstanding-prerequisite summaries
+where they still describe the supplied observations as missing. Historical
+records and all unsigned approval gates remain intact.
+
+### Supplied operator observations
+
+Source: operator evidence supplied in the November 9, 2026 preparation request.
+This is the date of receipt/recording, not an independently established inspection
+timestamp. These observations were **not independently verified by this agent**.
+
+| Observation | Operator-supplied result |
+|---|---|
+| Neon branch | `staging-talgov-r2` |
+| Branch ID | `br-steep-sea-ao0qw05a` |
+| Direct endpoint | `ep-sparkling-bird-ao5precf` |
+| Database | `neondb` |
+| Database owner | `neondb_owner` |
+| Public schema owner | `pg_database_owner` |
+| Migrator CREATE | `true` |
+| Runtime CREATE | `false` |
+| Restricted migrator TLS connection | Passed |
+| Application tables | `0` |
+| Global default PUBLIC function EXECUTE | Revoked |
+
+The supplied CREATE observations do not specify every database/schema privilege
+checked by the runner. They do not establish all role flags, memberships, TEMP,
+grant options, other default ACLs, absence of TalGov schemas/history, or object
+inventory. No new provisioning or ACL change is requested on the strength of
+this documentation review. Attach protected source evidence and its actual
+inspection timestamp to the existing authorization/review records.
+
+### Local inspection and outstanding preflight prerequisites
+
+Inspected the actual `backend/scripts/r2-staging-migrate.cjs`, staging
+`target.cjs`, `runner.cjs`, `target.json` and `manifest.json` at HEAD
+`2344709d6b1d721a27a95b66e14ec2fa184bea1d` plus the existing uncommitted work.
+Target pins agree with the supplied branch, endpoint, database and database
+owner. All five ordered migration SHA-256 values independently recomputed
+locally over UTF-8 SQL normalized to LF match the existing manifest. This is
+local integrity evidence, not either person's approval or a hosted result.
+
+Only the following remain prerequisites for the first hosted preflight:
+
+1. Complete the existing ALZA authorization record: project control/reuse,
+   provisioning and empty-only isolation/scope acceptance with protected
+   evidence; acceptance of the remaining exact metadata and role/ACL inventory
+   required by the runner. Record any necessary renewed inspection authority
+   before gathering missing hosted evidence. Do not repeat already reported
+   provisioning merely because approval/evidence acceptance is pending.
+2. Recovery owner and independent reviewer accept the empty baseline in
+   `ROLLBACK_AND_RECOVERY.md`: authorized database/object inventory (including
+   no TalGov schemas/history or staff state), baseline timestamp, retention,
+   RPO/RTO, isolated recovery destination, failure-evidence preservation and
+   escalation owner. Zero application tables alone does not close this gate.
+3. Record affected-system-owner revocation/rotation and access-log review
+   evidence for the historical credential incident, with ALZA security-owner
+   acceptance; record the existing dependency/install-scope review disposition.
+   Neither incident closure nor a fresh dependency audit is claimed here.
+4. Two distinct people complete the preflight review rows in
+   `STAGING_MIGRATIONS.md`, accepting the same candidate including hashes of
+   uncommitted/untracked runner, test, target, manifest and catalog content,
+   the five ordered SQL checksums, catalog baseline and existing local results.
+5. Record named operator, escalation contact, maintenance/write and
+   control-plane freeze windows, and separate dated hosted-read approval for
+   this exact candidate/target (Neon metadata GETs and read-only PostgreSQL
+   preflight with advisory lock). The November 8 inspection window has expired.
+6. Arrange secure process injection of `R2_STAGING_DATABASE_URL` and
+   `NEON_API_KEY`; current presence/values were not inspected. Use the pinned
+   restricted migrator/direct host, `neondb`, port 5432 (explicit or default),
+   `sslmode=verify-full` and `channel_binding=require`. No dotenv loading occurs.
+
+| Existing gate | Satisfied? | Current evidence |
+|---|---|---|
+| Recovery | No - PENDING | Empty-table observation supplied; owner/reviewer acceptance and recovery checklist incomplete |
+| Incident | No - PENDING | No recorded closure evidence and security-owner acceptance |
+| Authorization | No - PENDING for preflight | Historical inspection approval expired; separate hosted-read decision and freeze records pending |
+| Two-person review | No - PENDING | Both preflight review columns remain unsigned |
+
+**Next exact operator action:** the ALZA owner and named reviewers complete the
+existing records above and link the supplied observations to protected evidence.
+Only after those gates are accepted, the named operator securely injects the two
+variables and runs the [exact preflight command](STAGING_MIGRATIONS.md#exact-commands-repository-root-powershell).
+Retain sanitized output, timestamp, exit status and reviewed candidate/target
+references; expected empty-target result is
+`{"mode":"preflight","applied":0,"pending":5}`. A failed check stops the handoff.
+Successful preflight and separate apply approval/reviews are later apply gates,
+not prerequisites for this first preflight. Runtime/storage qualification, real
+LGU data and deployment remain outside this preparation.
+
+No hosted connection/write, schema apply, migration SQL edit, secret read,
+commit, push or deployment occurred. Existing work was preserved.
+
+## Canonical continuation - 2026-11-09 (UTC+08:00)
+
+**Local qualification PASS; hosted preflight/apply remain blocked.** This update
+supersedes stale target/runner availability statements below, not historical
+evidence or approval records. Canonical repository:
+`C:\Users\admin\Documents\TalGov-Final-Backend-Migration`, branch
+`feat/talgov-r2-staging-qualification`, HEAD
+`2344709d6b1d721a27a95b66e14ec2fa184bea1d`, with uncommitted work.
+
+The owner supplied verified project `misty-silence-69777617`, branch
+`staging-talgov-r2` / `br-steep-sea-ao0qw05a`, endpoint
+`ep-sparkling-bird-ao5precf`, database `neondb`, restricted migrator
+`talgov_staging_migrator` and TLS 1.3 login verification. Local `target.json`
+matches these identifiers; this continuation did not independently contact Neon
+or reverify TLS, ownership, grants or empty state. Link the protected verification
+evidence in the existing review record before hosted work.
+
+The actual staging entry point is `backend/scripts/r2-staging-migrate.cjs`, with
+`backend/scripts/staging/{target,runner,catalog}.cjs` and
+`{target,manifest,catalog}.json`. The separate `r2-neon-target.cjs` is the
+development selector, not this staging runner. Existing uncommitted target,
+runner, manifest, catalog and recovery/runbook work was preserved.
+
+Confirmed pilot fixes ported only to local test support:
+
+- F-002: replace the assumption that the real target is unconfigured with an
+  explicit null-field fixture, including individual missing-field rejection.
+- F-003: stop accepting an arbitrary caller URL; bind the generated fixture to
+  its local PID file, data directory, random cluster name and port. Verify live
+  loopback server/database/session identity before test DDL. Start test processes
+  with an allowlisted environment, excluding inherited database/Neon/Node settings.
+  Test scratch files stay within the disposable cluster's cache directory.
+
+Focused results from this candidate:
+
+- `npm.cmd run build:tsc --prefix backend`: exit 0.
+- `node --test backend/test/local-staging-fixture.test.cjs`: 2 passed, 0 failed.
+- `backend/test/run-staging-database-tests.ps1`: exit 0; 41 passed, 0 failed,
+  0 skipped (40 subtests plus the parent). Ran with synthetic hostile PG settings,
+  hosted-looking test URLs, API token and Node preload setting in the parent;
+  the test child confirmed their exclusion.
+- PostgreSQL 18.6, fresh cluster `talgov-staging-96d6bba4fc104c9fa2de0b76ebedc9af`,
+  bound only to `127.0.0.1:64706`; server log records clean shutdown and the PID
+  file is absent. Local logs/data retained under `backend/node_modules/.cache/`
+  for that cluster; no pilot caches or reports were copied.
+- An initial integration invocation overlapped the unfinished build and failed
+  before test execution with a missing compiled module. That cluster also stopped;
+  the successful rerun above followed build completion.
+
+No hosted Neon API or SQL access occurred during this continuation. Tests call
+the core runner with verified local pools; metadata checks are pure fixtures,
+and the CLI rejection test exits at its missing-approval guard before networking.
+No credential inspection, migration SQL edits, hosted apply, harness execution,
+commit, push or deployment occurred. Local synthetic migration replay is test
+evidence only. The ALZA engineering harness was neither used nor modified.
+
+Remaining prerequisites, in the existing authorization/recovery/review records:
+
+1. Authorized administrator evidence of the migrator's **global** default
+   function ACL revoking PUBLIC EXECUTE (no `IN SCHEMA` substitute), plus exact
+   database/public ownership, restricted roles/memberships and grants required
+   by the runner. TLS login success does not establish these ACL prerequisites.
+2. Recovery-owner and reviewer acceptance of the empty staging baseline, with
+   authorized inventory evidence, timestamp, retention, RPO/RTO, isolated recovery
+   destination and failure-evidence preservation. Unexpected nonempty state stops
+   this path; the protected-set path requires separate scope and restore evidence.
+3. Historical credential incident disposition: affected-system owner evidence
+   of revocation/rotation and access-log review, accepted by the ALZA security
+   owner. No closure or waiver is inferred from staging isolation. Record the
+   required dependency/install-scope review disposition without claiming a new audit.
+4. Two distinct reviewers accept the exact candidate (including hashes of all
+   uncommitted/untracked runner/test/target/manifest/catalog content), five ordered
+   normalized-LF migration checksums, catalog baseline and these local results.
+5. Dated ALZA decisions and evidence for any remaining provisioning, maintenance/
+   write and control-plane freeze, named operators and escalation owner; renewed
+   scoped inspection authority where needed and separate hosted-read preflight
+   approval. The November 8 inspection window expired and was not apply approval.
+6. Successful separately authorized preflight evidence; then separate written
+   candidate/target/manifest-bound apply approval, window and both apply reviews.
+   Runtime, storage, real LGU data and deployment retain their later scope gates.
+
+**Next operator action:** have the ALZA owner/reviewers attach the supplied target
+verification evidence and complete the missing ACL, recovery and incident records;
+renew the necessary scoped authorization before any hosted inspection or ACL work.
+After all preflight gates are accepted, the named operator may securely inject
+credentials and run the documented `--preflight` under separate hosted-read
+approval. Do not run `--apply` based on these local results.
+
+## Historical readiness assessment
+
 **Result: FAIL - staging qualification is not authorized or verified.**
 **Scope:** backend and deployment readiness only. No database or object-storage
 connection, migration, production write, deployment, secret inspection, or
@@ -11,12 +294,33 @@ dated 2026-11-07 and identifies `feat/talgov-final-backend-migration`; its
 results are useful prior evidence, but are not qualification of this exact
 branch/revision or of a hosted staging target.
 
+## ALZA-owned empty staging scope
+
+The project `talgov-r2` is owned and controlled by ALZA, as clarified by the
+project owner for this documentation review. This is not live verification of
+provider ownership, target identity, or authorization to connect or apply SQL.
+For empty schema-only staging, ALZA's infrastructure owner authorizes inspection
+and provisioning, ALZA's security/recovery owner accepts the empty baseline and
+incident-closure evidence, and a named migration operator plus independent
+reviewer review the exact candidate, target and checksums. Separate written
+hosted-read and schema-apply decisions remain required; all records below remain
+PENDING until supported by evidence.
+
+This scope permits no real LGU records, official content, staff/session imports,
+mail delivery, external integrations or deployment. Municipal/DPO/LGU IT
+approvals apply separately to real LGU data, official content, production and
+other work under their authority; they are not ownership prerequisites for
+ALZA's independent empty staging infrastructure. Runtime/storage, deployment
+and restore qualification remain open for their respective later stages. This
+scope clarification governs the earlier broad qualification gates and historical
+blocker summaries below; it waives no technical gate for schema apply.
+
 ## Gate summary
 
 | Prerequisite | Status | Evidence / remaining work |
 |---|---|---|
 | Approved staging Neon project, branch, endpoint, region and owner | NOT VERIFIED | No staging identity or authorization was supplied. The checked-in `r2-neon-target.cjs` pins a development project/branch; it is not a staging selector. |
-| PostgreSQL isolation and least privilege | NOT VERIFIED | Prior development testing covers synthetic data and separate roles. Confirm a fresh LGU-approved target, non-production data, independent secrets, direct migration and pooled runtime identities, and role grants before connecting. |
+| PostgreSQL isolation and least privilege | NOT VERIFIED | Prior development testing covers synthetic data and separate roles. Confirm a fresh ALZA-approved empty schema-only target, non-production data, independent secrets, direct migration and pooled runtime identities, and role grants before connecting. |
 | Object storage isolated from production | NOT VERIFIED | The app checks HTTPS endpoint shape and private ACL/policy. That does not prove which project/branch owns the bucket or credential. Verify bucket ownership, branch, private policy, credential scope and anonymous denial out of band. |
 | Backend environment-variable names inventoried | PASS | Names and production requirements are listed below. Secret values and local/operator env files were not inspected; actual staging configuration is unverified. |
 | Migration and rollback safety reviewed | PASS (static review) | Migration SQL is additive; the general migration CLI is loopback-only, dry-run by default, transactional, and checksum-guarded. Batch rollback deletes only unchanged rows in its own import receipt. These safeguards do not authorize a hosted target. |
@@ -26,7 +330,7 @@ branch/revision or of a hosted staging target.
 | Startup and deployment packaging | NOT VERIFIED (hosted) | Runtime validation and `/api/health/ready` exist. Vercel packaging/native `sharp` and PDF-worker behavior, platform limits, real client-IP behavior and a staging smoke are outstanding. |
 | Known security incident | FAIL | The final report records a production service-role JWT exposed in historical commit `356e294`, to be treated as compromised. Rotation/revocation and access-log review are not evidenced. Removing runtime references is not remediation. |
 | Dependency security | NOT VERIFIED (current audit); FAIL (root lock against saved advisory) | Backend lock now pins `multer` 2.5.0 via scoped override; the saved 2-high audit predates this fix. Root lock still resolves 2.4.0. See reconciliation below; no current zero-finding audit or risk acceptance is claimed. |
-| External approvals and operational controls | FAIL | Municipal content/hosting decisions, DPO privacy/retention approval, LGU IT/security recovery and monitoring approval, and dated release/rollback ownership remain outstanding. |
+| External approvals and operational controls (broader qualification/release) | FAIL | Municipal content/hosting decisions, DPO privacy/retention approval, LGU IT/security recovery and monitoring approval, and dated release/rollback ownership remain outstanding. |
 
 ## Backend environment inventory
 
@@ -125,9 +429,10 @@ is claimed.
 2. Resolve/contain the exposed production credential and obtain evidence of
    revocation/rotation and access-log review. Resolve or formally accept the
    backend advisories before considering release.
-3. Obtain signed municipal content/hosting approval, DPO privacy/retention
-   approval, LGU IT/security backup and incident-response approval, and named
-   release and rollback operators.
+3. For empty schema-only qualification, obtain the ALZA decisions in the
+   authorization record below and name migration/recovery operators. Obtain
+   municipal content/hosting, DPO privacy/retention and LGU IT/security approvals
+   separately before work within their applicable data, deployment or release scope.
 4. Re-run the local checks above at the exact candidate SHA. Build the backend
    with `npm --prefix backend run build`; verify Node `>=22.16.0 <23`, the
    `api/index.js` to `backend/dist/serverless.js` packaging, native `sharp`
@@ -168,13 +473,14 @@ write or delete synthetic state.
 
 ## Outstanding blockers and next action
 
-1. Obtain written authorization and a verifiable LGU-owned staging project/
+1. Obtain written authorization and a verifiable ALZA-owned staging project/
    branch/bucket identity plus stage-only access process. No live connection
    is allowed before this.
 2. Have the authorized security owner remediate the historical credential
    exposure and review access logs; close or formally disposition dependency
    advisories.
-3. Obtain the municipal, DPO and IT/security approvals listed above.
+3. Obtain the scoped ALZA staging approvals below; retain municipal, DPO and
+   LGU IT/security approvals for their separately applicable scope.
 4. Add or approve a staging-specific migration/qualification procedure whose
    target guard checks the approved staging identities and refuses production.
    Then qualify the exact candidate revision using the steps above.
@@ -241,8 +547,8 @@ its parent `main` is `br-flat-shape-aoyf83yq`. Neither is an approved staging
 branch. Do not assume `main` is production or that its historical empty state
 still holds. Production identity must be independently inventoried.
 
-The authorized operator must inspect this existing project first, confirm LGU
-permission to use it, and record a dedicated non-default staging branch
+The authorized operator must inspect this existing project first, confirm ALZA
+authority and permission to use it, and record a dedicated non-default staging branch
 (proposed name `staging-talgov-r2`, not yet created/verified), parent, endpoint,
 database, region, owner and expiry. Prefer a fresh empty/schema-only target
 with reviewed schema and synthetic fixtures. A copied branch can carry roles,
@@ -314,18 +620,19 @@ by this offline review.
 
 All approvals below are **NOT VERIFIED**; this document grants none.
 
-1. LGU infrastructure owner authorizes dated, scoped control-plane inspection
+1. ALZA infrastructure owner authorizes dated, scoped control-plane inspection
    of the existing project and identifies production resources. Security owner
    separately authorizes credential revocation/rotation and log review for the
    historical exposure; retain sanitized incident closure evidence.
-2. Infrastructure owner approves branch/endpoint and private storage creation,
-   cost/expiry, role provisioning and secret distribution. DPO/data owner
-   approves permitted synthetic/sanitized data, retention and mail recipients.
+2. ALZA infrastructure owner approves branch/endpoint creation, cost/expiry,
+   role provisioning and secret distribution for empty schema-only staging.
+   Private storage, data use and mail tests require separate applicable approvals;
+   no real LGU data or external integrations are included in this path.
    Operator then creates the isolated resources and records IDs plus ownership
    and negative-access evidence from the gates above. No live imports assumed.
 3. Backend/security reviewer verifies current audits, install scope, candidate
-   checks and the staging-specific migration procedure. LGU IT/recovery owner
-   approves backup/restore targets and RPO/RTO; named migration operator and
+   checks and the staging-specific migration procedure. ALZA recovery owner
+   approves the empty baseline, recovery target and RPO/RTO for this scope; named migration operator and
    independent reviewer approve exact target/checksums, rehearsal and apply
    window. Only then execute staging preflight and approved migration/recovery
    rehearsal. Any failed gate blocks progression.
@@ -614,3 +921,185 @@ and separate apply authorization. No hosted step was performed here. Target
 branch/endpoint/host/migrationLogin remain unset and fail closed. Recovery proof,
 storage/runtime isolation, incident closure, packaging and municipal/DPO/IT
 approval gates remain outstanding.
+
+## Staging authorization record - preparation 2026-11-08
+
+**INSPECTION ONLY AUTHORIZED.** All provisioning, credential changes, hosted preflight, migration apply and deployment approvals remain PENDING. This is the non-secret index of
+external written decisions, not a signature or approval. Record evidence IDs or
+access-controlled references, approver name/role, decision, date/time with timezone,
+scope and expiry for every approval. Never store credentials, connection URLs or
+secret-manager values here. Unverified entries remain PENDING.
+
+| Required decision / evidence | Record |
+|---|---|
+| ALZA infrastructure-owner authority and named infrastructure operator; authorization for scoped control-plane inspection and identification of production/development resources | APPROVED — See "ALZA — Neon Staging Inspection Authorization" below. |
+| Existing project `misty-silence-69777617`, organization `org-patient-mud-50407342`, region `aws-ap-southeast-1`: ALZA control, entitlement and reuse approval (repository pins only; live evidence still required) | PENDING |
+| Provisioning approval: exact `staging-talgov-r2` branch, direct endpoint, restricted roles/grants, cost, expiry/cleanup owner and secret-distribution process | PENDING |
+| Approved/created branch ID, non-default status, direct endpoint ID/hostname, migrationLogin and ownership/isolation evidence; distinct from production and development | PENDING |
+| ALZA scope acceptance: empty schema only, no real LGU data or official content, no staff/session imports, no mail or external integrations; independent staging secrets and disabled external jobs | PENDING |
+| ALZA security owner: acceptance of historical credential incident closure, with revocation/rotation and access-log review evidence from the authorized affected-system owner; reviewer disposition of current dependency audits/install scope and candidate checks | PENDING |
+
+### ALZA Staging Security Disposition — November 9, 2026
+
+**Security owner:** AJ Rienze Josol — ALZA CTO
+
+#### Neon staging administrator credential
+
+- **Affected role:** `neondb_owner`
+- **Affected environment:** `staging-talgov-r2`
+- **Issue:** Previous connection credential was exposed during development assistance.
+- **Action:** Infrastructure owner reports that the password was rotated.
+- **Verification:** A subsequent TLS-verified administrator login was successful.
+- **Evidence:** Owner confirmation and sanitized PostgreSQL connection results.
+- **Status:** ROTATION REPORTED — provider-side revocation timing and access-log review not independently verified.
+
+No credentials or connection strings are retained in this document.
+
+
+#### Dependency and installation-scope disposition
+
+**Available evidence:**
+- Root dependency cleanup completed in the staging qualification branch.
+- Root production dependency audit previously reported zero findings.
+- Backend production dependency audit previously reported zero findings.
+- Existing staging integration tests passed 41/41.
+- Backend build passed.
+
+**Scope limitations:** These results are historical verification evidence for the recorded candidate. They do not establish that all development dependencies, deployment artifacts or future package versions are vulnerability-free.
+
+**Decision:** PENDING — security owner must review the existing audit results, exact candidate revision and deployment installation scope before acceptance.
+
+**Production security qualification:** NOT CLAIMED.
+
+| ALZA recovery owner: verified empty baseline, protected failure/recovery evidence, approved RPO/RTO and isolated recovery target; see recovery checklist below | PENDING |
+| Maintenance/write-freeze and control-plane-freeze window: start/end with timezone, enforcing owner, affected resources, stop/escalation contact | PENDING |
+| ALZA separate hosted-read approval: named operator, exact target/candidate, validity window, fixed-origin Neon metadata GETs and direct PostgreSQL read-only preflight including advisory lock | PENDING |
+| ALZA separate migration apply approval: exact reviewed target/manifest/candidate and execution window; never implied by provisioning or hosted-read approval | PENDING |
+
+Use [the recovery-baseline checklist](ROLLBACK_AND_RECOVERY.md#staging-recovery-baseline-checklist)
+and [the two-person migration review](STAGING_MIGRATIONS.md#two-person-staging-migration-review)
+as the records for those gates; do not create duplicate approval files.
+
+**Provisioning handoff:** obtain the scoped inspection authorization first, then
+ownership/isolation evidence and explicit ALZA provisioning, empty-scope and
+security decisions above. Incident closure remains required; ALZA cannot sign
+for remediation on systems it does not control. Only an authorized administrator may create resources or roles.
+Record the resulting non-secret IDs and provisioning evidence here. This task
+does not perform or authorize that handoff.
+
+**Hosted-read handoff:** complete the recovery baseline, freeze and two-person
+review; verify provisioning/least-privilege evidence; have the authorized operator
+pin the approved identity in `backend/scripts/staging/target.json`; inject
+`R2_STAGING_DATABASE_URL` and `NEON_API_KEY` through the approved secret manager.
+Obtain the separate hosted-read decision above before running the runbook's
+`--preflight`. Retain sanitized output, timestamp, exit status and exact candidate/
+target references here: **PENDING**. An empty target must report five pending
+migrations; this is not permission to apply. Any failed/missing gate stops work.
+Broader staging qualification and release blockers in this report remain open.
+
+**Exact next operator action:** the ALZA infrastructure owner records a dated,
+scoped inspection authorization in the first PENDING row above, naming the
+operator, existing project/organization, permitted metadata/database inventory,
+validity window and protected evidence reference. This permits only the stated
+inspection, not provisioning or schema apply. Then follow the provisioning and
+hosted-read handoffs in order, preserving incident closure, empty-baseline and
+two-person checksum gates. After successful authorized preflight, obtain the
+separate target/manifest/candidate-bound ALZA apply decision and both apply
+reviews before invoking `--apply`. No approval is supplied by this document.
+
+
+## ALZA — Neon Staging Inspection Authorization
+
+**Date:** November 8, 2026 (Asia/Manila)<br>
+**Authorizing authority:** ALZA Infrastructure Owner<br>
+**Owner:** AJ Rienze Josol<br>
+**Authorized operator:** AJ Rienze Josol / Codex under owner supervision
+
+**Project:** `misty-silence-69777617`<br>
+**Organization:** `org-patient-mud-50407342`<br>
+**Branch:** `staging-talgov-r2`<br>
+**Expected branch ID:** `br-steep-sea-ao0qw05a` (subject to verification)<br>
+**Database:** `neondb`
+
+**Authorization window:** November 8, 2026, 22:00–23:59 PHT (UTC+08:00), subject to confirmation that the window is still active.
+
+**Permitted operations:** Authenticated Neon project/branch/endpoint metadata inspection, read-only PostgreSQL role and grant inspection, schema inventory and empty-baseline verification.
+
+**Prohibited operations:** Database writes, password changes, DDL, schema migrations, accessing or importing real LGU records, deployment and production changes.
+
+**Evidence reference:** `docs/r2/STAGING_READINESS.md` — owner-authorized staging inspection record.
+
+**Approval status:** APPROVED — explicitly authorized by AJ Rienze Josol, ALZA Infrastructure Owner, on November 8, 2026.
+## Read-only staging inspection attempt - 2026-11-08
+
+**Result: STOP - missing access. No hosted inspection performed.**
+
+Authorization checked at 2026-11-08 23:19:45 PHT (15:19:45 UTC).
+The ALZA inspection record explicitly names AJ Rienze Josol as infrastructure
+owner and AJ Rienze Josol / Codex under owner supervision as operator, specifies
+metadata, role/grant, schema and empty-baseline inspection, and limits validity
+to 2026-11-08 22:00-23:59 PHT. The window was active at verification. This agrees
+with the authorization table's APPROVED inspection row. The separate hosted-read
+preflight, provisioning and apply decisions remain PENDING; none was inferred.
+
+Document-authorized identifiers (not live-verified): project
+`misty-silence-69777617`, organization `org-patient-mud-50407342`, branch name
+`staging-talgov-r2`, expected branch ID `br-steep-sea-ao0qw05a`, database `neondb`.
+The local target.json agrees on project, organization, branch name and database;
+branch ID, endpoint ID, host and migrationLogin remain null. No target pins changed.
+
+Presence-only process-environment checks found NEON_API_KEY and
+R2_STAGING_DATABASE_URL both absent. No Neon connector was exposed in this session.
+The installed Neon CLI and psql do not establish authenticated access. No credential
+values, local credential stores or environment-file contents were inspected.
+Stopped before any hosted API request or PostgreSQL connection.
+
+Verified hosted target identifiers: none. Project/organization ownership, branch
+identity/isolation, direct endpoint, database/schema ownership, roles/grants and
+empty-data baseline all remain NOT VERIFIED. Required access must be supplied
+through the approved secure mechanism and authorization must still be active
+before another attempt. No credential changes, provisioning, DDL, migrations,
+deployments, commits or pushes were performed. This appendix records only local
+checks and does not advance any pending authorization or readiness gate.
+
+
+### Neon staging empty-baseline inspection — November 9, 2026
+
+**Project:** misty-silence-69777617<br>
+**Branch:** staging-talgov-r2<br>
+**Branch ID:** br-steep-sea-ao0qw05a<br>
+**Endpoint ID:** ep-sparkling-bird-ao5precf<br>
+**Database:** neondb<br>
+**Inspection account:** talgov_staging_migrator
+
+**Observed results:**
+- Secure PostgreSQL connection established using TLS 1.3.
+- Current database and migrator identity verified.
+- Application tables found: 0.
+- Global default function EXECUTE privileges revoked from PUBLIC for migrator-created functions.
+
+**Recovery status:** PENDING — empty-table inspection completed, but protected recovery baseline, recovery destination, retention and RPO/RTO still require verification and acceptance.
+
+**Schema migration status:** NOT STARTED.
+
+**Scope:** ALZA-owned staging only. No production changes or real LGU data.
+
+
+### Legacy Supabase Decommissioning — November 9, 2026
+
+**System:** TalGov legacy Supabase project<br>
+**Security owner:** AJ Rienze Josol — ALZA CTO
+
+**Owner-reported action:** The legacy TalGov Supabase project has been deleted.
+
+**Credential disposition:** The historical Supabase service-role credential is expected to be unusable following completed project deletion. Provider-side deletion confirmation and credential invalidation have not been independently verified.
+
+**Historical exposure:** A previously exposed service-role credential was documented in the repository history. Historical unauthorized access has not been ruled out.
+
+**Access-log review:** NOT VERIFIED — historical logs may no longer be accessible after project deletion.
+
+**Evidence:** Owner confirmation. Supabase project-deletion confirmation or provider record to be attached if available.
+
+**Security decision:** PENDING — ALZA security owner to accept the documented residual risk after reviewing available evidence.
+
+**Production readiness:** NOT CLAIMED.

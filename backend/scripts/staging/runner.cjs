@@ -29,12 +29,18 @@ async function prerequisites(c,t) {
   if ((await c.query(`SELECT has_database_privilege('talgov_runtime',current_database(),'CREATE') OR
     has_database_privilege('talgov_runtime',current_database(),'TEMP') AS unsafe`)).rows[0].unsafe) throw new Error();
   // Inspect PUBLIC explicitly; effective runtime checks also catch inherited privileges.
+  // Only Neon's NOLOGIN managed role may retain non-grantable CREATE/TEMP.
+  // MEMBER covers indirect membership and NOINHERIT/SET ROLE paths too.
   if ((await c.query(`SELECT 1 FROM pg_database d,
     LATERAL aclexplode(COALESCE(d.datacl,acldefault('d',d.datdba))) a
     WHERE d.datname=current_database() AND
       ((a.grantee=0 AND a.privilege_type IN ('CREATE','TEMPORARY')) OR
        (a.grantee=current_user::regrole AND a.is_grantable) OR
-       (a.grantee NOT IN (d.datdba,current_user::regrole) AND a.privilege_type IN ('CREATE','TEMPORARY')))`)).rowCount) throw new Error();
+       (a.grantee NOT IN (d.datdba,current_user::regrole) AND a.privilege_type IN ('CREATE','TEMPORARY')
+        AND NOT EXISTS (SELECT 1 FROM pg_roles managed WHERE managed.oid=a.grantee
+          AND managed.rolname='neon_superuser' AND NOT managed.rolcanlogin AND NOT a.is_grantable
+          AND NOT pg_has_role(current_user,managed.oid,'MEMBER')
+          AND NOT pg_has_role('talgov_runtime',managed.oid,'MEMBER'))))`)).rowCount) throw new Error();
   if ((await c.query(`SELECT has_database_privilege(current_user,current_database(),'TEMP') AS unsafe`)).rows[0].unsafe) throw new Error();
   // No inherited administrative authority; provision the NOLOGIN group separately.
   if ((await c.query(`SELECT 1 FROM pg_auth_members WHERE member IN (current_user::regrole,'talgov_runtime'::regrole)`)).rowCount) throw new Error();
@@ -52,8 +58,8 @@ async function prerequisites(c,t) {
   if ((await c.query(`SELECT 1 FROM pg_default_acl d,LATERAL aclexplode(d.defaclacl) a
     WHERE d.defaclrole=current_user::regrole AND a.grantee<>current_user::regrole`)).rowCount) throw new Error();
 }
-async function verify(c) {
-  const expected = require('./catalog.json');
+async function verify(c, count = manifest.length) {
+  const expected = count === 5 ? require('./catalog-v5.json') : require('./catalog.json');
   if (JSON.stringify(await catalog(c)) !== JSON.stringify(expected)) throw new Error();
   if (!(await c.query(`SELECT has_schema_privilege('talgov_runtime','app','USAGE') AS ok`)).rows[0].ok) throw new Error();
   if ((await c.query(`SELECT 1 FROM pg_namespace n,LATERAL aclexplode(n.nspacl) a
@@ -77,13 +83,16 @@ async function run(pool,t,{ mode='preflight', authorization, root, reverify=asyn
     await reverify();
     const exists=(await c.query("SELECT to_regclass('r2_staging.history') IS NOT NULL AS present")).rows[0].present;
     const rows=exists ? (await c.query('SELECT position,file,sha256 FROM r2_staging.history ORDER BY position')).rows : [];
-    if (rows.length && (rows.length!==files.length || rows.some((r,i)=>r.position!==i+1 || r.file!==files[i].file || r.sha256!==files[i].sha256))) throw new Error();
-    if (rows.length) await verify(c);
+    if (rows.length && (![5,files.length].includes(rows.length) || rows.some((r,i)=>r.position!==i+1 || r.file!==files[i].file || r.sha256!==files[i].sha256))) throw new Error();
+    if (rows.length) await verify(c,rows.length);
     else if ((await c.query("SELECT 1 FROM pg_namespace WHERE nspname IN ('app','r2_staging') UNION ALL SELECT 1 FROM pg_class WHERE relnamespace='public'::regnamespace AND relname LIKE 'r2_auth_%'")).rowCount) throw new Error();
-    if (mode==='apply' && !rows.length) {
-      await c.query('CREATE SCHEMA r2_staging; REVOKE ALL ON SCHEMA r2_staging FROM PUBLIC');
-      await c.query('CREATE TABLE r2_staging.history(position integer PRIMARY KEY,file text UNIQUE NOT NULL,sha256 text NOT NULL,applied_at timestamptz NOT NULL DEFAULT now()); REVOKE ALL ON r2_staging.history FROM PUBLIC,talgov_runtime');
+    if (mode==='apply' && rows.length < files.length) {
+      if (!rows.length) {
+        await c.query('CREATE SCHEMA r2_staging; REVOKE ALL ON SCHEMA r2_staging FROM PUBLIC');
+        await c.query('CREATE TABLE r2_staging.history(position integer PRIMARY KEY,file text UNIQUE NOT NULL,sha256 text NOT NULL,applied_at timestamptz NOT NULL DEFAULT now()); REVOKE ALL ON r2_staging.history FROM PUBLIC,talgov_runtime');
+      }
       for (const [i,m] of files.entries()) {
+        if (i < rows.length) continue;
         await c.query(m.sql);
         await c.query('INSERT INTO r2_staging.history(position,file,sha256) VALUES($1,$2,$3)',[i+1,m.file,m.sha256]);
       }

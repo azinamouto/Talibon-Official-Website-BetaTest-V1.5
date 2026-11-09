@@ -3,10 +3,10 @@
   "organization": "org-patient-mud-50407342",
   "region": "aws-ap-southeast-1",
   "database": "neondb",
-  "branch": null,
+  "branch": "br-steep-sea-ao0qw05a",
   "name": "staging-talgov-r2",
-  "endpoint": null,
-  "host": null,
+  "endpoint": "ep-sparkling-bird-ao5precf",
+  "host": "ep-sparkling-bird-ao5precf.c-2.ap-southeast-1.aws.neon.tech",
   "databaseOwner": "neondb_owner",
-  "migrationLogin": null
+  "migrationLogin": "talgov_staging_migrator"
 }

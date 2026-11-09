@@ -1,6 +1,6 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import type { Response, NextFunction } from 'express';
-import { connectionConfig, PostgresDatabase } from '../database/postgres';
+import { runtimeConnectionConfig, PostgresDatabase } from '../database/postgres';
 import type { AuthenticatedRequest } from './authenticated-request';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class AuditMiddleware implements NestMiddleware {
 
   private async persist(event: object) {
     try {
-      this.database ??= new PostgresDatabase(connectionConfig(process.env.DATABASE_URL));
+      this.database ??= new PostgresDatabase(runtimeConnectionConfig(process.env.DATABASE_URL));
       await this.database.transaction(tx => tx.query('INSERT INTO app.staff_auth_audit(action,subject) VALUES($1,$2)', ['http.request', JSON.stringify(event)]));
     } catch {
       this.logger.error('Audit persistence unavailable; retain structured platform logs.');

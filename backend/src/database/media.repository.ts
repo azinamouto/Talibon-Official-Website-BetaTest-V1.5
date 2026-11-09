@@ -1,24 +1,13 @@
-import { DatabaseError, PostgresDatabase, SqlSession } from './postgres';
+import { authorizeStaff } from './staff-authorization';
+import { DatabaseError, PostgresDatabase } from './postgres';
 import { MediaInput, PgRepositories } from './repositories';
 import { StaffPrincipal } from '../authentication/authentication.adapter';
 
 export class MediaRepository extends PgRepositories {
   constructor(private readonly mediaDb: PostgresDatabase) { super(mediaDb); }
-  private async actor(tx: SqlSession, actor: StaffPrincipal, fresh = false) {
-    if (!actor?.sessionVerified || actor.assurance !== 'mfa') throw new DatabaseError('forbidden');
-    const rows = await tx.query(`SELECT a.id FROM app.staff_accounts a
-      JOIN public.r2_auth_user u ON u.id=a.subject JOIN public.r2_auth_session s ON s."userId"=u.id
-      JOIN app.staff_session_assurance m ON m.session_id=s.id
-      WHERE a.id=$1 AND a.provider='better-auth' AND a.subject=$2 AND a.active
-      AND a.role IN ('admin','editor') AND u."emailVerified" AND u."twoFactorEnabled"
-      AND s.id=$3 AND s."expiresAt">now() AND m.verified_at>now()-($4::int * interval '1 second')
-      AND (NOT $5::boolean OR a.role='admin') FOR SHARE OF a,s,m`,
-    [actor.id, actor.subject, actor.sessionId, fresh ? 300 : 28800, fresh]);
-    if (!rows.length) throw new DatabaseError('forbidden');
-  }
   async throttle(actor: StaffPrincipal) {
     return this.mediaDb.transaction(async tx => {
-      await this.actor(tx, actor);
+      await authorizeStaff(tx, actor);
       const [row] = await tx.query(`INSERT INTO app.media_throttle(actor_id,attempts) VALUES($1,1)
         ON CONFLICT(actor_id) DO UPDATE SET attempts=CASE WHEN media_throttle.started_at<now()-interval '1 minute' THEN 1 ELSE media_throttle.attempts+1 END,
         started_at=CASE WHEN media_throttle.started_at<now()-interval '1 minute' THEN now() ELSE media_throttle.started_at END RETURNING attempts`, [actor.id]);
@@ -32,20 +21,20 @@ export class MediaRepository extends PgRepositories {
   }
   listStaff(actor: StaffPrincipal, page: number) {
     return this.mediaDb.transaction(async tx => {
-      await this.actor(tx, actor);
+      await authorizeStaff(tx, actor);
       return tx.query('SELECT * FROM app.media_assets WHERE deleted_at IS NULL ORDER BY created_at DESC,id LIMIT 51 OFFSET $1', [(page-1)*50]);
     });
   }
   options(actor: StaffPrincipal) {
     return this.mediaDb.transaction(async tx => {
-      await this.actor(tx, actor);
+      await authorizeStaff(tx, actor);
       return { categories: await tx.query('SELECT id,kind,title,approved FROM app.media_categories ORDER BY title LIMIT 500'),
         sources: await tx.query('SELECT id,reference,approved FROM app.content_sources ORDER BY reference LIMIT 500') };
     });
   }
   reserve(actor: StaffPrincipal, input: MediaInput, filename: string, request: string) {
     return this.mediaDb.transaction(async tx => {
-      await this.actor(tx, actor);
+      await authorizeStaff(tx, actor);
       const [created] = await tx.query(`INSERT INTO app.media_assets
         (kind,category_id,source_id,title,description,alt_text,object_key,mime,bytes,sha256,created_by,updated_by,original_filename)
         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$11,$12) ON CONFLICT(object_key) DO NOTHING RETURNING *`,
@@ -61,7 +50,7 @@ export class MediaRepository extends PgRepositories {
   }
   ready(actor: StaffPrincipal, id: string, request: string) {
     return this.mediaDb.transaction(async tx => {
-      await this.actor(tx, actor);
+      await authorizeStaff(tx, actor);
       const [row] = await tx.query("UPDATE app.media_assets SET processing='ready',updated_at=now(),version=version+1 WHERE id=$1 AND processing='pending' AND deleted_at IS NULL RETURNING *", [id]);
       if (!row) throw new DatabaseError('conflict');
       await tx.query('INSERT INTO app.media_revisions(asset_id,object_key,sha256,bytes,mime,actor_id) VALUES($1,$2,$3,$4,$5,$6)', [id,row.object_key,row.sha256,row.bytes,row.mime,actor.id]);
@@ -71,7 +60,7 @@ export class MediaRepository extends PgRepositories {
   }
   get(id: string, actor?: StaffPrincipal) {
     return this.mediaDb.transaction(async tx => {
-      if (actor) await this.actor(tx,actor);
+      if (actor) await authorizeStaff(tx,actor);
       const [row] = await tx.query(`SELECT m.* FROM app.media_assets m WHERE m.id=$1 AND m.deleted_at IS NULL AND m.processing='ready'
         ${actor ? '' : 'AND EXISTS(SELECT 1 FROM app.published_media p WHERE p.id=m.id)'}`, [id]);
       return row;
@@ -79,7 +68,7 @@ export class MediaRepository extends PgRepositories {
   }
   change(actor: StaffPrincipal, id: string, version: number, action: string, data: { title?: string; description?: string; altText?: string; categoryId?: string }, request: string) {
     return this.mediaDb.transaction(async tx => {
-      await this.actor(tx, actor, action === 'delete');
+      await authorizeStaff(tx, actor, action === 'delete');
       const [row] = await tx.query('SELECT * FROM app.media_assets WHERE id=$1 AND version=$2 AND deleted_at IS NULL FOR UPDATE', [id,version]);
       if (!row) throw new DatabaseError('conflict');
       if (action === 'edit') await tx.query('UPDATE app.media_assets SET title=$1,description=$2,alt_text=$3,category_id=$4 WHERE id=$5', [data.title,data.description,data.altText,data.categoryId,id]);

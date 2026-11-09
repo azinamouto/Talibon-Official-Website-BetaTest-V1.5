@@ -1,3 +1,4 @@
+import { CmsContentController } from './api/content/cms.controller';
 import { PublicFormsController } from './api/forms/public-forms.controller';
 import { MediaController, PublicMediaController } from './api/media/media.controller';
 import { MediaService } from './api/media/media.service';
@@ -36,7 +37,7 @@ import { HealthController } from './api/health/health.controller';
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['backend/.env', '.env'], validate: validateEnvironment })],
   controllers: [
-    MediaController, PublicMediaController, PublicCatalogController,
+    CmsContentController, MediaController, PublicMediaController, PublicCatalogController,
     HealthController,
     PublicFormsController,
     SearchController,

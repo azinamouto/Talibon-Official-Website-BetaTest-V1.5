@@ -375,7 +375,9 @@
               "enum": [
                 "ARTICLE",
                 "UPDATE",
-                "ANNOUNCEMENT"
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
               ]
             }
           },
@@ -3116,7 +3118,9 @@
               "enum": [
                 "ARTICLE",
                 "UPDATE",
-                "ANNOUNCEMENT"
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
               ]
             }
           },
@@ -3267,7 +3271,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -3278,8 +3282,8 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "tags": [
@@ -3313,21 +3317,118 @@
           }
         },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "201": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "slug",
+                        "content",
+                        "status",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "title": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "content": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "status": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "nullable": false
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "slug": "municipal-information",
+                      "status": "published",
+                      "created_at": "2026-09-21T00:00:00.000Z",
+                      "updated_at": "2026-09-21T00:00:00.000Z",
+                      "title": "Municipal information",
+                      "content": "Information about Talibon."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "pages"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       }
     },
     "/api/pages/manage": {
@@ -3392,7 +3493,9 @@
               "enum": [
                 "ARTICLE",
                 "UPDATE",
-                "ANNOUNCEMENT"
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
               ]
             }
           },
@@ -3543,7 +3646,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -3554,13 +3657,13 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
@@ -3683,7 +3786,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -3694,13 +3797,13 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
@@ -3823,7 +3926,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -3834,8 +3937,8 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "tags": [
@@ -3877,21 +3980,118 @@
           }
         },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "200": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "slug",
+                        "content",
+                        "status",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "title": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "content": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "status": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "nullable": false
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "slug": "municipal-information",
+                      "status": "published",
+                      "created_at": "2026-09-21T00:00:00.000Z",
+                      "updated_at": "2026-09-21T00:00:00.000Z",
+                      "title": "Municipal information",
+                      "content": "Information about Talibon."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "pages"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       },
       "delete": {
         "operationId": "PageContentController_remove_1",
@@ -3917,22 +4117,64 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "204": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Soft deleted; no response body."
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "pages"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       }
     },
     "/api/news": {
@@ -3997,7 +4239,9 @@
               "enum": [
                 "ARTICLE",
                 "UPDATE",
-                "ANNOUNCEMENT"
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
               ]
             }
           },
@@ -4184,7 +4428,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -4195,8 +4439,8 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "tags": [
@@ -4230,21 +4474,154 @@
           }
         },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "201": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "slug",
+                        "summary",
+                        "content",
+                        "category",
+                        "date",
+                        "image_url",
+                        "file_url",
+                        "author",
+                        "status",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "title": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "summary": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "content": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "category": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "date": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "image_url": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "file_url": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "author": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "status": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "nullable": false
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "slug": "municipal-information",
+                      "status": "published",
+                      "created_at": "2026-09-21T00:00:00.000Z",
+                      "updated_at": "2026-09-21T00:00:00.000Z",
+                      "title": "Municipal information",
+                      "content": "Information about Talibon.",
+                      "summary": "Municipal update.",
+                      "category": "UPDATE",
+                      "date": "2026-09-21",
+                      "image_url": null,
+                      "file_url": null,
+                      "author": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "news"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       }
     },
     "/api/news/manage": {
@@ -4309,7 +4686,9 @@
               "enum": [
                 "ARTICLE",
                 "UPDATE",
-                "ANNOUNCEMENT"
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
               ]
             }
           },
@@ -4496,7 +4875,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -4507,13 +4886,13 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
@@ -4672,7 +5051,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -4683,13 +5062,13 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
@@ -4848,7 +5227,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -4859,8 +5238,8 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "tags": [
@@ -4902,21 +5281,154 @@
           }
         },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "200": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "slug",
+                        "summary",
+                        "content",
+                        "category",
+                        "date",
+                        "image_url",
+                        "file_url",
+                        "author",
+                        "status",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "title": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "summary": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "content": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "category": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "date": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "image_url": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "file_url": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "author": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "status": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "nullable": false
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "slug": "municipal-information",
+                      "status": "published",
+                      "created_at": "2026-09-21T00:00:00.000Z",
+                      "updated_at": "2026-09-21T00:00:00.000Z",
+                      "title": "Municipal information",
+                      "content": "Information about Talibon.",
+                      "summary": "Municipal update.",
+                      "category": "UPDATE",
+                      "date": "2026-09-21",
+                      "image_url": null,
+                      "file_url": null,
+                      "author": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "news"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       },
       "delete": {
         "operationId": "NewsContentController_remove_1",
@@ -4942,22 +5454,64 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "204": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Soft deleted; no response body."
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "news"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       }
     },
     "/api/services": {
@@ -5022,7 +5576,9 @@
               "enum": [
                 "ARTICLE",
                 "UPDATE",
-                "ANNOUNCEMENT"
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
               ]
             }
           },
@@ -5232,7 +5788,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -5243,8 +5799,8 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "tags": [
@@ -5278,21 +5834,177 @@
           }
         },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "201": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "name",
+                        "slug",
+                        "description",
+                        "purpose",
+                        "requirements",
+                        "processing_time",
+                        "fees",
+                        "office_responsible",
+                        "office_hours",
+                        "contact_info",
+                        "physical_address",
+                        "status",
+                        "downloadable_forms",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "name": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "description": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "purpose": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "requirements": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "processing_time": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "fees": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "office_responsible": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "office_hours": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "contact_info": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "physical_address": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "status": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "downloadable_forms": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "nullable": false
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "slug": "municipal-information",
+                      "status": "available",
+                      "created_at": "2026-09-21T00:00:00.000Z",
+                      "updated_at": "2026-09-21T00:00:00.000Z",
+                      "name": "Municipal information",
+                      "description": "Service details.",
+                      "office_responsible": "mayor",
+                      "requirements": [],
+                      "processing_time": "3 to 5 business days",
+                      "fees": "None",
+                      "purpose": null,
+                      "office_hours": "Monday to Friday, 8:00 AM - 5:00 PM",
+                      "contact_info": null,
+                      "physical_address": null,
+                      "downloadable_forms": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "services"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       }
     },
     "/api/services/manage": {
@@ -5357,7 +6069,9 @@
               "enum": [
                 "ARTICLE",
                 "UPDATE",
-                "ANNOUNCEMENT"
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
               ]
             }
           },
@@ -5567,7 +6281,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -5578,13 +6292,13 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
@@ -5766,7 +6480,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -5777,13 +6491,13 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
@@ -5965,7 +6679,7 @@
             "description": "Missing, invalid or ended session."
           },
           "403": {
-            "description": "Requires a verified super_admin, admin, municipal_admin or editor."
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
           },
           "404": {
             "description": "Missing, deleted or non-public content."
@@ -5976,8 +6690,8 @@
           "429": {
             "description": "Rate limit exceeded."
           },
-          "500": {
-            "description": "Storage unavailable."
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "tags": [
@@ -6019,21 +6733,177 @@
           }
         },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "200": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "name",
+                        "slug",
+                        "description",
+                        "purpose",
+                        "requirements",
+                        "processing_time",
+                        "fees",
+                        "office_responsible",
+                        "office_hours",
+                        "contact_info",
+                        "physical_address",
+                        "status",
+                        "downloadable_forms",
+                        "created_at",
+                        "updated_at"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "name": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "description": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "purpose": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "requirements": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "processing_time": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "fees": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "office_responsible": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "office_hours": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "contact_info": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "physical_address": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "status": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "downloadable_forms": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "nullable": false
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "nullable": false
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "data": {
+                      "id": "11111111-1111-4111-8111-111111111111",
+                      "slug": "municipal-information",
+                      "status": "available",
+                      "created_at": "2026-09-21T00:00:00.000Z",
+                      "updated_at": "2026-09-21T00:00:00.000Z",
+                      "name": "Municipal information",
+                      "description": "Service details.",
+                      "office_responsible": "mayor",
+                      "requirements": [],
+                      "processing_time": "3 to 5 business days",
+                      "fees": "None",
+                      "purpose": null,
+                      "office_hours": "Monday to Friday, 8:00 AM - 5:00 PM",
+                      "contact_info": null,
+                      "physical_address": null,
+                      "downloadable_forms": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "services"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       },
       "delete": {
         "operationId": "ServiceContentController_remove_1",
@@ -6059,22 +6929,64 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
         "responses": {
-          "410": {
-            "description": "Online services are not available. Please visit the appropriate municipal office."
+          "204": {
+            "headers": {
+              "Cache-Control": {
+                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Vary": {
+                "description": "Includes X-API-Version and CORS Origin.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Soft deleted; no response body."
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
           }
         },
         "security": [
           {
-            "bearer": []
+            "staffCookie": []
           }
         ],
         "tags": [
           "services"
-        ],
-        "deprecated": true,
-        "summary": "Retired in R2",
-        "description": "All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation."
+        ]
       }
     },
     "/api/search": {
@@ -7557,6 +8469,9 @@
       "CreatePageDto": {
         "type": "object",
         "properties": {
+          "sourceId": {
+            "type": "string"
+          },
           "title": {
             "type": "string",
             "example": "Municipal profile",
@@ -7583,6 +8498,7 @@
           }
         },
         "required": [
+          "sourceId",
           "title",
           "slug",
           "content"
@@ -7591,6 +8507,9 @@
       "UpdatePageDto": {
         "type": "object",
         "properties": {
+          "sourceId": {
+            "type": "string"
+          },
           "title": {
             "type": "string",
             "example": "Municipal profile",
@@ -7614,12 +8533,34 @@
               "archived"
             ],
             "default": "draft"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
           }
-        }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ContentVersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "version"
+        ]
       },
       "CreateNewsDto": {
         "type": "object",
         "properties": {
+          "sourceId": {
+            "type": "string"
+          },
           "title": {
             "type": "string",
             "example": "Municipal profile",
@@ -7654,12 +8595,15 @@
             "enum": [
               "ARTICLE",
               "UPDATE",
-              "ANNOUNCEMENT"
+              "ANNOUNCEMENT",
+              "ADVISORY",
+              "NOTICE"
             ],
             "default": "ARTICLE"
           }
         },
         "required": [
+          "sourceId",
           "title",
           "slug",
           "content",
@@ -7669,6 +8613,9 @@
       "UpdateNewsDto": {
         "type": "object",
         "properties": {
+          "sourceId": {
+            "type": "string"
+          },
           "title": {
             "type": "string",
             "example": "Municipal profile",
@@ -7703,15 +8650,27 @@
             "enum": [
               "ARTICLE",
               "UPDATE",
-              "ANNOUNCEMENT"
+              "ANNOUNCEMENT",
+              "ADVISORY",
+              "NOTICE"
             ],
             "default": "ARTICLE"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
           }
-        }
+        },
+        "required": [
+          "version"
+        ]
       },
       "CreateServiceDto": {
         "type": "object",
         "properties": {
+          "sourceId": {
+            "type": "string"
+          },
           "name": {
             "type": "string",
             "example": "Business permit",
@@ -7760,6 +8719,7 @@
           }
         },
         "required": [
+          "sourceId",
           "name",
           "slug",
           "description",
@@ -7769,6 +8729,9 @@
       "UpdateServiceDto": {
         "type": "object",
         "properties": {
+          "sourceId": {
+            "type": "string"
+          },
           "name": {
             "type": "string",
             "example": "Business permit",
@@ -7814,8 +8777,15 @@
           "fees": {
             "type": "string",
             "example": "None"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
           }
-        }
+        },
+        "required": [
+          "version"
+        ]
       },
       "SearchItemDto": {
         "type": "object",

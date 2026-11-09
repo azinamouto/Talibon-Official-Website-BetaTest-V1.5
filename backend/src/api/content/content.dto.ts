@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ArrayMaxSize, IsArray, IsIn, IsInt, IsString, Length, Matches, Max, Min, ValidateIf } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsObject, IsUUID, IsIn, IsInt, IsString, Length, Matches, Max, Min, ValidateIf } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 // Unlike IsOptional, this does not let explicit null bypass validation.
@@ -21,8 +21,8 @@ export class ListContentDto {
   @Optional() @IsString() @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) @Length(1, 160)
   slug?: string;
 
-  @ApiPropertyOptional({ enum: ['ARTICLE', 'UPDATE', 'ANNOUNCEMENT'], description: 'News only.' })
-  @Optional() @IsIn(['ARTICLE', 'UPDATE', 'ANNOUNCEMENT'])
+  @ApiPropertyOptional({ enum: ['ARTICLE', 'UPDATE', 'ANNOUNCEMENT', 'ADVISORY', 'NOTICE'], description: 'News only.' })
+  @Optional() @IsIn(['ARTICLE', 'UPDATE', 'ANNOUNCEMENT', 'ADVISORY', 'NOTICE'])
   category?: string;
 
   @ApiPropertyOptional({ description: 'Services only; department ID.' })
@@ -31,6 +31,7 @@ export class ListContentDto {
 }
 
 export class CreatePageDto {
+  @ApiProperty() @IsUUID() sourceId: string;
   @ApiProperty({ example: 'Municipal profile', maxLength: 200 })
   @IsString() @Length(1, 200) @Matches(/\S/)
   title: string;
@@ -47,20 +48,25 @@ export class CreatePageDto {
   @Optional() @IsIn(['draft', 'published', 'archived'])
   status?: string;
 }
-export class UpdatePageDto extends PartialType(CreatePageDto, { skipNullProperties: false }) {}
+export class UpdatePageDto extends PartialType(CreatePageDto, { skipNullProperties: false }) {
+  @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
+}
 
 export class CreateNewsDto extends CreatePageDto {
   @ApiProperty({ example: 'Latest municipal update.', maxLength: 2000 })
   @IsString() @Length(1, 2000) @Matches(/\S/)
   summary: string;
 
-  @ApiPropertyOptional({ enum: ['ARTICLE', 'UPDATE', 'ANNOUNCEMENT'], default: 'ARTICLE' })
-  @Optional() @IsIn(['ARTICLE', 'UPDATE', 'ANNOUNCEMENT'])
+  @ApiPropertyOptional({ enum: ['ARTICLE', 'UPDATE', 'ANNOUNCEMENT', 'ADVISORY', 'NOTICE'], default: 'ARTICLE' })
+  @Optional() @IsIn(['ARTICLE', 'UPDATE', 'ANNOUNCEMENT', 'ADVISORY', 'NOTICE'])
   category?: string;
 }
-export class UpdateNewsDto extends PartialType(CreateNewsDto, { skipNullProperties: false }) {}
+export class UpdateNewsDto extends PartialType(CreateNewsDto, { skipNullProperties: false }) {
+  @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
+}
 
 export class CreateServiceDto {
+  @ApiProperty() @IsUUID() sourceId: string;
   @ApiProperty({ example: 'Business permit', maxLength: 200 })
   @IsString() @Length(1, 200) @Matches(/\S/)
   name: string;
@@ -93,4 +99,18 @@ export class CreateServiceDto {
   @Optional() @IsString() @Length(1, 500)
   fees?: string;
 }
-export class UpdateServiceDto extends PartialType(CreateServiceDto, { skipNullProperties: false }) {}
+export class UpdateServiceDto extends PartialType(CreateServiceDto, { skipNullProperties: false }) {
+  @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
+}
+
+export class ContentVersionDto { @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number; }
+export class CmsContentDto {
+  @ApiProperty() @IsString() @Length(1,200) @Matches(/\S/) title: string;
+  @ApiProperty() @IsString() @Length(1,160) @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) slug: string;
+  @ApiProperty() @IsUUID() sourceId: string;
+  @ApiProperty({ type: 'object', additionalProperties: true }) @IsObject() body: Record<string, unknown>;
+  @ApiPropertyOptional({ enum: ['draft','published','archived'] }) @Optional() @IsIn(['draft','published','archived']) status?: string;
+}
+export class CmsUpdateDto extends PartialType(CmsContentDto, { skipNullProperties: false }) {
+  @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
+}

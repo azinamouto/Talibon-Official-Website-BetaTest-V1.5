@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { StaffRequest, contentMutation } from './staff-request';
+import { Req, Body, Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { Public, Roles } from '../../security/auth.guard';
 import { ContentService, CONTENT_ROLES } from './content.service';
-import { CreateServiceDto, UpdateServiceDto, ListContentDto } from './content.dto';
+import { CreateServiceDto, UpdateServiceDto, ListContentDto, ContentVersionDto } from './content.dto';
 import { ContentResponse, ContentErrors } from './content.openapi';
 
 @ApiTags('services')
@@ -17,16 +18,16 @@ export class ServiceContentController {
   list(@Query() query: ListContentDto) { return this.content.list('services', query); }
 
   @Roles(...CONTENT_ROLES)
-  @ApiBearerAuth()
+  @ApiCookieAuth('staffCookie')
   @Get('manage')
   @ContentResponse('services', 'list')
-  manage(@Query() query: ListContentDto) { return this.content.list('services', query, true); }
+  manage(@Req() req: StaffRequest, @Query() query: ListContentDto) { return this.content.list('services', query, req.staff); }
 
   @Roles(...CONTENT_ROLES)
-  @ApiBearerAuth()
+  @ApiCookieAuth('staffCookie')
   @Get('manage/:id')
   @ContentResponse('services', 'read')
-  preview(@Param('id', new ParseUUIDPipe()) id: string) { return this.content.get('services', id, true); }
+  preview(@Req() req: StaffRequest, @Param('id', new ParseUUIDPipe()) id: string) { return this.content.get('services', id, req.staff); }
 
   @Public()
   @Get(':id')
@@ -34,24 +35,24 @@ export class ServiceContentController {
   get(@Param('id', new ParseUUIDPipe()) id: string) { return this.content.get('services', id); }
 
   @Roles(...CONTENT_ROLES)
-  @ApiBearerAuth()
+  @ApiCookieAuth('staffCookie')
   @Post()
   @ContentResponse('services', 'create')
-  create(@Body() body: CreateServiceDto) { return this.content.create('services', body); }
+  create(@Req() req: StaffRequest, @Body() body: CreateServiceDto) { contentMutation(req); return this.content.create('services', body, req.staff, req.requestId); }
 
   @Roles(...CONTENT_ROLES)
-  @ApiBearerAuth()
+  @ApiCookieAuth('staffCookie')
   @Patch(':id')
   @ContentResponse('services', 'read')
-  update(@Param('id', new ParseUUIDPipe()) id: string, @Body() body: UpdateServiceDto) {
-    return this.content.update('services', id, body);
+  update(@Req() req: StaffRequest, @Param('id', new ParseUUIDPipe()) id: string, @Body() body: UpdateServiceDto) {
+    contentMutation(req); return this.content.update('services', id, body, req.staff, req.requestId);
   }
 
-  @Roles(...CONTENT_ROLES)
-  @ApiBearerAuth()
+  @ApiCookieAuth('staffCookie')
+  @Roles('admin')
   @Delete(':id')
   @HttpCode(204)
   @ContentResponse('services', 'delete')
-  remove(@Param('id', new ParseUUIDPipe()) id: string) { return this.content.remove('services', id); }
+  remove(@Req() req: StaffRequest, @Body() body: ContentVersionDto, @Param('id', new ParseUUIDPipe()) id: string) { contentMutation(req); return this.content.remove('services', id, body.version, req.staff, req.requestId); }
 }
 

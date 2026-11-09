@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { connectionConfig, PostgresDatabase } from '../database/postgres';
+import { runtimeConnectionConfig, PostgresDatabase } from '../database/postgres';
 import { clientIp } from './client-ip';
 import {
   Injectable,
@@ -62,7 +62,7 @@ export class RateLimiterGuard implements CanActivate {
     const key = 'http:' + createHash('sha256').update(category + ':' + clientIp(req)).digest('hex');
     let record: { attempts: number; retry: number };
     try {
-      this.database ??= new PostgresDatabase(connectionConfig(process.env.DATABASE_URL));
+      this.database ??= new PostgresDatabase(runtimeConnectionConfig(process.env.DATABASE_URL));
       record = await this.database.transaction(async tx => {
         // Existing shared throttle contract; separate namespace from authentication.
         await tx.query("DELETE FROM app.staff_auth_throttle WHERE key LIKE 'http:%' AND started_at < now()-interval '1 day'");

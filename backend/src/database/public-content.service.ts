@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { connectionConfig, PostgresDatabase } from './postgres';
+import { runtimeConnectionConfig, PostgresDatabase } from './postgres';
 
 export const PUBLIC_KINDS = ['barangays','departments','officials','news','pages','tourism_spots','events','navigation','downloadables','ordinances','resolutions','citizens_charter_cms','services_cms'] as const;
 
@@ -10,7 +10,7 @@ export class PublicContentService {
   configure(database: PostgresDatabase) { this.database = database; }
   async query<T>(work: Parameters<PostgresDatabase['transaction']>[0]): Promise<T> {
     try {
-      this.database ??= new PostgresDatabase(connectionConfig(process.env.DATABASE_URL));
+      this.database ??= new PostgresDatabase(runtimeConnectionConfig(process.env.DATABASE_URL));
       return await this.database.transaction(work, true) as T;
     } catch { throw new ServiceUnavailableException('Public content is temporarily unavailable.'); }
   }
@@ -33,7 +33,7 @@ export class PublicContentService {
       const [count] = await tx.query(`SELECT count(*)::int AS total FROM app.published_content WHERE ${where}`, values);
       const rows = await tx.query(`SELECT * FROM app.published_content WHERE ${where} ORDER BY published_at DESC,id LIMIT $${values.length+1} OFFSET $${values.length+2}`, [...values,limit,(page-1)*limit]);
       if (rows.some(row => /https?:\/\/[^/\s]+\/(storage|rest|auth)\/v1/i.test(JSON.stringify(row.body)))) throw new Error('Unmigrated content reference');
-      const data = rows.map(row => ({ ...row.body, id: row.id, slug: row.slug, title: row.title, created_at: row.published_at }));
+      const data = rows.map(row => ({ ...row.body, ...(row.kind==='news'?{date:row.body.date ?? row.published_at}:{}), id: row.id, slug: row.slug, title: row.title, created_at: row.published_at }));
       return { data, pagination: { page, limit, total: count.total, totalPages: Math.ceil(count.total/limit) } };
     });
   }

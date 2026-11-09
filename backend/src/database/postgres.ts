@@ -79,6 +79,28 @@ export function connectionConfig(url: string, localTest = false): PoolConfig {
   } catch { throw new DatabaseError('invalid'); }
 }
 
+/** Runtime pools cannot connect as an owner, migrator or inherited administrator. */
+export function runtimeConnectionConfig(url: string, localTest = false): PoolConfig {
+  const config = connectionConfig(url,localTest);
+  const prior = config.onConnect;
+  return { ...config, onConnect: async (client: Client) => {
+    if (prior) await prior(client);
+    const {rows:[role]} = await client.query(`WITH RECURSIVE inherited(oid) AS (
+      SELECT oid FROM pg_roles WHERE rolname=session_user
+      UNION SELECT m.roleid FROM pg_auth_members m JOIN inherited i ON m.member=i.oid
+    ) SELECT current_user=session_user AND
+      pg_has_role(session_user,'talgov_runtime','MEMBER') AND
+      NOT EXISTS(SELECT 1 FROM pg_roles r JOIN inherited i ON i.oid=r.oid
+        WHERE r.rolsuper OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication OR r.rolbypassrls
+          OR r.rolname IN ('neondb_owner','postgres')) AND
+      NOT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname IN ('app','public','r2_staging') AND nspowner IN (SELECT oid FROM inherited)) AND
+      NOT has_database_privilege(session_user,current_database(),'CREATE') AND
+      NOT has_schema_privilege(session_user,'public','CREATE') AND
+      NOT has_schema_privilege(session_user,'app','CREATE') AS safe`);
+    if (!role?.safe) throw new DatabaseError('forbidden');
+  } };
+}
+
 export interface SqlSession {
   query<T extends QueryResultRow = QueryResultRow>(sql: string, values?: unknown[]): Promise<T[]>;
 }

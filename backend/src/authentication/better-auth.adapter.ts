@@ -1,7 +1,7 @@
 import { clientIp } from '../security/client-ip';
 import { Pool } from 'pg';
 import { createHash, randomUUID } from 'node:crypto';
-import { connectionConfig } from '../database/postgres';
+import { runtimeConnectionConfig } from '../database/postgres';
 import type { AuthenticationAdapter, StaffPrincipal } from './authentication.adapter';
 import type { Request, Response, NextFunction } from 'express';
 
@@ -77,7 +77,7 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
       !(options.localTest && origin.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(origin.hostname))) ||
       options.secret.length < 43) throw new Error('Invalid staff authentication configuration');
     const loopback = ['127.0.0.1','localhost'].includes(new URL(options.databaseUrl).hostname);
-    this.pool = new Pool(connectionConfig(options.databaseUrl, options.localTest && loopback));
+    this.pool = new Pool(runtimeConnectionConfig(options.databaseUrl, options.localTest && loopback));
     this.pool.on('error', (error: Error & { code?: string }) => {
       console.error(`[staff-auth] database pool error code=${error.code || error.name}`);
     });

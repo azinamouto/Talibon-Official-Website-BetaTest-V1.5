@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { StaffPrincipal } from '../../authentication/authentication.adapter';
-import { connectionConfig, DatabaseError, PostgresDatabase } from '../../database/postgres';
+import { runtimeConnectionConfig, DatabaseError, PostgresDatabase } from '../../database/postgres';
 import { MediaRepository } from '../../database/media.repository';
 import { NeonObjectStore, ObjectStore } from '../../storage/neon-object-store';
 import { checksum, validateFile } from '../../storage/file-validation';
@@ -20,7 +20,7 @@ export class MediaService {
   private init() {
     if (!this.repository) {
       if (!process.env.MEDIA_DATABASE_URL) throw new ServiceUnavailableException('Media is not configured.');
-      this.database = new PostgresDatabase(connectionConfig(process.env.MEDIA_DATABASE_URL));
+      this.database = new PostgresDatabase(runtimeConnectionConfig(process.env.MEDIA_DATABASE_URL));
       this.repository = new MediaRepository(this.database);
     }
     this.storage ??= new NeonObjectStore();

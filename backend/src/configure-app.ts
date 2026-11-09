@@ -97,10 +97,6 @@ export function createApiDocument(app: INestApplication) {
     '/api/admin/users/{id}': ['get', 'patch'], '/api/admin/users/{id}/role': ['patch'],
     '/api/admin/users/{id}/deactivate': ['post'],
   };
-  for (const kind of ['pages', 'news', 'services']) {
-    retiredPaths[`/api/${kind}`] = ['post'];
-    retiredPaths[`/api/${kind}/{id}`] = ['patch', 'delete'];
-  }
   for (const [path, methods] of Object.entries(retiredPaths)) {
     document.paths[path] ??= {};
     for (const method of methods) {

@@ -4,6 +4,7 @@ import { staffRequest, useStaffAuth } from '../contexts/StaffAuthContext';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import AdminMedia from '../components/admin/AdminMedia';
+import AdminContent from '../components/admin/AdminContent';
 
 type StaffAccount = {
   id: string;
@@ -68,6 +69,7 @@ export default function StaffPortal() {
   }
   return <main className="mx-auto max-w-3xl space-y-5 p-8">
     <h1 className="text-3xl font-bold">Staff workspace</h1><p>Signed in as {staff.role}.</p>
+    <AdminContent role={staff.role} />
     <AdminMedia role={staff.role} />
     {staff.role === 'admin' && <section className="space-y-4"><h2 className="text-xl font-bold">Staff access</h2>
       <Input label="Current authenticator code" autoComplete="one-time-code" inputMode="numeric" maxLength={6} value={code} onChange={e=>setCode(e.target.value)} />

@@ -1,5 +1,5 @@
 import { Controller, Get, Header, Inject, ServiceUnavailableException } from '@nestjs/common';
-import { connectionConfig, PostgresDatabase } from '../../database/postgres';
+import { runtimeConnectionConfig, PostgresDatabase } from '../../database/postgres';
 import { NeonObjectStore } from '../../storage/neon-object-store';
 import { Public } from '../../security/auth.guard';
 import { PublicContentService } from '../../database/public-content.service';
@@ -21,7 +21,7 @@ export class HealthController {
   async ready() {
     // Read a canonical table without fetching citizen data. Bound slow dependencies.
     try {
-      if (!this.dependencies.length) this.dependencies = [process.env.STAFF_AUTH_DATABASE_URL, process.env.MEDIA_DATABASE_URL].map(url => new PostgresDatabase(connectionConfig(url)));
+      if (!this.dependencies.length) this.dependencies = [process.env.STAFF_AUTH_DATABASE_URL, process.env.MEDIA_DATABASE_URL].map(url => new PostgresDatabase(runtimeConnectionConfig(url)));
       await Promise.all([
         this.content.query(async tx => { await tx.query('SELECT 1 FROM app.published_content LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_auth_throttle LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_auth_audit LIMIT 1'); }),
         this.dependencies[0].transaction(async tx => { await tx.query('SELECT 1 FROM public.r2_auth_session LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_session_assurance LIMIT 1'); }, true),

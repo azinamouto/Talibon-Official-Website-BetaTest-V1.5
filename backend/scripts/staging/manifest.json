@@ -1,0 +1,26 @@
+[
+  {
+    "file": "migrations/001_foundation.sql",
+    "sha256": "b2a3f230afcd6fa060589714107946b0759f0e5cfb5018878d500d96ff2a195e"
+  },
+  {
+    "file": "migrations/002_privileges.sql",
+    "sha256": "761c527a55a88fa32ba9b7b27477a9ab6c7a39d02b46175619da16240a3c14fc"
+  },
+  {
+    "file": "auth/001_provider.sql",
+    "sha256": "20012bf69d4231fc48199fa3c0e8764ccf104e8f1c26817c7a328ae80c083d8e"
+  },
+  {
+    "file": "auth/002_staff_policy.sql",
+    "sha256": "4d6f87ca064a90ddde1b7a4db1cb6489a19bb2974bf1918cdc68fab9464e3a73"
+  },
+  {
+    "file": "media/001_media_policy.sql",
+    "sha256": "d257a2ce39fade50817a0e4e17f6b31e95121d579834ecbae8ff0d51d95cba72"
+  },
+  {
+    "file": "content/001_content_policy.sql",
+    "sha256": "41b5ebee6a82ec19fb45c128a5f7cd1acdbf807319cd2c96711200ec0b0607bc"
+  }
+]

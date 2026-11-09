@@ -6,11 +6,11 @@ export function ContentErrors() {
   return applyDecorators(...[
     [400, 'Invalid body, query, UUID or department reference.'],
     [401, 'Missing, invalid or ended session.'],
-    [403, 'Requires a verified super_admin, admin, municipal_admin or editor.'],
+    [403, 'Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA.'],
     [404, 'Missing, deleted or non-public content.'],
     [409, 'Slug already exists, including soft-deleted records.'],
     [429, 'Rate limit exceeded.'],
-    [500, 'Storage unavailable.'],
+    [503, 'Database unavailable.'],
   ].map(([status, description]) => ApiResponse({ status: Number(status), description: String(description) })));
 }
 

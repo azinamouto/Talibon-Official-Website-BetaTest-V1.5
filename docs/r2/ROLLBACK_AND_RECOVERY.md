@@ -1,5 +1,85 @@
 # Rollback and recovery
 
+
+Current pre-apply status: **NO-GO**. The candidate has six migrations; historical five-file statements below are superseded by [the current qualification](STAGING_READINESS.md#pre-apply-qualification---2026-11-09). Historical approvals and pending records are preserved.
+
+
+## Six-migration disposable recovery procedure - 2026-11-09
+
+Procedure checked against the current runner; hosted recreation NOT validated. This supersedes five-row recovery instructions below. Existing conditional ALZA acceptance of disposable schema/synthetic-data loss remains recorded; it is not completed recovery acceptance.
+
+1. Stop staging writers and control-plane changes. Preserve timestamped sanitized failure output, exit status, target IDs, candidate/runner/catalog hashes and ledger evidence. Do not infer rollback from a failed connection or uncertain COMMIT.
+2. Once existing read-preflight prerequisites are satisfied, reconcile the pinned target using `node backend/scripts/r2-staging-migrate.cjs --preflight`. Empty baseline expects applied 0/pending 6; complete six-row history expects applied 0/pending 0 with catalog verification. The runner also accepts an exact historical five-row prefix (pending 1); that is not the approved empty baseline and requires review, not automatic continuation. Any failure or unexpected state stops recovery.
+3. Before replacement, verify timestamped database/object/staff-state inventory and absence of dependent apps, jobs, webhooks, integrations and child branches. Zero application tables alone is insufficient. Recovery owner and independent reviewer must accept inventory, destination, RPO/RTO, evidence retention and escalation contact.
+4. Preserve the failed branch. Have the authorized operator prepare a distinct empty isolated staging destination from a verified empty baseline; never clone unverified production/development data, reset a shared branch, delete history or overwrite the failed target. Destination ID and provisioning evidence remain PENDING; no recreation command is executable yet.
+5. Replacement IDs cannot pass the current pinned runner. Review new target metadata/pins and restricted-role evidence separately, preserve all six SQL/manifest bytes, and obtain fresh target-bound preflight evidence (0 applied/6 pending). Do not weaken guards or grant elevated privileges. Migration replay requires subsequent explicit six-migration authorization; no apply is executed by this procedure review.
+
+Validation limit: required process credentials are absent. No hosted inventory, recreation, restore, measured recovery time or dependency-isolation result is claimed. Production and development resources are untouched.
+
+## Final scope alignment - 2026-11-09
+
+Recovery planning retains the unchanged five-migration, 20-application-table CMS/auth baseline, including `app.import_batches` and `app.content_asset_links`; no alternative 18-table recovery baseline is prepared. See the [final scope/readiness decision](STAGING_READINESS.md#final-cms-database-scope-decision---2026-11-09). Recorded ALZA staging execution authorization remains valid for its approved scope and need not be requested again. Recovery-owner/independent-reviewer acceptance, inventory, destination, retention, RPO/RTO and freeze/escalation records below remain PENDING; this scope decision supplies no recovery, security or review evidence.
+
+
+## Owner-authorized execution recovery assessment - 2026-11-09
+
+Recorded at 2026-11-09 01:51:47 Asia/Shanghai (UTC+08:00). The owner has authorized staging execution; see the current STAGING_READINESS.md assessment. Recovery acceptance remains PENDING. The supplied zero-application-table observation has not been reverified in this session because required credentials are absent. It does not establish absence of staff state, history, other schemas or object payloads.
+
+Applicable procedure for this intended empty schema-only target:
+
+1. Before preflight, obtain authorized database/object inventory for the exact pinned staging target, with inspection timestamp and owner/independent-reviewer acceptance. Unexpected nonempty state stops this path. Record recovery owner, escalation contact, separate isolated recovery destination, retention and achievable RPO/RTO; none is invented here.
+2. Preserve candidate hashes, manifest, sanitized output and baseline/failure evidence. The five migrations and private history are one transaction; on failure the runner attempts rollback and closes the connection. An error alone does not prove rollback.
+3. For an uncertain COMMIT, freeze further writes and reconcile using the authorized runner's read-only preflight once its mandatory gates are satisfied. Accept only the exact empty state or complete five-row history plus matching catalog/ownership/ACLs. Partial or unexpected state requires escalation, not ledger editing or blind retry.
+4. For an accepted empty baseline, isolated replacement/reprovisioning is the proposed recovery path. Select and authorize its distinct destination before execution. Do not reset a shared branch, overwrite the target, delete history or run down migrations. This session does not execute a recovery branch/restore.
+5. Retain failure evidence and verify the replacement separately before any switch. Empty replacement is not a restore rehearsal, object recovery or PITR test. No recovery test, retention guarantee or measured RPO/RTO is claimed.
+
+
+## Staging recovery-baseline checklist
+
+**PENDING - preparation only, 2026-11-08.** Owner, reviewer, decisions and evidence
+below are unverified. Link protected external evidence by non-secret reference;
+do not attach dumps, object contents, staff mappings, credentials or keys.
+This checklist satisfies neither restore qualification nor approval by itself.
+
+- [ ] **PENDING:** ALZA recovery owner name, independent reviewer, dated written
+  acceptance and evidence reference; approved target IDs, baseline timestamp,
+  retention, RPO/RTO, recovery destination and escalation owner.
+- [ ] **PENDING:** For the ALZA empty schema-only path, approve a documented empty
+  staging baseline. The protected-set option below is for a separately authorized
+  broader scope, not a fallback permitting nonempty state on this path. Record
+  the decision and scope. Nonempty/unexpected state stops the fresh-target procedure.
+- [ ] **PENDING - empty option:** authorized inspection evidence that the exact
+  target has no application data, TalGov schemas/history, staff state or object
+  payloads requiring preservation; record database/object inventory and reviewer
+  acceptance. Document isolated replacement/reprovisioning and preservation of
+  failure evidence. An empty baseline does not prove DB/object restore or PITR.
+- [ ] **PENDING - protected-set option:** immutable snapshot and ledger/catalog
+  references; encrypted DB export; private object backup/manifest with counts,
+  references and SHA-256; artifact/deployment and configuration-version references;
+  protected staff/enrollment mapping where applicable. Account for every item in
+  the required recovery set below. Explicitly justify any non-applicable item.
+- [ ] **PENDING - protected-set option:** evidence of encryption, retention,
+  independent storage/access controls, access audit and recoverable keys; isolated
+  restore/reconciliation results and second-operator signoff. Record measured
+  RPO/RTO against approved objectives; identify untested PITR/cross-project/object
+  recovery capabilities without claiming success. For the unselected option,
+  record the owner's dated rationale rather than a fabricated verification.
+- [ ] **PENDING:** Maintenance/write and control-plane freeze agreed with the
+  [authorization record](STAGING_READINESS.md#staging-authorization-record---preparation-2026-11-08).
+  Confirm unknown COMMIT outcomes require approved read preflight reconciliation;
+  no history deletion, down migrations, shared-branch reset or overwrite restore.
+  Any recovery branch/restore requires separate authorization before execution.
+
+ALZA approval covers only its independent empty staging infrastructure. Real LGU
+records, production recovery/deployment and external integrations retain their
+separate applicable approvals. Empty-baseline acceptance does not close the
+credential incident: revocation/rotation and access-log review evidence plus
+security-owner acceptance remain required in the staging authorization record.
+
+Historical local/development tests below do not verify this staging baseline.
+
+## Historical recovery context
+
 Increment 2.1 update (2026-11-02): synthetic import reconciliation/batch rollback and direct logical backup/restore now pass on the designated Neon development branch. Restore checks all nine operational tables, exact row digests, schema history, constraints, indexes, views, functions and effective privileges. The original database is never overwritten. See [the development procedure](NEON_MIGRATION_PLAN.md) and [qualification evidence](INCREMENT_2_1_REPORT.md). This does **not** qualify provider PITR, branch restore, cross-project disaster recovery, production data, RPO/RTO or production cutover. The following Increment 0 material remains historical planning.
 
 Status: proposed runbook. No backups, restores, migrations, production writes or release actions executed in Increment 0. RPO/RTO and retention values require municipal/ops approval; no recovery guarantee is asserted.
@@ -51,3 +131,51 @@ Reactivating Supabase after cutover would violate the final R2 zero-dependency r
 # Increment 2 rehearsal addendum
 
 The database test runner now exercises atomic migration/import failure, guarded batch rollback and full logical restore into a new disposable database with exact table digests, checksums, grants and constraints. See [commands and limitations](DATABASE_OPERATIONS.md) and [execution evidence](INCREMENT_2_REPORT.md). No destructive down migration, production rollback, object restore, Neon PITR or cross-cluster role restoration is implemented or certified. The historical recovery plan above remains a release requirement.
+
+
+
+### ALZA — Empty Staging Recovery Decision
+
+**Environment:** TalGov R2 — Neon staging<br>
+**Project:** `misty-silence-69777617`<br>
+**Branch:** `staging-talgov-r2`<br>
+**Branch ID:** `br-steep-sea-ao0qw05a`<br>
+**Database:** `neondb`
+
+**Observed baseline:** 0 application tables, based on the operator's PostgreSQL inspection on November 9, 2026.
+
+**Data classification:** Intended schema-only environment; no real LGU data authorized.
+
+**Recovery owner:** PENDING — name and acceptance required.
+
+**Recovery destination:** PENDING — identify a separate, isolated recovery branch or database.
+
+**Recovery method:** PENDING — verify Neon branch restore, protected snapshot, or another supported method.
+
+**Retention:** PENDING — select and confirm an achievable retention period.
+
+**RPO/RTO:** PENDING — recovery owner must select acceptable values based on actual recovery capabilities.
+
+**Recovery acceptance:** PENDING — not approved until the above decisions and evidence are complete.
+
+
+
+### ALZA Staging Recovery Decision — November 9, 2026
+
+**Authority:** AJ Rienze Josol, ALZA infrastructure owner
+
+**Target:** Neon project `misty-silence-69777617`, branch `staging-talgov-r2` (`br-steep-sea-ao0qw05a`).
+
+**Environment:** Disposable, schema-only staging. No real LGU data or production dependencies are authorized.
+
+**Observed baseline:** Zero application tables, verified through PostgreSQL inspection before migration.
+
+**Recovery strategy:** If the schema migration fails, stop database writes, preserve the failure evidence, and assess whether the existing branch can safely be retained. If recovery requires recreation, recreate an isolated empty staging branch and rerun the unchanged, checksum-verified migrations.
+
+**Recovery acceptance:** ALZA owner accepts loss of disposable staging schema and synthetic test data, provided isolation and absence of real government records are verified.
+
+**Recovery evidence:** PENDING — confirm that the branch has no dependent services, record the recreation procedure and identify the recovery destination.
+
+**Recovery objectives and retention:** PENDING — record the accepted RPO, RTO and evidence-retention period.
+
+**Production impact:** No deletion or recreation of Neon `main`, development branches or production resources is authorized.

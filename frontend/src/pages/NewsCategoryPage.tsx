@@ -5,7 +5,7 @@ import { listPublic, PublicNews } from '../services/publicApi';
 import { usePublicResource } from '../hooks/usePublicResource';
 import { PublicShell, PublicState, PublicPagination, pageNumber } from '../components/PublicContent';
 
-const categories: Record<string, string> = { articles: 'ARTICLE', updates: 'UPDATE', announcements: 'ANNOUNCEMENT', advisories: 'ANNOUNCEMENT', notices: 'ANNOUNCEMENT' };
+const categories: Record<string, string> = { articles: 'ARTICLE', updates: 'UPDATE', announcements: 'ANNOUNCEMENT', advisories: 'ADVISORY', notices: 'NOTICE' };
 export default function NewsCategoryPage() {
   const { category } = useParams();
   const [params, setParams] = useSearchParams();

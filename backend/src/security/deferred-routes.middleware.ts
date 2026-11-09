@@ -16,8 +16,7 @@ export function deferredRoutes(req: Request, res: Response, next: NextFunction) 
     || /^\/api\/auth(?:\/|$)/.test(path)
     || /^\/api\/admin\/(users|reports)(?:\/|$)/.test(path)
     || (/^\/api\/forms(?:\/|$)/.test(path) && !(read && publicForms.test(path)))
-    || /^\/api\/admin\/reports\/(submissions|payments)(?:\/|$)/.test(path)
-    || (!read && req.method !== 'OPTIONS' && /^\/api\/(pages|news|services)(?:\/|$)/.test(path));
+    || /^\/api\/admin\/reports\/(submissions|payments)(?:\/|$)/.test(path);
   if (!retired) { next(); return; }
   res.setHeader('Cache-Control', 'no-store');
   res.status(410).json({ success: false, statusCode: 410, error: 'Gone', message: DEFERRED_MESSAGE,

@@ -1,0 +1,6567 @@
+{
+  "relations": [
+    {
+      "nspname": "app",
+      "relname": "audit_actor_time",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "content_asset_links",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "content_asset_links_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "content_public_list",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "content_source",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "links_asset",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets_object_key_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories_id_kind_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories_kind_slug_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_category",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_public_list",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions_object_key_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_source",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content_kind_legacy_id_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content_kind_slug_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "published_content",
+      "relkind": "v",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": [
+        "security_barrier=true"
+      ],
+      "definition": " SELECT c.id,\n    c.kind,\n    c.legacy_id,\n    c.slug,\n    c.title,\n    c.body,\n    c.published_at\n   FROM app.public_content c\n     JOIN app.content_sources s ON s.id = c.source_id\n  WHERE c.publication = 'published'::text AND c.deleted_at IS NULL AND c.published_at <= now() AND s.approved;"
+    },
+    {
+      "nspname": "app",
+      "relname": "published_media",
+      "relkind": "v",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": [
+        "security_barrier=true"
+      ],
+      "definition": " SELECT m.id,\n    m.kind,\n    m.category_id,\n    m.title,\n    m.description,\n    m.alt_text,\n    m.mime,\n    m.bytes,\n    m.sha256,\n    m.published_at\n   FROM app.media_assets m\n     JOIN app.content_sources s ON s.id = m.source_id\n     JOIN app.media_categories c ON c.id = m.category_id\n  WHERE m.publication = 'published'::text AND m.processing = 'ready'::text AND m.deleted_at IS NULL AND m.published_at <= now() AND s.approved AND c.approved;"
+    },
+    {
+      "nspname": "app",
+      "relname": "revisions_asset",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts_provider_subject_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle_started_idx",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay_expiry_idx",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account_userId_idx",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit_key_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session_token_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session_userId_idx",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor_secret_idx",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor_userId_idx",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user_email_key",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "relkind": "r",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification_identifier_idx",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification_pkey",
+      "relkind": "i",
+      "owned": true,
+      "relrowsecurity": false,
+      "relforcerowsecurity": false,
+      "reloptions": null,
+      "definition": null
+    }
+  ],
+  "columns": [
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "actor_id",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "action",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "resource_id",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "request_id",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "occurred_at",
+      "ordinal_position": 6,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_asset_links",
+      "column_name": "content_id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_asset_links",
+      "column_name": "asset_id",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "reference",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "owner",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "sha256",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "approved",
+      "ordinal_position": 5,
+      "column_default": "false",
+      "is_nullable": "NO",
+      "data_type": "boolean"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "reviewed_at",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "import_batches",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "import_batches",
+      "column_name": "digest",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "import_batches",
+      "column_name": "manifest",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "jsonb"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "import_batches",
+      "column_name": "imported_at",
+      "ordinal_position": 4,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "import_batches",
+      "column_name": "rolled_back_at",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "kind",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "category_id",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "source_id",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "title",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "description",
+      "ordinal_position": 6,
+      "column_default": "''::text",
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "alt_text",
+      "ordinal_position": 7,
+      "column_default": "''::text",
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "object_key",
+      "ordinal_position": 8,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "mime",
+      "ordinal_position": 9,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "bytes",
+      "ordinal_position": 10,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "bigint"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "sha256",
+      "ordinal_position": 11,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "processing",
+      "ordinal_position": 12,
+      "column_default": "'pending'::text",
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "publication",
+      "ordinal_position": 13,
+      "column_default": "'draft'::text",
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "version",
+      "ordinal_position": 14,
+      "column_default": "1",
+      "is_nullable": "NO",
+      "data_type": "integer"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "created_by",
+      "ordinal_position": 15,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "updated_by",
+      "ordinal_position": 16,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "created_at",
+      "ordinal_position": 17,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "updated_at",
+      "ordinal_position": 18,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "published_at",
+      "ordinal_position": 19,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "deleted_at",
+      "ordinal_position": 20,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "original_filename",
+      "ordinal_position": 21,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "kind",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "slug",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "title",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "approved",
+      "ordinal_position": 5,
+      "column_default": "false",
+      "is_nullable": "NO",
+      "data_type": "boolean"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "asset_id",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "object_key",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "sha256",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "bytes",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "bigint"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "mime",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "actor_id",
+      "ordinal_position": 7,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "created_at",
+      "ordinal_position": 8,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "actor_id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "started_at",
+      "ordinal_position": 2,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "attempts",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "integer"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "kind",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "legacy_id",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "slug",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "title",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "body",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "jsonb"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "source_id",
+      "ordinal_position": 7,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "publication",
+      "ordinal_position": 8,
+      "column_default": "'draft'::text",
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "published_at",
+      "ordinal_position": 9,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "deleted_at",
+      "ordinal_position": 10,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "version",
+      "ordinal_position": 11,
+      "column_default": "1",
+      "is_nullable": "NO",
+      "data_type": "integer"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "updated_at",
+      "ordinal_position": 12,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "kind",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "legacy_id",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "slug",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "title",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "body",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "jsonb"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "published_at",
+      "ordinal_position": 7,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "kind",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "category_id",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "title",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "description",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "alt_text",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "mime",
+      "ordinal_position": 7,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "bytes",
+      "ordinal_position": 8,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "bigint"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "sha256",
+      "ordinal_position": 9,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "published_at",
+      "ordinal_position": 10,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "provider",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "subject",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "role",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "active",
+      "ordinal_position": 5,
+      "column_default": "false",
+      "is_nullable": "NO",
+      "data_type": "boolean"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "version",
+      "ordinal_position": 6,
+      "column_default": "1",
+      "is_nullable": "NO",
+      "data_type": "integer"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "created_at",
+      "ordinal_position": 7,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "updated_at",
+      "ordinal_position": 8,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": "gen_random_uuid()",
+      "is_nullable": "NO",
+      "data_type": "uuid"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "action",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "subject",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "occurred_at",
+      "ordinal_position": 4,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "key",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "started_at",
+      "ordinal_position": 2,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "attempts",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "integer"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "session_id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "verified_at",
+      "ordinal_position": 2,
+      "column_default": "now()",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "digest",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "expires_at",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accountId",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "providerId",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "userId",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessToken",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshToken",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "idToken",
+      "ordinal_position": 7,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessTokenExpiresAt",
+      "ordinal_position": 8,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshTokenExpiresAt",
+      "ordinal_position": 9,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "scope",
+      "ordinal_position": 10,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "password",
+      "ordinal_position": 11,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "createdAt",
+      "ordinal_position": 12,
+      "column_default": "CURRENT_TIMESTAMP",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "updatedAt",
+      "ordinal_position": 13,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "key",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "count",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "integer"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "lastRequest",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "bigint"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "expiresAt",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "token",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "createdAt",
+      "ordinal_position": 4,
+      "column_default": "CURRENT_TIMESTAMP",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "updatedAt",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "ipAddress",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userAgent",
+      "ordinal_position": 7,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userId",
+      "ordinal_position": 8,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "secret",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "backupCodes",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "userId",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "verified",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "boolean"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "failedVerificationCount",
+      "ordinal_position": 6,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "integer"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "lockedUntil",
+      "ordinal_position": 7,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "name",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "email",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "emailVerified",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "boolean"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "image",
+      "ordinal_position": 5,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "createdAt",
+      "ordinal_position": 6,
+      "column_default": "CURRENT_TIMESTAMP",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "updatedAt",
+      "ordinal_position": 7,
+      "column_default": "CURRENT_TIMESTAMP",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "twoFactorEnabled",
+      "ordinal_position": 8,
+      "column_default": null,
+      "is_nullable": "YES",
+      "data_type": "boolean"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "id",
+      "ordinal_position": 1,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "identifier",
+      "ordinal_position": 2,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "value",
+      "ordinal_position": 3,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "expiresAt",
+      "ordinal_position": 4,
+      "column_default": null,
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "createdAt",
+      "ordinal_position": 5,
+      "column_default": "CURRENT_TIMESTAMP",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "updatedAt",
+      "ordinal_position": 6,
+      "column_default": "CURRENT_TIMESTAMP",
+      "is_nullable": "NO",
+      "data_type": "timestamp with time zone"
+    }
+  ],
+  "constraints": [
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_action_check",
+      "convalidated": true,
+      "definition": "CHECK (action = ANY (ARRAY['media.create'::text, 'media.update'::text, 'media.publish'::text, 'media.unpublish'::text, 'media.delete'::text, 'staff.access'::text, 'migration.import'::text, 'migration.rollback'::text, 'content.create'::text, 'content.update'::text, 'content.delete'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_action_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL action"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_actor_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (actor_id) REFERENCES app.staff_accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_occurred_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL occurred_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_request_id_check",
+      "convalidated": true,
+      "definition": "CHECK (request_id ~ '^[a-zA-Z0-9_-]{1,100}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_request_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL request_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "conname": "audit_events_resource_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL resource_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_asset_links",
+      "conname": "content_asset_links_asset_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (asset_id) REFERENCES app.media_assets(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_asset_links",
+      "conname": "content_asset_links_asset_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL asset_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_asset_links",
+      "conname": "content_asset_links_content_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (content_id) REFERENCES app.public_content(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_asset_links",
+      "conname": "content_asset_links_content_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL content_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_asset_links",
+      "conname": "content_asset_links_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (content_id, asset_id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_approved_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL approved"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_check",
+      "convalidated": true,
+      "definition": "CHECK (NOT approved OR reviewed_at IS NOT NULL)"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_owner_check",
+      "convalidated": true,
+      "definition": "CHECK (length(btrim(owner)) >= 1 AND length(btrim(owner)) <= 200)"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_owner_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL owner"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_reference_check",
+      "convalidated": true,
+      "definition": "CHECK (length(btrim(reference)) >= 1 AND length(btrim(reference)) <= 1000)"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_reference_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL reference"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_sha256_check",
+      "convalidated": true,
+      "definition": "CHECK (sha256 ~ '^[a-f0-9]{64}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "conname": "content_sources_sha256_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL sha256"
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "conname": "import_batches_digest_check",
+      "convalidated": true,
+      "definition": "CHECK (digest ~ '^[a-f0-9]{64}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "conname": "import_batches_digest_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL digest"
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "conname": "import_batches_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "conname": "import_batches_imported_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL imported_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "conname": "import_batches_manifest_check",
+      "convalidated": true,
+      "definition": "CHECK (jsonb_typeof(manifest) = 'object'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "conname": "import_batches_manifest_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL manifest"
+    },
+    {
+      "nspname": "app",
+      "relname": "import_batches",
+      "conname": "import_batches_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_alt_text_check",
+      "convalidated": true,
+      "definition": "CHECK (length(alt_text) <= 500)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_alt_text_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL alt_text"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_bytes_check",
+      "convalidated": true,
+      "definition": "CHECK (bytes >= 1 AND bytes <= 52428800)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_bytes_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL bytes"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_category_id_kind_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (category_id, kind) REFERENCES app.media_categories(id, kind) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_category_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL category_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_check",
+      "convalidated": true,
+      "definition": "CHECK (kind = 'photo'::text AND (mime = ANY (ARRAY['image/jpeg'::text, 'image/png'::text, 'image/webp'::text])) OR kind = 'document'::text AND mime = 'application/pdf'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_check1",
+      "convalidated": true,
+      "definition": "CHECK (publication <> 'published'::text OR processing = 'ready'::text AND deleted_at IS NULL AND published_at IS NOT NULL AND (kind <> 'photo'::text OR length(btrim(alt_text)) > 0))"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_created_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL created_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_created_by_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (created_by) REFERENCES app.staff_accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_created_by_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL created_by"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_description_check",
+      "convalidated": true,
+      "definition": "CHECK (length(description) <= 4000)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_description_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL description"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_kind_check",
+      "convalidated": true,
+      "definition": "CHECK (kind = ANY (ARRAY['photo'::text, 'document'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_kind_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL kind"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_mime_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL mime"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_object_key_check",
+      "convalidated": true,
+      "definition": "CHECK (length(object_key) <= 500 AND object_key ~ '^[a-zA-Z0-9][a-zA-Z0-9/_-]*$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_object_key_key",
+      "convalidated": true,
+      "definition": "UNIQUE (object_key)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_object_key_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL object_key"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_processing_check",
+      "convalidated": true,
+      "definition": "CHECK (processing = ANY (ARRAY['pending'::text, 'ready'::text, 'rejected'::text, 'deleting'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_processing_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL processing"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_publication_check",
+      "convalidated": true,
+      "definition": "CHECK (publication = ANY (ARRAY['draft'::text, 'published'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_publication_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL publication"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_sha256_check",
+      "convalidated": true,
+      "definition": "CHECK (sha256 ~ '^[a-f0-9]{64}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_sha256_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL sha256"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_source_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (source_id) REFERENCES app.content_sources(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_source_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL source_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_title_check",
+      "convalidated": true,
+      "definition": "CHECK (length(btrim(title)) >= 1 AND length(btrim(title)) <= 200)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_title_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL title"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_updated_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL updated_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_updated_by_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (updated_by) REFERENCES app.staff_accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_updated_by_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL updated_by"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_version_check",
+      "convalidated": true,
+      "definition": "CHECK (version > 0)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_assets_version_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL version"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "conname": "media_filename",
+      "convalidated": true,
+      "definition": "CHECK (original_filename IS NULL OR original_filename ~ '^[a-zA-Z0-9][a-zA-Z0-9 _-]{0,100}\\.[a-zA-Z]{3,4}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_approved_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL approved"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_id_kind_key",
+      "convalidated": true,
+      "definition": "UNIQUE (id, kind)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_kind_check",
+      "convalidated": true,
+      "definition": "CHECK (kind = ANY (ARRAY['photo'::text, 'document'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_kind_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL kind"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_kind_slug_key",
+      "convalidated": true,
+      "definition": "UNIQUE (kind, slug)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_slug_check",
+      "convalidated": true,
+      "definition": "CHECK (slug ~ '^[a-z0-9][a-z0-9_-]{0,99}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_slug_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL slug"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_title_check",
+      "convalidated": true,
+      "definition": "CHECK (length(btrim(title)) >= 1 AND length(btrim(title)) <= 200)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "conname": "media_categories_title_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL title"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_actor_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (actor_id) REFERENCES app.staff_accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_actor_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL actor_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_asset_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (asset_id) REFERENCES app.media_assets(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_asset_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL asset_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_bytes_check",
+      "convalidated": true,
+      "definition": "CHECK (bytes >= 1 AND bytes <= 52428800)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_bytes_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL bytes"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_created_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL created_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_mime_check",
+      "convalidated": true,
+      "definition": "CHECK (mime = ANY (ARRAY['image/jpeg'::text, 'image/png'::text, 'image/webp'::text, 'application/pdf'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_mime_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL mime"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_object_key_check",
+      "convalidated": true,
+      "definition": "CHECK (length(object_key) <= 500 AND object_key ~ '^[a-zA-Z0-9][a-zA-Z0-9/_-]*$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_object_key_key",
+      "convalidated": true,
+      "definition": "UNIQUE (object_key)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_object_key_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL object_key"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_sha256_check",
+      "convalidated": true,
+      "definition": "CHECK (sha256 ~ '^[a-f0-9]{64}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "conname": "media_revisions_sha256_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL sha256"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "conname": "media_throttle_actor_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (actor_id) REFERENCES app.staff_accounts(id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "conname": "media_throttle_actor_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL actor_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "conname": "media_throttle_attempts_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL attempts"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "conname": "media_throttle_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (actor_id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "conname": "media_throttle_started_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL started_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_body_check",
+      "convalidated": true,
+      "definition": "CHECK (jsonb_typeof(body) = 'object'::text AND octet_length(body::text) <= 200000)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_body_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL body"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_check",
+      "convalidated": true,
+      "definition": "CHECK (publication <> 'published'::text OR published_at IS NOT NULL AND deleted_at IS NULL)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_kind_check",
+      "convalidated": true,
+      "definition": "CHECK (kind = ANY (ARRAY['barangays'::text, 'departments'::text, 'officials'::text, 'news'::text, 'pages'::text, 'tourism_spots'::text, 'events'::text, 'navigation'::text, 'downloadables'::text, 'ordinances'::text, 'resolutions'::text, 'citizens_charter_cms'::text, 'services_cms'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_kind_legacy_id_key",
+      "convalidated": true,
+      "definition": "UNIQUE (kind, legacy_id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_kind_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL kind"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_kind_slug_key",
+      "convalidated": true,
+      "definition": "UNIQUE (kind, slug)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_legacy_id_check",
+      "convalidated": true,
+      "definition": "CHECK (length(legacy_id) >= 1 AND length(legacy_id) <= 300)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_legacy_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL legacy_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_publication_check",
+      "convalidated": true,
+      "definition": "CHECK (publication = ANY (ARRAY['draft'::text, 'published'::text, 'archived'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_publication_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL publication"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_slug_check",
+      "convalidated": true,
+      "definition": "CHECK (slug ~ '^[a-z0-9][a-z0-9_-]{0,199}$'::text)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_slug_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL slug"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_source_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (source_id) REFERENCES app.content_sources(id) ON DELETE RESTRICT"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_source_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL source_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_title_check",
+      "convalidated": true,
+      "definition": "CHECK (length(btrim(title)) >= 1 AND length(btrim(title)) <= 200)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_title_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL title"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_updated_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL updated_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_version_check",
+      "convalidated": true,
+      "definition": "CHECK (version > 0)"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "conname": "public_content_version_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL version"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_active_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL active"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_created_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL created_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_provider_check",
+      "convalidated": true,
+      "definition": "CHECK (length(provider) >= 1 AND length(provider) <= 80)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_provider_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL provider"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_provider_subject_key",
+      "convalidated": true,
+      "definition": "UNIQUE (provider, subject)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_role_check",
+      "convalidated": true,
+      "definition": "CHECK (role = ANY (ARRAY['admin'::text, 'editor'::text]))"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_role_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL role"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_subject_check",
+      "convalidated": true,
+      "definition": "CHECK (length(subject) >= 1 AND length(subject) <= 300)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_subject_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL subject"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_updated_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL updated_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_version_check",
+      "convalidated": true,
+      "definition": "CHECK (version > 0)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "conname": "staff_accounts_version_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL version"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "conname": "staff_auth_audit_action_check",
+      "convalidated": true,
+      "definition": "CHECK (length(action) >= 1 AND length(action) <= 100)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "conname": "staff_auth_audit_action_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL action"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "conname": "staff_auth_audit_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "conname": "staff_auth_audit_occurred_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL occurred_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "conname": "staff_auth_audit_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "conname": "staff_auth_throttle_attempts_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL attempts"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "conname": "staff_auth_throttle_key_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL key"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "conname": "staff_auth_throttle_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (key)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "conname": "staff_auth_throttle_started_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL started_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "conname": "staff_session_assurance_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (session_id)"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "conname": "staff_session_assurance_session_id_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (session_id) REFERENCES r2_auth_session(id) ON DELETE CASCADE"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "conname": "staff_session_assurance_session_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL session_id"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "conname": "staff_session_assurance_verified_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL verified_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "conname": "staff_totp_replay_digest_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL digest"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "conname": "staff_totp_replay_expires_at_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL expires_at"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "conname": "staff_totp_replay_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (digest)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_accountId_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"accountId\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_createdAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_providerId_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"providerId\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_updatedAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_userId_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES r2_auth_user(id) ON DELETE CASCADE"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "conname": "r2_auth_account_userId_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "conname": "r2_auth_rate_limit_count_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL count"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "conname": "r2_auth_rate_limit_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "conname": "r2_auth_rate_limit_key_key",
+      "convalidated": true,
+      "definition": "UNIQUE (key)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "conname": "r2_auth_rate_limit_key_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL key"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "conname": "r2_auth_rate_limit_lastRequest_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"lastRequest\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "conname": "r2_auth_rate_limit_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_createdAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_expiresAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"expiresAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_token_key",
+      "convalidated": true,
+      "definition": "UNIQUE (token)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_token_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL token"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_updatedAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_userId_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES r2_auth_user(id) ON DELETE CASCADE"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "conname": "r2_auth_session_userId_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "conname": "r2_auth_two_factor_backupCodes_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"backupCodes\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "conname": "r2_auth_two_factor_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "conname": "r2_auth_two_factor_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "conname": "r2_auth_two_factor_secret_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL secret"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "conname": "r2_auth_two_factor_userId_fkey",
+      "convalidated": true,
+      "definition": "FOREIGN KEY (\"userId\") REFERENCES r2_auth_user(id) ON DELETE CASCADE"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "conname": "r2_auth_two_factor_userId_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"userId\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_createdAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_emailVerified_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"emailVerified\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_email_key",
+      "convalidated": true,
+      "definition": "UNIQUE (email)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_email_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL email"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_name_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL name"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "conname": "r2_auth_user_updatedAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "conname": "r2_auth_verification_createdAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"createdAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "conname": "r2_auth_verification_expiresAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"expiresAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "conname": "r2_auth_verification_id_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL id"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "conname": "r2_auth_verification_identifier_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL identifier"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "conname": "r2_auth_verification_pkey",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "conname": "r2_auth_verification_updatedAt_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL \"updatedAt\""
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "conname": "r2_auth_verification_value_not_null",
+      "convalidated": true,
+      "definition": "NOT NULL value"
+    }
+  ],
+  "triggers": [
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "tgname": "immutable_audit",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER immutable_audit BEFORE DELETE OR UPDATE ON app.audit_events FOR EACH ROW EXECUTE FUNCTION app.immutable_record()"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "tgname": "media_publication",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER media_publication BEFORE INSERT OR UPDATE ON app.media_assets FOR EACH ROW EXECUTE FUNCTION app.require_approved_source()"
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "tgname": "immutable_revision",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER immutable_revision BEFORE DELETE OR UPDATE ON app.media_revisions FOR EACH ROW EXECUTE FUNCTION app.immutable_record()"
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "tgname": "content_publication",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER content_publication BEFORE INSERT OR UPDATE ON app.public_content FOR EACH ROW EXECUTE FUNCTION app.require_approved_source()"
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "tgname": "immutable_auth_audit",
+      "tgenabled": "O",
+      "definition": "CREATE TRIGGER immutable_auth_audit BEFORE DELETE OR UPDATE ON app.staff_auth_audit FOR EACH ROW EXECUTE FUNCTION app.immutable_record()"
+    }
+  ],
+  "indexes": [
+    {
+      "schemaname": "app",
+      "tablename": "audit_events",
+      "indexname": "audit_actor_time",
+      "indexdef": "CREATE INDEX audit_actor_time ON app.audit_events USING btree (actor_id, occurred_at DESC, id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "audit_events",
+      "indexname": "audit_events_pkey",
+      "indexdef": "CREATE UNIQUE INDEX audit_events_pkey ON app.audit_events USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "content_asset_links",
+      "indexname": "content_asset_links_pkey",
+      "indexdef": "CREATE UNIQUE INDEX content_asset_links_pkey ON app.content_asset_links USING btree (content_id, asset_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "content_asset_links",
+      "indexname": "links_asset",
+      "indexdef": "CREATE INDEX links_asset ON app.content_asset_links USING btree (asset_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "content_sources",
+      "indexname": "content_sources_pkey",
+      "indexdef": "CREATE UNIQUE INDEX content_sources_pkey ON app.content_sources USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "import_batches",
+      "indexname": "import_batches_pkey",
+      "indexdef": "CREATE UNIQUE INDEX import_batches_pkey ON app.import_batches USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_assets",
+      "indexname": "media_assets_object_key_key",
+      "indexdef": "CREATE UNIQUE INDEX media_assets_object_key_key ON app.media_assets USING btree (object_key)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_assets",
+      "indexname": "media_assets_pkey",
+      "indexdef": "CREATE UNIQUE INDEX media_assets_pkey ON app.media_assets USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_assets",
+      "indexname": "media_category",
+      "indexdef": "CREATE INDEX media_category ON app.media_assets USING btree (category_id, kind)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_assets",
+      "indexname": "media_public_list",
+      "indexdef": "CREATE INDEX media_public_list ON app.media_assets USING btree (published_at DESC, id) WHERE ((publication = 'published'::text) AND (deleted_at IS NULL))"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_assets",
+      "indexname": "media_source",
+      "indexdef": "CREATE INDEX media_source ON app.media_assets USING btree (source_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_categories",
+      "indexname": "media_categories_id_kind_key",
+      "indexdef": "CREATE UNIQUE INDEX media_categories_id_kind_key ON app.media_categories USING btree (id, kind)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_categories",
+      "indexname": "media_categories_kind_slug_key",
+      "indexdef": "CREATE UNIQUE INDEX media_categories_kind_slug_key ON app.media_categories USING btree (kind, slug)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_categories",
+      "indexname": "media_categories_pkey",
+      "indexdef": "CREATE UNIQUE INDEX media_categories_pkey ON app.media_categories USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_revisions",
+      "indexname": "media_revisions_object_key_key",
+      "indexdef": "CREATE UNIQUE INDEX media_revisions_object_key_key ON app.media_revisions USING btree (object_key)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_revisions",
+      "indexname": "media_revisions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX media_revisions_pkey ON app.media_revisions USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_revisions",
+      "indexname": "revisions_asset",
+      "indexdef": "CREATE INDEX revisions_asset ON app.media_revisions USING btree (asset_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "media_throttle",
+      "indexname": "media_throttle_pkey",
+      "indexdef": "CREATE UNIQUE INDEX media_throttle_pkey ON app.media_throttle USING btree (actor_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "public_content",
+      "indexname": "content_public_list",
+      "indexdef": "CREATE INDEX content_public_list ON app.public_content USING btree (kind, published_at DESC, id) WHERE ((publication = 'published'::text) AND (deleted_at IS NULL))"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "public_content",
+      "indexname": "content_source",
+      "indexdef": "CREATE INDEX content_source ON app.public_content USING btree (source_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "public_content",
+      "indexname": "public_content_kind_legacy_id_key",
+      "indexdef": "CREATE UNIQUE INDEX public_content_kind_legacy_id_key ON app.public_content USING btree (kind, legacy_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "public_content",
+      "indexname": "public_content_kind_slug_key",
+      "indexdef": "CREATE UNIQUE INDEX public_content_kind_slug_key ON app.public_content USING btree (kind, slug)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "public_content",
+      "indexname": "public_content_pkey",
+      "indexdef": "CREATE UNIQUE INDEX public_content_pkey ON app.public_content USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_accounts",
+      "indexname": "staff_accounts_pkey",
+      "indexdef": "CREATE UNIQUE INDEX staff_accounts_pkey ON app.staff_accounts USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_accounts",
+      "indexname": "staff_accounts_provider_subject_key",
+      "indexdef": "CREATE UNIQUE INDEX staff_accounts_provider_subject_key ON app.staff_accounts USING btree (provider, subject)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_auth_audit",
+      "indexname": "staff_auth_audit_pkey",
+      "indexdef": "CREATE UNIQUE INDEX staff_auth_audit_pkey ON app.staff_auth_audit USING btree (id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_auth_throttle",
+      "indexname": "staff_auth_throttle_pkey",
+      "indexdef": "CREATE UNIQUE INDEX staff_auth_throttle_pkey ON app.staff_auth_throttle USING btree (key)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_auth_throttle",
+      "indexname": "staff_auth_throttle_started_idx",
+      "indexdef": "CREATE INDEX staff_auth_throttle_started_idx ON app.staff_auth_throttle USING btree (started_at)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_session_assurance",
+      "indexname": "staff_session_assurance_pkey",
+      "indexdef": "CREATE UNIQUE INDEX staff_session_assurance_pkey ON app.staff_session_assurance USING btree (session_id)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_totp_replay",
+      "indexname": "staff_totp_replay_expiry_idx",
+      "indexdef": "CREATE INDEX staff_totp_replay_expiry_idx ON app.staff_totp_replay USING btree (expires_at)"
+    },
+    {
+      "schemaname": "app",
+      "tablename": "staff_totp_replay",
+      "indexname": "staff_totp_replay_pkey",
+      "indexdef": "CREATE UNIQUE INDEX staff_totp_replay_pkey ON app.staff_totp_replay USING btree (digest)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_account",
+      "indexname": "r2_auth_account_pkey",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_account_pkey ON public.r2_auth_account USING btree (id)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_account",
+      "indexname": "r2_auth_account_userId_idx",
+      "indexdef": "CREATE INDEX \"r2_auth_account_userId_idx\" ON public.r2_auth_account USING btree (\"userId\")"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_rate_limit",
+      "indexname": "r2_auth_rate_limit_key_key",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_rate_limit_key_key ON public.r2_auth_rate_limit USING btree (key)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_rate_limit",
+      "indexname": "r2_auth_rate_limit_pkey",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_rate_limit_pkey ON public.r2_auth_rate_limit USING btree (id)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_session",
+      "indexname": "r2_auth_session_pkey",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_session_pkey ON public.r2_auth_session USING btree (id)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_session",
+      "indexname": "r2_auth_session_token_key",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_session_token_key ON public.r2_auth_session USING btree (token)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_session",
+      "indexname": "r2_auth_session_userId_idx",
+      "indexdef": "CREATE INDEX \"r2_auth_session_userId_idx\" ON public.r2_auth_session USING btree (\"userId\")"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_two_factor",
+      "indexname": "r2_auth_two_factor_pkey",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_two_factor_pkey ON public.r2_auth_two_factor USING btree (id)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_two_factor",
+      "indexname": "r2_auth_two_factor_secret_idx",
+      "indexdef": "CREATE INDEX r2_auth_two_factor_secret_idx ON public.r2_auth_two_factor USING btree (secret)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_two_factor",
+      "indexname": "r2_auth_two_factor_userId_idx",
+      "indexdef": "CREATE INDEX \"r2_auth_two_factor_userId_idx\" ON public.r2_auth_two_factor USING btree (\"userId\")"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_user",
+      "indexname": "r2_auth_user_email_key",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_user_email_key ON public.r2_auth_user USING btree (email)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_user",
+      "indexname": "r2_auth_user_pkey",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_user_pkey ON public.r2_auth_user USING btree (id)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_verification",
+      "indexname": "r2_auth_verification_identifier_idx",
+      "indexdef": "CREATE INDEX r2_auth_verification_identifier_idx ON public.r2_auth_verification USING btree (identifier)"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "r2_auth_verification",
+      "indexname": "r2_auth_verification_pkey",
+      "indexdef": "CREATE UNIQUE INDEX r2_auth_verification_pkey ON public.r2_auth_verification USING btree (id)"
+    }
+  ],
+  "functions": [
+    {
+      "proname": "immutable_record",
+      "owned": true,
+      "definition": "CREATE OR REPLACE FUNCTION app.immutable_record()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog'\nAS $function$\nBEGIN RAISE EXCEPTION 'Immutable record' USING ERRCODE='42501'; END $function$\n"
+    },
+    {
+      "proname": "require_approved_source",
+      "owned": true,
+      "definition": "CREATE OR REPLACE FUNCTION app.require_approved_source()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'app'\nAS $function$\nBEGIN\n  IF NEW.publication='published' THEN\n    PERFORM 1 FROM app.content_sources WHERE id=NEW.source_id AND approved FOR SHARE;\n    IF NOT FOUND THEN RAISE EXCEPTION 'Publication requires approval' USING ERRCODE='23514'; END IF;\n    IF TG_TABLE_NAME='media_assets' THEN\n      PERFORM 1 FROM app.media_categories WHERE id=NEW.category_id AND approved FOR SHARE;\n      IF NOT FOUND THEN RAISE EXCEPTION 'Publication requires category approval' USING ERRCODE='23514'; END IF;\n    END IF;\n  END IF;\n  RETURN NEW;\nEND $function$\n"
+    }
+  ],
+  "grants": [
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "action",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "action",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "actor_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "actor_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "occurred_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "occurred_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "request_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "request_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "resource_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "audit_events",
+      "column_name": "resource_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "approved",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "owner",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "reference",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "reviewed_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_sources",
+      "column_name": "sha256",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "alt_text",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "alt_text",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "alt_text",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "bytes",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "bytes",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "category_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "category_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "category_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "created_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "created_by",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "created_by",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "deleted_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "deleted_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "description",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "description",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "description",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "kind",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "kind",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "mime",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "mime",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "object_key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "object_key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "original_filename",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "original_filename",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "processing",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "processing",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "publication",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "publication",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "published_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "published_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "sha256",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "sha256",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "source_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "source_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "updated_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "updated_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "updated_by",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "updated_by",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "updated_by",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "version",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_assets",
+      "column_name": "version",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "approved",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "kind",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "slug",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_categories",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "actor_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "asset_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "bytes",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "created_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "mime",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "object_key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_revisions",
+      "column_name": "sha256",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "actor_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "actor_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "actor_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "attempts",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "attempts",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "attempts",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "started_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "started_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "media_throttle",
+      "column_name": "started_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "body",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "body",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "body",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "deleted_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "deleted_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "kind",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "kind",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "legacy_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "legacy_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "publication",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "publication",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "publication",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "published_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "published_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "published_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "slug",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "slug",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "slug",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "source_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "source_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "source_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "updated_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "updated_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "version",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "version",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "body",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "kind",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "legacy_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "published_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "slug",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_content",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "alt_text",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "bytes",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "category_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "description",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "kind",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "mime",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "published_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "sha256",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "published_media",
+      "column_name": "title",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "active",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "active",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "created_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "provider",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "role",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "role",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "subject",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "updated_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "updated_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "version",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_accounts",
+      "column_name": "version",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "action",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "action",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "occurred_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "occurred_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "subject",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_audit",
+      "column_name": "subject",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "attempts",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "attempts",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "attempts",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "started_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "started_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_auth_throttle",
+      "column_name": "started_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "session_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "session_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "session_id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "verified_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "verified_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_session_assurance",
+      "column_name": "verified_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "digest",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "digest",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "digest",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "expires_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "expires_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "staff_totp_replay",
+      "column_name": "expires_at",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessTokenExpiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessTokenExpiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accessTokenExpiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accountId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accountId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "accountId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "idToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "idToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "idToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "password",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "password",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "password",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "providerId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "providerId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "providerId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshToken",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshTokenExpiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshTokenExpiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "refreshTokenExpiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "scope",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "scope",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "scope",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_account",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "count",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "count",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "count",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "key",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "lastRequest",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "lastRequest",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_rate_limit",
+      "column_name": "lastRequest",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "expiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "expiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "expiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "ipAddress",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "ipAddress",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "ipAddress",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "token",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "token",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "token",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userAgent",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userAgent",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userAgent",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_session",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "backupCodes",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "backupCodes",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "backupCodes",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "failedVerificationCount",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "failedVerificationCount",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "failedVerificationCount",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "lockedUntil",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "lockedUntil",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "lockedUntil",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "secret",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "secret",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "secret",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "userId",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "verified",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "verified",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_two_factor",
+      "column_name": "verified",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "email",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "email",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "email",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "emailVerified",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "emailVerified",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "emailVerified",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "image",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "image",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "image",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "name",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "name",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "name",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "twoFactorEnabled",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "twoFactorEnabled",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "twoFactorEnabled",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_user",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "createdAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "expiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "expiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "expiresAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "id",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "identifier",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "identifier",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "identifier",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "updatedAt",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "value",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "value",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": "NO"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "r2_auth_verification",
+      "column_name": "value",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": "NO"
+    }
+  ],
+  "functionGrants": [],
+  "tableGrants": [
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "audit_events",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "content_sources",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "media_assets",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "media_categories",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "media_revisions",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "media_throttle",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "public_content",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "published_content",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "published_media",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_accounts",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_audit",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_auth_throttle",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_session_assurance",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "app",
+      "relname": "staff_totp_replay",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_account",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_rate_limit",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_session",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_two_factor",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_user",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "grantee": "talgov_runtime",
+      "privilege_type": "DELETE",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "grantee": "talgov_runtime",
+      "privilege_type": "INSERT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "grantee": "talgov_runtime",
+      "privilege_type": "SELECT",
+      "is_grantable": false
+    },
+    {
+      "nspname": "public",
+      "relname": "r2_auth_verification",
+      "grantee": "talgov_runtime",
+      "privilege_type": "UPDATE",
+      "is_grantable": false
+    }
+  ]
+}

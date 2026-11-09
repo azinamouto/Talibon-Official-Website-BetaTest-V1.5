@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { connectionConfig, PostgresDatabase } from './postgres';
+import { runtimeConnectionConfig, PostgresDatabase } from './postgres';
 import { PgRepositories } from './repositories';
 
 export const PUBLIC_CONTENT_REPOSITORY = Symbol('PublicContentRepository');
@@ -15,7 +15,7 @@ export class DatabaseModule {
     return {
       module: DatabaseModule,
       providers: [
-        { provide: PostgresDatabase, useFactory: () => new PostgresDatabase(connectionConfig(process.env.DATABASE_URL)) },
+        { provide: PostgresDatabase, useFactory: () => new PostgresDatabase(runtimeConnectionConfig(process.env.DATABASE_URL)) },
         { provide: PgRepositories, inject: [PostgresDatabase], useFactory: (db: PostgresDatabase) => new PgRepositories(db) },
         ...tokens.map(provide => ({ provide, useExisting: PgRepositories })),
       ],

@@ -28,7 +28,9 @@
     "test:load": "npm run build:tsc && node --test test/load/metrics.test.cjs && node test/load/run.cjs",
     "test:unit": "npm run build:tsc && jest --runInBand",
     "contracts:export": "npm run build:tsc && node scripts/export-openapi.cjs",
-    "contracts:check": "npm run build:tsc && node scripts/export-openapi.cjs --check"
+    "contracts:check": "npm run build:tsc && node scripts/export-openapi.cjs --check",
+    "test:content:db": "npm run build:tsc && powershell -NoProfile -ExecutionPolicy Bypass -File test/run-staging-database-tests.ps1 -TestFile content-database.integration.cjs",
+    "test:staging:db": "npm run build:tsc && powershell -NoProfile -ExecutionPolicy Bypass -File test/run-staging-database-tests.ps1"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1161.0",

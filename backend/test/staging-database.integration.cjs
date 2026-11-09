@@ -1,7 +1,6 @@
 const { test }=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const os=require('node:os');
 const path=require('node:path');
 const { spawnSync }=require('node:child_process');
 const { Pool }=require('pg');
@@ -9,12 +8,26 @@ const { connectionConfig }=require('../dist/database/postgres.js');
 const { run,migrations,approval,LOCK }=require('../scripts/staging/runner.cjs');
 const { catalog }=require('../scripts/staging/catalog.cjs');
 const { target,validateTarget,validateMetadata }=require('../scripts/staging/target.cjs');
+const { fixtureConfig,verifyFixture }=require('./local-staging-fixture.cjs');
 test('staging migration safety on disposable PostgreSQL',async t=>{
-  const url=new URL(process.env.R2_STAGING_TEST_URL);
-  assert.equal(url.hostname,'127.0.0.1'); assert.equal(url.pathname,'/postgres');
+  const fixture=fixtureConfig(process.env.R2_STAGING_TEST_FIXTURE);
+  const url=fixture.url;
   const admin=new Pool(connectionConfig(url.toString(),true));
   const pools=[];
   try {
+    await verifyFixture(admin,fixture);
+    await t.test('disposable identity mismatches rejected before test DDL',async()=>{
+      for (const patch of [{cluster:'not-this-cluster'},{port:fixture.port+1},{data:path.dirname(fixture.data)}]) {
+        await assert.rejects(verifyFixture(admin,{...fixture,...patch}));
+      }
+      assert.equal((await admin.query("SELECT 1 FROM pg_roles WHERE rolname IN ('neondb_owner','staging_owner','talgov_runtime')")).rowCount,0);
+    });
+    await t.test('inherited database and Node configuration excluded',()=>{
+      for (const key of ['PGHOST','PGPORT','PGDATABASE','PGUSER','PGPASSWORD','PGOPTIONS','PGSERVICE',
+        'R2_STAGING_TEST_URL','R2_STAGING_DATABASE_URL','NEON_API_KEY','NODE_OPTIONS']) {
+        assert.equal(Object.hasOwn(process.env,key),false,key);
+      }
+    });
     await admin.query('CREATE ROLE neondb_owner NOLOGIN; CREATE ROLE staging_owner LOGIN; CREATE ROLE talgov_runtime NOLOGIN');
     async function database(name) {
       assert.match(name,/^r2_staging_[a-z]+$/);
@@ -41,7 +54,7 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
     const a=await database('r2_staging_success');
     const apply=(x,extra={})=>run(x.pool,x.target,{mode:'apply',authorization:approval(x.target),...extra});
     await t.test('preflight is default and leaves no objects',async()=>{
-      assert.equal((await run(a.pool,a.target)).pending,5);
+      assert.equal((await run(a.pool,a.target)).pending,6);
       assert.equal((await a.pool.query("SELECT to_regnamespace('app') AS n")).rows[0].n,null);
     });
     await t.test('missing authorization and wrong database/owner rejected',async()=>{
@@ -50,10 +63,27 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
       await assert.rejects(run(a.pool,{...a.target,migrationLogin:'postgres'}));
     });
     await t.test('ordered atomic application and idempotent repeat',async()=>{
-      assert.equal((await apply(a)).applied,5);
+      assert.equal((await apply(a)).applied,6);
       assert.deepEqual((await a.pool.query('SELECT file FROM r2_staging.history ORDER BY position')).rows.map(r=>r.file),migrations().map(m=>m.file));
       assert.equal((await apply(a)).applied,0);
       assert.equal((await run(a.pool,a.target)).pending,0);
+    });
+    await t.test('five-migration upgrade preserves history and rejects baseline drift',async()=>{
+      const old=await database('r2_staging_upgrade');
+      await old.pool.query('CREATE SCHEMA r2_staging; REVOKE ALL ON SCHEMA r2_staging FROM PUBLIC');
+      await old.pool.query('CREATE TABLE r2_staging.history(position integer PRIMARY KEY,file text UNIQUE NOT NULL,sha256 text NOT NULL,applied_at timestamptz NOT NULL DEFAULT now()); REVOKE ALL ON r2_staging.history FROM PUBLIC,talgov_runtime');
+      for(const [i,m] of migrations().slice(0,5).entries()) {
+        await old.pool.query(m.sql);
+        await old.pool.query('INSERT INTO r2_staging.history(position,file,sha256) VALUES($1,$2,$3)',[i+1,m.file,m.sha256]);
+      }
+      const history=(await old.pool.query('SELECT * FROM r2_staging.history ORDER BY position')).rows;
+      assert.equal((await run(old.pool,old.target)).pending,1);
+      await old.pool.query('GRANT DELETE ON app.audit_events TO talgov_runtime');
+      await assert.rejects(apply(old));
+      await old.pool.query('REVOKE DELETE ON app.audit_events FROM talgov_runtime');
+      assert.equal((await apply(old)).applied,1);
+      assert.deepEqual((await old.pool.query('SELECT * FROM r2_staging.history WHERE position<=5 ORDER BY position')).rows,history);
+      assert.equal((await apply(old)).applied,0);
     });
     await t.test('separate managed database and public owners preserved',async()=>{
       const r=(await a.pool.query(`SELECT pg_get_userbyid(datdba) AS owner,
@@ -65,7 +95,29 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
     const guard=await database('r2_staging_guards');
     const guardUrl=new URL(url);guardUrl.pathname='/'+guard.target.database;
     const guardAdmin=new Pool(connectionConfig(guardUrl.toString(),true));pools.push(guardAdmin);
+    await guardAdmin.query('CREATE ROLE neon_superuser NOLOGIN; CREATE ROLE neon_superuser_extra NOLOGIN; CREATE ROLE neon_bridge NOLOGIN');
+    await t.test('exact Neon-managed non-grantable CREATE/TEMP accepted without writes',async()=>{
+      await guardAdmin.query('GRANT CREATE,TEMP ON DATABASE r2_staging_guards TO neon_superuser');
+      assert.equal((await run(guard.pool,guard.target)).pending,6);
+      assert.equal((await guard.pool.query("SELECT to_regnamespace('app') AS n,to_regnamespace('r2_staging') AS h")).rows[0].n,null);
+      assert.equal((await guard.pool.query("SELECT to_regnamespace('r2_staging') AS h")).rows[0].h,null);
+    });
     const badCases=[
+      ['managed role LOGIN',`ALTER ROLE neon_superuser LOGIN`,`ALTER ROLE neon_superuser NOLOGIN`],
+      ...['CREATE','TEMP'].map(privilege=>[
+        'managed '+privilege+' grant option',`GRANT ${privilege} ON DATABASE r2_staging_guards TO neon_superuser WITH GRANT OPTION`,
+        `REVOKE GRANT OPTION FOR ${privilege} ON DATABASE r2_staging_guards FROM neon_superuser`]),
+      ...['CREATE','TEMP'].map(privilege=>[
+        'lookalike '+privilege,`GRANT ${privilege} ON DATABASE r2_staging_guards TO neon_superuser_extra`,
+        `REVOKE ${privilege} ON DATABASE r2_staging_guards FROM neon_superuser_extra`]),
+      ...['staging_owner','talgov_runtime'].flatMap(role=>[
+        [role+' managed membership',`GRANT neon_superuser TO ${role}`,`REVOKE neon_superuser FROM ${role}`],
+        [role+' managed NOINHERIT membership',`GRANT neon_superuser TO ${role} WITH INHERIT FALSE`, `REVOKE neon_superuser FROM ${role}`],
+        [role+' indirect managed membership',`GRANT neon_superuser TO neon_bridge; GRANT neon_bridge TO ${role}`,
+          `REVOKE neon_bridge FROM ${role}; REVOKE neon_superuser FROM neon_bridge`]
+      ]),
+      ...['SUPERUSER','CREATEDB','CREATEROLE','REPLICATION','BYPASSRLS','LOGIN'].map(flag=>[
+        'runtime '+flag,`ALTER ROLE talgov_runtime ${flag}`,`ALTER ROLE talgov_runtime NO${flag}`]),
       ['database ownership',`ALTER DATABASE r2_staging_guards OWNER TO staging_owner`,`ALTER DATABASE r2_staging_guards OWNER TO neondb_owner; GRANT CONNECT,CREATE ON DATABASE r2_staging_guards TO staging_owner`],
       ['public ownership',`ALTER SCHEMA public OWNER TO staging_owner`,`ALTER SCHEMA public OWNER TO pg_database_owner; GRANT USAGE,CREATE ON SCHEMA public TO staging_owner`],
       ['migrator membership',`GRANT neondb_owner TO staging_owner`,`REVOKE neondb_owner FROM staging_owner`],
@@ -90,7 +142,7 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
       await guardAdmin.query(change);
       try {await assert.rejects(run(guard.pool,guard.target));}
       finally {await guardAdmin.query(restore);}
-      assert.equal((await run(guard.pool,guard.target)).pending,5);
+      assert.equal((await run(guard.pool,guard.target)).pending,6);
     });
     await t.test('schema-local function revoke cannot replace global revoke',async()=>{
       await guardAdmin.query(`ALTER DEFAULT PRIVILEGES FOR ROLE staging_owner GRANT EXECUTE ON FUNCTIONS TO PUBLIC;
@@ -137,7 +189,7 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
       } finally {c.release();await p.end();}
     });
     await t.test('changed file and changed history rejected',async()=>{
-      const root=fs.mkdtempSync(path.join(os.tmpdir(),'r2-checksum-'));
+      const root=fs.mkdtempSync(path.join(path.dirname(fixture.data),'r2-checksum-'));
       fs.cpSync(path.join(__dirname,'../database'),root,{recursive:true});
       fs.appendFileSync(path.join(root,migrations()[0].file),'\n-- altered');
       await assert.rejects(apply(a,{root}));
@@ -156,7 +208,7 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
       assert.equal(checks,2);
       assert.equal((await b.pool.query("SELECT to_regnamespace('app') AS n,to_regnamespace('r2_staging') AS h")).rows[0].n,null);
       assert.equal((await b.pool.query("SELECT to_regnamespace('r2_staging') AS h")).rows[0].h,null);
-      assert.equal((await apply(b)).applied,5);
+      assert.equal((await apply(b)).applied,6);
     });
     await t.test('catalog and privilege drift rejected',async()=>{
       await a.pool.query('ALTER TABLE app.media_assets DROP CONSTRAINT media_filename');
@@ -186,8 +238,9 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
       await admin.query('ALTER ROLE talgov_runtime NOCREATEDB');
     });
     await t.test('unconfigured/main/development/forged metadata rejected',()=>{
-      assert.throws(()=>validateTarget(target));
+      assert.throws(()=>validateTarget({...target,branch:null,endpoint:null,host:null,migrationLogin:null}));
       const good={...target,branch:'br-test-stage',endpoint:'ep-test-stage',host:'ep-test-stage.c-2.ap-southeast-1.aws.neon.tech',databaseOwner:'neondb_owner',migrationLogin:'staging_owner'};
+      for(const key of ['branch','endpoint','host','migrationLogin']) assert.throws(()=>validateTarget({...good,[key]:null}));
       const p={id:good.project,org_id:good.organization,region_id:good.region,pg_version:18};
       const b={id:good.branch,project_id:good.project,name:good.name,default:false};
       const e={id:good.endpoint,project_id:good.project,branch_id:good.branch,host:good.host,type:'read_write'};
@@ -198,7 +251,7 @@ test('staging migration safety on disposable PostgreSQL',async t=>{
       assert.throws(()=>validateMetadata(good,p,{...b,default:undefined},e));
     });
     await t.test('CLI emits only fixed sanitized error, never secrets',()=>{
-      const result=spawnSync(process.execPath,[path.join(__dirname,'../scripts/r2-staging-migrate.cjs'),'--apply'],{
+      const result=spawnSync(process.execPath,[path.join(__dirname,'../scripts/r2-staging-migrate.cjs')],{
         encoding:'utf8',env:{...process.env,R2_STAGING_DATABASE_URL:'postgresql://secret-user:secret-password@secret-host/neondb',NEON_API_KEY:'secret-token',R2_STAGING_APPROVAL:''}
       });
       assert.equal(result.status,1);assert.equal(result.stdout,'');

@@ -1102,4 +1102,4 @@ checks and does not advance any pending authorization or readiness gate.
 
 **Security decision:** PENDING — ALZA security owner to accept the documented residual risk after reviewing available evidence.
 
-**Production readiness:** NOT CLAIMED.
+**Production readiness:** NOT CLAIMED.`

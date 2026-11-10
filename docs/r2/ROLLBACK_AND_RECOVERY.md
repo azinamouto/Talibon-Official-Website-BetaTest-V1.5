@@ -6,6 +6,27 @@ Current pre-apply status: **NO-GO**. The candidate has six migrations; historica
 
 ## Six-migration disposable recovery procedure - 2026-11-09
 
+### Supported assumptions and owner decisions
+
+| Item | Supported position / acceptance still required |
+|---|---|
+| Data loss / RPO | Existing ALZA decision conditionally accepts loss of all disposable schema and synthetic data. Proposed recovery point is the verified empty pre-migration baseline; all later synthetic writes may be lost. This is not zero-data-loss RPO. Owner/reviewer must accept that precise loss boundary after inventory proves no real LGU/staff/object data needs preservation. |
+| Dependencies | No production dependency is authorized; absence is not yet evidenced. Inventory consuming apps/configuration, jobs, webhooks, integrations, child branches, storage and auth bindings, and verify separate staging secrets. An unexpected dependency stops recreation. |
+| RTO | No measured recovery time or accepted numeric objective exists. Recovery owner must specify an achievable duration, starting at declared staging outage and ending at accepted replacement preflight, and record a separately authorized rehearsal measurement. Approval/provisioning/credential/review delays count. No SLA is asserted. |
+| Retention | No accepted period or verified provider history window exists. Owner must record evidence-retention duration, protected storage/access owner and expiry; retain failed branch and sanitized candidate/inventory/failure evidence pending that decision. No deletion is authorized here. DB history does not establish object recovery. |
+
+### Reproducible recreation specification (not executed)
+
+Inputs to record before execution: approved parent ID **only `br-steep-sea-ao0qw05a`**, exact verified empty baseline timestamp/LSN and protected inventory reference, unique replacement name `staging-talgov-r2-recovery-<UTC timestamp>`, same project, named operator/reviewer, accepted retention and recovery objectives. If that staging baseline is unavailable or outside retained history, **stop**; do not substitute main/development/production or clone current failed state. No valid baseline/destination is yet recorded.
+
+1. Preserve the original branch and freeze staging writers/control-plane changes under the accepted recovery window. Resolve uncertain COMMIT with the existing read-only preflight procedure below before deciding recreation is necessary.
+2. Under separate recovery execution authorization, in Neon Console select project `misty-silence-69777617` > Branches > New branch. Explicitly select the pinned staging parent above, the approved unique name, and **Past data** at the verified empty baseline time (or Current data only if the still-empty parent is freshly verified under freeze). Disable automatic deletion; never accept the default parent. Save the selected inputs and operation result without credentials. Do not execute these steps under the current preparation-only request.
+3. Record new branch/endpoint IDs and direct hostname; verify project/organization/region, PostgreSQL 18, non-default/non-primary branch and endpoint binding. Inventory the replacement database, schemas/history, roles/ACLs, staff state and object/service dependencies against the accepted baseline. Do not fix discrepancies with ad hoc privilege changes. Schema-only cloning is not an empty baseline: it retains source schema. Branch creation also inherits role passwords, so credential separation must be reviewed before any use.
+4. **Stop before runner use:** current guards require the exact name `staging-talgov-r2` as well as pinned IDs; changing JSON IDs alone cannot qualify the uniquely named replacement. A separately authorized, reviewed target/name update and guard validation is required, retaining rejection of main/development/production. No rename, guard edit or connection switch is authorized here. Preserve six SQL files and manifest unchanged.
+5. After replacement target review and secure credential provisioning, run the existing `--preflight` against the reviewed replacement; require empty result `{"mode":"preflight","applied":0,"pending":6}` and accepted inventory/ACLs. Record elapsed recovery time and independent acceptance. Replay/switch require later explicit authorization; they are not performed by this specification.
+
+Provider basis: [Neon branch management](https://neon.com/docs/manage/branches) documents explicit parent selection, retained-history recovery points, unique names, schema-only behavior, automatic expiration and inherited role passwords. This is a conditional reproducible procedure, not proof of available history, completed recreation or restore qualification.
+
 Procedure checked against the current runner; hosted recreation NOT validated. This supersedes five-row recovery instructions below. Existing conditional ALZA acceptance of disposable schema/synthetic-data loss remains recorded; it is not completed recovery acceptance.
 
 1. Stop staging writers and control-plane changes. Preserve timestamped sanitized failure output, exit status, target IDs, candidate/runner/catalog hashes and ledger evidence. Do not infer rollback from a failed connection or uncertain COMMIT.

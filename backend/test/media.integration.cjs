@@ -7,7 +7,7 @@ const { Pool }=require('pg'); const sharp=require('sharp');
 const { PDFDocument, PDFName, PDFString }=require('pdf-lib');
 const { migrate,isolatedConfig }=require('../scripts/r2-migrate.cjs');
 const { mediaSchema }=require('../scripts/r2-media-schema.cjs');
-const { PostgresDatabase,connectionConfig }=require('../dist/database/postgres');
+const { PostgresDatabase,connectionConfig,runtimeConnectionConfig }=require('../dist/database/postgres');
 const { MediaRepository }=require('../dist/database/media.repository');
 const { MediaService }=require('../dist/api/media/media.service');
 const { MediaController,PublicMediaController }=require('../dist/api/media/media.controller');
@@ -27,12 +27,21 @@ async function actor(role) {
   return {...row,subject,sessionId,role,provider:'better-auth',sessionVerified:true,assurance:'mfa'};
 }
 before(async()=>{
-  const url=process.env.R2_AUTH_TEST_URL; owner=new Pool(isolatedConfig(url)); await migrate(owner);
-  for(const name of ['001_provider.sql','002_staff_policy.sql']) await owner.query(fs.readFileSync(path.join(__dirname,'../database/auth',name),'utf8'));
-  assert.equal((await mediaSchema(owner,true)).applied,1);
-  assert.equal((await mediaSchema(owner)).applied,1); assert.equal((await mediaSchema(owner)).applied,0);
+  const {fixtureConfig,verifyFixture}=require('./local-staging-fixture.cjs');
+  const fixture=process.env.R2_STAGING_TEST_FIXTURE ? fixtureConfig(process.env.R2_STAGING_TEST_FIXTURE) : null;
+  const url=fixture ? fixture.url.toString() : process.env.R2_AUTH_TEST_URL;
+  owner=new Pool(fixture ? connectionConfig(url,true) : isolatedConfig(url));
+  if(fixture) {
+    await verifyFixture(owner,fixture);
+    for(const m of require('../scripts/staging/runner.cjs').migrations()) await owner.query(m.sql);
+  } else {
+    await migrate(owner);
+    for(const name of ['001_provider.sql','002_staff_policy.sql']) await owner.query(fs.readFileSync(path.join(__dirname,'../database/auth',name),'utf8'));
+    assert.equal((await mediaSchema(owner,true)).applied,1);
+    assert.equal((await mediaSchema(owner)).applied,1); assert.equal((await mediaSchema(owner)).applied,0);
+  }
   await owner.query('CREATE ROLE r2_media_runtime LOGIN INHERIT'); await owner.query('GRANT talgov_runtime TO r2_media_runtime');
-  const runtimeUrl=new URL(url);runtimeUrl.username='r2_media_runtime'; db=new PostgresDatabase(connectionConfig(runtimeUrl.toString(),true));repo=new MediaRepository(db);
+  const runtimeUrl=new URL(url);runtimeUrl.username='r2_media_runtime'; db=new PostgresDatabase(runtimeConnectionConfig(runtimeUrl.toString(),true));repo=new MediaRepository(db);
   admin=await actor('admin');editor=await actor('editor');
   const sourceId=randomUUID(),categoryId=randomUUID();
   await owner.query("INSERT INTO app.content_sources(id,reference,owner,sha256,approved,reviewed_at) VALUES($1,'Synthetic test source','test',$2,true,now())",[sourceId,'a'.repeat(64)]);

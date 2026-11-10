@@ -1,7 +1,7 @@
 # R2 staging migration operator procedure
 
 
-Current pre-apply status: **NO-GO**. The candidate has six migrations; historical five-file statements below are superseded by [the current qualification](STAGING_READINESS.md#pre-apply-qualification---2026-11-09). Historical approvals and pending records are preserved.
+Current status (2026-11-10): **operator reports 6 applied, 0 pending; all six history entries verified**. See [post-migration evidence and runtime handoff](STAGING_READINESS.md#post-migration-runtime-integration---2026-11-10). Execution timestamp/protected output reference remain to be attached; no hosted rerun or independent verification occurred in this session. The pre-apply procedure and historical approval records below are retained for provenance, not an instruction to reapply migrations.
 
 
 ## Final retained scope and executable test preparation - 2026-11-09

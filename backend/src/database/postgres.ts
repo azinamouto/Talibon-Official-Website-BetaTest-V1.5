@@ -122,14 +122,17 @@ export class PostgresDatabase {
     try {
       client = await this.pool.connect();
       client.on('error', onError);
-      await client.query(readOnly ? 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY' : 'BEGIN');
-      // Transaction-local settings work with transaction pooling and cannot leak to another request.
-      await client.query("SET LOCAL statement_timeout = '5s'");
-      await client.query("SET LOCAL lock_timeout = '2s'");
-      await client.query("SET LOCAL idle_in_transaction_session_timeout = '5s'");
-      // PostgreSQL does not shorten an already-active transaction timer without resetting it.
-      await client.query('SET LOCAL transaction_timeout = 0');
-      await client.query("SET LOCAL transaction_timeout = '10s'");
+      // One simple-protocol exchange, containing only fixed SQL. Keep every
+      // setting transaction-local for PgBouncer, and await setup before work.
+      // Reset the transaction timer before shortening it, as PostgreSQL requires.
+      await client.query([
+        readOnly ? 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY' : 'BEGIN',
+        "SET LOCAL statement_timeout = '5s'",
+        "SET LOCAL lock_timeout = '2s'",
+        "SET LOCAL idle_in_transaction_session_timeout = '5s'",
+        'SET LOCAL transaction_timeout = 0',
+        "SET LOCAL transaction_timeout = '10s'",
+      ].join('; '));
       const session: SqlSession = { query: async (sql, values = []) => (await client.query(sql, values)).rows };
       const result = await work(session);
       await client.query('COMMIT');

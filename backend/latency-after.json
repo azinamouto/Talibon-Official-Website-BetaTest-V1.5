@@ -1,0 +1,1909 @@
+{
+  "timestamp": "2026-11-10T01:57:45.164Z",
+  "runtime": {
+    "pooledEndpoint": true,
+    "verifiedTLS": true,
+    "bindingRequired": true,
+    "max": 2,
+    "connectionTimeoutMillis": 5000,
+    "idleTimeoutMillis": 10000,
+    "queryTimeoutMillis": 12000
+  },
+  "setup": "batched",
+  "note": "First-pass means process-cold, not verified Neon compute-cold. Acquire includes connection/auth/role-check time; query timings include network RTT. No automatic retries.",
+  "summaries": {
+    "first-pass": {
+      "/api/news": {
+        "n": 1,
+        "p50": 4021.4,
+        "p95": 4021.4,
+        "statuses": {
+          "200": 1
+        }
+      },
+      "/api/services": {
+        "n": 1,
+        "p50": 1384.8,
+        "p95": 1384.8,
+        "statuses": {
+          "200": 1
+        }
+      },
+      "/api/tourism/festivities": {
+        "n": 1,
+        "p50": 1407.9,
+        "p95": 1407.9,
+        "statuses": {
+          "200": 1
+        }
+      }
+    },
+    "steady": {
+      "/api/news": {
+        "n": 5,
+        "p50": 1651.9,
+        "p95": 2205,
+        "statuses": {
+          "200": 5
+        }
+      },
+      "/api/services": {
+        "n": 5,
+        "p50": 1313.7,
+        "p95": 1735.4,
+        "statuses": {
+          "200": 5
+        }
+      },
+      "/api/tourism/festivities": {
+        "n": 5,
+        "p50": 1495,
+        "p95": 2247,
+        "statuses": {
+          "200": 5
+        }
+      }
+    },
+    "concurrent-3": {
+      "/api/news": {
+        "n": 2,
+        "p50": 1468.9,
+        "p95": 1604.7,
+        "statuses": {
+          "200": 2
+        }
+      },
+      "/api/services": {
+        "n": 2,
+        "p50": 2354.1,
+        "p95": 4144.1,
+        "statuses": {
+          "200": 2
+        }
+      },
+      "/api/tourism/festivities": {
+        "n": 2,
+        "p50": 1657.5,
+        "p95": 2288.5,
+        "statuses": {
+          "200": 2
+        }
+      }
+    },
+    "after-idle": {
+      "/api/news": {
+        "n": 1,
+        "p50": 4745.3,
+        "p95": 4745.3,
+        "statuses": {
+          "200": 1
+        }
+      },
+      "/api/services": {
+        "n": 1,
+        "p50": 1657.5,
+        "p95": 1657.5,
+        "statuses": {
+          "200": 1
+        }
+      },
+      "/api/tourism/festivities": {
+        "n": 1,
+        "p50": 887.7,
+        "p95": 887.7,
+        "statuses": {
+          "200": 1
+        }
+      }
+    }
+  },
+  "samples": [
+    {
+      "endpoint": "/api/news",
+      "phase": "first-pass",
+      "status": 200,
+      "ms": 4021.4
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "first-pass",
+      "status": 200,
+      "ms": 1384.8
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "first-pass",
+      "status": 200,
+      "ms": 1407.9
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1657.7
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1147
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1903.1
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1285.1
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1313.7
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1495
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "steady",
+      "status": 200,
+      "ms": 2205
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1540.1
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1277.1
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1651.9
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1735.4
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1465.9
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1523.8
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "steady",
+      "status": 200,
+      "ms": 1197.7
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "steady",
+      "status": 200,
+      "ms": 2247
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "concurrent-3",
+      "status": 200,
+      "ms": 1604.7
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "concurrent-3",
+      "status": 200,
+      "ms": 2288.5
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "concurrent-3",
+      "status": 200,
+      "ms": 4144.1
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "concurrent-3",
+      "status": 200,
+      "ms": 1468.9
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "concurrent-3",
+      "status": 200,
+      "ms": 1657.5
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "concurrent-3",
+      "status": 200,
+      "ms": 2354.1
+    },
+    {
+      "endpoint": "/api/news",
+      "phase": "after-idle",
+      "status": 200,
+      "ms": 4745.3
+    },
+    {
+      "endpoint": "/api/services",
+      "phase": "after-idle",
+      "status": 200,
+      "ms": 1657.5
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "phase": "after-idle",
+      "status": 200,
+      "ms": 887.7
+    }
+  ],
+  "traces": [
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "client": 1,
+          "stage": "runtime-role-check",
+          "ms": 132.4
+        },
+        {
+          "stage": "acquire",
+          "ms": 1464.3,
+          "total": 0,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 170.9
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 109.3
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 95.6
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 138.7
+        },
+        {
+          "client": 2,
+          "stage": "runtime-role-check",
+          "ms": 61.5
+        },
+        {
+          "stage": "acquire",
+          "ms": 1385.9,
+          "total": 0,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 133.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 69.3
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 109.1
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 269.5
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.4,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 108.5
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 115.5
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 325.9
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 182
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 130.8
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 99.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 219.9
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 189.1
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.3,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 371.6
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 134.1
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 191.6
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 255.9
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.4,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 182.6
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 122
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 64.5
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 75.6
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 173.3
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 234.4
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 131.6
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 91.6
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.3,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 170.5
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 272.5
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 436.4
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 137.7
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.5,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 121
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 179.9
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 251.3
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 76.8
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 70.7
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 247.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 66.9
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 124
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.4,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 179.1
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 132.9
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 318.9
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 365.2
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 243.4
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 265.6
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 145.7
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 242.7
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 127.1
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 258.4
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 249
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 199.2
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 117.1
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 112.8
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 141.7
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 71.3
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 235.2
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 73.6
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 178.3
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 206.2
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 320.4
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 112.9
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 70.4
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 108.6
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 1.5,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 325.8
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 187.6
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 103.4
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 95.9
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 128.7
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 181.1
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 327.1
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 130.6
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.3,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 309.1
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 477.9
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 93.6
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 196.3
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 112.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 197.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 637.7
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 171.5
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 197.5
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 259.4
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 260.8
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 128.9
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 304.8
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 72.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 109
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 200.7
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 315.5
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 134.3
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 295.2
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 88.7
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 116.9
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 117.7
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 133.1
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 69.7
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 321
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 254.9
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 315
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 263.3
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 162.4
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 82.6
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 122.6
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 124.2
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 387
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 189.4
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 197.7
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 124.5
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 110.3
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 266.1
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 263.9
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 189.8
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 178.1
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 165.5
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 147.6
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 325.1
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 70
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 111.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 142.7
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 319.7
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 236.4
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 136.4
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 399.2
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 303.8
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 99.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 96
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 117.8
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 130.1
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 160.3
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 151.3
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 189.3
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 176.9
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 209.3
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 112.8
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 131.5
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 59.6
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 267.4
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 190.8
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 307.9
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 777.3
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.3,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 131
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 182.2
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 125.2
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 259.5
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 122
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 194.5
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 131.6
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 183.9
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 323.7
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 243.7
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 61.5
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 334.6
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "client": 3,
+          "stage": "runtime-role-check",
+          "ms": 177.6
+        },
+        {
+          "stage": "acquire",
+          "ms": 1773.5,
+          "total": 1,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 3,
+          "stage": "setup",
+          "ms": 119.1
+        },
+        {
+          "client": 3,
+          "stage": "rate-limit",
+          "ms": 77.7
+        },
+        {
+          "client": 3,
+          "stage": "rate-limit",
+          "ms": 246.6
+        },
+        {
+          "client": 3,
+          "stage": "commit",
+          "ms": 61.4
+        },
+        {
+          "client": 4,
+          "stage": "runtime-role-check",
+          "ms": 91.6
+        },
+        {
+          "stage": "acquire",
+          "ms": 1346.2,
+          "total": 1,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 4,
+          "stage": "setup",
+          "ms": 119.6
+        },
+        {
+          "client": 4,
+          "stage": "public-content",
+          "ms": 73.3
+        },
+        {
+          "client": 4,
+          "stage": "public-content",
+          "ms": 124.2
+        },
+        {
+          "client": 4,
+          "stage": "commit",
+          "ms": 192.4
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 627.5,
+          "total": 2,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 325
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 243.7
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 395
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 181.4
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 118.5
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 77.9
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 246.6
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 63
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 2,
+          "idle": 2,
+          "waiting": 0
+        },
+        {
+          "client": 3,
+          "stage": "setup",
+          "ms": 113.9
+        },
+        {
+          "client": 3,
+          "stage": "rate-limit",
+          "ms": 65.9
+        },
+        {
+          "client": 3,
+          "stage": "rate-limit",
+          "ms": 134.6
+        },
+        {
+          "client": 3,
+          "stage": "commit",
+          "ms": 175.7
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 2,
+          "idle": 2,
+          "waiting": 0
+        },
+        {
+          "client": 4,
+          "stage": "setup",
+          "ms": 372.8
+        },
+        {
+          "client": 4,
+          "stage": "public-content",
+          "ms": 138
+        },
+        {
+          "client": 4,
+          "stage": "public-content",
+          "ms": 257.8
+        },
+        {
+          "client": 4,
+          "stage": "commit",
+          "ms": 201.5
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 2,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 1,
+          "stage": "setup",
+          "ms": 113
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 188.8
+        },
+        {
+          "client": 1,
+          "stage": "rate-limit",
+          "ms": 188.7
+        },
+        {
+          "client": 1,
+          "stage": "commit",
+          "ms": 372.7
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 2,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 2,
+          "stage": "setup",
+          "ms": 136.5
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 257.6
+        },
+        {
+          "client": 2,
+          "stage": "public-content",
+          "ms": 201.8
+        },
+        {
+          "client": 2,
+          "stage": "commit",
+          "ms": 190.4
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 486.7,
+          "total": 2,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 3,
+          "stage": "setup",
+          "ms": 373.1
+        },
+        {
+          "client": 3,
+          "stage": "rate-limit",
+          "ms": 137.4
+        },
+        {
+          "client": 3,
+          "stage": "rate-limit",
+          "ms": 257.5
+        },
+        {
+          "client": 3,
+          "stage": "commit",
+          "ms": 200.7
+        },
+        {
+          "stage": "acquire",
+          "ms": 1,
+          "total": 2,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 4,
+          "stage": "setup",
+          "ms": 191.5
+        },
+        {
+          "client": 4,
+          "stage": "public-content",
+          "ms": 184.4
+        },
+        {
+          "client": 4,
+          "stage": "public-content",
+          "ms": 329.3
+        },
+        {
+          "client": 4,
+          "stage": "commit",
+          "ms": 180.6
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/news",
+      "entries": [
+        {
+          "client": 5,
+          "stage": "runtime-role-check",
+          "ms": 197.8
+        },
+        {
+          "stage": "acquire",
+          "ms": 1868.9,
+          "total": 0,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 5,
+          "stage": "setup",
+          "ms": 171.6
+        },
+        {
+          "client": 5,
+          "stage": "rate-limit",
+          "ms": 276.5
+        },
+        {
+          "client": 5,
+          "stage": "rate-limit",
+          "ms": 157
+        },
+        {
+          "client": 5,
+          "stage": "commit",
+          "ms": 230.4
+        },
+        {
+          "client": 6,
+          "stage": "runtime-role-check",
+          "ms": 254.2
+        },
+        {
+          "stage": "acquire",
+          "ms": 1451.4,
+          "total": 0,
+          "idle": 0,
+          "waiting": 0
+        },
+        {
+          "client": 6,
+          "stage": "setup",
+          "ms": 191.7
+        },
+        {
+          "client": 6,
+          "stage": "public-content",
+          "ms": 139.2
+        },
+        {
+          "client": 6,
+          "stage": "public-content",
+          "ms": 125
+        },
+        {
+          "client": 6,
+          "stage": "commit",
+          "ms": 125.4
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/services",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 5,
+          "stage": "setup",
+          "ms": 122.7
+        },
+        {
+          "client": 5,
+          "stage": "rate-limit",
+          "ms": 184.9
+        },
+        {
+          "client": 5,
+          "stage": "rate-limit",
+          "ms": 316.8
+        },
+        {
+          "client": 5,
+          "stage": "commit",
+          "ms": 324.7
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 6,
+          "stage": "setup",
+          "ms": 181.6
+        },
+        {
+          "client": 6,
+          "stage": "public-content",
+          "ms": 196.2
+        },
+        {
+          "client": 6,
+          "stage": "public-content",
+          "ms": 186.8
+        },
+        {
+          "client": 6,
+          "stage": "commit",
+          "ms": 131.3
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/tourism/festivities",
+      "entries": [
+        {
+          "stage": "acquire",
+          "ms": 0.1,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 5,
+          "stage": "setup",
+          "ms": 185.9
+        },
+        {
+          "client": 5,
+          "stage": "rate-limit",
+          "ms": 125.1
+        },
+        {
+          "client": 5,
+          "stage": "rate-limit",
+          "ms": 72.1
+        },
+        {
+          "client": 5,
+          "stage": "commit",
+          "ms": 120.2
+        },
+        {
+          "stage": "acquire",
+          "ms": 0.2,
+          "total": 1,
+          "idle": 1,
+          "waiting": 0
+        },
+        {
+          "client": 6,
+          "stage": "setup",
+          "ms": 122
+        },
+        {
+          "client": 6,
+          "stage": "public-content",
+          "ms": 69.4
+        },
+        {
+          "client": 6,
+          "stage": "public-content",
+          "ms": 123.2
+        },
+        {
+          "client": 6,
+          "stage": "commit",
+          "ms": 64.8
+        }
+      ]
+    }
+  ]
+}

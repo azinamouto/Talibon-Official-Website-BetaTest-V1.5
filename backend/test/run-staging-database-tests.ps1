@@ -1,4 +1,4 @@
-param([ValidateSet('staging-database.integration.cjs','content-database.integration.cjs','generate-content-catalog.cjs')][string]$TestFile = 'staging-database.integration.cjs')
+param([ValidateSet('staging-database.integration.cjs','content-database.integration.cjs','staff-auth.integration.cjs','media.integration.cjs','generate-content-catalog.cjs')][string]$TestFile = 'staging-database.integration.cjs')
 $ErrorActionPreference = 'Stop'
 $pgBin = Split-Path (Get-Command psql -ErrorAction Stop).Source
 $node = (Get-Command node -ErrorAction Stop).Source
@@ -54,7 +54,8 @@ try {
     throw 'Disposable startup failed'
   }
   @{ port=$port; cluster=$cluster } | ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $scratch 'fixture.json')
-  if ((Invoke-LocalProcess $node @('--test','--test-timeout=120000',(Join-Path $PSScriptRoot $TestFile))) -ne 0) {
+  $testTimeout = if ($TestFile -eq 'staff-auth.integration.cjs') { '--test-timeout=240000' } else { '--test-timeout=120000' }
+  if ((Invoke-LocalProcess $node @('--test',$testTimeout,(Join-Path $PSScriptRoot $TestFile))) -ne 0) {
     throw 'Staging integration tests failed'
   }
 } finally {

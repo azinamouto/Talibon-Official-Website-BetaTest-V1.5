@@ -58,6 +58,15 @@ test('CMS HTTP workflows on disposable PostgreSQL with restricted runtime',async
    const elevated=new Pool(runtimeConnectionConfig(runtimeUrl.toString(),true));
    try {await assert.rejects(elevated.query('SELECT 1'));} finally {await elevated.end();}
    await owner.query('ALTER ROLE cms_runtime NOCREATEDB');
+   for(const [elevate,restore] of [
+    ['ALTER TABLE app.content_sources OWNER TO cms_runtime','ALTER TABLE app.content_sources OWNER TO postgres'],
+    ['GRANT talgov_runtime TO cms_runtime WITH INHERIT FALSE','GRANT talgov_runtime TO cms_runtime WITH INHERIT TRUE'],
+   ]) {
+    await owner.query(elevate);
+    const unsafe=new Pool(runtimeConnectionConfig(runtimeUrl.toString(),true));
+    try {await assert.rejects(unsafe.query('SELECT 1'));}
+    finally {await unsafe.end();await owner.query(restore);}
+   }
   });
   await t.test('anonymous, forged identity, CSRF, unknown fields and kinds rejected',async()=>{
    assert.equal((await request('/api/admin/content/news',input(),'')).status,401);

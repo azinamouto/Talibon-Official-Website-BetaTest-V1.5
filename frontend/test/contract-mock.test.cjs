@@ -36,7 +36,11 @@ test('mock serves OpenAPI examples, filtering, pagination, and explicit unsuppor
       assert.equal((await fetch(base + '/api/pages?' + query)).status, 400);
     }
     assert.equal((await fetch(base + '/api/pages/missing')).status, 404);
-    assert.equal((await fetch(base + '/api/pages', { method: 'POST' })).status, 410);
+    // Staff content writes are active in R2, but this fixture must never fake authorization.
+    assert.equal(contract.paths['/api/pages'].post.responses['410'], undefined);
+    const write = await fetch(base + '/api/pages', { method: 'POST' });
+    assert.equal(write.status, 501);
+    assert.equal((await write.json()).message, 'Content writes and staff reads are not mocked');
     assert.equal((await fetch(base + '/api/about/profile', { headers: { 'X-API-Version': '2' } })).status, 404);
     const search = await (await fetch(base + '/api/search?q=municipal&limit=10')).json();
     assert.ok(search.data.some(item => item.type === 'services'));

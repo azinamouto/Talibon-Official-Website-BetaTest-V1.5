@@ -72,15 +72,23 @@ async function nextTotp(secret, previous) {
   throw new Error('TOTP did not advance during the test window');
 }
 before(async()=>{
-  const url=process.env.R2_AUTH_TEST_URL;
+  const {fixtureConfig,verifyFixture}=require('./local-staging-fixture.cjs');
+  const fixture=process.env.R2_STAGING_TEST_FIXTURE ? fixtureConfig(process.env.R2_STAGING_TEST_FIXTURE) : null;
+  assert.ok(!fixture || !hosted);
+  const url=fixture ? fixture.url.toString() : process.env.R2_AUTH_TEST_URL;
   let config;
   if(hosted) {
     const { verifyTarget,neonConfig }=require('../scripts/r2-neon-target.cjs'); verifyTarget();
     const database=new URL(url).pathname.slice(1); assert.match(database,/^r2_auth_[a-f0-9]{12}$/);
     config=neonConfig(url,{databases:[database]});
-  } else config=isolatedConfig(url);
+  } else config=fixture ? require('../dist/database/postgres').connectionConfig(url,true) : isolatedConfig(url);
   admin=new Pool(config);
-  await migrate(admin);
+  if(fixture) {
+    await verifyFixture(admin,fixture);
+    for(const m of require('../scripts/staging/runner.cjs').migrations()) await admin.query(m.sql);
+  } else {
+    await migrate(admin);
+  }
   const origin='http://127.0.0.1';
   const options={databaseUrl:url,origin,secret:randomBytes(48).toString('base64url'),localTest:!hosted,sendResetPassword:async input=>{resetDelivery=input;}};
   const file=path.join(__dirname,'../database/auth/001_provider.sql');
@@ -89,8 +97,13 @@ before(async()=>{
     const plan=await getMigrations(providerOptions(admin,options));
     fs.writeFileSync(file,'-- Generated from pinned Better Auth 1.7.15; reviewed and applied only by isolated qualification.\n'+await plan.compileMigrations());
   }
-  await admin.query(fs.readFileSync(file,'utf8'));
-  await admin.query(fs.readFileSync(path.join(__dirname,'../database/auth/002_staff_policy.sql'),'utf8'));
+  if(!fixture) {
+    await admin.query(fs.readFileSync(file,'utf8'));
+    await admin.query(fs.readFileSync(path.join(__dirname,'../database/auth/002_staff_policy.sql'),'utf8'));
+  }
+  const schemaPlan=await getMigrations(providerOptions(admin,options));
+  assert.equal(schemaPlan.toBeCreated.length,0);
+  assert.equal(schemaPlan.toBeAdded.length,0);
   if(hosted) runtime=process.env.R2_AUTH_RUNTIME_URL;
   else {
     await admin.query('CREATE ROLE r2_auth_runtime LOGIN INHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS');

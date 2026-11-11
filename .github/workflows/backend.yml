@@ -2,7 +2,6 @@ name: Backend checks
 on:
   pull_request:
   push:
-    branches: [main, master]
 permissions:
   contents: read
 jobs:
@@ -37,7 +36,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci --prefix backend
-      - name: Rehearse R2 database, staff MFA and private media
+      - name: Rehearse R2 database, staff MFA, private media and CMS
         shell: pwsh
         run: |
           npm --prefix backend run test:r2:db
@@ -45,4 +44,6 @@ jobs:
           npm --prefix backend run test:auth:db
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix backend run test:media:db
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          npm --prefix backend run test:content:db
           exit $LASTEXITCODE

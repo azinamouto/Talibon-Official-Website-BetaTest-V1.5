@@ -23,10 +23,15 @@ export class MediaService {
       this.database = new PostgresDatabase(runtimeConnectionConfig(process.env.MEDIA_DATABASE_URL));
       this.repository = new MediaRepository(this.database);
     }
-    this.storage ??= new NeonObjectStore();
   }
   async run<T>(fn: (repo: MediaRepository, store: ObjectStore) => Promise<T>): Promise<T> {
-    try { this.init(); return await fn(this.repository,this.storage); }
+    return this.runRepository(repo => {
+      this.storage ??= new NeonObjectStore();
+      return fn(repo,this.storage);
+    });
+  }
+  private async runRepository<T>(fn: (repo: MediaRepository) => Promise<T>): Promise<T> {
+    try { this.init(); return await fn(this.repository); }
     catch (error) {
       if (error instanceof HttpException) throw error;
       if (error instanceof DatabaseError) {
@@ -44,7 +49,8 @@ export class MediaService {
     const rows = await repo.listPublic(kind,page);
     return { data: rows.slice(0,50).map(row => ({ ...row, download_url: `/api/media/${row.id}/download` })), hasMore: rows.length > 50 };
   }); }
-  options(actor: StaffPrincipal) { return this.run(repo => repo.options(actor)); }
+  // Content attribution uses these database choices even when object storage is unavailable.
+  options(actor: StaffPrincipal) { return this.runRepository(repo => repo.options(actor)); }
   upload(actor: StaffPrincipal, input: UploadDto, request: string) { return this.run(async (repo,store) => {
     if (!await repo.throttle(actor)) throw new HttpException('Upload limit reached. Retry in one minute.', 429);
     const bytes = Buffer.from(input.base64,'base64');

@@ -53,7 +53,7 @@ for (const width of [375, 768, 1280, 1440]) test(`five sections and protected he
     await expect(page.locator('#services h3')).toHaveCount(6);
     await expect(page.getByText('MUNICIPAL SERVICES & REAL ESTATE', { exact: true }).locator('..').locator('svg')).toHaveCount(0);
     await expect(page.locator('#popular-services')).toHaveCSS('background-color','rgb(0, 89, 138)');
-    await expect(page.locator('#emergency')).toHaveCSS('background-color','rgb(185, 28, 28)');
+    await expect(page.locator('#emergency')).toHaveCSS('background-color','rgb(114, 11, 11)');
     await expect(page.locator('#about h2')).toHaveCSS('font-size','24px');
     await expect(page.locator('#about [class*="mayorCard"]')).toHaveCount(0);
     await expect(page.locator('#about img').last()).toHaveAttribute('src',/mayor-janette.webp$/);

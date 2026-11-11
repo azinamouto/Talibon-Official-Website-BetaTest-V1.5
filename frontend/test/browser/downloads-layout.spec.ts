@@ -1,17 +1,18 @@
 import { test, expect } from '@playwright/test';
-const business=[{id:1,title:'Business Permit Application Form',url:'#'},{id:2,title:'Business Permit Renewal Form',url:'#'}];
-const buildings=[{id:1,title:'Building Permit Application Form',url:'#'},{id:2,title:'Electrical Permit Form',url:'#'},{id:3,title:'Plumbing Permit Form',url:'#'}];
-const zoning=[{id:1,title:'Zoning Clearance Application Form',url:'#'}];
+// Synthetic published documents follow the R2 media contract, never retired provider URLs.
+const documents = Array.from({length:11}, (_, index) => ({
+  id:`layout-document-${index}`, title:index===1?'Business Permit Application Form':index===2?'Business Permit Renewal Form':`Synthetic document ${index}`,
+  category:index===1 || index===2?'Business':'Reports', bytes:1200,
+  download_url:`/api/media/layout-document-${index}/download`,
+}));
 for(const width of [375,768,1280,1920]) test(`Downloadables layout, icon contrast and preserved controls at ${width}px`,async({page,context})=>{
   await page.setViewportSize({width,height:1000});
   await page.emulateMedia({reducedMotion:'reduce'});
   await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
-  await context.route('http://127.0.0.1:54321/**',route=>route.fulfill({json:new URL(route.request().url()).pathname.endsWith('/downloadables')?[{id:'finance',title:'test finance',file_url:'https://example.com/finance.jpg',category:'Reports',file_size:'1.2 MB'}]:[]}));
-  await context.route('**/api/**',route=>{
-    const path=new URL(route.request().url()).pathname;
-    const data=path.endsWith('/business-permits')?business:path.endsWith('/building-permits')?buildings:path.endsWith('/zoning-clearance')?zoning:[];
-    return route.fulfill({json:data});
-  });
+  await context.route('**/api/**',route=>route.fulfill({json:[]}));
+  await context.route('**/api/media?**',route=>route.fulfill({json:{
+    data:new URL(route.request().url()).searchParams.get('kind')==='document'?documents:[], hasMore:false,
+  }}));
   await page.goto('/downloads');
   await page.addStyleTag({content:'[style*="opacity"]{opacity:1!important}[style*="transform"]{transform:none!important}'});
   const heading=page.getByRole('heading',{name:'DOWNLOADABLES',exact:true});
@@ -45,9 +46,9 @@ for(const width of [375,768,1280,1920]) test(`Downloadables layout, icon contras
     await expect(icon).toHaveCSS('color','rgb(255, 255, 255)');
     await expect(icon.locator('..')).toHaveCSS('background-color','rgb(0, 89, 138)');
   }
-  await expect(cards.first().getByRole('link')).toHaveAttribute('href','https://example.com/finance.jpg');
-  expect(await cards.getByRole('link').evaluateAll(els=>els.filter(el=>el.getAttribute('href')==='#').length)).toBe(10);
-  await expect(page.getByText('N/A',{exact:true})).toHaveCount(6);
+  expect(await cards.getByRole('link').evaluateAll(els=>els.map(el=>el.getAttribute('href')))).toEqual(documents.map(item=>item.download_url));
+  expect(await cards.getByRole('link').evaluateAll(els=>els.filter(el=>el.getAttribute('href')==='#').length)).toBe(0);
+  await expect(page.getByText('1200 bytes',{exact:true})).toHaveCount(11);
   const search=page.getByPlaceholder('Search forms...');
   const desc=page.getByText('Access official forms, application documents, and informative materials from the Municipality of Talibon.',{exact:true});
   const s=await search.boundingBox(),d=await desc.boundingBox();

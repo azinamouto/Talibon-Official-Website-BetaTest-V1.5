@@ -73,7 +73,14 @@ test('document preview uses validated PDF bytes and offers a download',async({pa
   await page.goto('/cms');await page.getByRole('button',{name:'Preview',exact:true}).click();
   await expect(page.getByTitle('PDF preview')).toBeVisible();await expect(page.getByTitle('PDF preview')).toHaveAttribute('src',/^blob:/);
   await expect(page.getByRole('link',{name:'Download',exact:true})).toHaveAttribute('href',`/api/admin/media/${id}/download`);
-  const embed=await page.getByTitle('PDF preview').contentFrame().locator('embed[type="application/pdf"]');
-  await expect(embed).toBeAttached();
+  // Browser PDF-viewer internals differ between headless Chromium and Edge.
+  // Verify the application's blob contains the exact validated PDF, not viewer DOM.
+  const preview=await page.getByTitle('PDF preview').evaluate(async frame=>{
+    const response=await fetch((frame as HTMLIFrameElement).src);
+    const blob=await response.blob();
+    return {type:blob.type,bytes:Array.from(new Uint8Array(await blob.arrayBuffer()))};
+  });
+  expect(preview.type).toBe('application/pdf');
+  expect(preview.bytes).toEqual(Array.from(bytes));
   await page.getByRole('button',{name:'Close preview'}).click();await expect(page.getByTitle('PDF preview')).toHaveCount(0);
 });

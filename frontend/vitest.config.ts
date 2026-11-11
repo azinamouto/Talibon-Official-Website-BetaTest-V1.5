@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   test: {
+    // Bound concurrent jsdom environments to avoid starving interaction tests.
+    maxWorkers: 2,
     environment: 'jsdom',
     environmentOptions: { jsdom: { url: 'http://localhost:5173' } },
     include: ['test/react/**/*.test.{ts,tsx}'],

@@ -51,7 +51,9 @@ test('autoplay, pause/resume, hover, focus and drag keep the real office links',
   await expect(cards.first()).toContainText('Elmer B. Magalona');
   await page.clock.runFor(500);
   await carousel.scrollIntoViewIfNeeded();
-  await cards.first().hover();
+  await carousel.hover({position:{x:20,y:20}});
+  // Wait for React to commit hover pause before advancing the virtual clock.
+  await expect(carousel.locator('[aria-hidden="true"] > span')).toHaveCSS('animation-play-state','paused');
   await page.clock.runFor(6000);await expect(cards.first()).toContainText('Elmer B. Magalona');
   await page.mouse.move(0,0);
   await page.clock.runFor(4500);await expect(cards.first()).toContainText('Juliet D. Lumbo-an');

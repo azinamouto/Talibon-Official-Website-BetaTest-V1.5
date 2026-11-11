@@ -3,6 +3,12 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 const get = path => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
+test('repository Vercel configuration disables Git deployments for every branch', () => {
+  assert.equal(JSON.parse(get('vercel.json')).git?.deploymentEnabled, false);
+  assert.ok(get('.vercelignore').split(/\r?\n/).includes('BACKUPENVSUPA.txt'),
+    'Historical environment backup must never be uploaded to Vercel');
+});
+
 test('combined deployment routes API requests to the backend and deep links to the SPA', () => {
   assert.equal(existsSync(new URL('../../frontend/vercel.json', import.meta.url)), false,
     'Use the repository-root deployment; a frontend-only config omits the same-origin API');

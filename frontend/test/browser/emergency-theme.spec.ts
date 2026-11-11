@@ -33,8 +33,9 @@ for (const width of [360, 768, 1280, 1920]) {
     else {
       const before = resolve(artifacts, `before-${width}.json`);
       if (existsSync(before)) expect(measurements).toEqual(JSON.parse(readFileSync(before, 'utf8')));
-      await expect(section.getByRole('img', { name: 'Siren', exact: true })).toHaveText('🚨');
-      await expect(section).toHaveCSS('background-color', 'rgb(185, 28, 28)');
+      // abf0762 intentionally removed the emoji and darkened the emergency surface.
+      await expect(section.getByRole('img', { name: 'Siren', exact: true })).toHaveText('');
+      await expect(section).toHaveCSS('background-color', 'rgb(114, 11, 11)');
       await expect(section).toHaveCSS('background-image', 'none');
       expect(await section.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual([
         'tel:09291523330', 'tel:09173230117', 'tel:09985986433', 'tel:09463360021', 'tel:09458627931',
@@ -47,7 +48,7 @@ for (const width of [360, 768, 1280, 1920]) {
           .reduce((sum, value, index) => sum + value * [.2126, .7152, .0722][index], 0);
         // Conservative bound: the flat red surface plus 20% white,
         // brighter than the combined glows, watermark and 10% hover glass.
-        const background = [185, 28, 28].map(c => c * .8 + 255 * .2);
+        const background = [114, 11, 11].map(c => c * .8 + 255 * .2);
         return [...el.querySelectorAll('h2, h3, p, a')].map(node => {
           ctx.clearRect(0, 0, 1, 1);
           ctx.fillStyle = getComputedStyle(node).color;

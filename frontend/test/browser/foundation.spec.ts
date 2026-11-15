@@ -4,6 +4,9 @@ const staff = { id: '11111111-1111-4111-8111-111111111111', role: 'admin' as con
 
 async function isolate(context: BrowserContext) {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await context.route('**/api/admin/content/news?*', route => route.fulfill({ json: { data: [], pagination: { totalPages: 0 } } }));
+  await context.route('**/api/admin/media/options', route => route.fulfill({ json: { categories: [], sources: [] } }));
+  await context.route('**/api/admin/media?*', route => route.fulfill({ json: { data: [], hasMore: false } }));
 }
 
 test('protected staff URL redirects to staff-only login without a citizen session', async ({ page, context }) => {
@@ -45,8 +48,8 @@ test('password challenge requires an authenticator step before staff access', as
   await context.route('**/api/staff/audit?*', route => route.fulfill({ json: { data: [], pagination: { page: 1, limit: 50, hasMore: false } } }));
   await page.goto('/staff/login');
   await page.getByLabel('Staff email').fill('staff@example.test');
-  await page.getByLabel('Password').fill('synthetic-password');
-  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.getByLabel('Authenticator code')).toBeVisible();
   await page.getByLabel('Authenticator code').fill('123456');
   await page.getByRole('button', { name: 'Continue' }).click();
@@ -74,6 +77,8 @@ test('sign out clears the in-memory staff identity and returns to login', async 
     active = false;
     await route.fulfill({ json: { success: true } });
   });
+  await context.route('**/api/staff?*', route => route.fulfill({ json: { data: [], pagination: { page: 1, limit: 50, hasMore: false } } }));
+  await context.route('**/api/staff/audit?*', route => route.fulfill({ json: { data: [], pagination: { page: 1, limit: 50, hasMore: false } } }));
   await page.goto('/admin');
   await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
   await page.getByRole('button', { name: 'Sign out' }).click();

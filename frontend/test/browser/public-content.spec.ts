@@ -71,11 +71,15 @@ test('news filters reset pagination and use backend query parameters', async ({ 
   await page.goto('/news/updates?page=2');
   await page.getByRole('searchbox', { name: 'Search news' }).fill('coastal & health');
   const request = page.waitForRequest(request => request.url().includes('/api/news?') && request.url().includes('q='));
+  const response = page.waitForResponse(response => response.url().includes('/api/news?') && response.url().includes('q='));
   await page.getByRole('button', { name: 'Search news', exact: true }).click();
   const params = new URL((await request).url()).searchParams;
   expect(params.get('q')).toBe('coastal & health');
   expect(params.get('page')).toBe('1');
   expect(params.get('category')).toBe('UPDATE');
+  // Finish the mocked request before teardown removes the route.
+  await (await response).finished();
+  await expect(page.getByRole('link', { name: 'Municipal update', exact: true })).toBeVisible();
 });
 
 test('site search calls search API, retries failures and opens service and page results', async ({ page }) => {

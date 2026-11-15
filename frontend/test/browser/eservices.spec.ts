@@ -48,7 +48,7 @@ test('registration controls are absent while staff login and recovery remain', a
   await page.getByRole('button', { name: 'Forgot password?' }).click();
   await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toBeVisible();
   await expect(page.getByLabel('Staff email')).toBeVisible();
-  await expect(page.getByLabel('Password')).toHaveCount(0);
+  await expect(page.getByLabel('Password', { exact: true })).toHaveCount(0);
 });
 
 test('payments remain unavailable by default', async ({ page }) => {

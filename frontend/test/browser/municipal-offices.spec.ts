@@ -65,7 +65,8 @@ for (const width of [360, 768, 1280, 1920]) test(`municipal office cards, keyboa
     await expect(cards.first()).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, -2)');
     await expect(cards.first()).toHaveCSS('box-shadow', 'rgba(15, 23, 42, 0.18) 0px 4px 12px 0px');
     await expect(cards.first().locator('span[aria-hidden="true"]')).toHaveCSS('background-color', 'rgb(0, 70, 110)');
-    expect(await links.last().evaluate(el => el.getBoundingClientRect().height)).toBe(44);
+    // The label can wrap on narrow screens; 44px is the minimum touch target.
+    expect(await links.last().evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect(section).toHaveCSS('background-color', 'rgb(240, 249, 255)');
     expect(await section.locator('svg').evaluateAll(icons => icons.every(i => i.getAttribute('aria-hidden') === 'true'))).toBe(true);

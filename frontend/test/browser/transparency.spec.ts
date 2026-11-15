@@ -39,7 +39,10 @@ for (const width of [360, 768, 1280, 1920]) {
     await cards.first().hover();
     await expect(cards.first()).toHaveCSS('translate', '0px -2px');
     // The action's pseudo-element makes the padding at the top of the card clickable.
+    const budgetResponse = page.waitForResponse(response => new URL(response.url()).pathname === '/api/transparency/budget');
     await cards.first().click({ position: { x: 12, y: 12 } });
     await expect(page).toHaveURL(/\/transparency\/budget$/);
+    await (await budgetResponse).finished();
+    await expect(page.getByText('No content available at this time.', { exact: true })).toBeVisible();
   });
 }

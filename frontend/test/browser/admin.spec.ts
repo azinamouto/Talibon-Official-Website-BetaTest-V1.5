@@ -9,6 +9,7 @@ async function isolate(context: BrowserContext) {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await context.route('**/api/admin/media?page=*', route => route.fulfill({ json: { data: [], hasMore: false } }));
   await context.route('**/api/admin/media/options', route => route.fulfill({ json: { categories: [], sources: [] } }));
+  await context.route('**/api/admin/content/news?page=*', route => route.fulfill({ json: { data: [], pagination: { totalPages: 0 } } }));
 }
 
 async function staffSession(context: BrowserContext, role: 'admin' | 'editor') {
@@ -62,8 +63,8 @@ test('staff sign in requires MFA before opening the portal and stores no browser
   page.on('request', request => { if (/\/api\/(auth|admin\/users|admin\/reports)/.test(request.url())) legacyRequests.push(request.url()); });
   await page.goto('/staff/login');
   await page.getByLabel('Staff email').fill('admin@example.test');
-  await page.getByLabel('Password').fill('synthetic-password');
-  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.getByLabel('Authenticator code')).toBeVisible();
   await page.getByLabel('Authenticator code').fill('123456');
   await page.getByRole('button', { name: 'Continue' }).click();

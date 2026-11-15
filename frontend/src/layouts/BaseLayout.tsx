@@ -11,7 +11,7 @@ import { useUI } from '../contexts/UIContext';
 export default function BaseLayout() {
   const location = useLocation();
   const { isOffline, notification, dismissNotification, setNavigationOpen } = useUI();
-  const isLogin = location.pathname === '/login';
+  const isLogin = location.pathname === '/login' || location.pathname === '/staff/login';
   useEffect(() => { setNavigationOpen(false); }, [location.pathname, setNavigationOpen]);
   return <div className="min-h-screen bg-brand-bg font-sans text-brand-text">
     <a href="#main-content" className="ui-focus sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-control focus:bg-white focus:p-4">Skip to main content</a>
@@ -27,7 +27,7 @@ export default function BaseLayout() {
         <Outlet />
       </ErrorBoundary>
     </div>
-    <Footer />
+    {!isLogin && <Footer />}
     {isOffline && <div className="fixed bottom-4 right-4 z-50 max-w-sm"><Alert>You're offline. Check your internet connection.</Alert></div>}
   </div>;
 }

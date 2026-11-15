@@ -45,8 +45,8 @@ test('password challenge requires an authenticator step before staff access', as
   await context.route('**/api/staff/audit?*', route => route.fulfill({ json: { data: [], pagination: { page: 1, limit: 50, hasMore: false } } }));
   await page.goto('/staff/login');
   await page.getByLabel('Staff email').fill('staff@example.test');
-  await page.getByLabel('Password').fill('synthetic-password');
-  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.getByLabel('Authenticator code')).toBeVisible();
   await page.getByLabel('Authenticator code').fill('123456');
   await page.getByRole('button', { name: 'Continue' }).click();

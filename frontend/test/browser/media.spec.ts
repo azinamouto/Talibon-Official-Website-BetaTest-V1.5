@@ -3,9 +3,13 @@ import { PDFDocument } from 'pdf-lib';
 const id='11111111-1111-4111-8111-111111111111';
 const category='22222222-2222-4222-8222-222222222222';
 const source='33333333-3333-4333-8333-333333333333';
+test.beforeEach(async ({ context }) => {
+  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await context.route('**/api/admin/content/news?*', route => route.fulfill({ json: { data: [], pagination: { totalPages: 0 } } }));
+});
+
 test('editor uploads, previews, edits and publishes a private photo on mobile and desktop', async ({page,context},info) => {
   test.setTimeout(60000);
-  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
   await context.route('**/api/staff/me',route=>route.fulfill({json:{id,role:'editor'}}));
   let asset: Record<string,unknown> | null=null; let fail=true; const uploadIds: string[]=[];
   await context.route('**/api/admin/media**',async route=>{
@@ -46,7 +50,6 @@ test('editor uploads, previews, edits and publishes a private photo on mobile an
   await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:info.outputPath('media-desktop.png'),fullPage:true});
 });
 test('admin deletion requires explicit confirmation and MFA',async({page,context})=>{
-  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
   await context.route('**/api/staff/me',route=>route.fulfill({json:{id,role:'admin'}}));
   await context.route('**/api/staff?*',route=>route.fulfill({json:{data:[],pagination:{hasMore:false}}}));
   await context.route('**/api/staff/audit?*',route=>route.fulfill({json:{data:[],pagination:{hasMore:false}}}));
@@ -62,7 +65,6 @@ test('admin deletion requires explicit confirmation and MFA',async({page,context
   await page.getByRole('button',{name:'Confirm deletion'}).click();await expect(page.getByText('Media deleted from the CMS.')).toBeVisible();expect(removed).toBe(true);
 });
 test('document preview uses validated PDF bytes and offers a download',async({page,context})=>{
-  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
   const pdf=await PDFDocument.create();pdf.addPage();const bytes=Buffer.from(await pdf.save());
   await context.route('**/api/staff/me',route=>route.fulfill({json:{id,role:'editor'}}));
   await context.route('**/api/admin/media**',route=>{

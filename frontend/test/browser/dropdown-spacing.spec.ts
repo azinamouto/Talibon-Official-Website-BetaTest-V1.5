@@ -46,6 +46,7 @@ for(const width of [375,768,1280,1920]) test(`dropdown page spacing and detail l
     await page.addStyleTag({content:'[style*="opacity"]{opacity:1!important}[style*="transform"]{transform:none!important}'});
     const heading=page.locator('#main-content h1');
     await expect(heading).toHaveText(title);
+    await expect(heading).toBeVisible();
     await expect(page.getByRole('status',{name:'Loading content',exact:true})).toHaveCount(0);
     if(!path.endsWith('/gallery'))await expect(page.locator('#main-content [role="status"]').filter({hasText:/Loading/})).toHaveCount(0);
     const h=await heading.boundingBox();

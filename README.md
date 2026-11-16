@@ -184,6 +184,7 @@ npm run start:dev
 | :-- | :-- |
 | [R2 architecture](docs/r2/ARCHITECTURE.md) | System direction, constraints, and migration design |
 | [R2 work package register](docs/r2/WORK_PACKAGE_REGISTER.md) | Increment scopes and delivery tracking |
+| [R2 GitHub integration](docs/r2/GITHUB_INTEGRATION_2026-11-16.md) | Review stack, source provenance, regression evidence and remaining gates |
 | [Deferred workflow shutdown](docs/r2/DEFERRED_WORKFLOW_SHUTDOWN.md) | Contract for disabling citizen transaction workflows |
 | [Increment 1 report](docs/r2/INCREMENT_1_REPORT.md) | Implementation and verification evidence |
 | [Production acceptance](docs/r2/PRODUCTION_ACCEPTANCE.md) | Release requirements and outstanding qualification |

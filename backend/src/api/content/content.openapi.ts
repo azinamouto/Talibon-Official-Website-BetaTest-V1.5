@@ -1,6 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { CONTENT, ContentKind } from './content.service';
+import { CMS_VALIDATION_SCHEMA } from '../../security/cms-validation';
 
 export function ContentErrors() {
   return applyDecorators(...[
@@ -11,7 +12,7 @@ export function ContentErrors() {
     [409, 'Slug already exists, including soft-deleted records.'],
     [429, 'Rate limit exceeded.'],
     [503, 'Database unavailable.'],
-  ].map(([status, description]) => ApiResponse({ status: Number(status), description: String(description) })));
+  ].map(([status, description]) => ApiResponse({ status: Number(status), description: String(description), ...(Number(status) === 400 ? { schema: CMS_VALIDATION_SCHEMA } : {}) })));
 }
 
 export function ContentResponse(kind: ContentKind, operation: 'list' | 'read' | 'create' | 'delete') {

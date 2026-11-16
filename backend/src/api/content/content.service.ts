@@ -7,6 +7,8 @@ import { DatabaseError, PostgresDatabase, runtimeConnectionConfig } from '../../
 import { MUNICIPAL_KINDS } from './municipal-schema';
 import { GoneException } from '@nestjs/common';
 import { MEDIA_CMS_ONLY_MESSAGE } from '../../security/deferred-routes.middleware';
+import { CmsValidationError } from '../../database/cms-validation';
+import { CmsInputError } from '../../security/cms-validation';
 export const CONTENT = {
   pages: { table: 'pages', title: 'title', visible: 'published', fields: 'id,title,slug,content,status,created_at,updated_at' },
   news: { table: 'news', title: 'title', visible: 'published', fields: 'id,title,slug,summary,content,category,date,image_url,file_url,author,status,created_at,updated_at' },
@@ -30,6 +32,7 @@ export class ContentService {
       return await work(this.repository);
     } catch (error) {
       if (error instanceof HttpException) throw error;
+      if (error instanceof CmsValidationError) throw new CmsInputError(error.fields);
       if (error instanceof DatabaseError) {
         if (error.code==='conflict') throw new ConflictException('Content changed or is not a draft. Refresh before retrying.');
         if (error.code==='forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');

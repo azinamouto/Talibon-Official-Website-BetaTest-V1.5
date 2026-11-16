@@ -8,6 +8,7 @@ import {
   Injectable
 } from "@nestjs/common";
 import { Request, Response } from "express";
+import { safeFieldErrors } from './cms-validation';
 
 @Catch()
 @Injectable()
@@ -22,9 +23,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | object = "An unexpected error occurred. Please try again later.";
     let errorType = "Internal Server Error";
+    let fields = {};
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
+      errorType = ({400:'Bad Request',401:'Unauthorized',403:'Forbidden',404:'Not Found',409:'Conflict',413:'Payload Too Large',429:'Too Many Requests'} as Record<number,string>)[status] || errorType;
       const res = exception.getResponse();
       if (typeof res === "string") {
         message = res;
@@ -32,6 +35,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const obj = res as any;
         message = obj.message || obj.error || message;
         errorType = obj.error || errorType;
+        if (status === 400) fields = safeFieldErrors(obj.fieldErrors);
       }
     } else if (exception && typeof exception === 'object' && 'type' in exception) {
       // Express body-parser failures happen before DTO validation.
@@ -42,7 +46,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       } else if (exception.type === 'entity.too.large') {
         status = 413;
         errorType = 'Payload Too Large';
-        message = 'Request body exceeds the 1 MB limit.';
+        message = 'Request body exceeds the allowed size.';
       }
     }
 
@@ -65,6 +69,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: status,
       error: errorType,
       message: clientMessage,
+      ...(Object.keys(fields).length ? { fieldErrors: fields } : {}),
       timestamp: new Date().toISOString()
     });
   }

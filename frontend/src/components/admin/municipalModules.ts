@@ -21,4 +21,4 @@ export const municipalModules: MunicipalModule[]=[
 ];
 export type Attachment = { assetId: string; caption: string; altText: string };
 export type ContentRow = { id: string; kind: string; title: string; slug: string; source_id: string; publication: 'draft'|'published'|'archived'; version: number; updated_at: string; body: Record<string,unknown> & { attachments?: Attachment[]; featuredAssetId?: string } };
-export type ContentSource = { id: string; reference: string; owner: string; sha256: string; approved: boolean; reviewed_at: string | null };
+export type ContentSource = { id: string; reference: string; owner: string; sha256: string; approved: boolean; reviewed_at: string | null; approval_status?: 'approved'|'pending'|'rejected' };

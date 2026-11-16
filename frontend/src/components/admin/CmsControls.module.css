@@ -1,0 +1,25 @@
+.label { display:block; font-size:14px; font-weight:650; color:#17324d; }
+.selector { display:grid; gap:8px; min-width:0; }
+.selector select { width:100%; min-height:44px; border:1px solid #aab9c9; border-radius:8px; padding:10px 12px; color:#17324d; background:#fff; }
+.selector select:focus-visible,.dropzone input:focus-visible { outline:3px solid #126ca0; outline-offset:3px; }
+.selector select:disabled { opacity:.6; }
+.hint,.dropzone p { font-size:14px; color:#52657a; line-height:1.6; }
+.warning { padding:12px; background:#fff6df; color:#75510b; font-size:14px; line-height:1.6; border-radius:4px; }
+.fieldError { color:#9d2922; font-size:14px; line-height:1.5; }
+.error { padding:16px; border-radius:8px; margin-bottom:16px; background:#fff1f0; color:#9d2922; overflow-wrap:anywhere; }
+.error ul { padding-left:24px; list-style:disc; margin-top:8px; }.error li { margin-top:8px; }
+.dropzone { display:grid; justify-items:start; gap:8px; border:2px dashed #aab9c9; border-radius:8px; padding:24px; background:#f8fafc; color:#17324d; min-width:0; }
+.dropzone label { font-weight:650; }.dropzone input { width:100%; min-height:44px; font-size:14px; padding-block:8px; }
+.dropzone[aria-disabled=true] { opacity:.6; }.dragging { border-color:#126ca0; background:#eef5fa; }
+.thumbnail { width:100%; height:144px; background:#edf2f7; border-radius:4px; overflow:hidden; }
+.thumbnail img { width:100%; height:100%; object-fit:contain; }
+.thumbnail>div { height:100%; display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center; font-size:14px; color:#52657a; }
+.progress { padding:16px; background:#eef5fa; border-radius:8px; color:#17324d; }
+.progress progress { width:100%; height:12px; margin-top:8px; accent-color:#126ca0; }
+.skeletons { display:grid; gap:16px; padding-block:16px; }
+.skeleton { display:grid; gap:12px; min-height:112px; padding:16px; border:1px solid #dce3eb; border-radius:8px; }
+.skeleton span { height:16px; border-radius:4px; background:#e3eaf1; }.skeleton span:first-child { width:65%; height:24px; }.skeleton span:last-child { width:40%; }
+.cards { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }.cards .skeleton { min-height:224px; }
+.stats { grid-template-columns:repeat(4,minmax(0,1fr)); }.stats .skeleton { min-height:144px; }
+.srOnly { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+@media(max-width:640px) { .stats { grid-template-columns:repeat(2,minmax(0,1fr)); }.dropzone { padding:16px; } }

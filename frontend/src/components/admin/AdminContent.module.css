@@ -30,5 +30,8 @@
 .preview a { text-decoration:underline; min-height:44px; display:inline-flex; align-items:center; }
 .chartRow { display:grid; grid-template-columns:1fr 1fr auto; gap:16px; align-items:end; margin-block:16px; }
 .source { display:grid; gap:8px; padding:24px 0; border-bottom:1px solid #dce3eb; overflow-wrap:anywhere; }
-@media (min-width:1280px) { .workspace { grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr); align-items:start; } }
+.workflow { padding:12px 16px; margin-top:16px; background:#e8eff7; color:#17324d; font-size:14px; line-height:1.6; border-radius:4px; }
+.approvalLink { display:inline-flex; align-items:center; min-height:44px; color:#125d8a; text-decoration:underline; }
+.fieldError { font-size:14px; color:#9d2922; }
+.empty button { margin-top:16px; }
 @media (max-width:640px) { .fields,.attachment,.chartRow { grid-template-columns:1fr; }.form,.preview { padding:16px; }.picker { flex-wrap:wrap; }.toolbar>.field { width:100%; }.heading h2 { font-size:21px; } }

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { staffResponseError } from '../lib/staffErrors';
 
 type Staff = { id: string; role: 'admin' | 'editor' };
 function isStaff(value: unknown): value is Staff {
@@ -11,8 +12,7 @@ export async function staffRequest<T = unknown>(path: string, body?: unknown): P
     headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body), cache: 'no-store' });
   if (!response.ok) {
-    const messages:Record<number,string>={400:'Check the content fields, approved source and published attachments.',401:'Sign in and complete MFA to continue.',403:'This action requires authorized staff access and, for sensitive operations, a current administrator authenticator code.',409:'This record changed or requires unpublishing before editing. Refresh it before retrying.',429:'Too many requests. Wait a moment before retrying.',503:'The operation could not be confirmed. Refresh records before retrying.'};
-    throw new Error(messages[response.status] || 'Request could not be completed. Please try again.');
+    throw staffResponseError(response.status,await response.json().catch(() => null));
   }
   return response.json() as Promise<T>;
 }

@@ -6,9 +6,10 @@ import { StaffRoles } from '../../authentication/staff.guard';
 import { StaffPrincipal } from '../../authentication/authentication.adapter';
 import { MediaService } from './media.service';
 import { EditDto, UploadDto, VersionDto } from './media.dto';
+import { isStaffMutationOrigin } from '../../config/staff-origin';
 type StaffRequest = Request & { staff: StaffPrincipal; requestId: string };
 export function mediaMutation(req: Request) {
-  if (!process.env.STAFF_AUTH_ORIGIN || req.headers.origin !== process.env.STAFF_AUTH_ORIGIN || !req.is('application/json')) throw new ForbiddenException('Same-origin JSON required.');
+  if (!isStaffMutationOrigin(req.headers.origin, process.env) || !req.is('application/json')) throw new ForbiddenException('Same-origin JSON required.');
 }
 function headers(res: Response) { res.set({ 'Cache-Control': 'private, no-store', 'X-Robots-Tag': 'noindex, nofollow', 'X-Content-Type-Options': 'nosniff' }); }
 @ApiTags('Media CMS') @ApiCookieAuth('staffCookie') @StaffRoles('admin','editor')

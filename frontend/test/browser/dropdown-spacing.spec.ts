@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { mockMunicipalContent } from './helpers/municipal-content';
 const description = 'Municipal information supplied for this layout verification. '.repeat(30);
 const image='https://example.com/layout.png';
 const records = Array.from({length:5},(_,i)=>({id:`item-${i+1}`,title:`Published record ${i+1}`,name:`Destination ${i+1}`,description,date:'2026-11-06',status:'Published',budget:'100,000',deadline:'2026-12-01',url:'#document',banner_image:image,featured_image:image,location:'Talibon, Bohol',category:'ISLAND',gallery_images:[image,image],google_maps_link:'https://www.google.com/maps?q=10.1517,124.3333'}));
@@ -12,7 +13,7 @@ const routes = [
   ['/news/articles','News & Updates',true],
   ['/news/advisories','News & Updates',true],
   ['/news/updates','News & Updates',true],
-  ['/news/gallery','News & Updates',false],
+  ['/news/gallery','Municipal photo galleries',false],
   ['/tourism/map','Interactive Tourism Map',false],
   ['/tourism/spots','Tourist Spots',true],
   ['/tourism/festivities','Festivities',true],
@@ -40,6 +41,7 @@ for(const width of [375,768,1280,1920]) test(`dropdown page spacing and detail l
     if(path.startsWith('/transparency/')||path.startsWith('/tourism/')||path.startsWith('/api/transparency/')||path.startsWith('/api/tourism/'))return route.fulfill({json:records});
     return route.fulfill({json:[]});
   });
+  await mockMunicipalContent(context);
   const gutter=width>=1024?32:width>=640?24:16;
   for(const [path,title,cards] of routes){
     await page.goto(path);
@@ -69,7 +71,7 @@ for(const width of [375,768,1280,1920]) test(`dropdown page spacing and detail l
       const pagination=page.getByRole('navigation',{name:'Pagination'});expect(Math.round((await pagination.boundingBox())!.width)).toBe(width-gutter*2);
       await page.getByRole('button',{name:'Next',exact:true}).click();await expect(page).toHaveURL(/page=2/);await expect(page.getByRole('status').filter({hasText:'Page 2'})).toBeVisible();
     }
-    if(path==='/news/gallery')await expect(page.getByText('No news found. Try another search or category.')).toBeVisible();
+    if(path==='/news/gallery')await expect(page.getByRole('region',{name:'Photo collections'}).getByText('No publications are available in this section.')).toBeVisible();
     if(path.startsWith('/news/view')){
       const paragraphs=page.locator('#main-content article p');
       expect(await paragraphs.evaluateAll(els=>els.every(el=>el.getBoundingClientRect().width<=900))).toBe(true);

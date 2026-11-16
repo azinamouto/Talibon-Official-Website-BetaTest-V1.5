@@ -42,9 +42,15 @@ export async function publicGet<T>(path: string, signal?: AbortSignal): Promise<
   if (!response.ok) throw new PublicApiError(response.status);
   return response.json();
 }
-export function listPublic<T>(resource: string, params: Record<string, string | number>, signal?: AbortSignal) {
+export async function listPublic<T>(resource: string, params: Record<string, string | number>, signal?: AbortSignal) {
   const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value !== '').map(([key, value]) => [key, String(value)]));
-  return publicGet<Listing<T>>(`${resource}?${query}`, signal);
+  const result = await publicGet<Listing<T>>(`${resource}?${query}`, signal);
+  if (!result || !Array.isArray(result.data) || !result.pagination ||
+      !['page', 'limit', 'total', 'totalPages'].every(key => Number.isInteger(result.pagination[key as keyof Pagination])) ||
+      result.pagination.page < 1 || result.pagination.limit < 1 || result.pagination.total < 0 || result.pagination.totalPages < 0) {
+    throw new PublicApiError(502);
+  }
+  return result;
 }
 export async function publicDetail<T>(resource: string, identifier: string, signal?: AbortSignal): Promise<T | null> {
   try {

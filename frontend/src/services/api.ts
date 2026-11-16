@@ -1,5 +1,5 @@
 import { aboutApi } from './aboutApi';
-import { publicGet } from './publicApi';
+import { listPublic, publicGet } from './publicApi';
 import type { ContentData } from '../types';
 
 const get = <T>(path: string, signal?: AbortSignal) => publicGet<T>(path, signal);
@@ -53,7 +53,7 @@ export const formsApi = {
   getDownloadable: async (signal?: AbortSignal): Promise<DownloadableForm[]> => (await formsApi.getDownloadablePage(1,signal)).data,
   getDownloadablePage: async (page: number, signal?: AbortSignal): Promise<{data: DownloadableForm[]; hasMore: boolean}> => {
     const [records,result]=await Promise.all([
-      get<{data:DownloadableForm[];pagination:{totalPages:number}}>(`public-content/downloadables?page=${page}&limit=50`,signal),
+      listPublic<DownloadableForm>('public-content/downloadables',{page,limit:50},signal),
       get<{ data: { id: string; title: string; category: string; bytes: number; download_url: string }[]; hasMore: boolean }>(`media?kind=document&page=${page}`, signal),
     ]);
     const urls=new Set(records.data.map(item=>item.file_url));

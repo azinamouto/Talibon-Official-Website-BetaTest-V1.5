@@ -24,8 +24,11 @@ for (const width of [375, 1280]) {
     await page.keyboard.press('Tab');
     await expect(page.getByLabel('Category or department')).toBeFocused();
     await page.getByLabel('Category or department').selectOption('mayor');
+    await expect(page).toHaveURL(/category=mayor/);
     await page.getByLabel('Sort by').selectOption('date');
+    await expect(page).toHaveURL(/sort=date/);
     await page.getByLabel('Results per page').selectOption('20');
+    await expect(page).toHaveURL(/limit=20/);
     await page.reload();
     await expect(page.getByLabel('Sort by')).toHaveValue('date');
     await expect(page.getByLabel('Category or department')).toHaveValue('mayor');

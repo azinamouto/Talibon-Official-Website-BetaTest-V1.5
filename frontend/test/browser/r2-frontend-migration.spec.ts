@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { mockMunicipalContent } from './helpers/municipal-content';
 
 test.beforeEach(async ({ context }) => {
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
+  await mockMunicipalContent(context);
   await context.route('**/api/media?**', route => route.fulfill({ json: { data: [], hasMore: false } }));
   await context.route('**/api/staff/me', route => route.fulfill({ status: 401, json: { message: 'Unauthorized' } }));
 });
@@ -10,7 +12,7 @@ test.beforeEach(async ({ context }) => {
 test('download and legislative pages omit incomplete placeholder records', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
-  await page.route('**/api/forms/downloadable', route => route.fulfill({ json: [{ id: 'test-form', title: 'Unpublished form', url: '#' }] }));
+  await mockMunicipalContent(page, { downloadables: [{ id: 'test-form', title: 'Unpublished form', file_url: '#' }] });
   await page.route('**/api/legislative/ordinances', route => route.fulfill({ json: [{ id: 'test-ordinance', title: 'Unpublished ordinance', date: '2024-01-01' }] }));
   await page.route('**/api/legislative/resolutions', route => route.fulfill({ json: [{ id: 'test-resolution', title: 'Unpublished resolution', date: '2024-01-01' }] }));
 

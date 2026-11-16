@@ -4,10 +4,10 @@ test('public catalog and news render the shared contract server and search opens
   await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   const services = await (await request.get('/api/services')).json();
   const news = await (await request.get('/api/news')).json();
-  await page.goto('/services');
+  await page.goto('/services', { waitUntil: 'domcontentloaded' });
   await page.getByRole('link', { name: new RegExp(services.data[0].name) }).click();
   await expect(page.getByRole('heading', { name: services.data[0].name, exact: true, level: 1 })).toBeVisible();
-  await page.goto('/news');
+  await page.goto('/news', { waitUntil: 'domcontentloaded' });
   await page.getByRole('link', { name: news.data[0].title, exact: true }).click();
   await expect(page.getByRole('heading', { name: news.data[0].title, exact: true, level: 1 })).toBeVisible();
   await page.getByTitle('Search', { exact: true }).click();

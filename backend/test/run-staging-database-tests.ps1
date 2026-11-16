@@ -1,4 +1,4 @@
-param([ValidateSet('staging-database.integration.cjs','content-database.integration.cjs','staff-auth.integration.cjs','media.integration.cjs','generate-content-catalog.cjs')][string]$TestFile = 'staging-database.integration.cjs')
+param([ValidateSet('staging-database.integration.cjs','content-database.integration.cjs','staff-auth.integration.cjs','first-admin-bootstrap.integration.cjs','media.integration.cjs','generate-content-catalog.cjs','performance-database.cjs')][string]$TestFile = 'staging-database.integration.cjs', [ValidateSet('baseline','after')][string]$PerformanceLabel = 'baseline', [string]$TestNamePattern = '', [ValidateSet('true','false')][string]$PasswordRecoveryEnabled = 'true')
 $ErrorActionPreference = 'Stop'
 $pgBin = Split-Path (Get-Command psql -ErrorAction Stop).Source
 $node = (Get-Command node -ErrorAction Stop).Source
@@ -28,6 +28,9 @@ function Invoke-LocalProcess([string]$Executable, [string[]]$Arguments) {
   $info.EnvironmentVariables['PGPASSFILE'] = Join-Path $scratch 'no-password-file'
   $info.EnvironmentVariables['PGSERVICEFILE'] = Join-Path $scratch 'no-service-file'
   $info.EnvironmentVariables['R2_STAGING_TEST_FIXTURE'] = Join-Path $scratch 'fixture.json'
+  $info.EnvironmentVariables['TALGOV_PERF_LABEL'] = $PerformanceLabel
+  # Synthetic local delivery callback only; never inherit hosted credentials or flags.
+  $info.EnvironmentVariables['R2_AUTH_TEST_RECOVERY_ENABLED'] = $PasswordRecoveryEnabled
   $process = [Diagnostics.Process]::Start($info)
   try {
     if ($capture) {
@@ -55,7 +58,10 @@ try {
   }
   @{ port=$port; cluster=$cluster } | ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $scratch 'fixture.json')
   $testTimeout = if ($TestFile -eq 'staff-auth.integration.cjs') { '--test-timeout=240000' } else { '--test-timeout=120000' }
-  if ((Invoke-LocalProcess $node @('--test',$testTimeout,(Join-Path $PSScriptRoot $TestFile))) -ne 0) {
+  $testArguments = @('--test',$testTimeout)
+  if ($TestNamePattern) { $testArguments += @('--test-name-pattern',$TestNamePattern) }
+  $testArguments += (Join-Path $PSScriptRoot $TestFile)
+  if ((Invoke-LocalProcess $node $testArguments) -ne 0) {
     throw 'Staging integration tests failed'
   }
 } finally {

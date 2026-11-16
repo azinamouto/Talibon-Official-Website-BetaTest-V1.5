@@ -87,10 +87,10 @@ test('public forms metadata and health remain available without workflow service
   catalog.list = original;
   assert.equal((await fetch(base + '/api/health')).status,200);
 });
-test('content mutations require staff authentication while retired routes stay closed', async () => {
+test('text-content mutations are deferred while media-only staff CMS remains authorized separately', async () => {
   const start = calls;
   for (const path of ['/api/pages','/api/news','/api/services']) for (const method of ['POST','PATCH','DELETE']) {
-    assert.equal((await fetch(base + path + (method === 'POST' ? '' : '/id'), { method })).status,401);
+    assert.equal((await fetch(base + path + (method === 'POST' ? '' : '/id'), { method })).status,410);
   }
   assert.equal(calls,start);
   assert.equal((await fetch(base + '/api/admin/users')).status,410);
@@ -116,8 +116,10 @@ test('published contract describes retired operations as 410 only', async () => 
   for (const [path, method] of [['/api/payments/create-checkout-session','post'], ['/api/forms/submissions','post'], ['/api/auth/signup','post']]) {
     assert.deepEqual(Object.keys(doc.paths[path][method].responses),['410']);
   }
-  assert.ok(doc.paths['/api/news'].post.responses['201']);
-  assert.deepEqual(doc.paths['/api/news'].post.security,[{staffCookie:[]}]);
+  assert.deepEqual(Object.keys(doc.paths['/api/news'].post.responses),['410']);
+  assert.deepEqual(doc.paths['/api/news'].post.security,[]);
+  assert.ok(doc.paths['/api/news'].get.responses['200']);
+  assert.deepEqual(Object.keys(doc.paths['/api/admin/content/{kind}'].post.responses),['410']);
 });
 test('standalone worker and edge entry point cannot initialize providers', () => {
   const worker = spawnSync(process.execPath, ['dist/api/notifications/email-worker.js','--watch'], { cwd: require('node:path').resolve(__dirname,'..'), timeout:5000, encoding:'utf8' });

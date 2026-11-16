@@ -6,10 +6,10 @@ const events = [{ id: 'event-1', source: 'authentication', action: 'mfa.success'
   subjectId: target.id, occurredAt: '2026-11-02T00:00:00.000Z' }];
 
 async function isolate(context: BrowserContext) {
-  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await context.route('**/api/**', route => route.fulfill({ status: 404, json: {} }));
+  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.fallback() : route.abort());
   await context.route('**/api/admin/media?page=*', route => route.fulfill({ json: { data: [], hasMore: false } }));
   await context.route('**/api/admin/media/options', route => route.fulfill({ json: { categories: [], sources: [] } }));
-  await context.route('**/api/admin/content/news?page=*', route => route.fulfill({ json: { data: [], pagination: { totalPages: 0 } } }));
 }
 
 async function staffSession(context: BrowserContext, role: 'admin' | 'editor') {
@@ -23,17 +23,21 @@ async function staffSession(context: BrowserContext, role: 'admin' | 'editor') {
 }
 
 test('R2 staff portal remains responsive with authorized records', async ({ page, context }, info) => {
+  // Bound the cold Vite/module startup separately from the rendered UI assertions.
+  test.setTimeout(60000);
   await isolate(context);
   await staffSession(context, 'admin');
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto('/admin');
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
+  await page.goto('/admin', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
+  await page.getByRole('navigation', { name: 'CMS navigation' }).getByRole('button', { name: 'Staff management' }).click();
   await expect(page.getByText('editor@example.test')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: info.outputPath('admin-mobile.png'), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: info.outputPath('admin-desktop.png'), fullPage: true });
-  await expect(page.getByRole('heading', { name: 'Staff audit' })).toBeVisible();
+  await page.getByRole('navigation', { name: 'CMS navigation' }).getByRole('button', { name: 'Audit logs' }).click();
+  await expect(page.getByRole('heading', { name: 'Audit logs' })).toBeVisible();
 });
 
 test('staff portal redirects unauthenticated visitors to staff-only sign in', async ({ page, context }) => {
@@ -68,7 +72,7 @@ test('staff sign in requires MFA before opening the portal and stores no browser
   await expect(page.getByLabel('Authenticator code')).toBeVisible();
   await page.getByLabel('Authenticator code').fill('123456');
   await page.getByRole('button', { name: 'Continue' }).click();
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /auth|token/i.test(key)))).toEqual([]);
   expect(legacyRequests).toEqual([]);
 });
@@ -80,7 +84,7 @@ test('admin can perform a versioned role change only after entering a fresh MFA 
   await context.route('**/api/staff?*', route => route.fulfill({ json: {
     data: [{ ...target, role }], pagination: { page: 1, limit: 50, hasMore: false },
   } }));
-  await page.goto('/admin');
+  await page.goto('/admin?tab=staff');
   await expect(page.getByText('editor@example.test')).toBeVisible();
   await page.getByRole('button', { name: 'Make admin' }).click();
   await expect(page.getByRole('status')).toContainText('Enter a current authenticator code');
@@ -104,9 +108,118 @@ test('editors cannot view staff administration or audit', async ({ page, context
   await staffSession(context, 'editor');
   const adminRequests: string[] = [];
   page.on('request', request => { if (/\/api\/staff(?:\?|\/audit)/.test(request.url())) adminRequests.push(request.url()); });
-  await page.goto('/admin');
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Staff access' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Staff audit' })).toHaveCount(0);
+  await page.goto('/admin?tab=audit');
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Staff management' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Audit logs' })).toHaveCount(0);
   expect(adminRequests).toEqual([]);
+});
+
+test('restored dashboard uses real page-scoped counts and only supported modules on desktop and mobile', async ({ page, context }, info) => {
+  await isolate(context);
+  await staffSession(context, 'admin');
+  const photo = { id: 'synthetic-photo', title: 'Synthetic published photo', kind: 'photo', mime: 'image/png', bytes: 1024, description: '', alt_text: 'Test image', category_id: 'photo-category', processing: 'ready', publication: 'published', version: 1 };
+  const documentAsset = { ...photo, id: 'synthetic-document', title: 'Synthetic draft document', kind: 'document', mime: 'application/pdf', publication: 'draft' };
+  await context.route('**/api/admin/media?page=*', route => route.fulfill({ json: { data: [photo, documentAsset], hasMore: true } }));
+  const requests: string[] = [];
+  page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/')) requests.push(request.url()); });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/admin');
+  await expect(page.getByText('Synthetic published photo')).toBeVisible();
+  for (const label of ['Photos on this page', 'Documents on this page', 'Published on this page']) {
+    await expect(page.getByText(label).locator('..').locator('dd')).toHaveText('1');
+  }
+  const navigation = page.getByRole('navigation', { name: 'CMS navigation' });
+  await expect(navigation.getByRole('button')).toHaveCount(5);
+  await expect(page.locator('a[href*="eservices"]')).toHaveCount(0);
+  await expect(navigation.getByRole('button', { name: 'Dashboard overview' })).toHaveAttribute('aria-current', 'page');
+  await page.screenshot({ path: info.outputPath('cms-dashboard-desktop.png'), fullPage: true });
+  await page.getByRole('button', { name: 'Collapse sidebar' }).click();
+  await navigation.getByRole('button', { name: 'Photos', exact: true }).focus();
+  await expect(navigation.getByRole('button', { name: 'Photos', exact: true })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: 'Photos', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: photo.title })).toBeVisible();
+  await expect(page.getByRole('heading', { name: documentAsset.title })).toHaveCount(0);
+  await navigation.getByRole('button', { name: 'Documents', exact: true }).click();
+  await expect(page.getByRole('heading', { name: documentAsset.title })).toBeVisible();
+  await expect(page.getByRole('heading', { name: photo.title })).toHaveCount(0);
+  await navigation.getByRole('button', { name: 'Dashboard overview' }).click();
+  await page.setViewportSize({ width: 320, height: 812 });
+  await expect(page.getByRole('heading', { name: 'Dashboard overview' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  for (const label of ['Photos', 'Documents', 'Staff management', 'Audit logs']) {
+    const button = navigation.getByRole('button', { name: label, exact: true });
+    await expect(button).toBeVisible();
+    expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  }
+  await page.screenshot({ path: info.outputPath('cms-dashboard-mobile.png'), fullPage: true });
+  expect(requests.filter(url => /\/api\/(?:admin\/content|admin\/users|admin\/reports|payments|applications)/.test(url))).toEqual([]);
+  expect(requests.filter(url => /\/api\/staff(?:\?|\/audit)/.test(url))).toEqual([]);
+});
+
+test('staff pages preserve returned pagination and do not fetch audit data until selected', async ({ page, context }) => {
+  await isolate(context);
+  await staffSession(context, 'admin');
+  await context.route('**/api/staff?*', route => {
+    const current = Number(new URL(route.request().url()).searchParams.get('page'));
+    return route.fulfill({ json: { data: [{ ...target, email: current === 1 ? target.email : 'second-page@example.test' }], pagination: { page: current, limit: 50, hasMore: current === 1 } } });
+  });
+  const auditRequests: string[] = [];
+  page.on('request', request => { if (new URL(request.url()).pathname === '/api/staff/audit') auditRequests.push(request.url()); });
+  await page.goto('/admin?tab=staff');
+  await expect(page.getByText(target.email)).toBeVisible();
+  await page.getByRole('button', { name: 'Next staff page' }).click();
+  await expect(page.getByText('second-page@example.test')).toBeVisible();
+  await expect(page.getByText('Staff page 2', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Next staff page' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Previous staff page' })).toBeEnabled();
+  expect(auditRequests).toEqual([]);
+});
+
+test('audit error is visible and refresh recovers without inventing records', async ({ page, context }) => {
+  await isolate(context);
+  await staffSession(context, 'admin');
+  let unavailable = true;
+  await context.route('**/api/staff/audit?*', route => route.fulfill(unavailable
+    ? { status: 503, json: { message: 'Synthetic unavailable response' } }
+    : { json: { data: events, pagination: { page: 1, limit: 50, hasMore: false } } }));
+  await page.goto('/admin?tab=audit');
+  await expect(page.getByRole('alert')).toContainText('Could not load staff access records');
+  await expect(page.getByText('mfa.success', { exact: true })).toHaveCount(0);
+  unavailable = false;
+  await page.getByRole('button', { name: 'Refresh records' }).click();
+  await expect(page.getByText('mfa.success', { exact: true })).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+test('sign out preserves protected login routing', async ({ page, context }) => {
+  await isolate(context);
+  let signedIn = true;
+  await context.route('**/api/staff/me', route => route.fulfill(signedIn
+    ? { json: admin } : { status: 401, json: {} }));
+  await context.route('**/api/staff-auth/sign-out', route => {
+    signedIn = false;
+    return route.fulfill({ json: { success: true } });
+  });
+  await page.goto('/admin');
+  await expect(page.getByRole('heading', { name: 'Dashboard overview' })).toBeVisible();
+  await page.getByRole('button', { name: 'Sign out', exact: true }).click();
+  await expect(page).toHaveURL(/\/staff\/login$/);
+  await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+});
+
+test('CMS routes use their own shell while public pages retain public navigation and footer', async ({ page, context }) => {
+  await isolate(context);
+  await staffSession(context, 'admin');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/admin', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toHaveCount(0);
+  await expect(page.locator('a[href*="eservices"]')).toHaveCount(0);
+  await page.goto('/missing-page', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'Municipal Resource Missing' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Home', exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('contentinfo')).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'CMS navigation' })).toHaveCount(0);
 });

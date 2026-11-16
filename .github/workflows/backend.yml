@@ -43,6 +43,8 @@ jobs:
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix backend run test:auth:db
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          powershell -NoProfile -File backend/test/run-staging-database-tests.ps1 -TestFile first-admin-bootstrap.integration.cjs
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix backend run test:media:db
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix backend run test:content:db

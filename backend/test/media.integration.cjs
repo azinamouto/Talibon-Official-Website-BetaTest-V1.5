@@ -1,7 +1,7 @@
 require('reflect-metadata');
 const { test,before,after }=require('node:test');
 const assert=require('node:assert/strict');
-const { randomUUID }=require('node:crypto');
+const { randomUUID,randomBytes,createHmac }=require('node:crypto');
 const fs=require('node:fs'); const path=require('node:path');
 const { Pool }=require('pg'); const sharp=require('sharp');
 const { PDFDocument, PDFName, PDFString }=require('pdf-lib');
@@ -15,7 +15,7 @@ const { StaffGuard }=require('../dist/authentication/staff.guard');
 const { NestFactory,APP_GUARD }=require('@nestjs/core'); const { Module }=require('@nestjs/common');
 const { configureApp }=require('../dist/configure-app');
 const runtime=require('../dist/authentication/runtime');
-let owner,db,repo,service,app,base,admin,editor,input;
+let owner,db,repo,service,app,base,admin,editor,input,mediaRuntimeUrl;
 const objects=new Map(); let failWrite=false, failPrivacy=false;
 const store={verifyPrivate:async()=>{if(failPrivacy)throw new Error();},put:async(k,v)=>{if(failWrite)throw new Error();objects.set(k,Buffer.from(v));},read:async k=>{if(!objects.has(k))throw new Error();return objects.get(k);}};
 async function actor(role) {
@@ -42,6 +42,7 @@ before(async()=>{
   }
   await owner.query('CREATE ROLE r2_media_runtime LOGIN INHERIT'); await owner.query('GRANT talgov_runtime TO r2_media_runtime');
   const runtimeUrl=new URL(url);runtimeUrl.username='r2_media_runtime'; db=new PostgresDatabase(runtimeConnectionConfig(runtimeUrl.toString(),true));repo=new MediaRepository(db);
+  mediaRuntimeUrl=runtimeUrl.toString();
   admin=await actor('admin');editor=await actor('editor');
   const sourceId=randomUUID(),categoryId=randomUUID();
   await owner.query("INSERT INTO app.content_sources(id,reference,owner,sha256,approved,reviewed_at) VALUES($1,'Synthetic test source','test',$2,true,now())",[sourceId,'a'.repeat(64)]);
@@ -180,4 +181,64 @@ test('two API instances enforce one atomic shared rate budget under concurrency'
  const results=await Promise.allSettled(Array.from({length:125},(_,i)=>(i%2?a:b).canActivate(ctx)));
  assert.equal(results.filter(x=>x.status==='fulfilled').length,120);
  assert.equal(results.filter(x=>x.status==='rejected'&&x.reason.getStatus()===429).length,5);
+});
+
+test('real password and TOTP cookies authorize private media lifecycle and durable actor audits',async()=>{
+ const {BetterAuthAdapter}=require('../dist/authentication/better-auth.adapter');
+ const {hashPassword}=require('better-auth/crypto');
+ let mailCalls=0;
+ const adapter=new BetterAuthAdapter({databaseUrl:mediaRuntimeUrl,origin:base,secret:randomBytes(48).toString('base64url'),
+  localTest:true,passwordRecoveryEnabled:false,sendResetPassword:async()=>{mailCalls++;}});
+ const original=runtime.staffAuthentication;runtime.staffAuthentication=()=>adapter;
+ function totp(secret) {
+  const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let bits='';
+  for(const char of secret.replace(/=+$/,'')) bits+=alphabet.indexOf(char.toUpperCase()).toString(2).padStart(5,'0');
+  const bytes=[];for(let i=0;i+8<=bits.length;i+=8)bytes.push(parseInt(bits.slice(i,i+8),2));
+  const counter=Buffer.alloc(8);counter.writeBigUInt64BE(BigInt(Math.floor(Date.now()/30000)));
+  const digest=createHmac('sha1',Buffer.from(bytes)).update(counter).digest(),offset=digest[19]&15;
+  return ((digest.readUInt32BE(offset)&0x7fffffff)%1000000).toString().padStart(6,'0');
+ }
+ try {
+  const categoryId=randomUUID();
+  await owner.query("INSERT INTO app.media_categories(id,kind,slug,title,approved) VALUES($1,'document',$2,'Synthetic cookie qualification',true)",[categoryId,'cookie-'+randomUUID()]);
+  const pdf=await PDFDocument.create();pdf.addPage();const bytes=Buffer.from(await pdf.save());
+  for(const role of ['editor','admin']) {
+   const subject=randomUUID(),email=subject+'@example.invalid',password=randomBytes(24).toString('base64url');
+   await owner.query('INSERT INTO r2_auth_user(id,name,email,"emailVerified","createdAt","updatedAt") VALUES($1,$2,$3,true,now(),now())',[subject,'Synthetic media login',email]);
+   await owner.query('INSERT INTO r2_auth_account(id,"accountId","providerId","userId",password,"createdAt","updatedAt") VALUES($1,$2,$3,$2,$4,now(),now())',[randomUUID(),subject,'credential',await hashPassword(password)]);
+   const {rows:[staff]}=await owner.query("INSERT INTO app.staff_accounts(provider,subject,role,active) VALUES('better-auth',$1,$2,true) RETURNING id",[subject,role]);
+   const jar=new Map();
+   async function send(path,body) {
+    const response=await fetch(base+path,{method:body===undefined?'GET':'POST',headers:{origin:base,'content-type':'application/json',
+     cookie:[...jar].map(([k,v])=>k+'='+v).join('; ')},body:body===undefined?undefined:JSON.stringify(body)});
+    for(const cookie of response.headers.getSetCookie()){const pair=cookie.split(';')[0],i=pair.indexOf('=');jar.set(pair.slice(0,i),pair.slice(i+1));}
+    return response;
+   }
+   const payload={...upload(),categoryId,filename:'cookie-proof.pdf',mime:'application/pdf',base64:bytes.toString('base64')};
+   assert.equal((await send('/api/staff-auth/sign-in/email',{email,password})).status,200);
+   assert.equal((await send('/api/admin/media/uploads',payload)).status,401,'password alone cannot upload');
+   const setup=await send('/api/staff-auth/two-factor/enable',{password});assert.equal(setup.status,200);
+   const secret=new URL((await setup.json()).totpURI).searchParams.get('secret');
+   assert.equal((await send('/api/staff-auth/two-factor/verify-totp',{code:totp(secret)})).status,200);
+   assert.equal((await send('/api/staff-auth/request-password-reset',{email})).status,503);
+   const created=await send('/api/admin/media/uploads',payload);assert.equal(created.status,201);let row=await created.json();
+   assert.equal((await fetch(base+`/api/media/${row.id}/download`)).status,404);
+   assert.equal((await fetch(base+`/api/admin/media/${row.id}/download`)).status,401);
+   const privateDownload=await send(`/api/admin/media/${row.id}/download`);assert.equal(privateDownload.status,200);
+   assert.equal(privateDownload.headers.get('cache-control'),'private, no-store');
+   assert.deepEqual(Buffer.from(await privateDownload.arrayBuffer()),bytes);
+   const published=await send(`/api/admin/media/${row.id}/publish`,{version:row.version});assert.equal(published.status,201);row=await published.json();
+   const publicDownload=await fetch(base+`/api/media/${row.id}/download`);assert.equal(publicDownload.status,200);
+   assert.deepEqual(Buffer.from(await publicDownload.arrayBuffer()),bytes);
+   const unpublished=await send(`/api/admin/media/${row.id}/unpublish`,{version:row.version});assert.equal(unpublished.status,201);row=await unpublished.json();
+   assert.equal((await fetch(base+`/api/media/${row.id}/download`)).status,404);
+   assert.equal((await send(`/api/admin/media/${row.id}/delete`,{version:row.version})).status,role==='admin'?201:403);
+   const audits=(await owner.query('SELECT action,actor_id FROM app.audit_events WHERE resource_id=$1',[row.id])).rows;
+   for(const action of ['media.create','media.publish','media.unpublish']) assert.ok(audits.some(event=>event.action===action&&event.actor_id===staff.id));
+   assert.equal(audits.some(event=>event.action==='media.delete'),role==='admin');
+   assert.equal((await send('/api/staff-auth/sign-out',{})).status,200);
+   assert.equal((await send(`/api/admin/media/${row.id}/download`)).status,401);
+  }
+  assert.equal(mailCalls,0);
+ } finally {runtime.staffAuthentication=original;await adapter.close();}
 });

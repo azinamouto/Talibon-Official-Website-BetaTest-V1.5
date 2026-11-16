@@ -2,7 +2,8 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const net = require('node:net');
 const { Client } = require('pg');
-const { connectionConfig, PostgresDatabase, ChannelBoundClient } = require('../dist/database/postgres.js');
+const { connectionConfig, runtimeConnectionConfig, PostgresDatabase, ChannelBoundClient } = require('../dist/database/postgres.js');
+const { classifyFailure } = require('../dist/security/failure-diagnostics');
 const base = 'postgresql://synthetic:synthetic@db.example/test';
 const safe = e => e.message === 'Database operation unavailable' && !e.cause;
 
@@ -43,6 +44,7 @@ test('binding guard refuses non-PLUS, unverified TLS, MD5, cleartext and invalid
   c._handleAuthSASL({ mechanisms: ['SCRAM-SHA-256-PLUS'] });
   c._handleAuthMD5Password(); c._handleAuthCleartextPassword();
   assert.equal(errors.length, 4); assert.ok(errors.every(safe));
+  assert.deepEqual(errors.map(e => classifyFailure(e).reason), ['channel_binding_rejected', 'tls_failure', 'channel_binding_rejected', 'channel_binding_rejected']);
   c.connection.stream.authorized = true;
   c.saslSession = { mechanism: 'SCRAM-SHA-256-PLUS', message: 'SASLResponse', serverSignature: 'expected' };
   c._handleAuthSASLFinal({ data: 'v=d3Jvbmc=' });
@@ -62,4 +64,16 @@ test('connection refusal and premature disconnect fail safely without logs or cr
     }
   } finally { [console.error, console.warn, console.log] = originals; if (server.listening) server.close(); }
   assert.deepEqual(messages, []);
+});
+
+test('runtime-role predicate and query denial retain distinct internal metadata', async () => {
+  const config = runtimeConnectionConfig('postgres://synthetic@localhost/test', true);
+  let calls = 0;
+  await assert.rejects(config.onConnect({ query: async () => { calls++; return { rows: [{ safe: false }] }; } }), e =>
+    e.code === 'forbidden' && classifyFailure(e).phase === 'runtime_role' && classifyFailure(e).reason === 'runtime_role_guard_rejected');
+  assert.equal(calls, 1);
+  await assert.rejects(config.onConnect({ query: async () => { throw Object.assign(Error('synthetic private detail'), { code: '42501' }); } }), e =>
+    e.code === 'unavailable' && classifyFailure(e).phase === 'runtime_role' && classifyFailure(e).reason === 'permission_denied');
+  await config.onConnect({ query: async () => ({ rows: [{ safe: true }] }) });
+  assert.throws(() => connectionConfig('invalid'), e => e.code === 'invalid' && classifyFailure(e).reason === 'invalid_configuration');
 });

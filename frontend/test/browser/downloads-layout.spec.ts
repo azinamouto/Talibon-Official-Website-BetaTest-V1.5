@@ -14,7 +14,9 @@ for(const width of [375,768,1280,1920]) test(`Downloadables layout, icon contras
     data:new URL(route.request().url()).searchParams.get('kind')==='document'?documents:[], hasMore:false,
   }}));
   await page.goto('/downloads');
-  await page.addStyleTag({content:'[style*="opacity"]{opacity:1!important}[style*="transform"]{transform:none!important}'});
+  // CSS transition-all can interpolate Motion's staggered transforms even with
+  // reduced motion and transform:none. Measure the final layout without transitions.
+  await page.addStyleTag({content:'[style*="opacity"]{opacity:1!important}[style*="transform"]{transform:none!important}[style*="opacity"],[style*="transform"]{transition:none!important}'});
   const heading=page.getByRole('heading',{name:'DOWNLOADABLES',exact:true});
   await expect(heading).toBeVisible();
   const cards=page.locator('[class*="_card_"]').filter({has:page.getByRole('link',{name:'Download File',exact:true})});

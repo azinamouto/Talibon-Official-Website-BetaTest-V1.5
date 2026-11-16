@@ -28,6 +28,10 @@ export default function Footer() {
                 <img 
                   src="http://talibon.gov.ph/wp-content/uploads/2025/09/Talibon-Official-Seal-v4-2003-to-2023-.png" 
                   alt="Official Seal" 
+                  loading="lazy"
+                  decoding="async"
+                  width="48"
+                  height="48"
                   className="w-full h-auto"
                   referrerPolicy="no-referrer"
                 />

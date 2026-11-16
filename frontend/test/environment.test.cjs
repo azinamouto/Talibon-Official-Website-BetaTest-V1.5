@@ -24,6 +24,12 @@ test('rejects private values exposed with the Vite public prefix', () => {
   }
 });
 
+test('allows only the exact boolean email-recovery flag without allowing related secrets', () => {
+  for (const value of ['true', 'false']) assert.equal(validateEnvironment({ VITE_STAFF_PASSWORD_RECOVERY_ENABLED: value }).isValid, true);
+  for (const value of ['', 'False', '0', false, true]) assert.equal(validateEnvironment({ VITE_STAFF_PASSWORD_RECOVERY_ENABLED: value }).isValid, false);
+  assert.equal(validateEnvironment({ VITE_STAFF_PASSWORD_RECOVERY_ENABLED_SECRET: 'sensitive-marker' }).isValid, false);
+});
+
 test('active frontend source and manifests exclude Supabase', () => {
   const sourceFiles = directory => fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
     const fullPath = path.join(directory, entry.name);

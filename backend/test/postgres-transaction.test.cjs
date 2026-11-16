@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const { PostgresDatabase } = require('../dist/database/postgres');
+const { classifyFailure } = require('../dist/security/failure-diagnostics');
 
 function fixture(fail = () => false) {
   const db = new PostgresDatabase({});
@@ -42,7 +43,8 @@ test('setup failure never invokes work; failed rollback discards connection', as
   const f = fixture(() => true);
   let work = 0;
   try {
-    await assert.rejects(f.db.transaction(async () => { work++; }), { message: 'Database operation unavailable' });
+    await assert.rejects(f.db.transaction(async () => { work++; }), e => e.message === 'Database operation unavailable' &&
+      classifyFailure(e).phase === 'transaction_setup' && classifyFailure(e).transaction_outcome === 'unknown');
     assert.equal(work, 0);
     assert.equal(f.queries.at(-1).sql, 'ROLLBACK');
     assert.deepEqual(f.released, [true]);
@@ -55,10 +57,32 @@ test('ambiguous commit is never retried, including read-only callbacks', async (
     let calls = 0;
     try {
       await assert.rejects(f.db.transaction(async tx => { calls++; return tx.query('SELECT 1'); }, readOnly),
-        { message: 'Database operation unavailable' });
+        e => e.message === 'Database operation unavailable' && classifyFailure(e).phase === 'commit' && classifyFailure(e).transaction_outcome === 'unknown');
       assert.equal(calls, 1);
       assert.equal(f.queries.filter(q => q.sql === 'COMMIT').length, 1);
       assert.equal(f.queries.at(-1).sql, 'ROLLBACK');
+    } finally { await f.db.close(); }
+  }
+});
+
+test('checkout, query and callback failures preserve original phase and transaction outcome', async () => {
+  for (const stage of ['connect', 'query', 'work']) {
+    const f = fixture(sql => stage === 'query' && sql === 'SELECT 1');
+    if (stage === 'connect') f.db.pool.connect = async () => { throw Object.assign(Error('private'), { code: 'ETIMEDOUT' }); };
+    try {
+      await assert.rejects(f.db.transaction(async tx => {
+        if (stage === 'work') throw new TypeError('private callback');
+        return tx.query('SELECT 1');
+      }), e => {
+        const details = classifyFailure(e);
+        assert.equal(e.message, 'Database operation unavailable');
+        assert.equal(details.phase, stage);
+        assert.equal(details.reason, stage === 'connect' ? 'connection_timeout' : stage === 'query' ? 'connection_failure' : 'unexpected_exception');
+        assert.equal(details.transaction_outcome, stage === 'connect' ? 'not_started' : 'rollback_confirmed');
+        return true;
+      });
+      assert.equal(f.queries.filter(q => q.sql === 'ROLLBACK').length, stage === 'connect' ? 0 : 1);
+      assert.equal(f.queries.filter(q => q.sql === 'COMMIT').length, 0);
     } finally { await f.db.close(); }
   }
 });

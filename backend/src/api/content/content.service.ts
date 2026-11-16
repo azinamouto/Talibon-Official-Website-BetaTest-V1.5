@@ -1,10 +1,10 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, Inject, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { PublicContentService } from '../../database/public-content.service';
 import { ListContentDto } from './content.dto';
 import { ContentInput, ContentRepository } from '../../database/content.repository';
 import { StaffPrincipal } from '../../authentication/authentication.adapter';
-import { PostgresDatabase } from '../../database/postgres';
-import { PUBLIC_KINDS } from '../../database/public-content.service';
+import { DatabaseError, PostgresDatabase, runtimeConnectionConfig } from '../../database/postgres';
+import { MUNICIPAL_KINDS } from './municipal-schema';
 import { GoneException } from '@nestjs/common';
 import { MEDIA_CMS_ONLY_MESSAGE } from '../../security/deferred-routes.middleware';
 export const CONTENT = {
@@ -21,22 +21,42 @@ export class ContentService {
   private database: PostgresDatabase;
   private repository: ContentRepository;
   configure(repository: ContentRepository) { this.repository = repository; }
-  private async run<T>(_work: (repo: ContentRepository) => Promise<T>): Promise<T> {
-    // Defense in depth for direct service calls. Public reads use PublicContentService.
-    throw new GoneException(MEDIA_CMS_ONLY_MESSAGE);
+  private async run<T>(work: (repo: ContentRepository) => Promise<T>): Promise<T> {
+    try {
+      if (!this.repository) {
+        this.database=new PostgresDatabase(runtimeConnectionConfig(process.env.DATABASE_URL));
+        this.repository=new ContentRepository(this.database);
+      }
+      return await work(this.repository);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      if (error instanceof DatabaseError) {
+        if (error.code==='conflict') throw new ConflictException('Content changed or is not a draft. Refresh before retrying.');
+        if (error.code==='forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');
+        if (error.code==='invalid') throw new BadRequestException('Check metadata, source approval and published attachments.');
+      }
+      throw new ServiceUnavailableException('Content operation could not be confirmed. Refresh before retrying.');
+    }
   }
   private kind(kind: string) {
     const table = CONTENT[kind as ContentKind]?.table ?? kind;
-    if (!(PUBLIC_KINDS as readonly string[]).includes(table)) throw new BadRequestException('Unknown content kind.');
+    if (!(MUNICIPAL_KINDS as readonly string[]).includes(table)) throw new GoneException(MEDIA_CMS_ONLY_MESSAGE);
     return table;
   }
   manage(kind: string, query: ListContentDto, actor: StaffPrincipal, id?: string) {
     const table=this.kind(kind);
-    return this.run(repo=>repo.list(actor,table,query.page,query.limit,id));
+    return this.run(repo=>repo.list(actor,table,query.page,query.limit,id,query));
   }
   save(kind: string, input: Partial<ContentInput>, actor: StaffPrincipal, request: string, id?: string) {
     const table=this.kind(kind);
     return this.run(repo=>repo.save(actor,table,input,request,id));
+  }
+  dashboard(actor: StaffPrincipal) { return this.run(repo=>repo.dashboard(actor)); }
+  sources(actor: StaffPrincipal) { return this.run(repo=>repo.sources(actor)); }
+  createSource(input: {reference:string;owner:string;sha256:string},actor: StaffPrincipal,request: string) { return this.run(repo=>repo.createSource(actor,input,request)); }
+  approveSource(id: string,actor: StaffPrincipal,request: string) { return this.run(repo=>repo.approveSource(actor,id,request)); }
+  change(kind: string,id: string,version: number,action: string,actor: StaffPrincipal,request: string) {
+    const table=this.kind(kind); return this.run(repo=>repo.change(actor,table,id,version,action,request));
   }
   async onModuleDestroy() { await this.database?.close(); }
   private legacyView(row: Record<string, any>, kind: ContentKind) {

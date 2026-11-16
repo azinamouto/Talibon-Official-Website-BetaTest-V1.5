@@ -14,6 +14,10 @@ export class CacheControlMiddleware implements NestMiddleware {
       /\/manage(?:\/|$)/.test(path) ||
       !!req.headers.cookie ||
       path.startsWith("/api/media") ||
+      path === '/api/about/departments' ||
+      // Publication/approval can be withdrawn at any time. Never serve a cached
+      // municipal record after an unpublish, archive or provenance revocation.
+      /^\/api\/(public-content|news|pages|tourism|transparency|executive|legislative|search)(?:\/|$)/.test(path) ||
       path.startsWith("/api/health") ||
       !!req.headers.authorization ||
       path.startsWith("/api/payments") ||

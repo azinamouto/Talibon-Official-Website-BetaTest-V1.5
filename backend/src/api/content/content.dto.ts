@@ -5,6 +5,8 @@ import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 // Unlike IsOptional, this does not let explicit null bypass validation.
 const Optional = () => ValidateIf((_object, value) => value !== undefined);
 export class ListContentDto {
+  @ApiPropertyOptional({ enum: ['draft','published','archived'] })
+  @Optional() @IsIn(['draft','published','archived']) publication?: string;
   @ApiPropertyOptional({ default: 1, minimum: 1, maximum: 10000 })
   @Optional() @Type(() => Number) @IsInt() @Min(1) @Max(10000)
   page = 1;
@@ -22,7 +24,7 @@ export class ListContentDto {
   slug?: string;
 
   @ApiPropertyOptional({ enum: ['ARTICLE', 'UPDATE', 'ANNOUNCEMENT', 'ADVISORY', 'NOTICE'], description: 'News only.' })
-  @Optional() @IsIn(['ARTICLE', 'UPDATE', 'ANNOUNCEMENT', 'ADVISORY', 'NOTICE'])
+  @Optional() @IsString() @Length(1,100)
   category?: string;
 
   @ApiPropertyOptional({ description: 'Services only; department ID.' })
@@ -109,8 +111,13 @@ export class CmsContentDto {
   @ApiProperty() @IsString() @Length(1,160) @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) slug: string;
   @ApiProperty() @IsUUID() sourceId: string;
   @ApiProperty({ type: 'object', additionalProperties: true }) @IsObject() body: Record<string, unknown>;
-  @ApiPropertyOptional({ enum: ['draft','published','archived'] }) @Optional() @IsIn(['draft','published','archived']) status?: string;
+  @ApiPropertyOptional({ enum: ['draft'], description: 'Publishing uses the separate versioned publish action.' }) @Optional() @IsIn(['draft']) status?: string;
 }
 export class CmsUpdateDto extends PartialType(CmsContentDto, { skipNullProperties: false }) {
   @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
+}
+export class ContentSourceDto {
+  @ApiProperty() @IsString() @Length(1,1000) @Matches(/\S/) reference: string;
+  @ApiProperty() @IsString() @Length(1,200) @Matches(/\S/) owner: string;
+  @ApiProperty() @IsString() @Matches(/^[a-f0-9]{64}$/) sha256: string;
 }

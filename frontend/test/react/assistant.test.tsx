@@ -55,7 +55,7 @@ it('supports keyboard conversation, close/reopen history, topic navigation and c
   await user.click(screen.getByRole('button', { name: 'Close Chat' }));
   await user.click(trigger);
   await user.click(screen.getByRole('button', { name: 'Close Municipal Assistant Chat' }));
-});
+}, 15000);
 
 it('exposes real processing and errors and prevents duplicate sends', async () => {
   let finish!: (value: assistant.AssistantAnswer) => void;

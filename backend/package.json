@@ -18,7 +18,7 @@
     "notifications:work": "node dist/api/notifications/email-worker.js",
     "dev": "npm run build:tsc && node dist/main.js",
     "build": "npm run build:tsc",
-    "build:tsc": "node scripts/clean-build.cjs && tsc -p tsconfig.json && node --input-type=commonjs -e \"require('node:fs').writeFileSync('dist/package.json', JSON.stringify({type:'commonjs'}))\"",
+    "build:tsc": "node scripts/clean-build.cjs && tsc -p tsconfig.json && node scripts/finalize-build.cjs",
     "build:serverless": "npm run build:tsc",
     "start": "node dist/main.js",
     "start:dev": "npm run dev",

@@ -16,7 +16,7 @@ for (const viewport of [
 ]) {
   test(`${viewport.path} has a dedicated, accessible layout at ${viewport.width}px`, async ({ page }, info) => {
     await page.setViewportSize(viewport);
-    await page.goto(viewport.path);
+    await page.goto(viewport.path, { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { name: 'Staff sign in', exact: true })).toBeVisible();
     await expect(page.getByRole('banner')).toHaveCount(1);
     await expect(page.getByRole('contentinfo')).toHaveCount(1);
@@ -42,7 +42,7 @@ for (const viewport of [
 test('keyboard users can reveal and conceal a password without submitting or losing its value', async ({ page }) => {
   const signIns: unknown[] = [];
   page.on('request', request => { if (request.url().endsWith('/api/staff-auth/sign-in/email')) signIns.push(request.postDataJSON()); });
-  await page.goto('/staff/login');
+  await page.goto('/staff/login', { waitUntil: 'domcontentloaded' });
   await page.getByRole('link', { name: 'Back to public website' }).focus();
   await page.keyboard.press('Tab');
   const email = page.getByLabel('Staff email');
@@ -66,19 +66,17 @@ test('keyboard users can reveal and conceal a password without submitting or los
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Forgot password?' })).toBeFocused();
+  await expect(page.getByRole('link', { name: 'Privacy policy', exact: true })).toBeFocused();
+  await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
   expect(signIns).toEqual([]);
-  await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: 'Reset your password' })).toBeFocused();
-  await page.getByRole('button', { name: 'Back to sign in', exact: true }).click();
-  await expect(password).toHaveValue('');
+  await expect(password).toHaveValue('synthetic-password');
   await expect(password).toHaveAttribute('type', 'password');
 });
 
 test('required fields and email validation prevent invalid authentication requests', async ({ page }) => {
   const signIns: string[] = [];
   page.on('request', request => { if (request.url().endsWith('/api/staff-auth/sign-in/email')) signIns.push(request.url()); });
-  await page.goto('/staff/login');
+  await page.goto('/staff/login', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page.getByLabel('Staff email')).toBeFocused();
   expect(await page.getByLabel('Staff email').evaluate(input => (input as HTMLInputElement).validity.valueMissing)).toBe(true);
@@ -98,7 +96,7 @@ test('pending authentication disables form actions and exposes the existing fail
     await pending;
     await route.fulfill({ status: 401, json: { message: 'Unauthorized' } });
   });
-  await page.goto('/staff/login');
+  await page.goto('/staff/login', { waitUntil: 'domcontentloaded' });
   await page.getByLabel('Staff email').fill('staff@example.test');
   await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
@@ -107,38 +105,14 @@ test('pending authentication disables form actions and exposes the existing fail
   await expect(page.getByLabel('Staff email')).toBeDisabled();
   await expect(page.getByLabel('Password', { exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Show password' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Forgot password?' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
   finish();
   await expect(page.getByRole('alert')).toHaveText('Sign in and complete MFA to continue.');
   await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeEnabled();
   await expect(page.getByLabel('Password', { exact: true })).toHaveValue('synthetic-password');
   expect(signIns).toEqual([{ email: 'staff@example.test', password: 'synthetic-password' }]);
-  await page.getByRole('button', { name: 'Forgot password?' }).click();
-  await expect(page.getByRole('alert')).toHaveCount(0);
-});
-
-test('password reset keeps fragment handling, the minimum length, and the reset payload', async ({ page, context }) => {
-  const resets: unknown[] = [];
-  await context.route('**/api/staff-auth/reset-password', route => {
-    resets.push(route.request().postDataJSON());
-    return route.fulfill({ json: { success: true } });
-  });
-  await page.goto('/staff/login#token=synthetic-reset-token');
-  await expect(page).toHaveURL(/\/staff\/login$/);
-  const password = page.getByLabel('New password', { exact: true });
-  await expect(password).toHaveAttribute('minlength', '14');
-  await expect(password).toHaveAttribute('autocomplete', 'new-password');
-  await expect(password).toHaveAccessibleDescription('Use at least 14 characters.');
-  await password.fill('short');
-  await page.getByRole('button', { name: 'Reset password', exact: true }).click();
-  expect(resets).toEqual([]);
-  await password.fill('synthetic-new-passphrase');
-  await page.getByRole('button', { name: 'Show password' }).click();
-  await page.getByRole('button', { name: 'Reset password', exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Password reset. Sign in and complete MFA.');
-  await expect(page.getByLabel('Password', { exact: true })).toHaveValue('');
-  await expect(page.getByLabel('Password', { exact: true })).toHaveAttribute('type', 'password');
-  expect(resets).toEqual([{ token: 'synthetic-reset-token', newPassword: 'synthetic-new-passphrase' }]);
+  await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
+  await expect(page.getByRole('alert')).toBeVisible();
 });
 
 test('authenticator enrollment displays the unchanged setup key and recovery codes', async ({ page, context }, info) => {
@@ -148,7 +122,7 @@ test('authenticator enrollment displays the unchanged setup key and recovery cod
     expect(route.request().postDataJSON()).toEqual({ password: 'synthetic-password' });
     return route.fulfill({ json: { totpURI: 'otpauth://totp/Test?secret=SYNTHETICSETUPKEY', backupCodes: ['recovery-one', 'recovery-two'] } });
   });
-  await page.goto('/staff/login');
+  await page.goto('/staff/login', { waitUntil: 'domcontentloaded' });
   await page.getByLabel('Staff email').fill('staff@example.test');
   await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
   await page.getByRole('button', { name: 'Show password' }).click();
@@ -177,7 +151,7 @@ test('recovery-code sign in preserves verification and the final staff redirect'
     verified = true;
     return route.fulfill({ json: { success: true } });
   });
-  await page.goto('/staff/login');
+  await page.goto('/staff/login', { waitUntil: 'domcontentloaded' });
   await page.getByLabel('Staff email').fill('staff@example.test');
   await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
@@ -187,5 +161,5 @@ test('recovery-code sign in preserves verification and the final staff redirect'
   await page.getByLabel('Recovery code', { exact: true }).fill('synthetic-recovery-code');
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(page).toHaveURL(/\/admin$/);
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
 });

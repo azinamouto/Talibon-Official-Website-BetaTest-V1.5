@@ -1,75 +1,72 @@
-import { GadImsHeader } from "./components/GadImsSystem";
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import React from "react";
+import React, { lazy } from "react";
 import { createBrowserRouter, createRoutesFromElements, RouterProvider, Outlet, Route, Navigate } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import ContentPage from "./pages/ContentPage";
-import OfficialSealPage from "./pages/OfficialSealPage";
-import EnactedOrdinancesPage from "./pages/EnactedOrdinancesPage";
-import ResolutionsPage from "./pages/ResolutionsPage";
-import CitizenCharterPage from "./pages/CitizenCharterPage";
-import FullDisclosurePage from "./pages/FullDisclosurePage";
-import OrganizationalChartPage from "./pages/OrganizationalChartPage";
-import ServicesPage from "./pages/ServicesPage";
-import PublicPageDetail from "./pages/PublicPageDetail";
-import SearchPage from "./pages/SearchPage";
-import NewsCategoryPage from "./pages/NewsCategoryPage";
-import NewsDetailPage from "./pages/NewsDetailPage";
-import DownloadsPage from "./pages/DownloadsPage";
-import ServiceInfoPage from "./pages/ServiceInfoPage";
-import Login from "./pages/StaffLogin";
-import StaffPortal from "./pages/StaffPortal";
 import EServicesPage from "./pages/EServicesPage";
 import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
-import TourismMapPage from "./pages/TourismMapPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ScrollToTop from "./components/ScrollToTop";
-import { aboutApi, executiveApi, legislativeApi, transparencyApi, tourismApi, formsApi } from "./services/api";
+import { aboutApi, executiveApi, legislativeApi, transparencyApi, tourismApi } from "./services/api";
 import { StaffAuthProvider as AuthProvider } from "./contexts/StaffAuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 // Modular Page/View Components
-import ProfileView from "./pages/about/ProfileView";
-import HistoryView from "./pages/about/HistoryView";
-import MayorsView from "./pages/about/MayorsView";
-import DepartmentsView from "./pages/about/DepartmentsView";
-import BarangaysView from "./pages/about/BarangaysView";
-import DemographicsView from "./pages/about/DemographicsView";
-import LocationView from "./pages/about/LocationView";
-import VicinityView from "./pages/about/VicinityView";
-import IndustryView from "./pages/about/IndustryView";
-import GovernmentServicesView from "./pages/about/GovernmentServicesView";
-import HymnView from "./pages/about/HymnView";
-
-import ExecutiveMandateView from "./pages/executive/MandateView";
-import VisionMissionView from "./pages/executive/VisionMissionView";
-import DirectoryView from "./pages/executive/DirectoryView";
-import directoryStyles from "./pages/executive/DirectoryView.module.css";
-import GadImsView from "./pages/executive/GadImsView";
-
-import LegislativeMandateView from "./pages/legislative/MandateView";
-import LegislativeStructureView from "./pages/legislative/StructureView";
-
-import InfrastructureView from "./pages/transparency/InfrastructureView";
-import FinanceView from "./pages/transparency/FinanceView";
-import OrdersView from "./pages/transparency/OrdersView";
-import BudgetView from "./pages/transparency/BudgetView";
-import BiddingsView from "./pages/transparency/BiddingsView";
-
-import SpotsView from "./pages/tourism/SpotsView";
-import FestivitiesView from "./pages/tourism/FestivitiesView";
-import DelicaciesView from "./pages/tourism/DelicaciesView";
-
 
 import BaseLayout from "./layouts/BaseLayout";
 import { UIProvider } from "./contexts/UIContext";
 import { AppConfigProvider } from "./contexts/AppConfigContext";
 import ErrorPage from "./pages/ErrorPage";
+import directoryStyles from "./pages/executive/DirectoryView.module.css";
+
+// Secondary pages load on demand; homepage and access/error states stay eager.
+const OfficialSealPage = lazy(() => import("./pages/OfficialSealPage"));
+const EnactedOrdinancesPage = lazy(() => import("./pages/EnactedOrdinancesPage"));
+const ResolutionsPage = lazy(() => import("./pages/ResolutionsPage"));
+const CitizenCharterPage = lazy(() => import("./pages/CitizenCharterPage"));
+const FullDisclosurePage = lazy(() => import("./pages/FullDisclosurePage"));
+const OrganizationalChartPage = lazy(() => import("./pages/OrganizationalChartPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const PublicPageDetail = lazy(() => import("./pages/PublicPageDetail"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const NewsCategoryPage = lazy(() => import("./pages/NewsCategoryPage"));
+const NewsDetailPage = lazy(() => import("./pages/NewsDetailPage"));
+const DownloadsPage = lazy(() => import("./pages/DownloadsPage"));
+const ServiceInfoPage = lazy(() => import("./pages/ServiceInfoPage"));
+const Login = lazy(() => import("./pages/StaffLogin"));
+const StaffPortal = lazy(() => import("./pages/StaffPortal"));
+const TourismMapPage = lazy(() => import("./pages/TourismMapPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const ProfileView = lazy(() => import("./pages/about/ProfileView"));
+const HistoryView = lazy(() => import("./pages/about/HistoryView"));
+const MayorsView = lazy(() => import("./pages/about/MayorsView"));
+const DepartmentsView = lazy(() => import("./pages/about/DepartmentsView"));
+const BarangaysView = lazy(() => import("./pages/about/BarangaysView"));
+const DemographicsView = lazy(() => import("./pages/about/DemographicsView"));
+const LocationView = lazy(() => import("./pages/about/LocationView"));
+const VicinityView = lazy(() => import("./pages/about/VicinityView"));
+const IndustryView = lazy(() => import("./pages/about/IndustryView"));
+const GovernmentServicesView = lazy(() => import("./pages/about/GovernmentServicesView"));
+const HymnView = lazy(() => import("./pages/about/HymnView"));
+const ExecutiveMandateView = lazy(() => import("./pages/executive/MandateView"));
+const VisionMissionView = lazy(() => import("./pages/executive/VisionMissionView"));
+const DirectoryView = lazy(() => import("./pages/executive/DirectoryView"));
+const GadImsView = lazy(() => import("./pages/executive/GadImsView"));
+const LegislativeMandateView = lazy(() => import("./pages/legislative/MandateView"));
+const LegislativeStructureView = lazy(() => import("./pages/legislative/StructureView"));
+const InfrastructureView = lazy(() => import("./pages/transparency/InfrastructureView"));
+const FinanceView = lazy(() => import("./pages/transparency/FinanceView"));
+const OrdersView = lazy(() => import("./pages/transparency/OrdersView"));
+const BudgetView = lazy(() => import("./pages/transparency/BudgetView"));
+const BiddingsView = lazy(() => import("./pages/transparency/BiddingsView"));
+const SpotsView = lazy(() => import("./pages/tourism/SpotsView"));
+const FestivitiesView = lazy(() => import("./pages/tourism/FestivitiesView"));
+const DelicaciesView = lazy(() => import("./pages/tourism/DelicaciesView"));
+const GadImsHeader = lazy(() => import("./components/GadImsSystem").then(module => ({ default: module.GadImsHeader })));
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route element={<><ScrollToTop /><Outlet /></>}>

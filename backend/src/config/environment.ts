@@ -1,13 +1,24 @@
 import { connectionConfig } from '../database/postgres';
+import { staffOriginConfiguration } from './staff-origin';
+/** Email recovery is opt-in; this flag never controls login, MFA or authorization. */
+export function staffPasswordRecoveryEnabled(value: unknown, key = 'STAFF_PASSWORD_RECOVERY_ENABLED'): boolean {
+  if (value === undefined || value === 'false') return false;
+  if (value === 'true') return true;
+  throw new Error(`Invalid environment variable: ${key}`);
+}
 /** Validate configuration without printing secret values. */
 export function validateEnvironment(env: Record<string, unknown>) {
   const fail = (key: string): never => { throw new Error(`Invalid or missing environment variable: ${key}`); };
   for (const key of Object.keys(env)) {
-    if (/^VITE_.*(SECRET|SERVICE_ROLE|PRIVATE|PASSWORD|ADMIN)/i.test(key)) {
+    if (key === 'VITE_STAFF_PASSWORD_RECOVERY_ENABLED') {
+      staffPasswordRecoveryEnabled(env[key], key);
+    } else if (/^VITE_.*(SECRET|SERVICE_ROLE|PRIVATE|PASSWORD|ADMIN|DATABASE)/i.test(key)) {
       throw new Error('Private environment variables must not use the VITE_ prefix.');
     }
   }
   const mode = env.NODE_ENV ?? 'development';
+  const recoveryEnabled = staffPasswordRecoveryEnabled(env.STAFF_PASSWORD_RECOVERY_ENABLED);
+  const staffOrigin = staffOriginConfiguration(env);
   if (!['development', 'test', 'production'].includes(String(mode))) fail('NODE_ENV');
   const port = Number(env.PORT ?? 3000);
   if (!Number.isInteger(port) || port < 1 || port > 65535) fail('PORT');
@@ -19,7 +30,8 @@ export function validateEnvironment(env: Record<string, unknown>) {
     } catch { fail('ALLOWED_ORIGINS'); }
   }
   if (mode === 'production') {
-    for (const key of ['DATABASE_URL', 'STAFF_AUTH_DATABASE_URL', 'STAFF_AUTH_SECRET', 'STAFF_AUTH_ORIGIN', 'MEDIA_DATABASE_URL', 'MEDIA_BUCKET', 'AWS_ENDPOINT_URL_S3', 'AWS_REGION', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'STAFF_MAIL_API_KEY', 'STAFF_MAIL_FROM']) {
+    const mailKeys = recoveryEnabled ? ['STAFF_MAIL_API_KEY', 'STAFF_MAIL_FROM'] : [];
+    for (const key of ['DATABASE_URL', 'STAFF_AUTH_DATABASE_URL', 'STAFF_AUTH_SECRET', 'STAFF_AUTH_ORIGIN', 'MEDIA_DATABASE_URL', 'MEDIA_BUCKET', 'AWS_ENDPOINT_URL_S3', 'AWS_REGION', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', ...mailKeys]) {
       if (!String(env[key] ?? '').trim()) fail(key);
     }
     for (const key of ['DATABASE_URL','STAFF_AUTH_DATABASE_URL','MEDIA_DATABASE_URL']) {
@@ -35,5 +47,7 @@ export function validateEnvironment(env: Record<string, unknown>) {
     if (!origins.length) fail('ALLOWED_ORIGINS');
     if (env.ENABLE_MOCK_DATA === 'true') fail('ENABLE_MOCK_DATA');
   }
-  return { ...env, NODE_ENV: mode, PORT: port };
+  return { ...env, NODE_ENV: mode, PORT: port,
+    ...(staffOrigin.deploymentScoped ? { STAFF_AUTH_ORIGIN: staffOrigin.origin,
+      ALLOWED_ORIGINS: staffOrigin.trustedOrigins.join(',') } : {}) };
 }

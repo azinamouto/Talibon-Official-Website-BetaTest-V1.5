@@ -90,18 +90,19 @@ before(async()=>{
     await migrate(admin);
   }
   const origin='http://127.0.0.1';
-  const options={databaseUrl:url,origin,secret:randomBytes(48).toString('base64url'),localTest:!hosted,sendResetPassword:async input=>{resetDelivery=input;}};
+  const options={databaseUrl:url,origin,secret:randomBytes(48).toString('base64url'),localTest:!hosted,
+    passwordRecoveryEnabled:process.env.R2_AUTH_TEST_RECOVERY_ENABLED !== 'false',sendResetPassword:async input=>{resetDelivery=input;}};
   const file=path.join(__dirname,'../database/auth/001_provider.sql');
   if(!fs.existsSync(file)) {
     assert.equal(hosted,false,'Schema generation is local only');
-    const plan=await getMigrations(providerOptions(admin,options));
+    const plan=await getMigrations(await providerOptions(admin,options));
     fs.writeFileSync(file,'-- Generated from pinned Better Auth 1.7.15; reviewed and applied only by isolated qualification.\n'+await plan.compileMigrations());
   }
   if(!fixture) {
     await admin.query(fs.readFileSync(file,'utf8'));
     await admin.query(fs.readFileSync(path.join(__dirname,'../database/auth/002_staff_policy.sql'),'utf8'));
   }
-  const schemaPlan=await getMigrations(providerOptions(admin,options));
+  const schemaPlan=await getMigrations(await providerOptions(admin,options));
   assert.equal(schemaPlan.toBeCreated.length,0);
   assert.equal(schemaPlan.toBeAdded.length,0);
   if(hosted) runtime=process.env.R2_AUTH_RUNTIME_URL;
@@ -129,15 +130,59 @@ test('closed registration, forbidden provider endpoints, cross-origin and defaul
   assert.equal((await client.request('/api/staff-auth/sign-in/email',{}, {origin:'null'})).status,403);
   assert.equal((await client.request('/api/staff-auth/sign-in/email',{}, {'content-type':'text/plain'})).status,403);
   assert.equal((await client.request('/api/staff/me')).status,401);
-  const result=await adapter.auth.handler(new Request(base+'/api/staff-auth/sign-up/email',{method:'POST',headers:{origin:base,'content-type':'application/json'},body:JSON.stringify({email:'closed@example.invalid',password:randomBytes(24).toString('hex'),name:'Synthetic'})}));
+  const result=await (await adapter.auth).handler(new Request(base+'/api/staff-auth/sign-up/email',{method:'POST',headers:{origin:base,'content-type':'application/json'},body:JSON.stringify({email:'closed@example.invalid',password:randomBytes(24).toString('hex'),name:'Synthetic'})}));
   assert.equal(result.ok,false,'provider itself rejects signup');
+});
+test('MFA audit failure cannot authorize the existing password-only session',async()=>{
+  const account=await seed();const client=browser();
+  assert.equal((await client.request('/api/staff-auth/sign-in/email',{email:account.email,password:account.password})).status,200);
+  const setup=await client.request('/api/staff-auth/two-factor/enable',{password:account.password});
+  assert.equal(setup.status,200);
+  const secret=new URL(setup.body.totpURI).searchParams.get('secret');
+  await admin.query("ALTER TABLE app.staff_auth_audit ADD CONSTRAINT phase4_fail_mfa_audit CHECK (action <> 'two-factor.verify-totp.success') NOT VALID");
+  try {
+    assert.equal((await client.request('/api/staff-auth/two-factor/verify-totp',{code:totp(secret)})).status,503);
+    assert.equal((await client.request('/api/staff/me')).status,401);
+    const assurance=await admin.query('SELECT 1 FROM app.staff_session_assurance a JOIN r2_auth_session s ON s.id=a.session_id WHERE s."userId"=$1',[account.subject]);
+    assert.equal(assurance.rowCount,0);
+  } finally { await admin.query('ALTER TABLE app.staff_auth_audit DROP CONSTRAINT phase4_fail_mfa_audit'); }
+});
+test('MFA step-up audit failure cannot refresh administrator authorization',async()=>{
+  const administrator=await seed('admin');const client=await enroll(administrator);const target=await seed();
+  await admin.query("UPDATE app.staff_session_assurance SET verified_at=now()-interval '6 minutes' WHERE session_id IN (SELECT id FROM r2_auth_session WHERE \"userId\"=$1)",[administrator.subject]);
+  const before=(await admin.query('SELECT verified_at FROM app.staff_session_assurance a JOIN r2_auth_session s ON s.id=a.session_id WHERE s."userId"=$1',[administrator.subject])).rows[0].verified_at;
+  assert.equal((await client.request(`/api/staff/${target.id}/revoke`,{})).status,403);
+  await admin.query("ALTER TABLE app.staff_auth_audit ADD CONSTRAINT phase4_fail_mfa_audit CHECK (action <> 'two-factor.verify-totp.success') NOT VALID");
+  try {
+    assert.equal((await client.request('/api/staff-auth/two-factor/verify-totp',{code:totp(administrator.secret,Date.now()+30000)})).status,503);
+    assert.equal((await client.request(`/api/staff/${target.id}/revoke`,{})).status,403);
+    const after=(await admin.query('SELECT verified_at FROM app.staff_session_assurance a JOIN r2_auth_session s ON s.id=a.session_id WHERE s."userId"=$1',[administrator.subject])).rows[0].verified_at;
+    assert.equal(after.getTime(),before.getTime());
+  } finally {
+    await admin.query('ALTER TABLE app.staff_auth_audit DROP CONSTRAINT phase4_fail_mfa_audit');
+    // This regression's synthetic administrator must not change the later
+    // last-administrator fixture. Retain its sessions and audit evidence.
+    await admin.query('UPDATE app.staff_accounts SET active=false WHERE id=$1',[administrator.id]);
+  }
+});
+test('backup-code audit failure grants no new assurance and preserves one-use enforcement',async()=>{
+  const account=await seed();await enroll(account);const client=await challenge(account);
+  const before=(await admin.query('SELECT session_id FROM app.staff_session_assurance a JOIN r2_auth_session s ON s.id=a.session_id WHERE s."userId"=$1',[account.subject])).rows.map(row=>row.session_id);
+  await admin.query("ALTER TABLE app.staff_auth_audit ADD CONSTRAINT phase4_fail_mfa_audit CHECK (action <> 'two-factor.verify-backup-code.success') NOT VALID");
+  try {
+    assert.equal((await client.request('/api/staff-auth/two-factor/verify-backup-code',{code:account.backup[0]})).status,503);
+    assert.equal((await client.request('/api/staff/me')).status,401);
+    const extra=await admin.query('SELECT 1 FROM app.staff_session_assurance a JOIN r2_auth_session s ON s.id=a.session_id WHERE s."userId"=$1 AND NOT a.session_id=ANY($2::text[])',[account.subject,before]);
+    assert.equal(extra.rowCount,0);
+  } finally { await admin.query('ALTER TABLE app.staff_auth_audit DROP CONSTRAINT phase4_fail_mfa_audit'); }
+  assert.equal((await client.request('/api/staff-auth/two-factor/verify-backup-code',{code:account.backup[0]})).status,401);
 });
 test('real password login, TOTP enrollment, MFA proof, secure response, editor escalation denial',async()=>{
   const account=await seed(); const client=await enroll(account);
   const factor=await admin.query('SELECT secret,"backupCodes" FROM r2_auth_two_factor WHERE "userId"=$1',[account.subject]);
   assert.notEqual(factor.rows[0].secret,account.secret);
   assert.equal(factor.rows[0].backupCodes.includes(account.backup[0]),false);
-  const secure=providerOptions(adapter.pool,{databaseUrl:'postgresql://localhost/test',origin:'https://staff.example.invalid',
+  const secure=await providerOptions(adapter.pool,{databaseUrl:'postgresql://localhost/test',origin:'https://staff.example.invalid',
     secret:randomBytes(48).toString('base64url'),sendResetPassword:async()=>{}});
   assert.equal(secure.advanced.useSecureCookies,true);
   assert.deepEqual(secure.advanced.defaultCookieAttributes,{httpOnly:true,sameSite:'strict',path:'/'});
@@ -164,7 +209,21 @@ test('MFA challenge, wrong factor, backup recovery single use, session revocatio
   const cookies=[...client.jar];await client.request('/api/staff-auth/sign-out',{});client.jar.clear();for(const pair of cookies)client.jar.set(...pair);
   assert.equal((await client.request('/api/staff/me')).status,401);
 });
-test('password recovery consumes token, revokes sessions, preserves mandatory MFA',async()=>{
+test('disabled email recovery rejects direct requests while staff login and MFA remain required',
+  {skip:process.env.R2_AUTH_TEST_RECOVERY_ENABLED !== 'false'},async()=>{
+  const account=await seed();const client=await enroll(account);const anonymous=browser();
+  for(const endpoint of ['request-password-reset','reset-password']) {
+    const result=await anonymous.request('/api/staff-auth/'+endpoint,endpoint==='request-password-reset'
+      ? {email:account.email} : {token:'synthetic-expired-token',newPassword:randomBytes(24).toString('base64url')});
+    assert.equal(result.status,503);
+    assert.deepEqual(result.body,{message:'Password recovery is temporarily unavailable.'});
+  }
+  assert.equal(resetDelivery,undefined);
+  assert.equal((await client.request('/api/staff/me')).status,200);
+  assert.equal((await anonymous.request('/api/staff/me')).status,401);
+});
+test('password recovery consumes token, revokes sessions, preserves mandatory MFA',
+  {skip:process.env.R2_AUTH_TEST_RECOVERY_ENABLED === 'false'},async()=>{
   const account=await seed();const client=await enroll(account);const anonymous=browser();
   const known=await anonymous.request('/api/staff-auth/request-password-reset',{email:account.email});
   const absent=await anonymous.request('/api/staff-auth/request-password-reset',{email:'absent@example.invalid'});

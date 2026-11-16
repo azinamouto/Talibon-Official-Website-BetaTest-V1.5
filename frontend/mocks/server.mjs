@@ -50,5 +50,7 @@ export function createMockServer() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  createMockServer().listen(4010, '127.0.0.1', () => console.log('Contract example API: http://127.0.0.1:4010'));
+  const port = Number(process.env.CONTRACT_MOCK_PORT || 4010);
+  if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid local mock port');
+  createMockServer().listen(port, '127.0.0.1', () => console.log(`Contract example API: http://127.0.0.1:${port}`));
 }

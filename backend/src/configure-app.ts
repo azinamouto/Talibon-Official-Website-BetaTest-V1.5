@@ -1,15 +1,20 @@
 import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import express from 'express';
-import { DEFERRED_MESSAGE, deferredRoutes } from './security/deferred-routes.middleware';
+import { DEFERRED_MESSAGE, MEDIA_CMS_ONLY_MESSAGE, deferredRoutes } from './security/deferred-routes.middleware';
 import { randomUUID } from 'node:crypto';
 import { SecurityHeadersMiddleware } from './security/security-headers.middleware';
 import { requestMetrics } from './security/request-metrics.middleware';
 import { staffAuthentication } from './authentication/runtime';
+import { emitStaffAuthFailure } from './security/failure-diagnostics';
+import { staffOriginConfiguration } from './config/staff-origin';
 
 export function isAllowedOrigin(origin: string | undefined): boolean {
+  let config: ReturnType<typeof staffOriginConfiguration>;
+  try { config = staffOriginConfiguration(process.env); } catch { return false; }
   if (!origin) return true;
-  const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').map(value => value.trim());
+  const allowed = config.deploymentScoped ? config.trustedOrigins
+    : (process.env.ALLOWED_ORIGINS || '').split(',').map(value => value.trim());
   if (allowed.includes(origin)) return true;
   if (process.env.NODE_ENV === 'production') return false;
   try {
@@ -43,8 +48,7 @@ export function configureApp(app: INestApplication) {
       const auth = staffAuthentication();
       if (auth) return void auth.handle(req, res, next);
     } catch (error) {
-      const code = error instanceof Error ? error.name : 'unknown';
-      console.error(`[staff-auth] middleware initialization failed code=${code}`);
+      emitStaffAuthFailure(error, 'initialization');
     }
     res.setHeader('Cache-Control', 'no-store');
     res.status(503).json({ message: 'Staff authentication is unavailable.' });
@@ -75,7 +79,7 @@ export function configureApp(app: INestApplication) {
 export function createApiDocument(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('Talibon Municipal API')
-    .setDescription('Send X-API-Version: 1 (default when omitted). Legacy auth and administration routes return 410. Staff operations use Better Auth HttpOnly cookies and MFA. Errors contain success, statusCode, error, message, timestamp and requestId.')
+    .setDescription('Send X-API-Version: 1 (default when omitted). CMS authoring is limited to photos and documents. Text-content authoring, legacy auth and administration routes return 410. Staff operations use Better Auth HttpOnly cookies and MFA. Errors contain success, statusCode, error, message, timestamp and requestId.')
     .setVersion('1')
     .addBearerAuth()
     .addCookieAuth('__Secure-talgov-staff.session_token', { type: 'apiKey', in: 'cookie' }, 'staffCookie')
@@ -105,6 +109,27 @@ export function createApiDocument(app: INestApplication) {
       document.paths[path][method] = { ...previous, parameters, deprecated: true,
         summary: 'Retired in R2', description: 'All methods in deferred namespaces return 410 before parsing or authentication. Historical request schemas do not enable this operation.',
         responses: { '410': { description: DEFERRED_MESSAGE } } };
+    }
+  }
+  const mediaOnlyPaths: Record<string, string[]> = {
+    '/api/admin/content/{kind}': ['get','post'],
+    '/api/admin/content/{kind}/{id}/edit': ['post'],
+    '/api/admin/content/{kind}/{id}/delete': ['post'],
+  };
+  for (const [path, methods] of Object.entries(mediaOnlyPaths)) {
+    document.paths[path] ??= {};
+    for (const method of methods) document.paths[path][method] ??= {
+      parameters: [...path.matchAll(/\{([^}]+)\}/g)].map(match => ({ name: match[1], in: 'path', required: true, schema: { type: 'string' } })),
+    };
+  }
+  for (const [path, operations] of Object.entries(document.paths)) {
+    for (const method of Object.keys(operations).filter(key => ['get','head','post','put','patch','delete','options'].includes(key))) {
+      if (!/^\/api\/admin\/content(?:\/|$)/.test(path) &&
+        !(/^\/api\/(news|pages|services)(?:\/|$)/.test(path) &&
+          (!['get','head'].includes(method) || /^\/api\/(news|pages|services)\/manage(?:\/|$)/.test(path)))) continue;
+      operations[method] = { ...operations[method], deprecated: true, security: [], summary: 'Text-content authoring deferred in R2',
+        description: 'Returns 410 before parsing, authentication or database work. Public informational reads remain available.',
+        responses: { '410': { description: MEDIA_CMS_ONLY_MESSAGE } } };
     }
   }
   const staffSecurity = [{ staffCookie: [] }];

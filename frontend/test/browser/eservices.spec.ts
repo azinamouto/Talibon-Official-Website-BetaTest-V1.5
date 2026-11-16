@@ -21,7 +21,8 @@ for (const url of routes) test(`R2 entry point cannot submit, track or confirm: 
   page.on('request', request => {
     if (/\/api\/(forms|payments|notifications|auth\/signup)|xendit|\/rest\/v1\/(certificate_requests|payments|form_email_jobs)|\/functions\/v1\/send-status-email/.test(request.url())) transactions.push(request.url());
   });
-  await page.goto(url);
+  // External resources are deliberately blocked by this fixture; validate rendered UI.
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Electronic Services', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'To Be Implemented', exact: true })).toBeVisible();
   await expect(page.getByText('The Municipality of Talibon is preparing to introduce online services to make government transactions more accessible and convenient.', { exact: true })).toBeVisible();
@@ -33,7 +34,7 @@ for (const url of routes) test(`R2 entry point cannot submit, track or confirm: 
 });
 for (const width of [375, 1280]) test(`anonymous navigation and placeholder fit at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 850 });
-  await page.goto('/');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.locator('a[href="/e-services"]').filter({ visible: true }).first().click();
   await expect(page).toHaveURL(/\/e-services$/);
   await expect(page.getByRole('heading', { name: 'To Be Implemented', exact: true })).toBeVisible();
@@ -41,14 +42,14 @@ for (const width of [375, 1280]) test(`anonymous navigation and placeholder fit 
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /auth|token|request|submission|payment/i.test(key)))).toEqual([]);
   await page.screenshot({ path: `test-results-eservices/r2-placeholder-${width}.png`, fullPage: true });
 });
-test('registration controls are absent while staff login and recovery remain', async ({ page }) => {
-  await page.goto('/login?view=register');
+test('registration remains absent and email recovery remains disabled', async ({ page }) => {
+  await page.goto('/login?view=register', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Staff sign in', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create account' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Forgot password?' }).click();
-  await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Forgot password.*temporarily unavailable/i })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('Staff email')).toBeVisible();
-  await expect(page.getByLabel('Password', { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
 });
 
 test('payments remain unavailable by default', async ({ page }) => {
@@ -56,7 +57,7 @@ test('payments remain unavailable by default', async ({ page }) => {
   page.on('request', request => {
     if (/\/api\/payments|checkout|xendit/i.test(request.url())) paymentRequests.push(request.url());
   });
-  await page.goto('/payment/success?status=paid&submission=synthetic&receipt=forged');
+  await page.goto('/payment/success?status=paid&submission=synthetic&receipt=forged', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Electronic Services', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'To Be Implemented', exact: true })).toBeVisible();
   await expect(page.getByText(/Payment successful|Payment confirmed|Official receipt/)).toHaveCount(0);

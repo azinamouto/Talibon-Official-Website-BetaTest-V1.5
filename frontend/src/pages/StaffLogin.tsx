@@ -52,8 +52,9 @@ export default function StaffLogin() {
   const navigate = useNavigate();
   const { refresh } = useStaffAuth();
   const { appName } = useAppConfig();
+  const recoveryEnabled = import.meta.env.VITE_STAFF_PASSWORD_RECOVERY_ENABLED === 'true';
   const [token] = useState(() => { const value = new URLSearchParams(location.hash.slice(1)).get('token') || ''; if (value) history.replaceState(null, '', location.pathname); return value; });
-  const [view, setView] = useState<LoginView>(token ? 'reset' : 'login');
+  const [view, setView] = useState<LoginView>(token && recoveryEnabled ? 'reset' : 'login');
   const [email, setEmail] = useState(''); const [password, setPassword] = useState('');
   const [code, setCode] = useState(''); const [message, setMessage] = useState('');
   const [messageTone, setMessageTone] = useState<'error' | 'success'>('error');
@@ -73,7 +74,11 @@ export default function StaffLogin() {
   }, [view]);
 
   async function submit(event: FormEvent) {
-    event.preventDefault(); setBusy(true); setMessage(''); setMessageTone('error');
+    event.preventDefault();
+    if ((view === 'forgot' || view === 'reset') && !recoveryEnabled) {
+      setMessageTone('error'); setMessage('Password recovery is temporarily unavailable.'); return;
+    }
+    setBusy(true); setMessage(''); setMessageTone('error');
     try {
       if (view === 'login') {
         const result = await staffRequest<{ mfaRequired?: boolean }>('/api/staff-auth/sign-in/email', { email, password });
@@ -152,11 +157,16 @@ export default function StaffLogin() {
         </form>
 
         <div className={styles.secondaryActions}>
-          {!['forgot', 'reset'].includes(view) && <Button variant="secondary" disabled={busy} className={styles.textButton} onClick={() => { setView('forgot'); setEnrollment(null); setPassword(''); setMessage(''); }}>Forgot password?</Button>}
+          {!['forgot', 'reset'].includes(view) && <Button variant="secondary" disabled={busy || !recoveryEnabled}
+            aria-describedby={!recoveryEnabled ? 'recovery-unavailable' : undefined} tabIndex={!recoveryEnabled ? -1 : undefined}
+            className={styles.textButton} onClick={() => { setView('forgot'); setEnrollment(null); setPassword(''); setMessage(''); }}>
+            {recoveryEnabled ? 'Forgot password?' : 'Forgot password? (temporarily unavailable)'}
+          </Button>}
           {view === 'mfa' && !enrollment && <Button variant="secondary" disabled={busy} className={styles.textButton} onClick={() => { setView('backup'); setMessage(''); }}>Use recovery code</Button>}
           {view !== 'login' && <Button variant="secondary" disabled={busy} className={styles.textButton} onClick={() => { setView('login'); setEnrollment(null); setCode(''); setMessage(''); }}>Back to sign in</Button>}
         </div>
 
+        {!recoveryEnabled && <p id="recovery-unavailable" className={styles.hint}>Password recovery is temporarily unavailable.</p>}
         <p className={styles.securityNote}>For approved administrators and editors. Multi-factor authentication is required.</p>
       </div>
     </main>

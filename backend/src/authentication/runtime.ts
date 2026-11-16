@@ -1,4 +1,6 @@
 import { BetterAuthAdapter } from './better-auth.adapter';
+import { staffPasswordRecoveryEnabled } from '../config/environment';
+import { staffOriginConfiguration } from '../config/staff-origin';
 import type { AuthenticationAdapter } from './authentication.adapter';
 
 let adapter: AuthenticationAdapter;
@@ -6,8 +8,9 @@ export function staffAuthentication(): AuthenticationAdapter | undefined {
   if (!process.env.STAFF_AUTH_DATABASE_URL) return undefined;
   adapter ??= new BetterAuthAdapter({
     databaseUrl: process.env.STAFF_AUTH_DATABASE_URL,
-    origin: process.env.STAFF_AUTH_ORIGIN,
+    origin: staffOriginConfiguration(process.env).origin,
     secret: process.env.STAFF_AUTH_SECRET || '',
+    passwordRecoveryEnabled: staffPasswordRecoveryEnabled(process.env.STAFF_PASSWORD_RECOVERY_ENABLED),
     sendResetPassword: async ({ email, url }) => {
       if (!process.env.STAFF_MAIL_API_KEY || !process.env.STAFF_MAIL_FROM) throw new Error('Recovery delivery is not configured');
       const response = await fetch('https://api.resend.com/emails', {

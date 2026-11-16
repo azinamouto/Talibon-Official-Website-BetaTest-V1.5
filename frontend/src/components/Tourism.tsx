@@ -57,6 +57,8 @@ export default function Tourism() {
                   <img 
                     src={spot.image} 
                     alt={spot.title} 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     referrerPolicy="no-referrer"
                   />

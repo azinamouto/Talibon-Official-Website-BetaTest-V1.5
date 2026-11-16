@@ -24,6 +24,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Disposable PostgreSQL shutdown failed; scratch files retained.' }
   }
   $env:R2_AUTH_TEST_URL=$saved
-  Remove-Item -LiteralPath $scratch -Recurse -Force
+  $resolvedScratch = [IO.Path]::GetFullPath($scratch)
+  $tempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
+  if (-not $resolvedScratch.StartsWith($tempRoot, [StringComparison]::OrdinalIgnoreCase) -or
+      [IO.Path]::GetFileName($resolvedScratch) -notmatch '^talgov-auth-[0-9a-f]{32}$') {
+    throw 'Unsafe disposable database cleanup path; files retained.'
+  }
+  Remove-Item -LiteralPath $resolvedScratch -Recurse -Force
   Write-Output 'Disposable authentication database stopped and its synthetic files removed.'
 }

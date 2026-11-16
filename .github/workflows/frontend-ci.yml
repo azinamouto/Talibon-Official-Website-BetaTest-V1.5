@@ -8,7 +8,7 @@ jobs:
   frontend:
     # Playwright 1.58 does not support Ubuntu 26.04 (now ubuntu-latest).
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: frontend
@@ -29,6 +29,12 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+      - name: Required staff and MFA browser coverage
+        run: npm run test:admin
+      - name: Required public API contract browser coverage
+        run: npm run test:contracts:browser
+      - name: Required staff login and recovery browser coverage
+        run: npm run test:login
       - run: npm run test:eservices
       - run: npm run test:eservices -- --grep "payments remain unavailable by default"
         env:

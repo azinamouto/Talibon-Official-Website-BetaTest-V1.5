@@ -1,23 +1,27 @@
 import { clientIp } from '../security/client-ip';
-import { Pool } from 'pg';
+import { Pool, type PoolClient } from 'pg';
 import { createHash, randomUUID } from 'node:crypto';
 import { runtimeConnectionConfig } from '../database/postgres';
+import { emitStaffAuthFailure } from '../security/failure-diagnostics';
 import type { AuthenticationAdapter, StaffPrincipal } from './authentication.adapter';
 import type { Request, Response, NextFunction } from 'express';
 
-// Node 22.16 supports this ESM package through require; pin and integration-test upgrades.
-const { betterAuth } = require('better-auth');
-const { twoFactor } = require('better-auth/plugins');
+// Keep native import() outside the CommonJS TypeScript transform.
+const { loadBetterAuth } = require('./better-auth-loader.cjs');
 
 export interface StaffAuthOptions {
   databaseUrl: string;
   origin: string;
   secret: string;
   localTest?: boolean;
-  sendResetPassword: (input: { email: string; url: string }) => Promise<void>;
+  passwordRecoveryEnabled?: boolean;
+  sendResetPassword?: (input: { email: string; url: string }) => Promise<void>;
 }
 
-export function providerOptions(pool: Pool, options: StaffAuthOptions) {
+export async function providerOptions(pool: Pool, options: StaffAuthOptions) {
+  const sendResetPassword = options.passwordRecoveryEnabled === true ? options.sendResetPassword : undefined;
+  if (options.passwordRecoveryEnabled === true && !sendResetPassword) throw new Error('Recovery delivery is not configured');
+  const { twoFactor } = await loadBetterAuth();
   return {
     appName: 'TAL.GOV Staff', baseURL: options.origin, basePath: '/api/staff-auth',
     secret: options.secret, database: pool, trustedOrigins: [options.origin],
@@ -26,8 +30,8 @@ export function providerOptions(pool: Pool, options: StaffAuthOptions) {
       enabled: true, disableSignUp: true, requireEmailVerification: true,
       minPasswordLength: 14, maxPasswordLength: 128,
       resetPasswordTokenExpiresIn: 900, revokeSessionsOnPasswordReset: true,
-      sendResetPassword: async ({ user, token }) => options.sendResetPassword({ email: user.email,
-        url: `${options.origin}/staff/login#token=${encodeURIComponent(token)}` }),
+      sendResetPassword: sendResetPassword ? async ({ user, token }) => sendResetPassword({ email: user.email,
+        url: `${options.origin}/staff/login#token=${encodeURIComponent(token)}` }) : undefined,
     },
     user: { modelName: 'r2_auth_user', changeEmail: { enabled: false }, deleteUser: { enabled: false } },
     account: { modelName: 'r2_auth_account', accountLinking: { enabled: false } },
@@ -70,7 +74,11 @@ function staffPage(query: Request['query']) {
 
 export class BetterAuthAdapter implements AuthenticationAdapter {
   readonly pool: Pool;
-  readonly auth;
+  private authPromise;
+  get auth() {
+    return this.authPromise ??= loadBetterAuth().then(async ({ betterAuth }) =>
+      betterAuth(await providerOptions(this.pool, this.options)));
+  }
   constructor(private readonly options: StaffAuthOptions) {
     const origin = new URL(options.origin);
     if (origin.origin !== options.origin || (origin.protocol !== 'https:' &&
@@ -78,14 +86,34 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
       options.secret.length < 43) throw new Error('Invalid staff authentication configuration');
     const loopback = ['127.0.0.1','localhost'].includes(new URL(options.databaseUrl).hostname);
     this.pool = new Pool(runtimeConnectionConfig(options.databaseUrl, options.localTest && loopback));
-    this.pool.on('error', (error: Error & { code?: string }) => {
-      console.error(`[staff-auth] database pool error code=${error.code || error.name}`);
-    });
-    this.auth = betterAuth(providerOptions(this.pool, options));
+    this.pool.on('error', error => emitStaffAuthFailure(error, 'pool'));
+  }
+
+  private async transaction<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
+    const client = await this.pool.connect();
+    let discard = false;
+    let committing = false;
+    const onError = () => { discard = true; };
+    client.on('error', onError);
+    try {
+      await client.query('BEGIN');
+      const result = await work(client);
+      committing = true;
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      // A failed commit has an unknown outcome; never retry or reuse that client.
+      if (committing) discard = true;
+      try { await client.query('ROLLBACK'); } catch { discard = true; }
+      throw error;
+    } finally {
+      client.removeListener('error', onError);
+      client.release(discard);
+    }
   }
 
   async verify(headers: Headers): Promise<StaffPrincipal | null> {
-    const session = await this.auth.api.getSession({ headers, query: { disableCookieCache: true } });
+    const session = await (await this.auth).api.getSession({ headers, query: { disableCookieCache: true } });
     if (!session) return null;
     const result = await this.pool.query(`SELECT a.id,a.subject,a.role,s.id AS "sessionId"
       FROM app.staff_accounts a JOIN r2_auth_user u ON u.id=a.subject
@@ -102,6 +130,10 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('Referrer-Policy', 'no-referrer');
     try {
+      if (this.options.passwordRecoveryEnabled !== true &&
+          ['/api/staff-auth/request-password-reset', '/api/staff-auth/reset-password'].includes(req.path)) {
+        res.status(503).json({ message: 'Password recovery is temporarily unavailable.' }); return;
+      }
       const headers = new Headers({ cookie: req.headers.cookie || '' });
       if (req.method !== 'GET' && (req.headers.origin !== this.options.origin ||
         !req.is('application/json'))) { res.status(403).json({ message: 'Access denied.' }); return; }
@@ -180,49 +212,53 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
       }
       if (path === '/request-password-reset') body.redirectTo = `${this.options.origin}/staff/login`;
       if (path === '/two-factor/enable') {
-        const session = await this.auth.api.getSession({ headers });
+        const session = await (await this.auth).api.getSession({ headers });
         if (!session || session.user.twoFactorEnabled) { res.status(403).json({ message: 'Access denied.' }); return; }
       }
       // The caller cannot supply the provider's IP header. Express resolves only configured trusted proxies.
       headers.set('x-talgov-client-ip', clientIp(req));
       headers.set('origin', this.options.origin);
       headers.set('content-type', 'application/json');
-      const response = await this.auth.handler(new globalThis.Request(`${this.options.origin}${req.path}`, {
+      const response = await (await this.auth).handler(new globalThis.Request(`${this.options.origin}${req.path}`, {
         method: 'POST', headers, body: JSON.stringify(body),
       }));
       const payload = await response.json();
       const cookies = response.headers.getSetCookie();
       let outcome = response.ok;
+      let mfaAuditRecorded = false;
       if (outcome && ['/two-factor/verify-totp', '/two-factor/verify-backup-code'].includes(path)) {
         const combined = new Map((req.headers.cookie || '').split(';').filter(Boolean).map(v => {
           const index = v.indexOf('='); return [v.slice(0,index).trim(),v.slice(index+1)];
         }));
         for (const cookie of cookies) { const pair=cookie.split(';')[0]; const i=pair.indexOf('='); combined.set(pair.slice(0,i),pair.slice(i+1)); }
-        const current = await this.auth.api.getSession({ headers: new Headers({ cookie: [...combined].map(([k,v])=>`${k}=${v}`).join('; ') }) });
+        const current = await (await this.auth).api.getSession({ headers: new Headers({ cookie: [...combined].map(([k,v])=>`${k}=${v}`).join('; ') }) });
         if (!current) throw new Error('No verified session');
-        const client = await this.pool.connect();
         try {
-          await client.query('BEGIN');
-          // Reject reuse across independent challenges, including concurrent requests.
-          if (path.endsWith('verify-totp')) {
-            const digest = createHash('sha256').update(`${current.user.id}:${body.code}`).digest('hex');
-            await client.query('DELETE FROM app.staff_totp_replay WHERE expires_at<now()');
-            const replay = await client.query(`INSERT INTO app.staff_totp_replay (digest,expires_at) VALUES ($1,now()+interval '2 minutes')
-              ON CONFLICT (digest) DO UPDATE SET expires_at=excluded.expires_at WHERE staff_totp_replay.expires_at<now() RETURNING digest`,[digest]);
-            if (!replay.rowCount) throw new ReplayError('Replayed factor');
-          }
-          await client.query(`INSERT INTO app.staff_session_assurance(session_id) VALUES($1)
-            ON CONFLICT (session_id) DO UPDATE SET verified_at=now()`,[current.session.id]);
-          await client.query("INSERT INTO app.staff_auth_audit(action,subject) VALUES('mfa.success',$1)",[current.user.id]);
-          await client.query('COMMIT');
+          await this.transaction(async client => {
+            // Reject reuse across independent challenges, including concurrent requests.
+            if (path.endsWith('verify-totp')) {
+              const digest = createHash('sha256').update(`${current.user.id}:${body.code}`).digest('hex');
+              await client.query('DELETE FROM app.staff_totp_replay WHERE expires_at<now()');
+              const replay = await client.query(`INSERT INTO app.staff_totp_replay (digest,expires_at) VALUES ($1,now()+interval '2 minutes')
+                ON CONFLICT (digest) DO UPDATE SET expires_at=excluded.expires_at WHERE staff_totp_replay.expires_at<now() RETURNING digest`,[digest]);
+              if (!replay.rowCount) throw new ReplayError('Replayed factor');
+            }
+            await client.query(`INSERT INTO app.staff_session_assurance(session_id) VALUES($1)
+              ON CONFLICT (session_id) DO UPDATE SET verified_at=now()`,[current.session.id]);
+            // Assurance and both success records must commit together. An audit failure
+            // must not grant or refresh MFA, including an existing administrator session.
+            await client.query("INSERT INTO app.staff_auth_audit(action,subject) VALUES('mfa.success',$1),($2,$1)",
+              [current.user.id, `${path.slice(1).replaceAll('/','.')}.success`]);
+          });
+          mfaAuditRecorded = true;
         } catch (error) {
-          await client.query('ROLLBACK');
           if (!(error instanceof ReplayError)) throw error;
           await this.pool.query('DELETE FROM r2_auth_session WHERE id=$1',[current.session.id]);
           outcome=false;
-        } finally { client.release(); }
+        }
       }
-      await this.pool.query('INSERT INTO app.staff_auth_audit(action) VALUES($1)',[`${path.slice(1).replaceAll('/','.')}.${outcome ? 'success' : 'failure'}`]);
+      if (!mfaAuditRecorded) await this.pool.query('INSERT INTO app.staff_auth_audit(action) VALUES($1)',
+        [`${path.slice(1).replaceAll('/','.')}.${outcome ? 'success' : 'failure'}`]);
       if (!outcome) { res.status(response.ok ? 401 : response.status).json({ message: 'Authentication request failed.' }); return; }
       if (cookies.length) res.setHeader('Set-Cookie', cookies);
       // Never return provider user records, session tokens, or reset tokens to browser JS.
@@ -230,8 +266,7 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
         : { success: true, mfaRequired: payload.twoFactorRedirect === true });
     } catch (error) {
       if (!(error instanceof AccessError)) {
-        const code=typeof error==='object' && error!==null && 'code' in error ? String(error.code) : error instanceof Error ? error.name : 'unknown';
-        console.error(`[staff-auth] request failed code=${code}`);
+        emitStaffAuthFailure(error, 'request');
       }
       res.status(error instanceof AccessError ? error.status : 503).json({ message: 'Authentication request could not be completed.' });
     }
@@ -239,9 +274,7 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
 
   private async manageStaff(actor: StaffPrincipal, target: string, action: 'activate' | 'deactivate' | 'revoke' | 'role',
     version: number | undefined, role: 'admin' | 'editor' | undefined, requestId: string) {
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
+    await this.transaction(async client => {
       await client.query('SELECT pg_advisory_xact_lock(72002)');
       const current = await client.query(`SELECT a.id FROM app.staff_accounts a JOIN r2_auth_session s ON s."userId"=a.subject
         JOIN app.staff_session_assurance m ON m.session_id=s.id WHERE a.id=$1 AND a.active AND a.role='admin'
@@ -268,8 +301,7 @@ export class BetterAuthAdapter implements AuthenticationAdapter {
       await client.query("INSERT INTO app.audit_events(actor_id,action,resource_id,request_id) VALUES($1,'staff.access',$2,$3)",[actor.id,target,requestId]);
       const auditAction = action === 'role' ? `account.role.${account.role}_to_${role}` : `account.${action}`;
       await client.query('INSERT INTO app.staff_auth_audit(action,subject) VALUES($1,$2)',[auditAction,account.subject]);
-      await client.query('COMMIT');
-    } catch(error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+    });
   }
   async close() { await this.pool.end(); }
 }

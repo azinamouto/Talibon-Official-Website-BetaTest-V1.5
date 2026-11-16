@@ -5,11 +5,78 @@ const {RateLimiterGuard}=require('../dist/security/rate-limiter.guard');
 const {AuditMiddleware}=require('../dist/security/audit.middleware');
 const {validateEnvironment}=require('../dist/config/environment');
 const {Reflector}=require('@nestjs/core');
+const {classifyFailure}=require('../dist/security/failure-diagnostics');
+const {sanitized}=require('../dist/database/postgres');
+const diagnosticId='12345678-1234-4123-8123-123456789abc';
 const context=(req,headers={})=>({getHandler:()=>function(){},getClass:()=>class{},switchToHttp:()=>({getRequest:()=>req,getResponse:()=>({setHeader:(k,v)=>headers[k]=v})})});
 test('untrusted forwarding and internal IP headers cannot override socket identity',()=>{
  const previous=process.env.VERCEL; delete process.env.VERCEL;
  try { assert.equal(clientIp({ip:'::ffff:127.0.0.1',headers:{'x-forwarded-for':'1.2.3.4','x-talgov-client-ip':'5.6.7.8'}}),'127.0.0.1'); }
  finally { if(previous===undefined)delete process.env.VERCEL;else process.env.VERCEL=previous; }
+});
+
+test('IP failures log once, deny before throttle work and never expose header values',async()=>{
+ const previous=process.env.VERCEL;process.env.VERCEL='1';
+ try {for(const [raw,reason]of [[undefined,'ip_missing'],['','ip_missing'],[['private'],'ip_non_string'],['203.0.113.1, 203.0.113.2','ip_ambiguous'],['private','ip_invalid']]){
+  const records=[];let calls=0;const guard=new RateLimiterGuard(new Reflector());
+  guard.logger={warn:s=>records.push(JSON.parse(s))};guard.configure({transaction:async()=>{calls++;}});
+  await assert.rejects(guard.canActivate(context({path:'/api/news',method:'GET',headers:{'x-forwarded-for':raw},requestId:diagnosticId})),e=>e.getStatus()===503&&classifyFailure(e).reason===reason);
+  assert.equal(calls,0);assert.equal(records.length,1);assert.equal(records[0].reason,reason);
+  assert.equal(records[0].transaction_outcome,'not_started');assert.equal(records[0].request_id,diagnosticId);
+  assert.ok(!JSON.stringify(records).includes('203.0.113'));assert.ok(!JSON.stringify(records).includes('private'));
+ }}finally {if(previous===undefined)delete process.env.VERCEL;else process.env.VERCEL=previous;}
+});
+
+test('throttle SQL order, limit boundary, parameterization and silent 429/liveness are unchanged',async()=>{
+ const previous=process.env.VERCEL;delete process.env.VERCEL;
+ try {for(const attempts of [120,121]){
+  const records=[],queries=[],headers={};const guard=new RateLimiterGuard(new Reflector());
+  guard.logger={warn:s=>records.push(s)};guard.configure({transaction:async work=>work({query:async(sql,values)=>{queries.push({sql,values});return sql.startsWith('INSERT')?[{attempts,retry:17}]:[];}})});
+  const req={path:'/api/news',method:'GET',headers:{},ip:'203.0.113.1',requestId:diagnosticId};
+  if(attempts===121)await assert.rejects(guard.canActivate(context(req,headers)),e=>e.getStatus()===429);else assert.equal(await guard.canActivate(context(req,headers)),true);
+  assert.equal(queries.length,2);assert.equal(queries[0].sql,"DELETE FROM app.staff_auth_throttle WHERE key LIKE 'http:%' AND started_at < now()-interval '1 day'");
+  assert.ok(queries[1].sql.startsWith('INSERT INTO app.staff_auth_throttle(key,attempts) VALUES($1,1)'));
+  assert.match(queries[1].values[0],/^http:[a-f0-9]{64}$/);assert.ok(!queries[1].sql.includes('203.0.113.1'));
+  assert.equal(headers['X-RateLimit-Limit'],120);assert.equal(headers['X-RateLimit-Remaining'],0);
+  assert.equal(headers['Retry-After'],attempts===121?17:undefined);assert.deepEqual(records,[]);
+  assert.equal(await guard.canActivate(context({path:'/api/health'})),true);assert.equal(queries.length,2);
+ }}finally {if(previous===undefined)delete process.env.VERCEL;else process.env.VERCEL=previous;}
+});
+
+test('throttle failure and broken logging preserve 503; unexpected response exceptions remain unchanged',async()=>{
+ const previous=process.env.VERCEL;delete process.env.VERCEL;
+ try {
+  const records=[];const guard=new RateLimiterGuard(new Reflector());guard.logger={warn:s=>records.push(JSON.parse(s))};
+  const failure=sanitized(Object.assign(Error('private'),{code:'42501'}),'query','rollback_confirmed');
+  guard.configure({transaction:async work=>work({query:async sql=>{if(sql.startsWith('INSERT'))throw failure;return [];}})});
+  const req={path:'/api/news',method:'GET',headers:{},ip:'203.0.113.1',requestId:diagnosticId};
+  await assert.rejects(guard.canActivate(context(req)),e=>e.getStatus()===503);
+  assert.equal(records.length,1);assert.equal(records[0].operation,'throttle_upsert');assert.equal(records[0].phase,'query');
+  assert.equal(records[0].error_code,'42501');assert.equal(records[0].transaction_outcome,'rollback_confirmed');
+  guard.logger={warn(){throw Error('logger failed');}};await assert.rejects(guard.canActivate(context(req)),e=>e.getStatus()===503);
+  records.length=0;guard.logger={warn:s=>records.push(JSON.parse(s))};guard.configure({transaction:async()=>undefined});
+  await assert.rejects(guard.canActivate(context(req)),TypeError);
+  assert.equal(records.length,1);assert.equal(records[0].reason,'unexpected_exception');assert.equal(records[0].phase,'response');
+  assert.equal(records[0].transaction_outcome,'commit_confirmed');
+ }finally {if(previous===undefined)delete process.env.VERCEL;else process.env.VERCEL=previous;}
+});
+
+test('audit failures correlate without subject leakage and still finish exactly once after persistence',async()=>{
+ const audit=new AuditMiddleware();const diagnostics=[],legacy=[];let rejectWrite,ended=0,writes=0;
+ audit.logger={log:s=>legacy.push(JSON.parse(s)),warn:s=>diagnostics.push(JSON.parse(s)),error:()=>{}};
+ audit.database={transaction:async()=>{writes++;return new Promise((resolve,reject)=>{rejectWrite=reject;});}};
+ const req={path:'/api/news',method:'GET',staff:{id:'synthetic-person'},requestId:diagnosticId,route:{path:'/api/news'},body:{password:'private'},query:{token:'private'}};
+ const res={statusCode:503,end(){ended++;return this;}};audit.use(req,res,()=>{});res.end('private');res.end('private');
+ assert.equal(ended,0);assert.equal(writes,1);
+ rejectWrite(sanitized(Object.assign(Error('private'),{code:'42501'}),'query','rollback_confirmed'));
+ await new Promise(r=>setImmediate(r));
+ assert.equal(ended,1);assert.equal(diagnostics.length,1);assert.equal(diagnostics[0].component,'audit');
+ assert.equal(diagnostics[0].request_id,diagnosticId);assert.equal(diagnostics[0].phase,'query');
+ assert.equal(diagnostics[0].error_code,'42501');assert.equal(diagnostics[0].transaction_outcome,'rollback_confirmed');
+ assert.ok(!JSON.stringify(diagnostics).includes('synthetic-person'));assert.ok(!JSON.stringify(diagnostics).includes('private'));
+ assert.equal(legacy[0].actor_id,'synthetic-person');
+ const success=new AuditMiddleware();success.database={transaction:async()=>{throw Error('successful GET must not audit');}};
+ const ok={statusCode:200,end(){return this;}};success.use(req,ok,()=>{});ok.end();
 });
 test('Vercel edge IP must be one valid address; missing or ambiguous headers fail closed',()=>{
  const previous=process.env.VERCEL;process.env.VERCEL='1';

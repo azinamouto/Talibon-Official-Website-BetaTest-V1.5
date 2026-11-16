@@ -6,10 +6,15 @@ import { randomUUID } from 'node:crypto';
 import { SecurityHeadersMiddleware } from './security/security-headers.middleware';
 import { requestMetrics } from './security/request-metrics.middleware';
 import { staffAuthentication } from './authentication/runtime';
+import { emitStaffAuthFailure } from './security/failure-diagnostics';
+import { staffOriginConfiguration } from './config/staff-origin';
 
 export function isAllowedOrigin(origin: string | undefined): boolean {
+  let config: ReturnType<typeof staffOriginConfiguration>;
+  try { config = staffOriginConfiguration(process.env); } catch { return false; }
   if (!origin) return true;
-  const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').map(value => value.trim());
+  const allowed = config.deploymentScoped ? config.trustedOrigins
+    : (process.env.ALLOWED_ORIGINS || '').split(',').map(value => value.trim());
   if (allowed.includes(origin)) return true;
   if (process.env.NODE_ENV === 'production') return false;
   try {
@@ -43,8 +48,7 @@ export function configureApp(app: INestApplication) {
       const auth = staffAuthentication();
       if (auth) return void auth.handle(req, res, next);
     } catch (error) {
-      const code = error instanceof Error ? error.name : 'unknown';
-      console.error(`[staff-auth] middleware initialization failed code=${code}`);
+      emitStaffAuthFailure(error, 'initialization');
     }
     res.setHeader('Cache-Control', 'no-store');
     res.status(503).json({ message: 'Staff authentication is unavailable.' });

@@ -9,13 +9,14 @@ test('deployment entry boots concurrently and retains DTO metadata', async () =>
   process.env.STAFF_AUTH_SECRET = 'x'.repeat(48);
   process.env.STAFF_AUTH_ORIGIN = 'https://talibon.gov.ph';
   process.env.ALLOWED_ORIGINS = 'https://talibon.gov.ph';
+  process.env.STAFF_PASSWORD_RECOVERY_ENABLED = 'false';
+  delete process.env.STAFF_MAIL_API_KEY;
+  delete process.env.STAFF_MAIL_FROM;
   for (const key of [
   'MEDIA_BUCKET',
   'AWS_REGION',
   'AWS_ACCESS_KEY_ID',
   'AWS_SECRET_ACCESS_KEY',
-  'STAFF_MAIL_API_KEY',
-  'STAFF_MAIL_FROM',
 ]) {
   process.env[key] = `fixture-${key.toLowerCase().replaceAll('_', '-')}`;
 }
@@ -34,6 +35,15 @@ test('deployment entry boots concurrently and retains DTO metadata', async () =>
     assert.equal(health.status, 200);
     assert.deepEqual(await health.json(), { status: 'ok', service: 'talibon-api' });
     assert.match(health.headers.get('cache-control'), /no-store/);
+    for (const endpoint of ['request-password-reset','reset-password']) {
+      const recovery = await fetch(base + '/api/staff-auth/' + endpoint, {
+        method: 'POST', headers: { origin: process.env.STAFF_AUTH_ORIGIN, 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      assert.equal(recovery.status,503);
+      assert.deepEqual(await recovery.json(), { message: 'Password recovery is temporarily unavailable.' });
+      assert.match(recovery.headers.get('cache-control'), /no-store/);
+    }
     const unavailable = await fetch(base + '/api/health/ready');
     assert.equal(unavailable.status, 503);
     assert.match(unavailable.headers.get('cache-control'), /no-store/);

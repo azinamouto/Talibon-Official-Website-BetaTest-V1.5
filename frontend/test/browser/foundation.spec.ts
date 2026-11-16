@@ -57,15 +57,19 @@ test('password challenge requires an authenticator step before staff access', as
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /auth|token/i.test(key)))).toEqual([]);
 });
 
-test('password recovery response does not reveal account eligibility', async ({ page, context }) => {
+test('disabled password recovery cannot submit an email or reveal account eligibility', async ({ page, context }) => {
   await isolate(context);
   await context.route('**/api/staff/me', route => route.fulfill({ status: 401, json: { message: 'Unauthorized' } }));
-  await context.route('**/api/staff-auth/request-password-reset', route => route.fulfill({ json: { success: true } }));
+  let recoveryRequests=0;
+  await context.route('**/api/staff-auth/request-password-reset', route => { recoveryRequests++; return route.fulfill({status:503,json:{message:'Password recovery is temporarily unavailable.'}}); });
   await page.goto('/staff/login');
-  await page.getByRole('button', { name: 'Forgot password?' }).click();
   await page.getByLabel('Staff email').fill('staff@example.test');
-  await page.getByRole('button', { name: 'Request recovery' }).click();
-  await expect(page.getByRole('status')).toContainText('If the account is eligible');
+  const recovery = page.getByRole('button', { name: /Forgot password.*temporarily unavailable/i });
+  await expect(recovery).toBeDisabled();
+  await expect(recovery).toHaveAttribute('tabindex', '-1');
+  await expect(recovery).toHaveAccessibleDescription('Password recovery is temporarily unavailable.');
+  await expect(page.getByRole('button', { name: 'Request recovery' })).toHaveCount(0);
+  expect(recoveryRequests).toBe(0);
 });
 
 test('sign out clears the in-memory staff identity and returns to login', async ({ page, context }) => {

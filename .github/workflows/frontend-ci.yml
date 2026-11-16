@@ -29,6 +29,8 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+      - name: Required staff login and recovery browser coverage
+        run: npx playwright test --config playwright.staff.config.ts --forbid-only
       - run: npm run test:eservices
       - run: npm run test:eservices -- --grep "payments remain unavailable by default"
         env:

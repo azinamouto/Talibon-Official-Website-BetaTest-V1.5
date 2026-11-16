@@ -58,9 +58,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
 
   // If a spot is selected, render the detail page directly inline (full-width layout without dark modal backdrop)
   if (selectedSpot) {
-    const formattedDescription = selectedSpot.description && !selectedSpot.description.startsWith("SAMPLE")
-      ? selectedSpot.description
-      : `${selectedSpot.name} is one of Talibon's premier tourist destinations, showcasing pristine natural landscapes, rich marine ecosystems, and welcoming local hospitality. Visitors can enjoy guided eco-tours, island hopping, photography opportunities, and memorable local experiences.`;
+    const formattedDescription = selectedSpot.description || '';
 
     return (
       <div className={`${layout.flow} animate-fadeIn w-full`}>
@@ -169,7 +167,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
                   <div>
                     <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Operating Hours</div>
                     <div className="text-xs sm:text-sm font-bold text-slate-800 mt-0.5">
-                      {selectedSpot.opening_hours || "Always Open / Daily"}
+                      {selectedSpot.opening_hours || "Visiting hours not listed"}
                     </div>
                   </div>
                 </div>

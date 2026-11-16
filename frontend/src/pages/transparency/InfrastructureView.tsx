@@ -1,7 +1,11 @@
+import PublishedAttachments from '../../components/PublishedAttachments';
+import type { PublicAttachment } from '../../services/publicApi';
 import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 
 interface Project {
+  description?: string;
+  attachments?: PublicAttachment[];
   id: string;
   title: string;
   status: string;
@@ -28,6 +32,8 @@ export default function InfrastructureView({ data }: InfrastructureViewProps) {
           <p className="text-[10px] font-bold text-brand-muted uppercase tracking-wider">
             BUDGET: <span className="text-brand-primary">{String(project.budget)}</span>
           </p>
+          {project.description && <p className="whitespace-pre-wrap">{project.description}</p>}
+          <PublishedAttachments attachments={project.attachments} />
         </div>
       ))}
     </div>

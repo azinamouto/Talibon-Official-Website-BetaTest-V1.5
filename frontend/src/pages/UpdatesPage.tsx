@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ShieldAlert, Facebook, ExternalLink, Lock } from 'lucide-react';
+import PublishedUpdates from '../components/PublishedUpdates';
 
 const UpdatesPage: React.FC = () => {
   const [activeFeed, setActiveFeed] = useState<'pio' | 'main'>('pio');
@@ -37,6 +38,7 @@ const UpdatesPage: React.FC = () => {
         </p>
       </div>
 
+      <PublishedUpdates />
       {/* Feed Selector */}
       <div className="flex flex-wrap gap-3 justify-center">
         {(['pio', 'main'] as const).map((key) => (

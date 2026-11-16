@@ -79,7 +79,7 @@ export function configureApp(app: INestApplication) {
 export function createApiDocument(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle('Talibon Municipal API')
-    .setDescription('Send X-API-Version: 1 (default when omitted). CMS authoring is limited to photos and documents. Text-content authoring, legacy auth and administration routes return 410. Staff operations use Better Auth HttpOnly cookies and MFA. Errors contain success, statusCode, error, message, timestamp and requestId.')
+    .setDescription('Send X-API-Version: 1 (default when omitted). R2.1 municipal publishing uses /api/admin/content, Better Auth HttpOnly cookies and MFA. Public reads expose approved published content. Legacy authoring, retired auth and e-services return 410. Errors contain success, statusCode, error, message, timestamp and requestId.')
     .setVersion('1')
     .addBearerAuth()
     .addCookieAuth('__Secure-talgov-staff.session_token', { type: 'apiKey', in: 'cookie' }, 'staffCookie')
@@ -111,21 +111,9 @@ export function createApiDocument(app: INestApplication) {
         responses: { '410': { description: DEFERRED_MESSAGE } } };
     }
   }
-  const mediaOnlyPaths: Record<string, string[]> = {
-    '/api/admin/content/{kind}': ['get','post'],
-    '/api/admin/content/{kind}/{id}/edit': ['post'],
-    '/api/admin/content/{kind}/{id}/delete': ['post'],
-  };
-  for (const [path, methods] of Object.entries(mediaOnlyPaths)) {
-    document.paths[path] ??= {};
-    for (const method of methods) document.paths[path][method] ??= {
-      parameters: [...path.matchAll(/\{([^}]+)\}/g)].map(match => ({ name: match[1], in: 'path', required: true, schema: { type: 'string' } })),
-    };
-  }
   for (const [path, operations] of Object.entries(document.paths)) {
     for (const method of Object.keys(operations).filter(key => ['get','head','post','put','patch','delete','options'].includes(key))) {
-      if (!/^\/api\/admin\/content(?:\/|$)/.test(path) &&
-        !(/^\/api\/(news|pages|services)(?:\/|$)/.test(path) &&
+      if (!(/^\/api\/(news|pages|services)(?:\/|$)/.test(path) &&
           (!['get','head'].includes(method) || /^\/api\/(news|pages|services)\/manage(?:\/|$)/.test(path)))) continue;
       operations[method] = { ...operations[method], deprecated: true, security: [], summary: 'Text-content authoring deferred in R2',
         description: 'Returns 410 before parsing, authentication or database work. Public informational reads remain available.',

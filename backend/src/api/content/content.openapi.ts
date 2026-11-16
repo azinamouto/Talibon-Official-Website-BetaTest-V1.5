@@ -31,7 +31,7 @@ export function ContentResponse(kind: ContentKind, operation: 'list' | 'read' | 
   return ApiResponse({
     status: operation === 'create' ? 201 : operation === 'delete' ? 204 : 200,
     headers: {
-      'Cache-Control': { description: 'Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.', schema: { type: 'string' } },
+      'Cache-Control': { description: 'Municipal records, authenticated requests, writes and errors: private, no-store. Retired service information keeps its existing public cache policy.', schema: { type: 'string' } },
       Vary: { description: 'Includes X-API-Version and CORS Origin.', schema: { type: 'string' } },
     },
     description: operation === 'delete' ? 'Soft deleted; no response body.' : 'Public reads expose only published/available content. Manage reads include drafts. Content strings are data; sanitize before rendering HTML.',

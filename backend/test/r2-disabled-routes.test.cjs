@@ -119,7 +119,8 @@ test('published contract describes retired operations as 410 only', async () => 
   assert.deepEqual(Object.keys(doc.paths['/api/news'].post.responses),['410']);
   assert.deepEqual(doc.paths['/api/news'].post.security,[]);
   assert.ok(doc.paths['/api/news'].get.responses['200']);
-  assert.deepEqual(Object.keys(doc.paths['/api/admin/content/{kind}'].post.responses),['410']);
+  assert.ok(doc.paths['/api/admin/content/{kind}'].post.responses['201']);
+  assert.deepEqual(doc.paths['/api/admin/content/{kind}'].post.security,[{staffCookie:[]}]);
 });
 test('standalone worker and edge entry point cannot initialize providers', () => {
   const worker = spawnSync(process.execPath, ['dist/api/notifications/email-worker.js','--watch'], { cwd: require('node:path').resolve(__dirname,'..'), timeout:5000, encoding:'utf8' });

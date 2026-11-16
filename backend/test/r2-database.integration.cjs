@@ -42,7 +42,7 @@ before(async()=>{
 after(async()=>{await db?.close();await owner.end();});
 
 test('migrations replay, upgrade, checksum drift and failed DDL roll back atomically',async()=>{
-  assert.deepEqual(await migrate(owner),{migrations:2,applied:0});
+  assert.deepEqual(await migrate(owner),{migrations:3,applied:0});
   const directory=path.join(process.env.R2_TEST_SCRATCH,'migrations'); fs.mkdirSync(directory);
   const original=path.join(__dirname,'../database/migrations');
   fs.copyFileSync(path.join(original,'001_foundation.sql'),path.join(directory,'001_foundation.sql'));
@@ -51,7 +51,8 @@ test('migrations replay, upgrade, checksum drift and failed DDL roll back atomic
     assert.equal((await migrate(upgrade,directory,true)).applied,1);
     assert.equal((await upgrade.query("SELECT to_regclass('app.staff_accounts') AS t")).rows[0].t,null);
     assert.equal((await migrate(upgrade,directory)).applied,1);
-    assert.equal((await migrate(upgrade)).applied,1);
+    assert.equal((await migrate(upgrade)).applied,2);
+    fs.copyFileSync(path.join(original,'003_municipal_content_foundation.sql'),path.join(directory,'003_municipal_content_foundation.sql'));
     fs.copyFileSync(path.join(original,'002_privileges.sql'),path.join(directory,'002_privileges.sql'));
     fs.writeFileSync(path.join(directory,'001_foundation.sql'),fs.readFileSync(path.join(original,'001_foundation.sql'),'utf8').replace(/\r\n/g,'\n').replace(/\n/g,'\r\n'));
     assert.equal((await migrate(upgrade,directory)).applied,0);
@@ -59,10 +60,10 @@ test('migrations replay, upgrade, checksum drift and failed DDL roll back atomic
     fs.copyFileSync(path.join(original,'002_privileges.sql'),path.join(directory,'002_privileges.sql'));
     await assert.rejects(migrate(upgrade,directory),/checksum/);
     fs.copyFileSync(path.join(original,'001_foundation.sql'),path.join(directory,'001_foundation.sql'));
-    fs.writeFileSync(path.join(directory,'003_failure.sql'),'CREATE TABLE app.should_rollback(id int); SELECT nonexistent_column;');
+    fs.writeFileSync(path.join(directory,'004_failure.sql'),'CREATE TABLE app.should_rollback(id int); SELECT nonexistent_column;');
     await assert.rejects(migrate(upgrade,directory));
     assert.equal((await upgrade.query("SELECT to_regclass('app.should_rollback') AS t")).rows[0].t,null);
-    assert.equal((await upgrade.query('SELECT count(*)::int AS n FROM public.r2_schema_migrations')).rows[0].n,2);
+    assert.equal((await upgrade.query('SELECT count(*)::int AS n FROM public.r2_schema_migrations')).rows[0].n,3);
   } finally {await upgrade.end();}
 });
 test('TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets',()=>{
@@ -121,7 +122,7 @@ test('constraints reject invalid metadata, duplicate keys, missing FKs and unsup
   await assert.rejects(repo.create(identity('editor'),data,'test-unique'),denied('conflict'));
   await assert.rejects(repo.setAccess(identity('admin'),editor,1,'super_admin',true,'test-role'),denied('invalid'));
 });
-test('public content filters drafts, deleted, future and revoked provenance; runtime cannot edit content',async()=>{
+test('public content filters drafts, deleted, future and revoked provenance; runtime cannot mutate creation timestamps',async()=>{
   const id=randomUUID();
   await owner.query(`INSERT INTO app.public_content(id,kind,legacy_id,slug,title,body,source_id) VALUES($1,'pages','test','test','Synthetic test','{}',$2)`,[id,source]);
   assert.equal((await repo.list('pages')).length,0);
@@ -136,13 +137,13 @@ test('public content filters drafts, deleted, future and revoked provenance; run
   await owner.query("UPDATE app.public_content SET publication='archived',deleted_at=now() WHERE id=$1",[id]);
   assert.equal((await repo.list('pages')).length,0);
   await assert.rejects(repo.list('pages',101),denied('invalid'));
-  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.public_content SET title='unauthorized'")),denied('unavailable'));
+  await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.public_content SET created_at=now()")),denied('unavailable'));
 });
 test('runtime least privilege prevents DDL, approval, readiness, audit tampering and schema history changes',async()=>{
   for(const sql of ["CREATE TABLE app.no_access(id int)","UPDATE app.content_sources SET approved=true", "UPDATE app.media_categories SET approved=true",
     "UPDATE app.media_assets SET processing='ready'",'DELETE FROM app.media_assets','DELETE FROM app.audit_events',
     "UPDATE app.audit_events SET action='media.create'",'TRUNCATE app.audit_events','DELETE FROM public.r2_schema_migrations',
-    'SELECT * FROM app.public_content','SELECT * FROM app.import_batches']) {
+    'DELETE FROM app.public_content','SELECT * FROM app.import_batches']) {
     await assert.rejects(db.transaction(tx=>tx.query(sql)),denied('unavailable'));
   }
 });

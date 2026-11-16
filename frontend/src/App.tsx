@@ -1,3 +1,5 @@
+import PublishedCollections from './components/PublishedCollections';
+import { PublicShell } from './components/PublicContent';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -120,6 +122,7 @@ const router = createBrowserRouter(createRoutesFromElements(
 
                       {/* News */}
                       <Route path="/news/view/:id" element={<NewsDetailPage />} />
+                      <Route path="/news/gallery" element={<PublicShell standardSpacing title="Municipal photo galleries"><PublishedCollections /></PublicShell>} />
                       <Route path="/news/:category" element={<NewsCategoryPage />} />
 
                       {/* Transparency */}
@@ -132,7 +135,7 @@ const router = createBrowserRouter(createRoutesFromElements(
                       <Route path="/transparency/biddings" element={<ContentPage spacingLayout title="Biddings" fetchData={transparencyApi.getBiddings} renderContent={(data) => <BiddingsView data={data} />} />} />
 
                       {/* Tourism */}
-                      <Route path="/tourism/spots" element={<ContentPage spacingLayout title="Tourist Spots" fetchData={tourismApi.getSpots} renderContent={(data) => <SpotsView data={data} />} />} />
+                      <Route path="/tourism/spots" element={<ContentPage spacingLayout title="Tourist Spots" fetchData={tourismApi.getSpots} renderContent={(data) => <><SpotsView data={data} /><PublishedCollections category="tourism" title="Tourism galleries" /></>} />} />
                       <Route path="/tourism/festivities" element={<ContentPage spacingLayout title="Festivities" fetchData={tourismApi.getFestivities} renderContent={(data) => <FestivitiesView data={data} />} />} />
                       <Route path="/tourism/delicacies" element={<ContentPage spacingLayout title="Local Delicacies" fetchData={tourismApi.getDelicacies} renderContent={(data) => <DelicaciesView data={data} />} />} />
 

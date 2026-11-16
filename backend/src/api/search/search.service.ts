@@ -12,11 +12,11 @@ export class SearchService {
     return this.content.query(async tx => {
       const [result] = await tx.query(`WITH matches AS MATERIALIZED (
         SELECT id,slug,title,published_at AS created_at,
-          CASE WHEN kind='services_cms' THEN 'services' ELSE kind END AS type,
-          coalesce(body->>'category',body->>'office_responsible','') AS category,
+          CASE WHEN kind='services_cms' THEN 'services' WHEN kind IN ('advisories','updates') THEN 'news' ELSE kind END AS type,
+          CASE WHEN kind='advisories' THEN 'ADVISORY' WHEN kind='updates' THEN 'UPDATE' ELSE coalesce(body->>'category',body->>'office_responsible','') END AS category,
           left(regexp_replace(coalesce(body->>'summary',body->>'description',body->>'content',''),'<[^>]*>','','g'),200) AS snippet,
           ts_rank_cd(to_tsvector('english',title || ' ' || body::text),websearch_to_tsquery('english',$1)) AS score
-        FROM app.published_content WHERE kind IN ('news','services_cms','pages')
+        FROM app.published_content WHERE kind IN ('news','advisories','updates','services_cms','pages')
           AND to_tsvector('english',title || ' ' || body::text) @@ websearch_to_tsquery('english',$1)
       ), filtered AS (
         SELECT * FROM matches WHERE ($2='all' OR type=$2) AND ($3='' OR category=$3)

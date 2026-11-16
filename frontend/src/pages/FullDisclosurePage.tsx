@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink } from 'lucide-react';
 import styles from './FullDisclosurePage.module.css';
+import PublishedCollections from '../components/PublishedCollections';
 
 const FullDisclosurePage: React.FC = () => {
   const imageUrl = "https://talibon.gov.ph/wp-content/themes/yootheme/cache/e8/RegistrationCert_page-0001-e8213d59.webp";
@@ -57,6 +58,7 @@ const FullDisclosurePage: React.FC = () => {
           </div>
         </div>
 
+        <PublishedCollections kind="transparency_reports" category="full-disclosure" title="Full Disclosure Policy publications" />
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3 p-5 bg-white rounded-xl border border-gray-200 shadow-xs">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 uppercase tracking-tight font-display">About the Policy</h3>

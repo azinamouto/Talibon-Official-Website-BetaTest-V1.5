@@ -1,5 +1,5 @@
 import { aboutApi } from './aboutApi';
-import { publicGet } from './publicApi';
+import { listPublic, publicGet } from './publicApi';
 import type { ContentData } from '../types';
 
 const get = <T>(path: string, signal?: AbortSignal) => publicGet<T>(path, signal);
@@ -52,7 +52,11 @@ export const formsApi = {
   getZoningClearance: () => get<DownloadableForm[]>('forms/zoning-clearance'),
   getDownloadable: async (signal?: AbortSignal): Promise<DownloadableForm[]> => (await formsApi.getDownloadablePage(1,signal)).data,
   getDownloadablePage: async (page: number, signal?: AbortSignal): Promise<{data: DownloadableForm[]; hasMore: boolean}> => {
-    const result = await get<{ data: { id: string; title: string; category: string; bytes: number; download_url: string }[]; hasMore: boolean }>(`media?kind=document&page=${page}`, signal);
-    return { data: result.data.map(item => ({ id: item.id, title: item.title, category: item.category, file_size: `${item.bytes} bytes`, file_url: item.download_url })), hasMore: result.hasMore };
+    const [records,result]=await Promise.all([
+      listPublic<DownloadableForm>('public-content/downloadables',{page,limit:50},signal),
+      get<{ data: { id: string; title: string; category: string; bytes: number; download_url: string }[]; hasMore: boolean }>(`media?kind=document&page=${page}`, signal),
+    ]);
+    const urls=new Set(records.data.map(item=>item.file_url));
+    return { data: [...records.data,...result.data.filter(item=>!urls.has(item.download_url)).map(item => ({ id: item.id, title: item.title, category: item.category, file_size: `${item.bytes} bytes`, file_url: item.download_url }))], hasMore: result.hasMore || page<records.pagination.totalPages };
   },
 };

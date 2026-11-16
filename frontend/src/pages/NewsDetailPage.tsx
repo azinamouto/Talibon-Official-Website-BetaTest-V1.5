@@ -7,6 +7,7 @@ import { Calendar, User, ArrowLeft, Loader2, Share2, Bookmark, Printer, ShieldCh
 import { publicDetail, PublicNews } from '../services/publicApi';
 import { usePublicResource } from '../hooks/usePublicResource';
 import { PublicState } from '../components/PublicContent';
+import PublishedAttachments from '../components/PublishedAttachments';
 
 const NewsDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -122,7 +123,7 @@ const NewsDetailPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest">ISSUED BY</p>
-                  <p className="font-extrabold text-brand-text text-xs">{item.author || "Office of the Municipal Mayor"}</p>
+                  <p className="font-extrabold text-brand-text text-xs">{item.author || "Issuing office not listed"}</p>
                 </div>
               </div>
 
@@ -176,7 +177,7 @@ const NewsDetailPage: React.FC = () => {
             <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] min-h-[220px] max-h-[420px] overflow-hidden rounded-xl border border-brand-border shadow-xs bg-slate-900">
               <img
                 src={item.image_url}
-                alt={item.title}
+                alt={item.image_alt || item.title}
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -196,6 +197,7 @@ const NewsDetailPage: React.FC = () => {
               ))}
             </div>
 
+            <PublishedAttachments attachments={item.attachments} />
             {/* Official Verification Notice Bar */}
             <div className="mt-6 pt-4 border-t border-brand-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 py-2">
               <div className="flex items-center gap-2.5">

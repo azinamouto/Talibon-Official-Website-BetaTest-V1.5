@@ -7,6 +7,7 @@ const { configureApp, createApiDocument } = require('../dist/configure-app');
 
 // Inspect production controllers without constructing database clients or listening.
 const definitions = [
+  ['content/cms', 'CmsContentController', 'content/content', 'ContentService'],
   ['forms/public-forms', 'PublicFormsController', '../database/public-content', 'PublicContentService'],
   ['content/public-catalog', 'PublicCatalogController', '../database/public-content', 'PublicContentService'],
   ['media/media', 'MediaController', 'media/media', 'MediaService'],
@@ -35,7 +36,7 @@ async function exportDocument() {
     console.error("contract: generating schema");
     const document = createApiDocument(app);
     console.error("contract: schema generated");
-    document.info.description += ' Checked-in scope: retained public content/search/catalog contracts, R2 staff authentication and private photo/document media. Other APIs remain in the live document.';
+    document.info.description += ' Checked-in scope: R2.1 municipal authoring, retained public content/search/catalog contracts, staff authentication and private photo/document media. Other APIs remain in the live document.';
     const output = JSON.stringify(document, null, 2) + '\n';
     const target = path.resolve(__dirname, '../../contracts/openapi.json');
     if (process.argv.includes('--check')) {

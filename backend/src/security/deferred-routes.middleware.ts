@@ -13,8 +13,7 @@ export function deferredRoutes(req: Request, res: Response, next: NextFunction) 
     res.status(400).json({ success: false, statusCode: 400, message: 'Invalid request path.' }); return;
   }
   const read = ['GET', 'HEAD'].includes(req.method);
-  const outsideMediaCms = /^\/api\/admin\/content(?:\/|$)/.test(path)
-    || (/^\/api\/(news|pages|services)(?:\/|$)/.test(path)
+  const outsideMediaCms = (/^\/api\/(news|pages|services)(?:\/|$)/.test(path)
       && ((!read && req.method !== 'OPTIONS') || /^\/api\/(news|pages|services)\/manage(?:\/|$)/.test(path)));
   const retired = /^\/api\/(payments|notifications|chat)(?:\/|$)/.test(path)
     || /^\/api\/auth(?:\/|$)/.test(path)

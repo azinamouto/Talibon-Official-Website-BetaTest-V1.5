@@ -1,6 +1,993 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/api/admin/content/dashboard": {
+      "get": {
+        "operationId": "CmsContentController_dashboard_1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/sources": {
+      "get": {
+        "operationId": "CmsContentController_sources_1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      },
+      "post": {
+        "operationId": "CmsContentController_createSource_1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentSourceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/sources/{id}/approve": {
+      "post": {
+        "operationId": "CmsContentController_approveSource_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}/{id}/preview": {
+      "get": {
+        "operationId": "CmsContentController_preview_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}": {
+      "get": {
+        "operationId": "CmsContentController_list_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 10000,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive literal title/name substring.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "municipal-profile",
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "News only.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ARTICLE",
+                "UPDATE",
+                "ANNOUNCEMENT",
+                "ADVISORY",
+                "NOTICE"
+              ]
+            }
+          },
+          {
+            "name": "office_responsible",
+            "required": false,
+            "in": "query",
+            "description": "Services only; department ID.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      },
+      "post": {
+        "operationId": "CmsContentController_create_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CmsContentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}/{id}/edit": {
+      "post": {
+        "operationId": "CmsContentController_edit_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CmsUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}/{id}/delete": {
+      "post": {
+        "operationId": "CmsContentController_remove_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}/{id}/publish": {
+      "post": {
+        "operationId": "CmsContentController_publish_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}/{id}/unpublish": {
+      "post": {
+        "operationId": "CmsContentController_unpublish_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}/{id}/archive": {
+      "post": {
+        "operationId": "CmsContentController_archive_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
+    "/api/admin/content/{kind}/{id}/restore": {
+      "post": {
+        "operationId": "CmsContentController_restore_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentVersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference."
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
     "/api/forms/business-permits": {
       "get": {
         "operationId": "PublicFormsController_getBusinessPermits[0]_1",
@@ -315,6 +1302,19 @@
             "in": "path",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
             }
           },
           {
@@ -3061,6 +4061,19 @@
         "operationId": "PageContentController_list_1",
         "parameters": [
           {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -3150,7 +4163,7 @@
           "200": {
             "headers": {
               "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "description": "Municipal records, authenticated requests, writes and errors: private, no-store. Retired service information keeps its existing public cache policy.",
                 "schema": {
                   "type": "string"
                 }
@@ -3335,6 +4348,19 @@
         "operationId": "PageContentController_manage_1",
         "parameters": [
           {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -3502,7 +4528,7 @@
           "200": {
             "headers": {
               "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "description": "Municipal records, authenticated requests, writes and errors: private, no-store. Retired service information keeps its existing public cache policy.",
                 "schema": {
                   "type": "string"
                 }
@@ -3707,6 +4733,19 @@
         "operationId": "NewsContentController_list_1",
         "parameters": [
           {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -3796,7 +4835,7 @@
           "200": {
             "headers": {
               "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "description": "Municipal records, authenticated requests, writes and errors: private, no-store. Retired service information keeps its existing public cache policy.",
                 "schema": {
                   "type": "string"
                 }
@@ -4017,6 +5056,19 @@
         "operationId": "NewsContentController_manage_1",
         "parameters": [
           {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -4184,7 +5236,7 @@
           "200": {
             "headers": {
               "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "description": "Municipal records, authenticated requests, writes and errors: private, no-store. Retired service information keeps its existing public cache policy.",
                 "schema": {
                   "type": "string"
                 }
@@ -4425,6 +5477,19 @@
         "operationId": "ServiceContentController_list_1",
         "parameters": [
           {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -4514,7 +5579,7 @@
           "200": {
             "headers": {
               "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "description": "Municipal records, authenticated requests, writes and errors: private, no-store. Retired service information keeps its existing public cache policy.",
                 "schema": {
                   "type": "string"
                 }
@@ -4758,6 +5823,19 @@
         "operationId": "ServiceContentController_manage_1",
         "parameters": [
           {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -4925,7 +6003,7 @@
           "200": {
             "headers": {
               "Cache-Control": {
-                "description": "Successful anonymous GET: public, max-age=60, s-maxage=300, stale-while-revalidate=60. Authenticated requests and writes: private, no-store. Errors: private, no-store. Cached public data may remain stale for 360 seconds after a write.",
+                "description": "Municipal records, authenticated requests, writes and errors: private, no-store. Retired service information keeps its existing public cache policy.",
                 "schema": {
                   "type": "string"
                 }
@@ -5799,112 +6877,6 @@
         }
       }
     },
-    "/api/admin/content/{kind}": {
-      "get": {
-        "parameters": [
-          {
-            "name": "kind",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "deprecated": true,
-        "security": [],
-        "summary": "Text-content authoring deferred in R2",
-        "description": "Returns 410 before parsing, authentication or database work. Public informational reads remain available.",
-        "responses": {
-          "410": {
-            "description": "CMS authoring is limited to photos and documents."
-          }
-        }
-      },
-      "post": {
-        "parameters": [
-          {
-            "name": "kind",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "deprecated": true,
-        "security": [],
-        "summary": "Text-content authoring deferred in R2",
-        "description": "Returns 410 before parsing, authentication or database work. Public informational reads remain available.",
-        "responses": {
-          "410": {
-            "description": "CMS authoring is limited to photos and documents."
-          }
-        }
-      }
-    },
-    "/api/admin/content/{kind}/{id}/edit": {
-      "post": {
-        "parameters": [
-          {
-            "name": "kind",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "deprecated": true,
-        "security": [],
-        "summary": "Text-content authoring deferred in R2",
-        "description": "Returns 410 before parsing, authentication or database work. Public informational reads remain available.",
-        "responses": {
-          "410": {
-            "description": "CMS authoring is limited to photos and documents."
-          }
-        }
-      }
-    },
-    "/api/admin/content/{kind}/{id}/delete": {
-      "post": {
-        "parameters": [
-          {
-            "name": "kind",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "deprecated": true,
-        "security": [],
-        "summary": "Text-content authoring deferred in R2",
-        "description": "Returns 410 before parsing, authentication or database work. Public informational reads remain available.",
-        "responses": {
-          "410": {
-            "description": "CMS authoring is limited to photos and documents."
-          }
-        }
-      }
-    },
     "/api/staff/me": {
       "get": {
         "summary": "Get the current staff identity",
@@ -6661,7 +7633,7 @@
   },
   "info": {
     "title": "Talibon Municipal API",
-    "description": "Send X-API-Version: 1 (default when omitted). CMS authoring is limited to photos and documents. Text-content authoring, legacy auth and administration routes return 410. Staff operations use Better Auth HttpOnly cookies and MFA. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: retained public content/search/catalog contracts, R2 staff authentication and private photo/document media. Other APIs remain in the live document.",
+    "description": "Send X-API-Version: 1 (default when omitted). R2.1 municipal publishing uses /api/admin/content, Better Auth HttpOnly cookies and MFA. Public reads expose approved published content. Legacy authoring, retired auth and e-services return 410. Errors contain success, statusCode, error, message, timestamp and requestId. Checked-in scope: R2.1 municipal authoring, retained public content/search/catalog contracts, staff authentication and private photo/document media. Other APIs remain in the live document.",
     "version": "1",
     "contact": {}
   },
@@ -6681,9 +7653,103 @@
       }
     },
     "schemas": {
+      "ContentSourceDto": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference",
+          "owner",
+          "sha256"
+        ]
+      },
       "Object": {
         "type": "object",
         "properties": {}
+      },
+      "CmsContentDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft"
+            ],
+            "description": "Publishing uses the separate versioned publish action."
+          }
+        },
+        "required": [
+          "title",
+          "slug",
+          "sourceId",
+          "body"
+        ]
+      },
+      "CmsUpdateDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft"
+            ],
+            "description": "Publishing uses the separate versioned publish action."
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ContentVersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "version"
+        ]
       },
       "UploadDto": {
         "type": "object",
@@ -6835,18 +7901,6 @@
             ],
             "default": "draft"
           },
-          "version": {
-            "type": "number",
-            "minimum": 1
-          }
-        },
-        "required": [
-          "version"
-        ]
-      },
-      "ContentVersionDto": {
-        "type": "object",
-        "properties": {
           "version": {
             "type": "number",
             "minimum": 1

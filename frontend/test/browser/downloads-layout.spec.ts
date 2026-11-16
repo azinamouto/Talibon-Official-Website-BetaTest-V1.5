@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { mockMunicipalContent } from './helpers/municipal-content';
 // Synthetic published documents follow the R2 media contract, never retired provider URLs.
 const documents = Array.from({length:11}, (_, index) => ({
   id:`layout-document-${index}`, title:index===1?'Business Permit Application Form':index===2?'Business Permit Renewal Form':`Synthetic document ${index}`,
@@ -10,6 +11,7 @@ for(const width of [375,768,1280,1920]) test(`Downloadables layout, icon contras
   await page.emulateMedia({reducedMotion:'reduce'});
   await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
   await context.route('**/api/**',route=>route.fulfill({json:[]}));
+  await mockMunicipalContent(context);
   await context.route('**/api/media?**',route=>route.fulfill({json:{
     data:new URL(route.request().url()).searchParams.get('kind')==='document'?documents:[], hasMore:false,
   }}));

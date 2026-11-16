@@ -115,22 +115,34 @@ test('editors cannot view staff administration or audit', async ({ page, context
   expect(adminRequests).toEqual([]);
 });
 
-test('restored dashboard uses real page-scoped counts and only supported modules on desktop and mobile', async ({ page, context }, info) => {
+test('municipal dashboard uses complete content totals and supported modules on desktop and mobile', async ({ page, context }, info) => {
   await isolate(context);
   await staffSession(context, 'admin');
   const photo = { id: 'synthetic-photo', title: 'Synthetic published photo', kind: 'photo', mime: 'image/png', bytes: 1024, description: '', alt_text: 'Test image', category_id: 'photo-category', processing: 'ready', publication: 'published', version: 1 };
   const documentAsset = { ...photo, id: 'synthetic-document', title: 'Synthetic draft document', kind: 'document', mime: 'application/pdf', publication: 'draft' };
   await context.route('**/api/admin/media?page=*', route => route.fulfill({ json: { data: [photo, documentAsset], hasMore: true } }));
+  await context.route('**/api/admin/content/dashboard', route => route.fulfill({ json: {
+    counts: [{ kind: 'news', publication: 'draft', total: 4 }, { kind: 'news', publication: 'published', total: 12 },
+      { kind: 'news', publication: 'archived', total: 3 }, { kind: 'downloadables', publication: 'published', total: 2 }],
+    media: [{ kind: 'photo', publication: 'published', total: 120 }, { kind: 'document', publication: 'draft', total: 10 }],
+    recent: [{ id: 'synthetic-news', kind: 'news', title: 'Synthetic municipal update', publication: 'draft', updated_at: '2026-11-17T00:00:00Z' }],
+    activity: [{ action: 'content.publish', resource_id: 'synthetic-news', occurred_at: '2026-11-17T00:00:00Z' }],
+  } }));
   const requests: string[] = [];
   page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/')) requests.push(request.url()); });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/admin');
-  await expect(page.getByText('Synthetic published photo')).toBeVisible();
-  for (const label of ['Photos on this page', 'Documents on this page', 'Published on this page']) {
-    await expect(page.getByText(label).locator('..').locator('dd')).toHaveText('1');
+  await expect(page.getByText('Synthetic municipal update')).toBeVisible();
+  for (const [label, value] of [['Municipal records', '21'], ['Published records', '14'], ['Drafts awaiting publication', '4'], ['Media library files', '130']]) {
+    await expect(page.getByText(label, { exact: true }).locator('..').locator('dd')).toHaveText(value);
   }
+  await expect(page.getByText('Totals include all municipal records and library files. Archived records: 3.')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Your recent activity' }).getByText('content.publish')).toBeVisible();
+  const moduleLabels = ['News & Updates', 'Tourism', 'Transparency', 'Local Government', 'Galleries', 'Downloadables',
+    'Photos', 'Documents', 'Source approvals', 'Staff management', 'Audit logs'];
   const navigation = page.getByRole('navigation', { name: 'CMS navigation' });
-  await expect(navigation.getByRole('button')).toHaveCount(5);
+  await expect(navigation.getByRole('button')).toHaveCount(12);
+  for (const label of moduleLabels) await expect(navigation.getByRole('button', { name: label, exact: true })).toBeVisible();
   await expect(page.locator('a[href*="eservices"]')).toHaveCount(0);
   await expect(navigation.getByRole('button', { name: 'Dashboard overview' })).toHaveAttribute('aria-current', 'page');
   await page.screenshot({ path: info.outputPath('cms-dashboard-desktop.png'), fullPage: true });
@@ -148,13 +160,15 @@ test('restored dashboard uses real page-scoped counts and only supported modules
   await page.setViewportSize({ width: 320, height: 812 });
   await expect(page.getByRole('heading', { name: 'Dashboard overview' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  for (const label of ['Photos', 'Documents', 'Staff management', 'Audit logs']) {
+  for (const label of moduleLabels) {
     const button = navigation.getByRole('button', { name: label, exact: true });
     await expect(button).toBeVisible();
     expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   }
   await page.screenshot({ path: info.outputPath('cms-dashboard-mobile.png'), fullPage: true });
-  expect(requests.filter(url => /\/api\/(?:admin\/content|admin\/users|admin\/reports|payments|applications)/.test(url))).toEqual([]);
+  expect(requests.some(url => new URL(url).pathname === '/api/admin/content/dashboard')).toBe(true);
+  expect(requests.filter(url => new URL(url).pathname.startsWith('/api/admin/content') && new URL(url).pathname !== '/api/admin/content/dashboard')).toEqual([]);
+  expect(requests.filter(url => /\/api\/(?:admin\/users|admin\/reports|payments|applications)/.test(url))).toEqual([]);
   expect(requests.filter(url => /\/api\/staff(?:\?|\/audit)/.test(url))).toEqual([]);
 });
 

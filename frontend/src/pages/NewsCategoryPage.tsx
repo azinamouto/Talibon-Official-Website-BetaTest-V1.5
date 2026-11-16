@@ -33,9 +33,9 @@ export default function NewsCategoryPage() {
       {resource.data.data.length === 0 ? <p role="status" className="civic-card p-8">No news found. Try another search or category.</p> :
         <div className={layout.cards}>
           {resource.data.data.map(item => <article key={item.id} className="civic-card overflow-hidden">
-            {item.image_url && /^https?:\/\//i.test(item.image_url) && <img src={item.image_url} alt="" loading="lazy" className="w-full h-48 object-cover" />}
+            {item.image_url && <img src={item.image_url} alt={item.image_alt || ''} loading="lazy" className="w-full h-48 object-cover" />}
             <div className="p-6 space-y-3">
-              <p className="text-sm text-brand-muted">{item.category} · {item.date}</p>
+              <p className="text-sm text-brand-muted">{item.category} Â· {item.date}</p>
               <h2 className="text-xl font-bold"><Link className="text-brand-primary" to={`/news/view/${encodeURIComponent(item.id)}`}>{item.title}</Link></h2>
               <p className="text-brand-muted line-clamp-3">{item.summary}</p>
             </div>

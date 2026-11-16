@@ -9,7 +9,9 @@ export interface PublicService {
 export interface PublicNews {
   id: string; slug: string; title: string; summary: string; content: string;
   category: string; date: string; image_url?: string | null; file_url?: string | null; author?: string | null;
+  image_alt?: string; attachments?: PublicAttachment[];
 }
+export type PublicAttachment={id:string;kind:'photo'|'document';title:string;caption:string;alt_text:string;download_url:string;preview_url:string};
 export interface PublicPage { id: string; slug: string; title: string; content: string }
 export interface SearchItem {
   id: string; slug: string; title: string; snippet: string; type: 'news' | 'services' | 'pages';
@@ -40,9 +42,15 @@ export async function publicGet<T>(path: string, signal?: AbortSignal): Promise<
   if (!response.ok) throw new PublicApiError(response.status);
   return response.json();
 }
-export function listPublic<T>(resource: string, params: Record<string, string | number>, signal?: AbortSignal) {
+export async function listPublic<T>(resource: string, params: Record<string, string | number>, signal?: AbortSignal) {
   const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value !== '').map(([key, value]) => [key, String(value)]));
-  return publicGet<Listing<T>>(`${resource}?${query}`, signal);
+  const result = await publicGet<Listing<T>>(`${resource}?${query}`, signal);
+  if (!result || !Array.isArray(result.data) || !result.pagination ||
+      !['page', 'limit', 'total', 'totalPages'].every(key => Number.isInteger(result.pagination[key as keyof Pagination])) ||
+      result.pagination.page < 1 || result.pagination.limit < 1 || result.pagination.total < 0 || result.pagination.totalPages < 0) {
+    throw new PublicApiError(502);
+  }
+  return result;
 }
 export async function publicDetail<T>(resource: string, identifier: string, signal?: AbortSignal): Promise<T | null> {
   try {

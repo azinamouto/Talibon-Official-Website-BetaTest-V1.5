@@ -12,3 +12,10 @@ backend/test/load/results/
 ops/evidence/
 ops/backups/
 .neon
+
+# Local verification and release receipts are not source inputs.
+frontend/browser-gate-reports/
+frontend/test-results*/
+frontend/coverage/
+docs/r2/evidence/
+frontend/test/gate-fixtures-final/results/

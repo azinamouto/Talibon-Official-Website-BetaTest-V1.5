@@ -23,14 +23,19 @@ for (const width of [375, 768, 1280, 1920]) test(`About container and mayoral er
     const heading = page.locator('main h1');
     await expect(heading).toBeVisible();
     await expect(page.getByRole('status', { name:'Loading content' })).toHaveCount(0);
-    const r = await heading.boundingBox();
-    const headerBottom = await page.locator('header').first().evaluate(el => el.getBoundingClientRect().bottom);
-    expect(r!.y).toBeGreaterThan(headerBottom);
-    expect(Math.round(r!.x)).toBe(width >= 1024 ? 32 : width >= 640 ? 24 : 16);
+    // Lazy content can suspend the route after its loading skeleton disappears.
+    // Poll the actual layout, retaining the clearance and container assertions.
+    await expect(async () => {
+      const r = await heading.boundingBox();
+      expect(r).not.toBeNull();
+      const headerBottom = await page.locator('header').first().evaluate(el => el.getBoundingClientRect().bottom);
+      expect(r!.y).toBeGreaterThan(headerBottom);
+      expect(Math.round(r!.x)).toBe(width >= 1024 ? 32 : width >= 640 ? 24 : 16);
+    }).toPass({ timeout: 5000 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     if(path==='profile') {
       const paragraph = page.locator('main p').first();
-      expect((await paragraph.boundingBox())!.x).toBe(r!.x);
+      expect((await paragraph.boundingBox())!.x).toBe((await heading.boundingBox())!.x);
       expect(await paragraph.evaluate(el => el.getBoundingClientRect().width)).toBeLessThanOrEqual(900);
     }
   }

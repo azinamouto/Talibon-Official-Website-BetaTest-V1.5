@@ -9,7 +9,7 @@ for (const width of [375, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto('/search?q=municipal&limit=1');
+    await page.goto('/search?q=municipal&limit=1', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('region', { name: 'Search results' })).toContainText('3 results');
     await expect(page.getByRole('button', { name: 'Previous', exact: true })).toBeDisabled();
     await page.getByRole('button', { name: 'Next', exact: true }).click();
@@ -46,21 +46,21 @@ for (const width of [375, 1280]) {
 test('idle, empty, out-of-range and malformed URL states', async ({ page }) => {
   const calls: string[] = [];
   page.on('request', request => { if (request.url().includes('/api/search?')) calls.push(request.url()); });
-  await page.goto('/search');
+  await page.goto('/search', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('status')).toContainText('Enter a search term');
   expect(calls).toHaveLength(0);
   await page.getByRole('searchbox', { name: 'Search the site' }).fill('no-such-result');
   await page.getByRole('search').getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page.getByText('No results found. Try another search term or clear the filters.')).toBeVisible();
-  await page.goto('/search?q=municipal&page=99&limit=1');
+  await page.goto('/search?q=municipal&page=99&limit=1', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: 'Go to first page' }).click();
   await expect(page.getByRole('navigation', { name: 'Pagination' })).toContainText('Page 1 of 3');
-  await page.goto('/search?q=municipal&type=invalid&sort=bad&page=-1&limit=999');
+  await page.goto('/search?q=municipal&type=invalid&sort=bad&page=-1&limit=999', { waitUntil: 'domcontentloaded' });
   await expect(page.getByLabel('Content type')).toHaveValue('all');
   await expect(page.getByLabel('Results per page')).toHaveValue('10');
   await expect(page.getByRole('region', { name: 'Search results' })).toContainText('3 results');
   const before = calls.length;
-  await page.goto(`/search?q=${'x'.repeat(101)}`);
+  await page.goto(`/search?q=${'x'.repeat(101)}`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('alert')).toContainText('100 characters');
   expect(calls).toHaveLength(before);
 });
@@ -74,7 +74,7 @@ test('loading, rate-limit and service errors allow retry', async ({ page }) => {
     if (status === 429) return route.fulfill({ status: 429, json: {}, headers: { 'Retry-After': '1' } });
     return route.continue();
   });
-  await page.goto('/search?q=municipal');
+  await page.goto('/search?q=municipal', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('region', { name: 'Search results' })).toHaveAttribute('aria-busy', 'true');
   await expect(page.getByRole('status')).toContainText('Loading content');
   release();
@@ -97,7 +97,7 @@ test('superseded search responses cannot replace the current results', async ({ 
     }
     return route.continue();
   });
-  await page.goto('/search?q=old');
+  await page.goto('/search?q=old', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('status')).toContainText('Loading content');
   await page.getByRole('searchbox', { name: 'Search the site' }).fill('municipal');
   await page.getByRole('search').getByRole('button', { name: 'Search', exact: true }).click();
@@ -107,14 +107,14 @@ test('superseded search responses cannot replace the current results', async ({ 
 });
 
 test('popup links to full search and results navigate by content type', async ({ page }) => {
-  await page.goto('/news');
+  await page.goto('/news', { waitUntil: 'domcontentloaded' });
   await page.getByTitle('Search', { exact: true }).click();
   await page.getByRole('searchbox', { name: 'Search the site' }).fill('municipal');
   await page.getByRole('link', { name: 'View all results and filters' }).click();
   await expect(page).toHaveURL(/\/search\?q=municipal/);
   await expect(page.getByRole('dialog')).not.toBeVisible();
   for (const [type, prefix] of [['news', '/news/view/'], ['pages', '/pages/']]) {
-    await page.goto(`/search?q=municipal&type=${type}`);
+    await page.goto(`/search?q=municipal&type=${type}`, { waitUntil: 'domcontentloaded' });
     await page.getByRole('region', { name: 'Search results' }).getByRole('link').click();
     expect(new URL(page.url()).pathname).toContain(prefix);
     await expect(page.getByRole('heading', { name: 'Municipal information', level: 1 })).toBeVisible();

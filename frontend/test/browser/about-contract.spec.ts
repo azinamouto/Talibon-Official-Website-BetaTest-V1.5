@@ -20,8 +20,15 @@ for (const width of [375, 1280]) {
     ]) {
       const response = page.waitForResponse(response => response.url().endsWith('/api/' + endpoint));
       await page.goto('/about/' + path);
-      expect((await response).status()).toBe(200);
-      await expect(page.getByRole('heading', { name: heading, exact: true, level: 1 })).toBeVisible();
+      const result=await response;
+      expect(result.status()).toBe(200);
+      const payload=await result.json();
+      if(Array.isArray(payload) && payload.length===0) {
+        // Empty verified feeds render an honest empty state, not invented civic records.
+        await expect(page.getByRole('main')).toContainText('No content available at this time.');
+      } else {
+        await expect(page.getByRole('heading', { name: heading, exact: true, level: 1 })).toBeVisible();
+      }
       await expect(page.getByRole('status', { name: 'Loading content' })).toHaveCount(0);
       await expect(page.getByRole('alert')).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

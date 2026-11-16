@@ -273,9 +273,9 @@ test('R2 HTTP public reads use approved Neon views with filters, pagination, sea
     const search=await (await fetch(base+'/api/search?q=uniqueverify')).json();
     assert.equal(search.meta.total,1);assert.equal(search.data[0].id,id);
     assert.equal((await fetch(base+'/api/health/ready')).status,503);
-    // R2 staff content writes are active and must reject anonymous callers.
+    // Text authoring is closed for the photo/document CMS scope, before authentication or writes.
     const beforeWrite = await owner.query('SELECT count(*)::int AS n FROM app.public_content');
-    assert.equal((await fetch(base+'/api/news',{method:'POST'})).status,401);
+    assert.equal((await fetch(base+'/api/news',{method:'POST'})).status,410);
     assert.deepEqual((await owner.query('SELECT count(*)::int AS n FROM app.public_content')).rows, beforeWrite.rows);
     assert.equal((await fetch(base+'/api/admin/media')).status,401);
     await owner.query('UPDATE app.content_sources SET approved=false WHERE id=$1',[source]);

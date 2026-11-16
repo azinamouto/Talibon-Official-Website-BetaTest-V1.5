@@ -9,7 +9,9 @@ export interface PublicService {
 export interface PublicNews {
   id: string; slug: string; title: string; summary: string; content: string;
   category: string; date: string; image_url?: string | null; file_url?: string | null; author?: string | null;
+  image_alt?: string; attachments?: PublicAttachment[];
 }
+export type PublicAttachment={id:string;kind:'photo'|'document';title:string;caption:string;alt_text:string;download_url:string;preview_url:string};
 export interface PublicPage { id: string; slug: string; title: string; content: string }
 export interface SearchItem {
   id: string; slug: string; title: string; snippet: string; type: 'news' | 'services' | 'pages';

@@ -1,3 +1,5 @@
+import PublishedAttachments from '../components/PublishedAttachments';
+import type { PublicAttachment } from '../services/publicApi';
 import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
@@ -10,6 +12,7 @@ interface Official {
   image_url?: string;
 }
 interface OrganizationalChart {
+  attachments?: PublicAttachment[];
   mayor: Official;
   level2: Official[];
   departments: Official[];
@@ -117,6 +120,7 @@ const OrganizationalChartPage: React.FC = () => {
           </p>
         </div>
 
+        <PublishedAttachments attachments={data.attachments} />
         <div className="flex flex-col items-center space-y-4 py-2">
           {/* Level 1: Mayor */}
           <motion.div 

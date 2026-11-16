@@ -3,6 +3,8 @@ import React from "react";
 import { Clock, ShieldCheck, Building2, FileText, Download, ExternalLink, Info } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
+import PublishedAttachments from '../../components/PublishedAttachments';
+import type { PublicAttachment } from '../../services/publicApi';
 
 interface BudgetBreakdownItem {
   category: string;
@@ -10,6 +12,7 @@ interface BudgetBreakdownItem {
 }
 
 interface BudgetDocument {
+  attachments?: PublicAttachment[];
   id: string | number;
   title: string;
   file_url?: string;
@@ -30,11 +33,7 @@ interface BudgetViewProps {
 }
 
 export default function BudgetView({ data }: BudgetViewProps) {
-  const isToBePosted = 
-    !data.annualBudget || 
-    data.annualBudget === "TO BE POSTED" || 
-    data.status === "TO BE POSTED" ||
-    (!data.documents?.length && (!data.breakdown || data.breakdown.length === 0));
+  const hasDocuments=!!data.documents?.length;
 
   return (
     <div className="space-y-6">
@@ -64,7 +63,7 @@ export default function BudgetView({ data }: BudgetViewProps) {
           <div className="shrink-0">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-extrabold text-xs uppercase tracking-wider shadow-2xs">
               <Clock size={14} className="animate-pulse" />
-              <span>TO BE POSTED</span>
+              <span>{hasDocuments?'DOCUMENTS PUBLISHED':'TO BE POSTED'}</span>
             </div>
           </div>
         </div>
@@ -80,7 +79,7 @@ export default function BudgetView({ data }: BudgetViewProps) {
                 Publication status
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                {data.message || "Approved budget documents are not yet available."}
+                {hasDocuments?`${data.documents!.length} approved budget publication(s) available below.`:data.message || "Approved budget documents are not yet available."}
               </p>
             </div>
           </div>
@@ -109,10 +108,10 @@ export default function BudgetView({ data }: BudgetViewProps) {
 
             <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
               <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">
-                Current Fiscal Status
+                Budget Document Status
               </span>
               <p className="text-xs font-black text-amber-700 uppercase">
-                TO BE POSTED
+                {hasDocuments?'PUBLISHED':'TO BE POSTED'}
               </p>
             </div>
           </div>
@@ -135,7 +134,7 @@ export default function BudgetView({ data }: BudgetViewProps) {
             {data.documents.map((doc, idx) => (
               <div 
                 key={doc.id || idx}
-                className="p-3.5 bg-white border border-slate-200/80 rounded-xl flex items-center justify-between shadow-2xs hover:border-brand-primary/40 transition-all group"
+                className="p-3.5 bg-white border border-slate-200/80 rounded-xl flex flex-wrap items-center justify-between gap-3 shadow-2xs hover:border-brand-primary/40 transition-all group"
               >
                 <div className="flex items-center gap-2.5 min-w-0 pr-2">
                   <div className="w-9 h-9 rounded-lg bg-brand-primary/10 group-hover:bg-brand-primary group-hover:text-white flex items-center justify-center text-brand-primary transition-colors shrink-0">
@@ -151,7 +150,7 @@ export default function BudgetView({ data }: BudgetViewProps) {
                   </div>
                 </div>
 
-                {doc.file_url && (
+                {doc.file_url && !doc.attachments?.length && (
                   <a
                     href={doc.file_url}
                     target="_blank"
@@ -162,6 +161,7 @@ export default function BudgetView({ data }: BudgetViewProps) {
                     <Download size={13} />
                   </a>
                 )}
+                <div className="w-full"><PublishedAttachments attachments={doc.attachments} /></div>
               </div>
             ))}
           </div>

@@ -1,7 +1,11 @@
+import PublishedAttachments from '../../components/PublishedAttachments';
+import type { PublicAttachment } from '../../services/publicApi';
 import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 
 interface BidItem {
+  description?: string;
+  attachments?: PublicAttachment[];
   id: string;
   title: string;
   deadline: string;
@@ -22,6 +26,8 @@ export default function BiddingsView({ data }: BiddingsViewProps) {
           <p className="text-[10px] font-bold text-brand-primary uppercase tracking-wider">
             DEADLINE: {String(bid.deadline)}
           </p>
+          {bid.description && <p className="whitespace-pre-wrap">{bid.description}</p>}
+          <PublishedAttachments attachments={bid.attachments} />
         </div>
       ))}
     </div>

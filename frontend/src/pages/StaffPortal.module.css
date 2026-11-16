@@ -32,7 +32,7 @@
 .panelHeading > div { flex: 1 1 320px; }
 .panelHeading p:not(.eyebrow) { color: #475569; font-size: 14px; line-height: 1.65; }
 .panelHeading button { font-size: 13px; }
-.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .stat { position: relative; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
 .statIcon { display: grid; width: 36px; height: 36px; place-items: center; margin-bottom: 16px; border-radius: 8px; color: #1d4ed8; background: #eff6ff; }
 .stat dt { color: #475569; font-size: 12px; font-weight: 600; }

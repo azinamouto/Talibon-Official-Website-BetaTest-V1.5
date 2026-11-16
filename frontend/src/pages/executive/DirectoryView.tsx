@@ -2,7 +2,7 @@ import { Phone, Building2 } from 'lucide-react';
 import { charterGroups } from '../../data/charterDirectory';
 import styles from './DirectoryView.module.css';
 
-interface DirectoryEntry { department: string; contact?: string }
+interface DirectoryEntry { department: string; contact?: string; head?: string; description?: string; address?: string }
 const officeKey = (name: string) => name.replace(/[\u2019']/g, '').toLowerCase().trim();
 
 export default function DirectoryView({ data }: { data: DirectoryEntry[] }) {
@@ -21,6 +21,9 @@ export default function DirectoryView({ data }: { data: DirectoryEntry[] }) {
         <span className={styles.icon}><Building2 size={18} aria-hidden="true" /></span>
         <h2>{entry.department}</h2>
       </div>
+      {entry.head && <p>Office head: {entry.head}</p>}
+      {entry.description && <p>{entry.description}</p>}
+      {entry.address && <p>{entry.address}</p>}
       {entry.contact ? <a href={`tel:${entry.contact.replace(/[^+\d]/g, '')}`} className={styles.phone}
         aria-label={`Call ${entry.department}: ${entry.contact}`}>
         <Phone size={13} aria-hidden="true" /><span>{entry.contact}</span>

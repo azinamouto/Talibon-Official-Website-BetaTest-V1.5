@@ -73,7 +73,7 @@ export default function DepartmentsView({ data }: DepartmentsViewProps) {
                         <span className="text-[8px] font-bold text-brand-muted uppercase tracking-wider block opacity-70">Director / Head</span>
                         <div className="flex items-center gap-1.5 text-xs font-bold text-brand-text uppercase tracking-tight group-hover:text-brand-primary transition-colors">
                           <User size={11} className="shrink-0 text-brand-primary/80" />
-                          <span className="truncate">{dept.head || "OIC"}</span>
+                          <span className="truncate">{dept.head || "Not listed"}</span>
                         </div>
                       </div>
                       <div className="space-y-0.5">

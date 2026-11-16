@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PublishedPhotos from '../components/PublishedPhotos';
+import PublishedCollections from '../components/PublishedCollections';
 import layout from '../styles/InnerPageLayout.module.css';
 import { motion } from 'motion/react';
 import { Download, FileText, FileSpreadsheet, FileArchive, Search, Filter, ExternalLink, Building2, Briefcase, FileCheck, Landmark, Target, Activity } from 'lucide-react';
@@ -216,6 +217,7 @@ const DownloadsPage: React.FC = () => {
           {page > 1 && <button className="min-h-11 underline" onClick={() => setPage(page-1)}>Previous documents</button>}
           {hasMore && !loading && !error && <button className="min-h-11 underline" onClick={() => setPage(page+1)}>Next documents</button>}
         </div>
+        <PublishedCollections />
         <PublishedPhotos />
 
         {/* GAD Links Section */}

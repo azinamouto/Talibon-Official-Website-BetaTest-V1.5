@@ -1,7 +1,11 @@
+import PublishedAttachments from '../../components/PublishedAttachments';
+import type { PublicAttachment } from '../../services/publicApi';
 import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 
 interface Order {
+  description?: string;
+  attachments?: PublicAttachment[];
   id: string;
   date: string;
   title: string;
@@ -22,6 +26,8 @@ export default function OrdersView({ data }: OrdersViewProps) {
           <h3 className="text-xs sm:text-sm font-bold text-brand-text group-hover:text-brand-primary transition-colors font-display uppercase tracking-tight">
             {String(order.title)}
           </h3>
+          {order.description && <p className="whitespace-pre-wrap">{order.description}</p>}
+          <PublishedAttachments attachments={order.attachments} />
         </div>
       ))}
     </div>

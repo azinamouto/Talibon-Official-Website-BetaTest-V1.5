@@ -25,6 +25,7 @@ beforeEach(() => {
   mocks.auth.staff = { id: 'synthetic-admin', role: 'admin' }; mocks.auth.loading = false; mocks.auth.error = null;
   mocks.auth.refresh.mockReset(); mocks.auth.signOut.mockReset();
   mocks.request.mockImplementation(async (path: string) => {
+    if (path === '/api/admin/content/dashboard') return { counts: [{kind:'news',publication:'draft',total:4},{kind:'news',publication:'published',total:12}], media:[{kind:'photo',publication:'published',total:120}], recent:[{id:'news',kind:'news',title:'Synthetic municipal update',publication:'draft',updated_at:'2026-11-17'}], activity:[] };
     if (path === '/api/admin/media/options') return mediaOptions;
     if (path.startsWith('/api/admin/media?page=')) return { data: [photo, document], hasMore: true };
     if (path.startsWith('/api/staff/audit?')) return { data: [{ id: 'event', action: 'mfa.success', source: 'authentication', actorId: null, subjectId: 'synthetic-editor', occurredAt: '2026-11-02T00:00:00Z' }], pagination: { page: 1, limit: 50, hasMore: false } };
@@ -34,14 +35,14 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
-it('uses returned media records for explicitly page-scoped counts and keeps administration requests lazy', async () => {
+it('uses website-wide content statistics and keeps administration requests lazy', async () => {
   portal();
-  await screen.findByText('Synthetic photo');
+  await screen.findByText('Synthetic municipal update');
   expect(screen.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
-  for (const label of ['Photos on this page', 'Documents on this page', 'Published on this page']) {
-    expect(screen.getByText(label).parentElement?.querySelector('dd')).toHaveTextContent('1');
+  for (const [label,value] of [['Municipal records','16'],['Published records','12'],['Drafts awaiting publication','4'],['Media library files','120']]) {
+    expect(screen.getByText(label).parentElement?.querySelector('dd')).toHaveTextContent(value);
   }
-  expect(screen.getByText(/Up to 50 recent files/)).toBeVisible();
+  expect(screen.getByText(/Totals include all municipal records/)).toBeVisible();
   expect(mocks.request).not.toHaveBeenCalledWith(expect.stringMatching(/^\/api\/staff(?:\?|\/audit)/));
   expect(nav('Dashboard overview')).toHaveAttribute('aria-current', 'page');
 });
@@ -65,7 +66,7 @@ it('separates photo and document files and categories without inventing a backen
 it('hides admin modules and rejects a privileged deep link for an editor', async () => {
   mocks.auth.staff = { id: 'synthetic-editor', role: 'editor' };
   portal('/admin?tab=staff');
-  await screen.findByText('Synthetic photo');
+  await screen.findByText('Synthetic municipal update');
   const navigation = screen.getByRole('navigation', { name: 'CMS navigation' });
   expect(within(navigation).queryByRole('button', { name: 'Staff management' })).not.toBeInTheDocument();
   expect(within(navigation).queryByRole('button', { name: 'Audit logs' })).not.toBeInTheDocument();
@@ -91,7 +92,7 @@ it('requires a fresh MFA code before a versioned role mutation and clears the co
 
 it('loads the read-only audit only when selected and renders recorded activity', async () => {
   portal();
-  await screen.findByText('Synthetic photo');
+  await screen.findByText('Synthetic municipal update');
   fireEvent.click(nav('Audit logs'));
   await screen.findByText('mfa.success');
   expect(screen.getByRole('heading', { name: 'Audit logs' })).toBeVisible();
@@ -104,19 +105,20 @@ it('shows unavailable counts rather than fabricated zeroes when loading fails, a
   mocks.request.mockRejectedValueOnce(new Error('Synthetic unavailable response'));
   portal();
   await screen.findByRole('alert');
-  expect(screen.getByText('Photos on this page').parentElement?.querySelector('dd')).toHaveTextContent('—');
+  expect(screen.getByText('Municipal records').parentElement?.querySelector('dd')).toHaveTextContent('—');
   expect(screen.queryByText('No media on this page')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Refresh overview' }));
-  await screen.findByText('Synthetic photo');
-  expect(screen.getByText('Photos on this page').parentElement?.querySelector('dd')).toHaveTextContent('1');
+  await screen.findByText('Synthetic municipal update');
+  expect(screen.getByText('Municipal records').parentElement?.querySelector('dd')).toHaveTextContent('16');
 });
 
 it('does not restore deprecated modules through a legacy query parameter', async () => {
   portal('/admin?tab=workflows');
-  await screen.findByText('Synthetic photo');
+  await screen.findByText('Synthetic municipal update');
   expect(screen.getByRole('heading', { name: 'Dashboard overview' })).toBeVisible();
-  expect(screen.queryByRole('button', { name: /citizen|payment|application|news/i })).not.toBeInTheDocument();
-  expect(mocks.request.mock.calls.some(([path]) => String(path).startsWith('/api/admin/content'))).toBe(false);
+  expect(within(screen.getByRole('navigation', {name:'CMS navigation'})).queryByRole('button', { name: /citizen|payment|application/i })).not.toBeInTheDocument();
+  expect(nav('News & Updates')).toBeVisible();
+  expect(mocks.request).toHaveBeenCalledWith('/api/admin/content/dashboard');
 });
 
 it('preserves unauthenticated redirect and does not load CMS metadata', async () => {
@@ -129,7 +131,7 @@ it('preserves unauthenticated redirect and does not load CMS metadata', async ()
 it('preserves sign-out and offers a retry when it cannot be confirmed', async () => {
   mocks.auth.signOut.mockRejectedValueOnce(new Error('Synthetic sign-out failure'));
   portal();
-  await screen.findByText('Synthetic photo');
+  await screen.findByText('Synthetic municipal update');
   fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
   await screen.findByText('Could not confirm sign out. Please retry.');
   await waitFor(() => expect(screen.getByRole('button', { name: 'Sign out' })).toBeEnabled());

@@ -1,69 +1,36 @@
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useState } from 'react';
-import { Activity, ArrowRight, CheckCircle2, ExternalLink, FileText, Image, LayoutDashboard, ListCollapse, LogOut, RefreshCw, ShieldCheck, Users } from 'lucide-react';
+import { Activity, Building2, Camera, ExternalLink, FileText, Image, Landmark, LayoutDashboard, ListCollapse, LogOut, MapPin, Newspaper, RefreshCw, ShieldCheck, Users } from 'lucide-react';
 import { staffRequest, useStaffAuth } from '../contexts/StaffAuthContext';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import AdminMedia, { type Asset } from '../components/admin/AdminMedia';
+import AdminMedia from '../components/admin/AdminMedia';
+import AdminContent from '../components/admin/AdminContent';
+import AdminSources from '../components/admin/AdminSources';
+import MunicipalDashboard from '../components/admin/MunicipalDashboard';
+import type { MunicipalGroup } from '../components/admin/municipalModules';
 import styles from './StaffPortal.module.css';
 
 type StaffAccount = { id: string; email: string; role: 'admin' | 'editor'; active: boolean; version: number };
 type StaffEvent = { id: string; source: string; action: string; actorId: string | null; subjectId: string | null; occurredAt: string };
 type StaffPage<T> = { data: T[]; pagination: { page: number; limit: number; hasMore: boolean } };
-type Module = 'overview' | 'photos' | 'documents' | 'staff' | 'audit';
+type Module = 'overview' | MunicipalGroup | 'photos' | 'documents' | 'staff' | 'audit' | 'sources';
 const contentModules = [
   { id: 'overview', label: 'Dashboard overview', icon: LayoutDashboard },
+  { id: 'news', label: 'News & Updates', icon: Newspaper },
+  { id: 'tourism', label: 'Tourism', icon: MapPin },
+  { id: 'transparency', label: 'Transparency', icon: Landmark },
+  { id: 'government', label: 'Local Government', icon: Building2 },
+  { id: 'galleries', label: 'Galleries', icon: Camera },
+  { id: 'downloadables', label: 'Downloadables', icon: FileText },
   { id: 'photos', label: 'Photos', icon: Image },
   { id: 'documents', label: 'Documents', icon: FileText },
 ] as const;
 const administrationModules = [
+  { id: 'sources', label: 'Source approvals', icon: ShieldCheck },
   { id: 'staff', label: 'Staff management', icon: Users },
   { id: 'audit', label: 'Audit logs', icon: Activity },
 ] as const;
-
-function DashboardOverview({ openModule }: { openModule(module: Module): void }) {
-  const [snapshot, setSnapshot] = useState<{ data: Asset[]; hasMore: boolean } | null>(null);
-  const [error, setError] = useState('');
-  const [reload, setReload] = useState(0);
-  useEffect(() => {
-    let current = true;
-    setSnapshot(null); setError('');
-    void staffRequest<{ data: Asset[]; hasMore: boolean }>('/api/admin/media?page=1')
-      .then(result => { if (current) setSnapshot(result); })
-      .catch(() => { if (current) setError('The media overview could not be loaded. Please retry.'); });
-    return () => { current = false; };
-  }, [reload]);
-  const counts = [
-    { label: 'Photos on this page', icon: Image, value: snapshot?.data.filter(asset => asset.kind === 'photo').length },
-    { label: 'Documents on this page', icon: FileText, value: snapshot?.data.filter(asset => asset.kind === 'document').length },
-    { label: 'Published on this page', icon: CheckCircle2, value: snapshot?.data.filter(asset => asset.processing === 'ready' && asset.publication === 'published').length },
-  ];
-  return <section aria-labelledby="overview-title">
-    <div className={styles.panelHeading}>
-      <div><p className={styles.eyebrow}>Content management</p><h2 id="overview-title">Dashboard overview</h2><p>Manage the photos and documents shared through the TalGov website.</p></div>
-      <Button variant="secondary" onClick={() => setReload(value => value + 1)}><RefreshCw size={16} aria-hidden="true" />Refresh overview</Button>
-    </div>
-    {error && <p role="alert" className={styles.error}>{error}</p>}
-    {!snapshot && !error && <p role="status" className={styles.loading}>Loading the media overview…</p>}
-    <dl className={styles.stats}>{counts.map(({ label, icon: Icon, value }) => <div key={label} className={styles.stat}>
-      <span className={styles.statIcon}><Icon size={20} aria-hidden="true" /></span>
-      <dt>{label}</dt><dd>{value ?? '—'}</dd>
-    </div>)}</dl>
-    <p className={styles.scope}>Library page 1 · Up to 50 recent files. {snapshot?.hasMore ? 'More files are available on the next library pages.' : 'Counts reflect this page, not website-wide totals.'}</p>
-    <div className={styles.quickActions}>
-      <button className={styles.quickAction} onClick={() => openModule('photos')}><span className={styles.actionIcon}><Image size={24} aria-hidden="true" /></span><span><strong>Manage photos</strong><span>Upload images, add alternative text and review publication.</span></span><ArrowRight size={20} aria-hidden="true" /></button>
-      <button className={styles.quickAction} onClick={() => openModule('documents')}><span className={styles.actionIcon}><FileText size={24} aria-hidden="true" /></span><span><strong>Manage documents</strong><span>Organize PDF files and provide authorized downloads.</span></span><ArrowRight size={20} aria-hidden="true" /></button>
-    </div>
-    <section className={styles.recent} aria-labelledby="recent-title">
-      <div className={styles.sectionHeading}><h3 id="recent-title">Recent media</h3><span>From library page 1</span></div>
-      {snapshot && (snapshot.data.length ? <ul className={styles.recentList}>{snapshot.data.slice(0, 5).map(asset => <li key={asset.id}>
-        <span className={styles.fileIcon}>{asset.kind === 'photo' ? <Image size={20} aria-hidden="true" /> : <FileText size={20} aria-hidden="true" />}</span>
-        <div><strong>{asset.title}</strong><p>{asset.kind === 'photo' ? 'Photo' : 'Document'} · {Math.ceil(Number(asset.bytes) / 1024)} KiB</p></div>
-        <span className={styles.badge}>{asset.processing === 'ready' ? asset.publication : 'Upload pending'}</span>
-      </li>)}</ul> : <div className={styles.empty}><FileText size={32} aria-hidden="true" /><h3>No media on this page</h3><p>Uploaded photos and documents will appear here. New uploads begin as private drafts.</p></div>)}
-    </section>
-  </section>;
-}
 
 export default function StaffPortal() {
   const { staff, loading, error, refresh, signOut } = useStaffAuth();
@@ -152,11 +119,13 @@ export default function StaffPortal() {
         <nav id="cms-navigation" aria-label="CMS navigation"><p className={styles.navGroup + ' ' + styles.navLabel}>Content library</p><div className={styles.navItems}>{navigation(contentModules)}</div>
           {staff.role === 'admin' && <div className={styles.adminNavigation}><p className={styles.navGroup + ' ' + styles.navLabel}>Administration</p><div className={styles.navItems}>{navigation(administrationModules)}</div></div>}
         </nav>
-        <div className={styles.sidebarNote}><ShieldCheck size={18} aria-hidden="true" /><p className={styles.navLabel}>Photos and documents.<br />Reviewed before publication.</p></div>
+        <div className={styles.sidebarNote}><ShieldCheck size={18} aria-hidden="true" /><p className={styles.navLabel}>Official municipal content.<br />Reviewed before publication.</p></div>
       </aside>
       <div className={styles.panel}>
         {message && <p role="status" className={styles.notice}>{message}</p>}
-        {activeTab === 'overview' && <DashboardOverview openModule={openModule} />}
+        {activeTab === 'overview' && <MunicipalDashboard openModule={openModule} />}
+        {(['news','tourism','transparency','government','galleries','downloadables'] as string[]).includes(activeTab) && <AdminContent key={activeTab} role={staff.role} group={activeTab as MunicipalGroup} />}
+        {staff.role === 'admin' && activeTab === 'sources' && <AdminSources />}
         {(activeTab === 'photos' || activeTab === 'documents') && <AdminMedia key={activeTab} role={staff.role} kind={activeTab === 'photos' ? 'photo' : 'document'} />}
         {staff.role === 'admin' && (activeTab === 'staff' || activeTab === 'audit') && <>
           <div className={styles.panelHeading}><div><p className={styles.eyebrow}>Administration · Admin only</p><h2>{activeTab === 'staff' ? 'Staff management' : 'Audit logs'}</h2><p>{activeTab === 'staff' ? 'Review staff roles, active access and sessions.' : 'Review recorded authentication and administrative activity.'}</p></div>

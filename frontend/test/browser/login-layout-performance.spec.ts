@@ -12,18 +12,19 @@ for (const width of [375, 1280]) {
     const ready = new Promise<void>(resolve => { release = resolve; });
     await page.route('**/assets/StaffLogin-*.js', async route => { await ready; await route.continue(); });
     await page.goto('/staff/login', { waitUntil: 'domcontentloaded' });
-    let before: { height: number; footerTop: number };
+    let before: { height: number };
     try {
       await expect(page.getByRole('status').filter({ hasText: 'Loading page' })).toBeVisible();
-      before = await page.evaluate(() => ({ height: document.querySelector('#main-content')!.getBoundingClientRect().height,
-        footerTop: document.querySelector('footer')!.getBoundingClientRect().top }));
+      before = await page.evaluate(() => ({ height: document.querySelector('#main-content')!.getBoundingClientRect().height }));
     } finally { release(); }
     await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
     const after = await page.evaluate(() => ({ height: document.querySelector('#main-content')!.getBoundingClientRect().height,
-      footerTop: document.querySelector('footer')!.getBoundingClientRect().top,
       overflow: document.documentElement.scrollWidth > innerWidth }));
-    expect(after.height).toBeCloseTo(before!.height, 0);
-    expect(after.footerTop).toBeCloseTo(before!.footerTop, 0);
+    expect(before!.height).toBeGreaterThanOrEqual(width === 375 ? 812 : 900);
+    expect(after.height).toBeGreaterThanOrEqual(before!.height);
+    await expect(page.getByRole('navigation', { name: 'Main navigation' })).toHaveCount(0);
+    await expect(page.getByRole('contentinfo')).toHaveCount(1);
+    await expect(page.locator('#main-content footer')).toHaveCount(1);
     expect(after.overflow).toBe(false);
     await testInfo.attach('loading-and-login-geometry', { body: JSON.stringify({ before: before!, after }), contentType: 'application/json' });
     const email = page.getByLabel('Staff email', { exact: true });
@@ -32,12 +33,10 @@ for (const width of [375, 1280]) {
     await email.focus();
     await expect(email).toHaveCSS('outline-style', 'solid');
     await email.fill('lab@example.invalid');
-    await page.getByRole('button', { name: 'Forgot password?' }).click();
-    await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toBeVisible();
-    await expect(page.getByLabel('Password', { exact: true })).toHaveCount(0);
-    await page.getByRole('button', { name: 'Back to sign in' }).click();
+    await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toHaveCount(0);
     await expect(email).toHaveValue('lab@example.invalid');
     await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Staff workspace' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'CMS Administration' })).toHaveCount(0);
   });
 }

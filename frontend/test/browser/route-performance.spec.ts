@@ -57,7 +57,7 @@ test('every staff portal alias still rejects anonymous sessions', async ({ page 
     await page.goto(route);
     await expect(page).toHaveURL(/\/staff\/login$/);
     await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Staff workspace' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'CMS Administration' })).toHaveCount(0);
   }
 });
 
@@ -70,10 +70,18 @@ for (const role of ['admin', 'editor'] as const) {
     await page.route('**/api/staff?**', route => route.fulfill({ json: { data: [], pagination: { hasMore: false } } }));
     await page.route('**/api/staff/audit?**', route => route.fulfill({ json: { data: [], pagination: { hasMore: false } } }));
     await page.goto('/cms');
-    await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
-    await expect(page.getByText(`Signed in as ${role}.`)).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Staff access', exact: true })).toHaveCount(role === 'admin' ? 1 : 0);
-    await expect(page.getByLabel('Current authenticator code', { exact: true })).toHaveCount(role === 'admin' ? 1 : 0);
+    await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
+    await expect(page.getByText(role === 'admin' ? 'Administrator' : 'Editor', { exact: true })).toBeVisible();
+    const navigation = page.getByRole('navigation', { name: 'CMS navigation' });
+    await expect(navigation.getByRole('button', { name: 'Photos', exact: true })).toBeVisible();
+    await expect(navigation.getByRole('button', { name: 'Documents', exact: true })).toBeVisible();
+    await expect(page.getByLabel('Current authenticator code', { exact: true })).toHaveCount(0);
+    await expect(navigation.getByRole('button', { name: 'Staff management', exact: true })).toHaveCount(role === 'admin' ? 1 : 0);
+    await expect(navigation.getByRole('button', { name: 'Audit logs', exact: true })).toHaveCount(role === 'admin' ? 1 : 0);
+    if (role === 'admin') {
+      await navigation.getByRole('button', { name: 'Staff management', exact: true }).click();
+      await expect(page.getByLabel('Current authenticator code', { exact: true })).toBeVisible();
+    }
     if (role === 'editor') expect(privilegedReads).toEqual([]);
   });
 }
@@ -82,7 +90,7 @@ test('staff initialization failure remains closed and retryable', async ({ page 
   await page.route('**/api/staff/me', route => route.fulfill({ status: 503, json: { message: 'Unavailable' } }));
   await page.goto('/cms');
   await expect(page.getByRole('alert').filter({ hasText: 'Staff authentication is unavailable' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Retry', exact: true })).toBeVisible();
 });
 

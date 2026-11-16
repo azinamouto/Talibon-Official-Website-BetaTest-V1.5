@@ -3,13 +3,10 @@ import { PDFDocument } from 'pdf-lib';
 const id='11111111-1111-4111-8111-111111111111';
 const category='22222222-2222-4222-8222-222222222222';
 const source='33333333-3333-4333-8333-333333333333';
-test.beforeEach(async ({ context }) => {
-  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('**/api/admin/content/news?*', route => route.fulfill({ json: { data: [], pagination: { totalPages: 0 } } }));
-});
-
 test('editor uploads, previews, edits and publishes a private photo on mobile and desktop', async ({page,context},info) => {
   test.setTimeout(60000);
+  await context.route('**/api/**', route => route.fulfill({status:404,json:{}}));
+  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
   await context.route('**/api/staff/me',route=>route.fulfill({json:{id,role:'editor'}}));
   let asset: Record<string,unknown> | null=null; let fail=true; const uploadIds: string[]=[];
   await context.route('**/api/admin/media**',async route=>{
@@ -30,8 +27,8 @@ test('editor uploads, previews, edits and publishes a private photo on mobile an
     }
     return route.fulfill({json:{data:asset?[asset]:[],hasMore:false}});
   });
-  await page.setViewportSize({width:375,height:812});await page.goto('/cms');
-  await expect(page.getByRole('heading',{name:'Photos and documents'})).toBeVisible();
+  await page.setViewportSize({width:375,height:812});await page.goto('/cms?tab=photos');
+  await expect(page.getByRole('heading',{name:'Photos',exact:true})).toBeVisible();
   await page.getByLabel('File',{exact:true}).setInputFiles({name:'test.png',mimeType:'image/png',buffer:Buffer.from('synthetic-browser-upload')});
   await page.getByLabel('Title',{exact:true}).fill('Test photo');
   await page.getByLabel('Alternative text').fill('Test image');await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record').selectOption(source);
@@ -50,6 +47,8 @@ test('editor uploads, previews, edits and publishes a private photo on mobile an
   await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:info.outputPath('media-desktop.png'),fullPage:true});
 });
 test('admin deletion requires explicit confirmation and MFA',async({page,context})=>{
+  await context.route('**/api/**', route => route.fulfill({status:404,json:{}}));
+  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
   await context.route('**/api/staff/me',route=>route.fulfill({json:{id,role:'admin'}}));
   await context.route('**/api/staff?*',route=>route.fulfill({json:{data:[],pagination:{hasMore:false}}}));
   await context.route('**/api/staff/audit?*',route=>route.fulfill({json:{data:[],pagination:{hasMore:false}}}));
@@ -60,11 +59,13 @@ test('admin deletion requires explicit confirmation and MFA',async({page,context
     if(route.request().url().endsWith('/delete')){expect(mfa).toBe(true);removed=true;return route.fulfill({json:{}});}
     return route.fulfill({json:{data:removed?[]:[{id,title:'Synthetic file',description:'',alt_text:'',category_id:category,kind:'document',mime:'application/pdf',bytes:100,processing:'ready',publication:'draft',version:1}],hasMore:false}});
   });
-  await page.goto('/cms');await page.getByRole('button',{name:'Delete',exact:true}).click();
+  await page.goto('/cms?tab=documents');await page.getByRole('button',{name:'Delete',exact:true}).click();
   await expect(page.getByRole('button',{name:'Confirm deletion'})).toBeDisabled();await page.getByLabel('Deletion authenticator code').fill('123456');
   await page.getByRole('button',{name:'Confirm deletion'}).click();await expect(page.getByText('Media deleted from the CMS.')).toBeVisible();expect(removed).toBe(true);
 });
-test('document preview uses validated PDF bytes and offers a download',async({page,context})=>{
+test('document viewing offers the validated PDF download without an embedded frame',async({page,context})=>{
+  await context.route('**/api/**', route => route.fulfill({status:404,json:{}}));
+  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
   const pdf=await PDFDocument.create();pdf.addPage();const bytes=Buffer.from(await pdf.save());
   await context.route('**/api/staff/me',route=>route.fulfill({json:{id,role:'editor'}}));
   await context.route('**/api/admin/media**',route=>{
@@ -72,17 +73,57 @@ test('document preview uses validated PDF bytes and offers a download',async({pa
     if(route.request().url().endsWith('/preview'))return route.fulfill({contentType:'application/pdf',body:bytes});
     return route.fulfill({json:{data:[{id,title:'Synthetic PDF',description:'',alt_text:'',category_id:category,kind:'document',mime:'application/pdf',bytes:bytes.length,processing:'ready',publication:'draft',version:1}],hasMore:false}});
   });
-  await page.goto('/cms');await page.getByRole('button',{name:'Preview',exact:true}).click();
-  await expect(page.getByTitle('PDF preview')).toBeVisible();await expect(page.getByTitle('PDF preview')).toHaveAttribute('src',/^blob:/);
+  await page.goto('/cms?tab=documents');await page.getByRole('button',{name:'Preview',exact:true}).click();
+  await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
+  await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toHaveAttribute('href',/^blob:/);
+  await expect(page.locator('iframe')).toHaveCount(0);
   await expect(page.getByRole('link',{name:'Download',exact:true})).toHaveAttribute('href',`/api/admin/media/${id}/download`);
-  // Browser PDF-viewer internals differ between headless Chromium and Edge.
-  // Verify the application's blob contains the exact validated PDF, not viewer DOM.
-  const preview=await page.getByTitle('PDF preview').evaluate(async frame=>{
-    const response=await fetch((frame as HTMLIFrameElement).src);
+  // Verify exact authorized bytes without relying on a browser PDF viewer or weakening CSP.
+  const preview=await page.getByRole('link',{name:'Download PDF',exact:true}).evaluate(async link=>{
+    const response=await fetch((link as HTMLAnchorElement).href);
     const blob=await response.blob();
     return {type:blob.type,bytes:Array.from(new Uint8Array(await blob.arrayBuffer()))};
   });
   expect(preview.type).toBe('application/pdf');
   expect(preview.bytes).toEqual(Array.from(bytes));
-  await page.getByRole('button',{name:'Close preview'}).click();await expect(page.getByTitle('PDF preview')).toHaveCount(0);
+  await page.getByRole('button',{name:'Close preview'}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toHaveCount(0);
+});
+
+test('staff uploads a PDF with progress and uses only the photo/document CMS',async({page,context})=>{
+  await context.route('**/api/**', route => route.fulfill({status:404,json:{}}));
+  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
+  const pdf=await PDFDocument.create();pdf.addPage();const bytes=Buffer.from(await pdf.save());
+  await context.route('**/api/staff/me',route=>route.fulfill({json:{id,role:'editor'}}));
+  let asset: any=null,releaseUpload: (()=>void)|undefined;
+  const uploaded=new Promise<void>(resolve=>{releaseUpload=resolve;});
+  await context.route('**/api/admin/media**',async route=>{
+    const path=new URL(route.request().url()).pathname;
+    if(path.endsWith('/options'))return route.fulfill({json:{categories:[{id:category,title:'Synthetic document category',kind:'document',approved:true}],sources:[{id:source,reference:'Synthetic test source',approved:true}]}});
+    if(path.endsWith('/uploads')) {
+      const body=route.request().postDataJSON();
+      expect(body.filename).toBe('synthetic.pdf');expect(body.mime).toBe('application/pdf');
+      expect(Buffer.from(body.base64,'base64')).toEqual(bytes);
+      await uploaded;
+      asset={id,title:body.title,description:body.description,alt_text:'',category_id:category,source_id:source,kind:'document',mime:'application/pdf',bytes:bytes.length,processing:'ready',publication:'draft',version:2};
+      return route.fulfill({json:asset});
+    }
+    return route.fulfill({json:{data:asset?[asset]:[],hasMore:false}});
+  });
+  const textCmsRequests: string[]=[];
+  page.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/api/admin/content'))textCmsRequests.push(request.url());});
+  await page.goto('/cms?tab=documents');
+  await expect(page.getByRole('heading',{name:'Documents',exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Public information'})).toHaveCount(0);
+  await page.getByLabel('File',{exact:true}).setInputFiles({name:'synthetic.pdf',mimeType:'application/pdf',buffer:bytes});
+  await page.getByLabel('Title',{exact:true}).fill('Synthetic PDF upload');
+  await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record').selectOption(source);
+  await page.getByRole('button',{name:'Upload private draft'}).click();
+  await expect(page.getByRole('progressbar',{name:'File upload progress'})).toBeVisible();
+  await expect(page.getByText('Uploading and verifying file…',{exact:true})).toBeVisible();
+  releaseUpload!();
+  await expect(page.getByRole('heading',{name:'Synthetic PDF upload'})).toBeVisible();
+  await expect(page.getByRole('progressbar')).toHaveCount(0);
+  await expect(page.getByText('Media saved. New uploads remain private drafts.')).toBeVisible();
+  await expect(page.getByRole('link',{name:'Download',exact:true})).toHaveAttribute('href',`/api/admin/media/${id}/download`);
+  expect(textCmsRequests).toEqual([]);
 });

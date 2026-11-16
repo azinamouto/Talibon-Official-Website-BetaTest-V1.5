@@ -21,6 +21,8 @@ export default defineConfig(({mode}) => {
     plugins: [react(), tailwindcss()],
     envPrefix: [],
     define: {
+      // Expose only this validated public flag; keep the empty envPrefix security boundary.
+      'import.meta.env.VITE_STAFF_PASSWORD_RECOVERY_ENABLED': JSON.stringify(env.VITE_STAFF_PASSWORD_RECOVERY_ENABLED ?? 'false'),
       // AI features fail closed until a server-side endpoint is available.
       "process.env.GEMINI_API_KEY": "undefined",
     },

@@ -41,14 +41,14 @@ for (const width of [375, 1280]) test(`anonymous navigation and placeholder fit 
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /auth|token|request|submission|payment/i.test(key)))).toEqual([]);
   await page.screenshot({ path: `test-results-eservices/r2-placeholder-${width}.png`, fullPage: true });
 });
-test('registration controls are absent while staff login and recovery remain', async ({ page }) => {
+test('registration remains absent and email recovery remains disabled', async ({ page }) => {
   await page.goto('/login?view=register');
   await expect(page.getByRole('heading', { name: 'Staff sign in', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create account' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Forgot password?' }).click();
-  await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Forgot password.*temporarily unavailable/i })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('Staff email')).toBeVisible();
-  await expect(page.getByLabel('Password', { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
 });
 
 test('payments remain unavailable by default', async ({ page }) => {

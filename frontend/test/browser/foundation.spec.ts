@@ -3,10 +3,9 @@ import { test, expect, type BrowserContext } from '@playwright/test';
 const staff = { id: '11111111-1111-4111-8111-111111111111', role: 'admin' as const };
 
 async function isolate(context: BrowserContext) {
-  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
-  await context.route('**/api/admin/content/news?*', route => route.fulfill({ json: { data: [], pagination: { totalPages: 0 } } }));
-  await context.route('**/api/admin/media/options', route => route.fulfill({ json: { categories: [], sources: [] } }));
-  await context.route('**/api/admin/media?*', route => route.fulfill({ json: { data: [], hasMore: false } }));
+  await context.route('**/api/**', route => route.fulfill({ status: 404, json: {} }));
+  await context.route('**/api/admin/media?page=*', route => route.fulfill({ json: { data: [], hasMore: false } }));
+  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.fallback() : route.abort());
 }
 
 test('protected staff URL redirects to staff-only login without a citizen session', async ({ page, context }) => {
@@ -27,9 +26,9 @@ test('staff identity is loaded from the HttpOnly-cookie API and editors see no a
   const requests: string[] = [];
   page.on('request', request => { if (/\/api\/staff(?:\?|\/audit)/.test(request.url())) requests.push(request.url()); });
   await page.goto('/admin');
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
-  await expect(page.getByText('Signed in as editor.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Staff access' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
+  await expect(page.getByText('Editor', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Staff management' })).toHaveCount(0);
   expect(requests).toEqual([]);
 });
 
@@ -53,7 +52,7 @@ test('password challenge requires an authenticator step before staff access', as
   await expect(page.getByLabel('Authenticator code')).toBeVisible();
   await page.getByLabel('Authenticator code').fill('123456');
   await page.getByRole('button', { name: 'Continue' }).click();
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /auth|token/i.test(key)))).toEqual([]);
 });
 
@@ -81,10 +80,8 @@ test('sign out clears the in-memory staff identity and returns to login', async 
     active = false;
     await route.fulfill({ json: { success: true } });
   });
-  await context.route('**/api/staff?*', route => route.fulfill({ json: { data: [], pagination: { page: 1, limit: 50, hasMore: false } } }));
-  await context.route('**/api/staff/audit?*', route => route.fulfill({ json: { data: [], pagination: { page: 1, limit: 50, hasMore: false } } }));
   await page.goto('/admin');
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/staff\/login$/);
 });

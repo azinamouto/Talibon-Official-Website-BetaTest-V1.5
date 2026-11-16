@@ -161,5 +161,5 @@ test('recovery-code sign in preserves verification and the final staff redirect'
   await page.getByLabel('Recovery code', { exact: true }).fill('synthetic-recovery-code');
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(page).toHaveURL(/\/admin$/);
-  await expect(page.getByRole('heading', { name: 'Staff workspace' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
 });

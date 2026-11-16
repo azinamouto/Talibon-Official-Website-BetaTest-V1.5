@@ -3,9 +3,10 @@ import { PublicContentService } from '../../database/public-content.service';
 import { ListContentDto } from './content.dto';
 import { ContentInput, ContentRepository } from '../../database/content.repository';
 import { StaffPrincipal } from '../../authentication/authentication.adapter';
-import { runtimeConnectionConfig, PostgresDatabase, DatabaseError } from '../../database/postgres';
+import { PostgresDatabase } from '../../database/postgres';
 import { PUBLIC_KINDS } from '../../database/public-content.service';
-import { ConflictException, ForbiddenException, ServiceUnavailableException } from '@nestjs/common';
+import { GoneException } from '@nestjs/common';
+import { MEDIA_CMS_ONLY_MESSAGE } from '../../security/deferred-routes.middleware';
 export const CONTENT = {
   pages: { table: 'pages', title: 'title', visible: 'published', fields: 'id,title,slug,content,status,created_at,updated_at' },
   news: { table: 'news', title: 'title', visible: 'published', fields: 'id,title,slug,summary,content,category,date,image_url,file_url,author,status,created_at,updated_at' },
@@ -20,21 +21,9 @@ export class ContentService {
   private database: PostgresDatabase;
   private repository: ContentRepository;
   configure(repository: ContentRepository) { this.repository = repository; }
-  private async run<T>(work: (repo: ContentRepository) => Promise<T>) {
-    try {
-      if (!this.repository) {
-        this.database = new PostgresDatabase(runtimeConnectionConfig(process.env.DATABASE_URL));
-        this.repository = new ContentRepository(this.database);
-      }
-      return await work(this.repository);
-    } catch (error) {
-      if (error instanceof DatabaseError) {
-        if (error.code === 'forbidden') throw new ForbiddenException('Live staff MFA or fresh administrator MFA required.');
-        if (error.code === 'conflict') throw new ConflictException('Content changed; refresh and retry.');
-        if (error.code === 'invalid') throw new BadRequestException('Check content and approved source.');
-      }
-      throw new ServiceUnavailableException('Content operation could not be confirmed.');
-    }
+  private async run<T>(_work: (repo: ContentRepository) => Promise<T>): Promise<T> {
+    // Defense in depth for direct service calls. Public reads use PublicContentService.
+    throw new GoneException(MEDIA_CMS_ONLY_MESSAGE);
   }
   private kind(kind: string) {
     const table = CONTENT[kind as ContentKind]?.table ?? kind;

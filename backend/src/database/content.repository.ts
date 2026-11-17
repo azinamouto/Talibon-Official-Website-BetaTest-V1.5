@@ -66,6 +66,8 @@ export class ContentRepository {
     if (publishing && rows.some(row=>!row.visible)) throw new CmsValidationError({attachments:'attachment_private'});
     if (input.body.featuredAssetId && rows.find(row=>row.id===input.body.featuredAssetId)?.kind!=='photo') throw new CmsValidationError({featuredAssetId:'featured_photo'});
     if (kind==='galleries' && rows.some(row=>row.kind!=='photo')) throw new CmsValidationError({attachments:'gallery_photo'});
+    const portraits=[...((input.body.nodes || []) as {photoAssetId?:string}[]),...((input.body.officials || []) as {photoAssetId?:string}[])].flatMap(row=>row.photoAssetId?[row.photoAssetId]:[]);
+    if (portraits.some(id=>rows.find(row=>row.id===id)?.kind!=='photo')) throw new CmsValidationError({attachments:'featured_photo'});
     for (const [index,attachment] of checked.attachments.entries()) if (rows.find(row=>row.id===attachment.assetId)?.kind==='photo' && !attachment.altText?.trim()) throw new CmsValidationError({[`attachments.${index}.altText`]:'photo_alt'});
     if (publishing && ['downloadables','transparency_reports'].includes(kind) && !checked.attachments.some(a=>rows.find(row=>row.id===a.assetId)?.kind==='document')) throw new CmsValidationError({attachments:'document_required'});
     if (publishing && kind==='galleries' && !checked.attachments.length) throw new CmsValidationError({attachments:'gallery_required'});

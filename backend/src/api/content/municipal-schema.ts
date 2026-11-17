@@ -1,4 +1,5 @@
 import { CmsInputError, type CmsErrorCode } from '../../security/cms-validation';
+import { validateOfficials } from './officials-schema';
 
 export const MUNICIPAL_KINDS = ['news','advisories','updates','tourism_spots','tourism_festivals','events',
   'tourism_delicacies','transparency_reports','pages','organizational_chart','departments','galleries','downloadables'] as const;
@@ -9,8 +10,8 @@ const fields: Record<string, string[]> = {
   news:['summary','content','category','author','date'], advisories:['summary','content','author','date'], updates:['summary','content','author','date'],
   tourism_spots:['description','location','address','contact','opening_hours','highlights'], tourism_festivals:['description','date','venue','time','start_time','end_time'], events:['description','date','venue','time','start_time','end_time','category'], tourism_delicacies:['description'],
   transparency_reports:['description','category','year','date','deadline','budget','status','reference'],
-  pages:['content'], organizational_chart:['mayor','level2','departments'],
-  departments:['description','head','contact','address'], galleries:['description','category'], downloadables:['description','category','year','reference'],
+  pages:['content'], organizational_chart:['mayor','level2','departments','nodes'],
+  departments:['description','head','contact','address','email','officials'], galleries:['description','category'], downloadables:['description','category','year','reference'],
 };
 const fail = (message: string, field = 'body', code: CmsErrorCode = 'invalid'): never => {
   throw new CmsInputError({[field]:code},message);
@@ -34,7 +35,6 @@ export function validateMunicipal(kind: string, input: { title?: string; slug?: 
   text(input.title,'title',200,true);
   if (!input.slug || input.slug.length>160 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.slug)) throw new CmsInputError({slug:'slug'});
   if (!input.sourceId || !uuid.test(input.sourceId)) throw new CmsInputError({sourceId:'uuid'});
-  if (kind==='pages' && !['executive-mandate','legislative-mandate'].includes(input.slug)) fail('Select an executive or legislative mandate.');
   if (kind==='organizational_chart' && input.slug!=='executive-chart') fail('The organizational chart slug is executive-chart.');
   const body=input.body;
   if (!body || typeof body!=='object' || Array.isArray(body) || Buffer.byteLength(JSON.stringify(body))>180000) fail('Invalid content body.');
@@ -43,7 +43,7 @@ export function validateMunicipal(kind: string, input: { title?: string; slug?: 
   if (Object.keys(body).some(key=>!fields[kind].includes(key) && !['featuredAssetId','attachments'].includes(key)
     && !(legacyBody && Object.hasOwn(legacyBody,key) && JSON.stringify(legacyBody[key])===JSON.stringify(body[key])))) fail('Unsupported metadata field.');
   for (const key of fields[kind]) {
-    if (kind==='organizational_chart' || key==='highlights') continue;
+    if (kind==='organizational_chart' || ['highlights','officials'].includes(key)) continue;
     text(body[key],key,key==='content'?100000:key==='description'?10000:key==='summary'?2000:500);
   }
   if (['news','advisories','updates','pages'].includes(kind)) text(body.content,'content',100000,true);
@@ -66,13 +66,20 @@ export function validateMunicipal(kind: string, input: { title?: string; slug?: 
     const date=String(body[key]);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0,10)!==date) throw new CmsInputError({[key]:'date'});
   }
-  if (kind==='organizational_chart') {
+  if (body.email!==undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(body.email))) fail('Enter a valid email address.','email');
+  const portraits:string[]=[];
+  if (kind==='organizational_chart' && body.nodes!==undefined) {
+    portraits.push(...validateOfficials(body.nodes,'nodes',legacyBody));
+    for (const key of ['mayor','level2','departments']) if(body[key]!==undefined && (!legacyBody || JSON.stringify(body[key])!==JSON.stringify(legacyBody[key]))) fail('Imported chart details must be retained unchanged.','body','unsupported');
+  }
+  else if (kind==='organizational_chart') {
     official(body.mayor,'mayor');
     for (const key of ['level2','departments']) {
       if (!Array.isArray(body[key]) || body[key].length>100) fail('Invalid chart level.',key,'chart');
       (body[key] as unknown[]).forEach((entry,index)=>official(entry,`${key}.${index}`));
     }
   }
+  if (kind==='departments' && body.officials!==undefined) portraits.push(...validateOfficials(body.officials,'officials',legacyBody));
   if (body.featuredAssetId!==undefined && (typeof body.featuredAssetId!=='string' || !uuid.test(body.featuredAssetId))) throw new CmsInputError({featuredAssetId:'featured_photo'});
   if (body.attachments!==undefined && (!Array.isArray(body.attachments) || body.attachments.length>50)) throw new CmsInputError({attachments:'length'});
   const attachments=(body.attachments ?? []) as ContentAttachment[];
@@ -83,5 +90,6 @@ export function validateMunicipal(kind: string, input: { title?: string; slug?: 
     text(attachment.caption,`attachments.${index}.caption`,1000,true);
     text(attachment.altText,`attachments.${index}.altText`,500);
   }
+  if (portraits.some(id=>!seen.has(id))) throw new CmsInputError({attachments:'featured_photo'});
   return { body, attachments, assetIds:[...new Set([...(body.featuredAssetId?[String(body.featuredAssetId)]:[]),...seen])].sort() };
 }

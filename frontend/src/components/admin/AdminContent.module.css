@@ -40,6 +40,9 @@
 .confirmTitle { font-weight:700; margin-bottom:16px; overflow-wrap:anywhere; }
 .root details summary { cursor:pointer; min-height:44px; display:flex; align-items:center; font-weight:600; }
 .root h4 { font-weight:650; }
+.officialRow { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; padding:24px 0; border-bottom:1px solid #dce3eb; margin-bottom:16px; }
+.officialRow>button { width:44px; padding:0; }
+@media(max-width:640px) { .officialRow { grid-template-columns:minmax(0,1fr); } }
 .root { letter-spacing:0; }
 .empty button { margin-top:16px; }
 @media (max-width:640px) { .fields,.attachment,.chartRow { grid-template-columns:1fr; }.form,.preview { padding:16px; }.picker { flex-wrap:wrap; }.toolbar>.field { width:100%; }.heading h2 { font-size:21px; } }

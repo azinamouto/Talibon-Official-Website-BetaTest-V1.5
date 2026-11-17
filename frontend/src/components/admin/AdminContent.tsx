@@ -9,12 +9,12 @@ import type { Asset } from './AdminMedia';
 import DraftMediaPanel from './DraftMediaPanel';
 import EditorActions, { EditorBack } from './EditorActions';
 import EditorFields from './EditorFields';
+import OfficialEditor, { chartEntries, emptyOfficial, type OfficialEntry } from './OfficialEditor';
 import { CmsLink, CmsSkeleton, ErrorNotice, ReviewedSelect } from './CmsControls';
 import { errorFields, fieldMessages, StaffRequestError } from '../../lib/staffErrors';
 import { useCmsEditor, type EditorState } from '../../hooks/useCmsEditor';
 import styles from './AdminContent.module.css';
 
-type Official={name:string;role:string};
 type Publication={row:ContentRow;media:{assetId:string;version:number}[];update:boolean};
 const groups: Record<MunicipalGroup,string>={news:'News & Updates',tourism:'Tourism',events:'Events & Festivals',transparency:'Transparency',government:'Local Government',galleries:'Galleries',downloadables:'Downloadables'};
 export default function AdminContent({role,group,onEditorStateChange}:{role:'admin'|'editor';group:MunicipalGroup;onEditorStateChange?(state:EditorState):void}) {
@@ -51,12 +51,13 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
   useEffect(()=>{if(showForm)formRef.current?.querySelector<HTMLInputElement>('input[name="title"]')?.focus();},[showForm,session]);
   useEffect(()=>{if(Object.keys(validation).length)formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();},[validation]);
   function clear() {
-    const defaults=module.kind==='organizational_chart'?{mayor:{name:'',role:''},level2:[],departments:[]}:Object.fromEntries(module.fields.filter(field=>field.options && field.required).map(field=>[field.key,field.options![0]]));
+    const defaults=module.kind==='organizational_chart'?{nodes:[emptyOfficial()]}:Object.fromEntries(module.fields.filter(field=>field.options && field.required).map(field=>[field.key,field.options![0]]));
     setEditing(null);setTitle('');setSource('');setFields(defaults);setAttachments([]);setFeatured('');setPreview(null);setPendingUploads(false);setValidation({});setSession(value=>value+1);
     setBaseline(JSON.stringify({title:'',source:'',fields:defaults,attachments:[],featured:''}));
   }
   function edit(row:ContentRow) {
     const {attachments:_attachments,featuredAssetId:_featured,...body}=row.body;
+    if(row.kind==='organizational_chart')body.nodes=chartEntries(body);
     const attached=row.body.attachments || [],photo=row.body.featuredAssetId || '';
     setEditing(row);setTitle(row.title);setSource(row.source_id);setFields(body);setAttachments(attached);setFeatured(photo);setShowForm(true);setPreview(null);setPendingUploads(false);setValidation({});setSession(value=>value+1);
     setBaseline(JSON.stringify({title:row.title,source:row.source_id,fields:body,attachments:attached,featured:photo}));
@@ -111,13 +112,6 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
   }
   async function change(row:ContentRow,action:string) {await act(async()=>{await staffRequest(`/api/admin/content/${row.kind}/${row.id}/${action}`,{version:row.version});setPreview(null);setMessage(`Content ${action==='unpublish'?'returned to draft':action==='restore'?'restored to draft':'archived'}.`);});}
   function addAttachment(asset:Asset) {setAttachments(prior=>prior.some(item=>item.assetId===asset.id) || prior.length>=50?prior:[...prior,{assetId:asset.id,caption:asset.title,altText:asset.alt_text || ''}]);}
-  const chart=(key:string,label:string,single=false)=>{
-    const values=single?[((fields[key] || {name:'',role:''}) as Official)]:((fields[key] || []) as Official[]);
-    return <section className={styles.wide}><h4>{label}</h4>{values.map((official,index)=><div key={index} className={styles.chartRow}>
-      {(['name','role'] as const).map(part=>{const field=`${key}${single?'':`.${index}`}.${part}`;return <Input key={part} label={`${label} ${index+1} ${part}`} name={field} error={validation[field]} required maxLength={200} value={official[part]} onChange={event=>{const updated=values.map((entry,i)=>i===index?{...entry,[part]:event.target.value}:entry);setFields({...fields,[key]:single?updated[0]:updated});}} />;})}
-      {!single && <Button variant="secondary" onClick={()=>setFields({...fields,[key]:values.filter((_,i)=>i!==index)})}>Remove entry</Button>}
-    </div>)}{!single && <Button variant="secondary" disabled={values.length>=100} onClick={()=>setFields({...fields,[key]:[...values,{name:'',role:''}]})}>Add {label.toLowerCase()} entry</Button>}</section>;
-  };
   const cancel=()=>requestDiscard(()=>{clear();setShowForm(false);});
   return <section className={styles.root} aria-label={groups[group]}>
     <div className={styles.heading}><div><h2>{showForm?module.label:groups[group]}</h2>{showForm && <span className={styles.badge}>{editing?.publication==='published'?'Published':'Draft'}{dirty?' - Unsaved changes':''}</span>}</div>
@@ -134,7 +128,8 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
       <fieldset className={styles.fields} disabled={working}>
         <div className={styles.wide}><Input label={module.titleLabel || 'Title'} name="title" required maxLength={200} value={title} error={validation.title} onChange={event=>setTitle(event.target.value)} /></div>
         <EditorFields definitions={module.fields.filter(field=>!field.advanced)} values={fields} errors={validation} onChange={setFields}/>
-        {module.kind==='organizational_chart' && <>{chart('mayor','Executive leader',true)}{chart('level2','Second level')}{chart('departments','Department')}</>}
+        {module.kind==='organizational_chart' && <OfficialEditor chart value={(fields.nodes || []) as OfficialEntry[]} attachments={attachments} errors={validation} onChange={nodes=>setFields({...fields,nodes})}/>}
+        {module.kind==='departments' && <OfficialEditor value={(fields.officials || []) as OfficialEntry[]} attachments={attachments} errors={validation} onChange={officials=>setFields({...fields,officials})}/>}
         {module.fields.some(field=>field.advanced) && <details className={styles.wide} open={module.fields.some(field=>field.advanced && validation[field.key]) || undefined}><summary>Additional details</summary><div className={styles.fields}><EditorFields definitions={module.fields.filter(field=>field.advanced)} values={fields} errors={validation} onChange={setFields}/></div></details>}
         <section className={styles.wide} aria-label="Verification"><ReviewedSelect label="Official material" name="sourceId" allowPending choices={sources.map(item=>({...item,label:item.reference}))} disabled={working} value={source} error={validation.sourceId} onChange={setSource} hint="Administrator approval is required before publication."/>
           {!sources.length && <p className={styles.hint}>An administrator must register official source material in Source approvals.</p>}

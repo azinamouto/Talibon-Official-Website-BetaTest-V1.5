@@ -35,9 +35,9 @@ async function editor(group:'news'|'galleries'|'transparency'='news') {
  render(<AdminContent role="admin" group={group}/>);
  await waitFor(()=>expect(screen.getByRole('button',{name:'New draft'})).toBeEnabled());
  fireEvent.click(screen.getByRole('button',{name:'New draft'}));
- fireEvent.change(screen.getByLabelText('Title'),{target:{value:'Synthetic draft'}});
- fireEvent.change(screen.getByLabelText('Public slug'),{target:{value:'synthetic-draft'}});
- fireEvent.change(screen.getByLabelText('Source record'),{target:{value:source.id}});
+ fireEvent.change(screen.getByLabelText(group==='news'?'Headline':group==='galleries'?'Album title':'Document title'),{target:{value:'Synthetic draft'}});
+ expect(screen.queryByLabelText('Public slug')).not.toBeInTheDocument();
+ fireEvent.change(screen.getByLabelText('Official material'),{target:{value:source.id}});
  await waitFor(()=>expect(screen.queryByRole('status',{name:'Loading media library'})).not.toBeInTheDocument());
 }
 async function queuedPhoto(name='photo.png') {
@@ -48,7 +48,7 @@ async function queuedPhoto(name='photo.png') {
 it('distinguishes approved, pending and rejected sources, and disables unapproved categories',async()=>{
  await editor();
  expect(screen.getByRole('option',{name:/Rejected source/})).toBeDisabled();
- fireEvent.change(screen.getByLabelText('Source record'),{target:{value:pending.id}});
+ fireEvent.change(screen.getByLabelText('Official material'),{target:{value:pending.id}});
  expect(screen.getByText(/This source can be used for a private draft/)).toBeVisible();
  await queuedPhoto();expect(screen.getByRole('option',{name:/Pending photos/})).toBeDisabled();
  expect(screen.getAllByRole('link',{name:'Open Source approvals'})[0]).toHaveAttribute('href','/cms?tab=sources');
@@ -61,7 +61,7 @@ it('uploads directly, attaches privately, measures progress, and disables the ed
  expect(screen.getByLabelText('File 1 upload filename')).toHaveValue('Council photo -1-.png');
  fireEvent.click(screen.getByRole('button',{name:'Upload and attach'}));
  await screen.findByRole('progressbar',{name:'File upload progress'});
- expect(screen.getByLabelText('Title')).toBeDisabled();expect(screen.getByRole('button',{name:'Save draft'})).toBeDisabled();
+ expect(screen.getByLabelText('Headline')).toBeDisabled();expect(screen.getByRole('button',{name:'Save draft'})).toBeDisabled();
  expect(uploadPrivateMedia).toHaveBeenCalledWith(expect.any(File),expect.objectContaining({sourceId:source.id,categoryId:category.id,filename:'Council photo -1-.png',altText:'White test image'}),expect.any(String),expect.any(Function));
  finish!(photo);await screen.findByText('File uploaded and attached to this draft. Save the draft to keep the attachment. The file remains private.');
  expect(screen.getByLabelText('Attachment 1 caption')).toHaveValue(photo.title);
@@ -84,8 +84,8 @@ it('preserves uploaded attachments and featured photos after a draft save confli
  request.mockImplementation(async(path,body)=>{if(body && path==='/api/admin/content/news')throw new StaffRequestError(409);return original(path,body);});
  await editor();await queuedPhoto();fireEvent.click(screen.getByRole('button',{name:'Upload and attach'}));await screen.findByLabelText('Attachment 1 caption');
  fireEvent.change(screen.getByLabelText('Featured photo'),{target:{value:photo.id}});
- fireEvent.change(screen.getByLabelText('Summary'),{target:{value:'Fixture summary'}});fireEvent.change(screen.getByLabelText('Article text'),{target:{value:'Fixture content'}});
- fireEvent.submit(screen.getByLabelText('Title').closest('form')!);
+ fireEvent.change(screen.getByLabelText('Short description'),{target:{value:'Fixture summary'}});fireEvent.change(screen.getByLabelText('Article content'),{target:{value:'Fixture content'}});
+ fireEvent.submit(screen.getByLabelText('Headline').closest('form')!);
  await screen.findByRole('alert');expect(screen.getByLabelText('Featured photo')).toHaveValue(photo.id);expect(screen.getByLabelText('Attachment 1 caption')).toHaveValue(photo.title);
  expect(request).toHaveBeenCalledWith('/api/admin/content/news',expect.objectContaining({body:expect.objectContaining({featuredAssetId:photo.id,attachments:[{assetId:photo.id,caption:photo.title,altText:photo.alt_text}]})}));
 });
@@ -96,11 +96,25 @@ it('removes an attachment and clears its featured selection without deleting the
  expect(screen.getByLabelText('Featured photo')).toHaveValue('');expect(screen.queryByLabelText('Attachment 1 caption')).not.toBeInTheDocument();
  expect(vi.mocked(staffRequest).mock.calls.some(([path])=>path.endsWith('/delete'))).toBe(false);
 });
+it('supports keyboard and drag ordering without changing attachment identity or featured selection',async()=>{
+ const second={...photo,id:'88888888-8888-4888-8888-888888888888',title:'Second fictional photo'};
+ library=[photo,second];await editor('galleries');
+ for(const button of screen.getAllByRole('button',{name:'Attach file'}))fireEvent.click(button);
+ fireEvent.change(screen.getByLabelText('Featured photo'),{target:{value:photo.id}});
+ fireEvent.click(screen.getByRole('button',{name:'Move attachment 2 up'}));
+ expect(screen.getByLabelText('Attachment 1 caption')).toHaveValue(second.title);
+ expect(screen.getByLabelText('Featured photo')).toHaveValue(photo.id);
+ const target=screen.getByLabelText('Attachment 1 caption').closest('article')!;
+ fireEvent.drop(target,{dataTransfer:{getData:()=>photo.id}});
+ expect(screen.getByLabelText('Attachment 1 caption')).toHaveValue(photo.title);
+ expect(screen.getByLabelText('Attachment 2 caption')).toHaveValue(second.title);
+ expect(vi.mocked(staffRequest).mock.calls.some(([path])=>path.endsWith('/delete'))).toBe(false);
+});
 it('keeps queued files visible and prevents saving until they are uploaded or removed',async()=>{
  await editor();await queuedPhoto();
  expect(screen.getByRole('button',{name:'Save draft'})).toBeDisabled();
  fireEvent.submit(screen.getByRole('button',{name:'Save draft'}).closest('form')!);
- expect(await screen.findByText('Upload the queued files or remove them before saving this draft.')).toBeVisible();
+ expect(await screen.findByText('Upload or remove the queued files before saving.')).toBeVisible();
  expect(screen.getByLabelText('File 1 title')).toBeInTheDocument();
  expect(vi.mocked(staffRequest).mock.calls.some(([,body])=>typeof body==='object' && body!==null && 'body' in body)).toBe(false);
  fireEvent.click(screen.getByRole('button',{name:'Remove queued file'}));
@@ -137,9 +151,9 @@ it('guards recovery resets, hides another uploader’s recovery, and retains ori
 });
 it('warns before discarding or leaving an unsaved editor',async()=>{
  await editor();const unload=new Event('beforeunload',{cancelable:true});expect(window.dispatchEvent(unload)).toBe(false);
- fireEvent.click(screen.getByRole('button',{name:'Close editor'}));const dialog=await screen.findByRole('dialog',{name:'Discard unsaved changes?'});
- fireEvent.click(within(dialog).getByRole('button',{name:'Keep editing'}));expect(screen.getByLabelText('Title')).toHaveValue('Synthetic draft');
- fireEvent.click(screen.getByRole('button',{name:'Close editor'}));fireEvent.click(screen.getByRole('button',{name:'Discard changes'}));expect(screen.queryByLabelText('Title')).not.toBeInTheDocument();
+ fireEvent.click(screen.getByRole('button',{name:'Cancel'}));const dialog=await screen.findByRole('dialog',{name:'Discard unsaved changes?'});
+ fireEvent.click(within(dialog).getByRole('button',{name:'Keep editing'}));expect(screen.getByLabelText('Headline')).toHaveValue('Synthetic draft');
+ fireEvent.click(screen.getByRole('button',{name:'Cancel'}));fireEvent.click(screen.getByRole('button',{name:'Discard changes'}));expect(screen.queryByLabelText('Headline')).not.toBeInTheDocument();
 });
 it('shows a recoverable library failure rather than an empty successful library',async()=>{
  vi.mocked(staffRequest).mockImplementation(async path=>path.endsWith('/sources')?{data:[source]}:path.endsWith('/options')?{categories:[],sources:[source]}:path.startsWith('/api/admin/media?')?Promise.reject(new StaffRequestError(503)):{data:[],pagination:{totalPages:0}});

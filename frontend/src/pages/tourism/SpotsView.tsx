@@ -13,6 +13,7 @@ interface Spot {
   google_maps_link?: string;
   gallery_images?: string[];
   category?: string;
+  highlights?: string[];
 }
 
 interface SpotsViewProps {
@@ -132,6 +133,7 @@ export default function SpotsView({ data }: SpotsViewProps) {
               </p>
             </div>
 
+            {!!selectedSpot.highlights?.length && <section className="py-4"><h2 className="text-lg font-bold">Highlights</h2><ul className="list-disc pl-6 space-y-2">{selectedSpot.highlights.map((highlight,index)=><li key={index}>{highlight}</li>)}</ul></section>}
             {selectedSpot.gallery_images && selectedSpot.gallery_images.length > 0 && (
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-4">
                 <h2 className="text-lg font-black font-display uppercase tracking-tight text-slate-900 border-b border-slate-100 pb-4">

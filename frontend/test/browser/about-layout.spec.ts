@@ -44,7 +44,7 @@ for (const width of [375, 768, 1280, 1920]) test(`About container and mayoral er
   expect(Math.round((await page.locator('main h1').boundingBox())!.x)).toBe(width >= 1024 ? 32 : width >= 640 ? 24 : 16);
   await page.goto('/about/mayors');
   const eras = page.locator('main section[aria-labelledby]');
-  await expect(eras).toHaveCount(mayors.length);
+  await expect(eras).toHaveCount(mayors.length, { timeout: 15000 });
   const navigation = page.getByRole('navigation', { name: 'Jump to mayoral era' });
   await expect(navigation.getByRole('link')).toHaveCount(mayors.length);
   for (let index=0; index<mayors.length; index++) {

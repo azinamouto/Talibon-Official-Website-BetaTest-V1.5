@@ -142,6 +142,52 @@ test('CMS upload, attachment and publication regression on disposable PostgreSQL
     assert.equal((await publicContent.list(kind)).data.some(item=>item.id===row.id),false,kind);
    }
   });
+  await t.test('generated addresses and atomic attachment publication reject stale consent and roll back unapproved sources',async()=>{
+   const freshPhoto=await (await http('/api/admin/media/uploads',upload({filename:'atomic.jpg'}))).json();
+   const pendingSource=randomUUID();await owner.query('INSERT INTO app.content_sources(id,reference,owner,sha256) VALUES($1,$2,$3,$4)',[pendingSource,'Fictional pending source','Test custodian','c'.repeat(64)]);
+   const body={content:'Fictional atomic article',category:'ARTICLE',featuredAssetId:freshPhoto.id,attachments:[{assetId:freshPhoto.id,caption:'Fictional image',altText:'White fictional image'}]};
+   const created=await http('/api/admin/content/news',{title:'Fictional atomic news',sourceId:pendingSource,body});assert.equal(created.status,201);let row=(await created.json()).data;
+   assert.equal(row.slug,'fictional-atomic-news');assert.equal(row.body.summary,body.content);
+   const consent=[{assetId:freshPhoto.id,version:freshPhoto.version}];
+   const blocked=await http(`/api/admin/content/news/${row.id}/publish`,{version:row.version,media:consent});assert.equal(blocked.status,400);
+   assert.equal((await owner.query('SELECT publication,version FROM app.media_assets WHERE id=$1',[freshPhoto.id])).rows[0].publication,'draft');
+   assert.equal((await owner.query("SELECT count(*)::int AS n FROM app.audit_events WHERE resource_id=$1 AND action='media.publish'",[freshPhoto.id])).rows[0].n,0);
+   await owner.query('UPDATE app.content_sources SET approved=true,reviewed_at=now() WHERE id=$1',[pendingSource]);
+   assert.equal((await http(`/api/admin/content/news/${row.id}/publish`,{version:row.version,media:[{...consent[0],version:99}]})).status,409);
+   assert.equal((await http(`/api/admin/content/news/${row.id}/publish`,{version:row.version,media:[...consent,{assetId:randomUUID(),version:1}]})).status,400);
+   const result=await http(`/api/admin/content/news/${row.id}/publish`,{version:row.version,media:consent});assert.equal(result.status,201);row=(await result.json()).data;
+   assert.equal((await http(`/api/media/${freshPhoto.id}/preview`,undefined,'')).status,200);
+   const stale=await http(`/api/admin/content/news/${row.id}/update`,{title:'Should not replace',version:1});assert.equal(stale.status,409);
+   await owner.query('UPDATE app.content_sources SET approved=false WHERE id=$1',[pendingSource]);
+   assert.equal((await http(`/api/admin/content/news/${row.id}/update`,{title:'Must roll back',version:row.version})).status,400);
+   assert.equal((await owner.query('SELECT title FROM app.public_content WHERE id=$1',[row.id])).rows[0].title,'Fictional atomic news');
+   await owner.query('UPDATE app.content_sources SET approved=true WHERE id=$1',[pendingSource]);
+   const updated=await http(`/api/admin/content/news/${row.id}/update`,{title:'Fictional updated headline',version:row.version});assert.equal(updated.status,201);row=(await updated.json()).data;assert.equal(row.slug,'fictional-atomic-news');
+   const second=await http('/api/admin/content/news',{title:'Fictional atomic news',sourceId,body:{content:'Fictional second article',category:'ARTICLE'}});assert.equal((await second.json()).data.slug,'fictional-atomic-news-2');
+   const duplicate=await Promise.all([1,2].map(()=>http('/api/admin/content/news',{title:'Fictional concurrent title',sourceId,body:{content:'Fictional concurrent draft',category:'ARTICLE'}})));
+   const slugs=await Promise.all(duplicate.map(async response=>{assert.equal(response.status,201);return (await response.json()).data.slug;}));assert.equal(new Set(slugs).size,2);
+   assert.equal((await http(`/api/admin/content/news/${row.id}/delete`,{version:row.version})).status,403);
+   assert.equal((await http(`/api/admin/content/news/${row.id}/delete`,{version:row.version},'fixture=admin')).status,201);
+  });
+  await t.test('events, general pages, structured chart portraits and all disclosure categories retain public isolation',async()=>{
+   const image={assetId:photo.id,caption:'Fictional photo',altText:'White fictional photo'},document={assetId:pdf.id,caption:'Fictional PDF',altText:''};
+   const parent=randomUUID(),child=randomUUID();
+   const cases=[['events',{description:'Fictional event',category:'event',date:'2026-11-17',start_time:'09:00',end_time:'10:00',attachments:[image]}],['pages',{content:'Fictional general page'}],['organizational_chart',{nodes:[{id:parent,name:'Fictional leader',role:'Test role',office:'Test office',reportsTo:null,photoAssetId:photo.id},{id:child,name:'Fictional staff',role:'Test role',office:'Test office',reportsTo:parent}],attachments:[image]}],...['full-disclosure','infrastructure','finance','budget','bidding','executive-order'].map(category=>['transparency_reports',{description:'Fictional disclosure',category,attachments:[document]}])];
+   // The earlier legacy-chart test left the unique canonical chart as a draft.
+   const legacyChart=(await owner.query("SELECT id FROM app.public_content WHERE kind='organizational_chart'")).rows[0];await owner.query("UPDATE app.public_content SET slug='fictional-legacy-chart' WHERE id=$1",[legacyChart.id]);
+   for(const [kind,body] of cases){
+    const created=await http(`/api/admin/content/${kind}`,{title:'Fictional '+kind,sourceId,body});assert.equal(created.status,201,kind);let row=(await created.json()).data;
+    assert.equal((await publicContent.list(kind)).data.some(item=>item.id===row.id),false);
+    const result=await http(`/api/admin/content/${kind}/${row.id}/publish`,{version:row.version});assert.equal(result.status,201,kind);row=(await result.json()).data;
+    const visible=(await publicContent.list(kind)).data.find(item=>item.id===row.id);assert.ok(visible,kind);
+    if(kind==='organizational_chart')assert.equal(visible.nodes[0].image_url,`/api/media/${photo.id}/preview`);
+    if(kind==='events')assert.equal(visible.time,'09:00 - 10:00');
+    assert.equal((await http(`/api/admin/content/${kind}/${row.id}/unpublish`,{version:row.version})).status,201);
+    assert.equal((await publicContent.list(kind)).data.some(item=>item.id===row.id),false);
+   }
+   for(const query of ['?publication=invalid','?categoryId=no','?publication=draft&publication=published'])assert.equal((await http('/api/admin/media'+query)).status,400);
+   const library=await http(`/api/admin/media?publication=published&categoryId=${documentCategory}`);assert.ok((await library.json()).data.every(row=>row.kind==='document' && row.publication==='published'));
+  });
   await t.test('source/category revocation and media unpublishing immediately remove dependent public content',async()=>{
    await owner.query('UPDATE app.media_categories SET approved=false WHERE id=$1',[photoCategory]);assert.equal((await publicContent.list('news')).data.length,0);
    await owner.query('UPDATE app.media_categories SET approved=true WHERE id=$1',[photoCategory]);

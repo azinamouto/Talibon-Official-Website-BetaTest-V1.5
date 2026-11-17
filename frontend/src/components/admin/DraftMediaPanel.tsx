@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ArrowDown, ArrowUp, GripVertical, Trash2 } from 'lucide-react';
 import { staffRequest } from '../../contexts/StaffAuthContext';
 import { errorFields, fieldMessages, StaffRequestError } from '../../lib/staffErrors';
 import { fileKind, simpleFilename, uploadPrivateMedia, validateUploadFile, type UploadMetadata, type UploadProgress } from '../../lib/mediaUpload';
@@ -14,12 +15,13 @@ export default function DraftMediaPanel({sourceId,role,kind,attachments,featured
   sourceId:string;role:'admin'|'editor';kind:string;attachments:Attachment[];featured:string;onAttach(asset:Asset):void;
   onAttachmentsChange(value:Attachment[]):void;onFeaturedChange(value:string):void;busy:boolean;onBusyChange(value:boolean):void;onPendingChange(value:boolean):void;fieldErrors?:Record<string,string>;
 }) {
+  const mediaKind=['downloadables','transparency_reports'].includes(kind)?'document' as const:['galleries','tourism_spots','tourism_delicacies','organizational_chart','departments'].includes(kind)?'photo' as const:undefined;
   const [options,setOptions]=useState<MediaOptions>({categories:[],sources:[]}),[optionsLoading,setOptionsLoading]=useState(true),[optionsError,setOptionsError]=useState('');
   const [queue,setQueue]=useState<QueuedFile[]>([]),[uploading,setUploading]=useState(''),[progress,setProgress]=useState<UploadProgress|null>(null);
   const [assets,setAssets]=useState<Asset[]>([]),[known,setKnown]=useState<Record<string,Asset|null>>({});
-  const [page,setPage]=useState(1),[hasMore,setHasMore]=useState(false),[search,setSearch]=useState(''),[filter,setFilter]=useState(kind==='galleries'?'photo':'');
-  const [loading,setLoading]=useState(true),[libraryError,setLibraryError]=useState(''),[error,setError]=useState(''),[fields,setErrorFields]=useState<Record<string,string>>({}),[message,setMessage]=useState(''),[reload,setReload]=useState(0),[publishing,setPublishing]=useState('');
-  const disabled=busy || !!uploading || !!publishing;
+  const [page,setPage]=useState(1),[hasMore,setHasMore]=useState(false),[search,setSearch]=useState(''),[filter,setFilter]=useState(mediaKind || '');
+  const [loading,setLoading]=useState(true),[libraryError,setLibraryError]=useState(''),[error,setError]=useState(''),[fields,setErrorFields]=useState<Record<string,string>>({}),[message,setMessage]=useState(''),[reload,setReload]=useState(0);
+  const disabled=busy || !!uploading;
   useEffect(()=>{onPendingChange(queue.length>0);},[queue.length,onPendingChange]);
   useEffect(()=>{
     let current=true;setOptionsLoading(true);setOptionsError('');
@@ -47,9 +49,11 @@ export default function DraftMediaPanel({sourceId,role,kind,attachments,featured
   function choose(files:File[]) {
     setError('');setErrorFields({});setMessage('');const added:QueuedFile[]=[];
     for(const file of files) {
-      try {validateUploadFile(file,kind==='galleries'?'photo':undefined);} catch(reason){setError((reason as Error).message);setErrorFields(errorFields(reason));continue;}
+      try {validateUploadFile(file,mediaKind);} catch(reason){setError((reason as Error).message);setErrorFields(errorFields(reason));continue;}
+      if([...queue,...added].some(item=>item.file.name===file.name && item.file.size===file.size && item.file.lastModified===file.lastModified))continue;
       if(attachments.length+queue.length+added.length>=50){setError('A draft can contain up to 50 attachments. Remove a file before adding another.');break;}
-      added.push({id:crypto.randomUUID(),file,filename:simpleFilename(file.name),title:file.name.replace(/\.[^.]+$/,'').slice(0,200),altText:'',categoryId:''});
+      const categories=options.categories.filter(category=>category.approved && category.kind===fileKind(file));
+      added.push({id:crypto.randomUUID(),file,filename:simpleFilename(file.name),title:file.name.replace(/\.[^.]+$/,'').slice(0,200),altText:'',categoryId:categories.length===1?categories[0].id:''});
     }
     setQueue(prior=>[...prior,...added]);
   }
@@ -79,33 +83,24 @@ export default function DraftMediaPanel({sourceId,role,kind,attachments,featured
       update(item.id,{error:(reason as Error).message,fields:errorFields(reason),uncertain,attempt:metadata});
     } finally {setUploading('');setProgress(null);onBusyChange(false);}
   }
-  async function publishFile(asset:Asset,attachment:Attachment) {
-    if(disabled)return;setPublishing(asset.id);onBusyChange(true);setError('');setErrorFields({});setMessage('');
-    try {
-      let row=asset;
-      if(asset.kind==='photo' && !asset.alt_text.trim()) {
-        row=await staffRequest<Asset>(`/api/admin/media/${asset.id}/edit`,{title:asset.title,description:asset.description,altText:attachment.altText,categoryId:asset.category_id,version:asset.version});
-        setKnown(prior=>({...prior,[row.id]:row}));
-      }
-      row=await staffRequest<Asset>(`/api/admin/media/${row.id}/publish`,{version:row.version});
-      setKnown(prior=>({...prior,[row.id]:row}));setMessage('File published. Save and preview this draft before publishing the record.');setReload(value=>value+1);
-    } catch(reason){setError((reason as Error).message);setErrorFields(errorFields(reason));}
-    finally{setPublishing('');onBusyChange(false);}
+  function reorder(from:number,to:number) {
+    if(disabled || from<0 || to<0 || to>=attachments.length || from===to)return;
+    const next=[...attachments];const [moved]=next.splice(from,1);next.splice(to,0,moved);onAttachmentsChange(next);
   }
-  const publicationHint=['downloadables','transparency_reports'].includes(kind)?'This record needs a published PDF before publication.':kind==='galleries'?'A collection needs at least one published photo.':'Publish every attached file before publishing the record.';
+  const publicationHint=['downloadables','transparency_reports'].includes(kind)?'A PDF is required for publication.':kind==='galleries'?'At least one photo is required for publication.':'';
   return <section className={styles.root} aria-label="Media attachments">
-    <div><h4>Images and documents</h4><p className={styles.hint}>Upload from this editor or attach an existing library file. Uploads remain private until you publish each file explicitly.</p></div>
+    <div><h4>{mediaKind==='document'?'PDF attachment':mediaKind==='photo'?'Photos':'Photos and PDF attachments'}</h4></div>
     {error && <ErrorNotice message={error} fields={fields} />}{message && <p role="status" className={styles.notice}>{message}</p>}
     {fieldErrors.attachments && <p className={styles.fieldError}>{fieldErrors.attachments}</p>}
-    <FileDropzone label="Upload files for this draft" kind={kind==='galleries'?'photo':undefined} multiple disabled={disabled || attachments.length+queue.length>=50} onFiles={choose} />
+    <FileDropzone label="Upload files for this draft" kind={mediaKind} multiple disabled={disabled || attachments.length+queue.length>=50} onFiles={choose} />
     {!sourceId && <p className={styles.warning}>Choose the draft’s source record before uploading. You can select files now and complete their details.</p>}
     {optionsError && <ErrorNotice message={optionsError} />}{optionsError && <Button type="button" variant="secondary" disabled={disabled} onClick={()=>setReload(value=>value+1)}>Retry upload choices</Button>}
     {queue.map((item,index)=><article key={item.id} className={styles.uploadCard} aria-label={`Queued file ${index+1}`}>
       <MediaThumbnail file={item.file} /><div className={styles.details}><h5>{item.file.name}</h5><p className={styles.hint}>{Math.ceil(item.file.size/1024)} KiB · {fileKind(item.file)==='photo'?'Photo':'PDF document'}</p>
         {item.error && <ErrorNotice message={item.error} fields={item.fields} />}
         <fieldset disabled={disabled || item.uncertain} className={styles.uploadFields}>
-          <Input label={`File ${index+1} title`} maxLength={200} value={item.title} error={item.fields?.title} onChange={event=>update(item.id,{title:event.target.value})} />
-          <Input label={`File ${index+1} upload filename`} maxLength={110} value={item.filename} error={item.fields?.filename} hint={item.filename!==item.file.name?'A compatible upload filename is used. The file contents stay the same.':undefined} onChange={event=>update(item.id,{filename:event.target.value})} />
+          <details open={!!item.fields?.title || !!item.fields?.filename || undefined}><summary>File details</summary><Input label={`File ${index+1} title`} maxLength={200} value={item.title} error={item.fields?.title} onChange={event=>update(item.id,{title:event.target.value})} />
+          <Input label={`File ${index+1} upload filename`} maxLength={110} value={item.filename} error={item.fields?.filename} onChange={event=>update(item.id,{filename:event.target.value})} /></details>
           {fileKind(item.file)==='photo' && <Input label={`File ${index+1} alternative text`} maxLength={500} value={item.altText} error={item.fields?.altText} hint="Describe what the photo shows for people using screen readers." onChange={event=>update(item.id,{altText:event.target.value})} />}
           <ReviewedSelect label={`File ${index+1} category`} required={false} disabled={optionsLoading || disabled || item.uncertain} value={item.categoryId} error={item.fields?.categoryId}
             choices={options.categories.filter(choice=>choice.kind===fileKind(item.file)).map(choice=>({...choice,label:choice.title}))} onChange={categoryId=>update(item.id,{categoryId})} hint={`Only approved ${fileKind(item.file)} categories can be selected.`} />
@@ -118,7 +113,7 @@ export default function DraftMediaPanel({sourceId,role,kind,attachments,featured
     <section aria-label="Choose existing media" className={styles.library}>
       <div className={styles.libraryHeading}><h4>Choose from the media library</h4><Button type="button" variant="secondary" disabled={disabled || loading} onClick={()=>{setKnown({});setReload(value=>value+1);}}>Refresh library</Button></div>
       <div className={styles.filters}><Input label="Search media library" type="search" maxLength={100} disabled={disabled} value={search} onChange={event=>{setSearch(event.target.value);setPage(1);}} />
-        {kind!=='galleries' && <label className={styles.field}>File type<select disabled={disabled} value={filter} onChange={event=>{setFilter(event.target.value);setPage(1);}}><option value="">Images and PDFs</option><option value="photo">Photos</option><option value="document">PDF documents</option></select></label>}</div>
+        {!mediaKind && <label className={styles.field}>File type<select disabled={disabled} value={filter} onChange={event=>{setFilter(event.target.value);setPage(1);}}><option value="">Images and PDFs</option><option value="photo">Photos</option><option value="document">PDF documents</option></select></label>}</div>
       {loading?<CmsSkeleton label="Loading media library" rows={3} variant="cards" />:libraryError?<div><ErrorNotice message={libraryError} /><Button type="button" variant="secondary" disabled={disabled} onClick={()=>setReload(value=>value+1)}>Retry media library</Button></div>:!assets.length?<div className={styles.empty}><strong>No ready files found</strong><p>Upload a file above, clear your search, or check another file type. Pending uploads can be resumed in Photos or Documents.</p></div>:<ul className={styles.mediaGrid}>{assets.map(asset=><li key={asset.id} className={styles.libraryCard}><MediaThumbnail asset={asset} /><h5>{asset.title}</h5><p className={styles.hint}>{asset.kind==='photo'?'Photo':'PDF'} · {Math.ceil(Number(asset.bytes)/1024)} KiB · {asset.publication==='published'?'Published':'Private draft'}</p><Button type="button" variant="secondary" disabled={disabled || attachments.some(item=>item.assetId===asset.id) || attachments.length+queue.length>=50} onClick={()=>onAttach(asset)}>{attachments.some(item=>item.assetId===asset.id)?'Attached':'Attach file'}</Button></li>)}</ul>}
       <div className={styles.actions}><span className={styles.hint}>Library page {page}</span><Button type="button" variant="secondary" disabled={disabled || loading || page===1} onClick={()=>setPage(value=>value-1)}>Previous library page</Button><Button type="button" variant="secondary" disabled={disabled || loading || !hasMore} onClick={()=>setPage(value=>value+1)}>Next library page</Button></div>
     </section>
@@ -127,21 +122,22 @@ export default function DraftMediaPanel({sourceId,role,kind,attachments,featured
       {attachments.map((attachment,index)=>{
         const asset=known[attachment.assetId],category=options.categories.find(choice=>choice.id===asset?.category_id),source=options.sources.find(choice=>choice.id===asset?.source_id);
         const publicationBlocked=asset && (!source?.approved || !category?.approved || (asset.kind==='photo' && !attachment.altText.trim()));
-        return <article key={attachment.assetId} className={styles.attachmentCard}>
+        return <article key={attachment.assetId} className={styles.attachmentCard} onDragOver={event=>{if(event.dataTransfer.types.includes('application/x-talgov-attachment'))event.preventDefault();}} onDrop={event=>{const id=event.dataTransfer.getData('application/x-talgov-attachment');if(!id)return;event.preventDefault();reorder(attachments.findIndex(item=>item.assetId===id),index);}}>
           {asset?<MediaThumbnail asset={asset} />:!Object.hasOwn(known,attachment.assetId)?<CmsSkeleton label="Loading attachment details" rows={1} />:<p className={styles.warning}>This file is unavailable. Refresh the library or remove this attachment.</p>}
           <div className={styles.details}><strong>{asset?.title || attachment.caption}</strong>{asset && <span className={styles.badge}>{asset.publication==='published'?'Published':'Private draft'}{featured===asset.id?' · Featured photo':''}</span>}
             <Input label={`Attachment ${index+1} caption`} name={`attachments.${index}.caption`} required maxLength={1000} disabled={disabled} value={attachment.caption} error={fieldErrors[`attachments.${index}.caption`]} onChange={event=>onAttachmentsChange(attachments.map((entry,i)=>i===index?{...entry,caption:event.target.value}:entry))} />
             {(!asset || asset.kind==='photo') && <Input label={`Attachment ${index+1} alternative text (photos)`} name={`attachments.${index}.altText`} required={asset?.kind==='photo'} maxLength={500} disabled={disabled} value={attachment.altText} error={fieldErrors[`attachments.${index}.altText`]} onChange={event=>onAttachmentsChange(attachments.map((entry,i)=>i===index?{...entry,altText:event.target.value}:entry))} />}
             {asset?.publication==='draft' && publicationBlocked && <p className={styles.warning}>{!source?.approved?'This file’s source needs administrator approval.':!category?.approved?'This file’s category needs approval.':'Add alternative text before publishing this photo.'}</p>}
             <div className={styles.actions}>{asset && <a href={`/api/admin/media/${asset.id}/download`}>Preview / download {asset.kind==='document'?'PDF':'photo'}</a>}
-              {asset?.publication==='draft' && <Button type="button" variant="secondary" disabled={disabled || optionsLoading || !!publicationBlocked} onClick={()=>void publishFile(asset,attachment)}>Publish file</Button>}
-              <Button type="button" variant="secondary" disabled={disabled} onClick={()=>{onAttachmentsChange(attachments.filter((_,i)=>i!==index));if(featured===attachment.assetId)onFeaturedChange('');}}>Remove file</Button>
+              <Button variant="secondary" draggable={!disabled} disabled={disabled} title={`Drag attachment ${index+1}`} aria-label={`Drag attachment ${index+1}`} onDragStart={event=>event.dataTransfer.setData('application/x-talgov-attachment',attachment.assetId)}><GripVertical size={18} aria-hidden="true" /></Button>
+              <Button variant="secondary" disabled={disabled || index===0} title={`Move attachment ${index+1} up`} aria-label={`Move attachment ${index+1} up`} onClick={()=>reorder(index,index-1)}><ArrowUp size={18} aria-hidden="true" /></Button>
+              <Button variant="secondary" disabled={disabled || index===attachments.length-1} title={`Move attachment ${index+1} down`} aria-label={`Move attachment ${index+1} down`} onClick={()=>reorder(index,index+1)}><ArrowDown size={18} aria-hidden="true" /></Button>
+              <Button type="button" variant="secondary" title="Remove attachment" disabled={disabled} onClick={()=>{onAttachmentsChange(attachments.filter((_,i)=>i!==index));if(featured===attachment.assetId)onFeaturedChange('');}}><Trash2 size={18} aria-hidden="true" />Remove file</Button>
             </div>
           </div>
         </article>;
       })}
-      <label className={styles.field}>Featured photo<select name="featuredAssetId" value={featured} disabled={disabled} aria-invalid={!!fieldErrors.featuredAssetId} onChange={event=>onFeaturedChange(event.target.value)}><option value="">No featured photo</option>{ids.filter(id=>known[id]?.kind==='photo').map(id=><option key={id} value={id}>{known[id]!.title}</option>)}{featured && !known[featured] && <option value={featured}>Current featured photo</option>}</select></label>
-      <p className={styles.hint}>Choose one of this draft’s photos to feature on the website. Remove a photo to clear its featured selection.</p>
+      {mediaKind!=='document' && <label className={styles.field}>Featured photo<select name="featuredAssetId" value={featured} disabled={disabled} aria-invalid={!!fieldErrors.featuredAssetId} onChange={event=>onFeaturedChange(event.target.value)}><option value="">No featured photo</option>{ids.filter(id=>known[id]?.kind==='photo').map(id=><option key={id} value={id}>{known[id]!.title}</option>)}{featured && !known[featured] && <option value={featured}>Current featured photo</option>}</select></label>}
       {role==='admin' && <CmsLink href="/cms?tab=sources" className={styles.approvalLink}>Open Source approvals</CmsLink>}
     </section>
   </section>;

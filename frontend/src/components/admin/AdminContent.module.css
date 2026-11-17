@@ -9,7 +9,7 @@
 .field textarea { resize:vertical; min-height:128px; line-height:1.6; }
 .root :is(input,select,textarea,button,a):focus-visible { outline:3px solid #126ca0; outline-offset:3px; }
 .workspace { display:grid; grid-template-columns:minmax(0,1fr); gap:32px; }
-.form { padding:24px; border:1px solid #dce3eb; border-radius:12px; background:#f8fafc; }
+.form { padding:24px 0; background:white; }
 .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:24px 0; border:0; padding:0; }
 .wide { grid-column:1 / -1; }
 .list { display:grid; gap:0; margin-bottom:24px; }
@@ -24,7 +24,7 @@
 .attachments h4,.form h3,.preview h3 { font-weight:700; }
 .attachment { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:16px; align-items:end; }
 .picker { display:flex; gap:16px; align-items:end; }.picker .field { flex:1; }
-.preview { padding:24px; margin-block:24px; border:2px solid #aac6d8; border-radius:12px; }
+.preview { padding:16px 0; }
 .preview p { white-space:pre-wrap; line-height:1.8; margin:16px 0; overflow-wrap:anywhere; }
 .preview img { width:100%; max-height:400px; object-fit:contain; margin-block:16px; }
 .preview a { text-decoration:underline; min-height:44px; display:inline-flex; align-items:center; }
@@ -33,5 +33,16 @@
 .workflow { padding:12px 16px; margin-top:16px; background:#e8eff7; color:#17324d; font-size:14px; line-height:1.6; border-radius:4px; }
 .approvalLink { display:inline-flex; align-items:center; min-height:44px; color:#125d8a; text-decoration:underline; }
 .fieldError { font-size:14px; color:#9d2922; }
+.editorActions { display:flex; flex-wrap:wrap; gap:8px; padding:24px 0; border-top:1px solid #dce3eb; margin-top:24px; }
+.editorActions button { min-width:120px; }
+.repeatRow { display:grid; grid-template-columns:minmax(0,1fr) 44px; gap:16px; align-items:end; margin:16px 0; }
+.repeatRow button { padding:0; width:44px; }
+.confirmTitle { font-weight:700; margin-bottom:16px; overflow-wrap:anywhere; }
+.root details summary { cursor:pointer; min-height:44px; display:flex; align-items:center; font-weight:600; }
+.root h4 { font-weight:650; }
+.officialRow { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; padding:24px 0; border-bottom:1px solid #dce3eb; margin-bottom:16px; }
+.officialRow>button { width:44px; padding:0; }
+@media(max-width:640px) { .officialRow { grid-template-columns:minmax(0,1fr); } }
+.root { letter-spacing:0; }
 .empty button { margin-top:16px; }
 @media (max-width:640px) { .fields,.attachment,.chartRow { grid-template-columns:1fr; }.form,.preview { padding:16px; }.picker { flex-wrap:wrap; }.toolbar>.field { width:100%; }.heading h2 { font-size:21px; } }

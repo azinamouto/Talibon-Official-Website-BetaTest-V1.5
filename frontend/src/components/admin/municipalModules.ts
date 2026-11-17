@@ -1,23 +1,27 @@
-export type MunicipalGroup = 'news' | 'tourism' | 'transparency' | 'government' | 'galleries' | 'downloadables';
-type Field = { key: string; label: string; multiline?: boolean; options?: string[]; type?: string; max?: number; required?: boolean };
-export type MunicipalModule = { kind: string; label: string; group: MunicipalGroup; fields: Field[]; slug?: string };
+export type MunicipalGroup = 'news' | 'tourism' | 'events' | 'transparency' | 'government' | 'galleries' | 'downloadables';
+export type Field = { key: string; label: string; multiline?: boolean; options?: string[]; optionLabels?: Record<string,string>; type?: string; max?: number; required?: boolean; advanced?: boolean; repeatable?: boolean; when?: string[] };
+export type MunicipalModule = { kind: string; label: string; group: MunicipalGroup; fields: Field[]; slug?: string; titleLabel?: string };
 const description: Field={key:'description',label:'Description',multiline:true,max:10000,required:true};
-const article: Field[]=[{key:'summary',label:'Summary',multiline:true,max:2000,required:true},{key:'content',label:'Article text',multiline:true,max:100000,required:true},{key:'author',label:'Issuing office or author'},{key:'date',label:'Release date',type:'date'}];
+const article: Field[]=[{key:'content',label:'Article content',multiline:true,max:100000,required:true},{key:'summary',label:'Short description',multiline:true,max:2000,advanced:true},{key:'author',label:'Issuing office or author',advanced:true}];
+const eventFields:Field[]=[description,{key:'date',label:'Event date',type:'date',required:true},{key:'start_time',label:'Start time (optional)',type:'time'},{key:'end_time',label:'End time (optional)',type:'time'},{key:'venue',label:'Venue / location'}];
 export const municipalModules: MunicipalModule[]=[
-  {kind:'news',label:'News & announcements',group:'news',fields:[{key:'category',label:'Category',options:['ARTICLE','ANNOUNCEMENT','NOTICE','ADVISORY','UPDATE'],required:true},...article]},
-  {kind:'advisories',label:'Municipal advisories',group:'news',fields:article},
-  {kind:'updates',label:'Public updates',group:'news',fields:article},
-  {kind:'tourism_spots',label:'Tourist spots',group:'tourism',fields:[description,{key:'location',label:'Location'},{key:'address',label:'Address'},{key:'contact',label:'Contact information'},{key:'opening_hours',label:'Verified visiting hours'}]},
-  {kind:'tourism_festivals',label:'Festivals',group:'tourism',fields:[description,{key:'date',label:'Festival date',type:'date'},{key:'venue',label:'Venue'},{key:'time',label:'Time'}]},
-  {kind:'tourism_delicacies',label:'Local delicacies',group:'tourism',fields:[description]},
-  {kind:'galleries',label:'Tourism galleries',group:'tourism',fields:[description,{key:'category',label:'Collection category',options:['tourism'],required:true}]},
-  {kind:'transparency_reports',label:'Official reports & notices',group:'transparency',fields:[{key:'category',label:'Publication category',options:['full-disclosure','infrastructure','finance','budget','bidding','executive-order'],required:true},description,{key:'year',label:'Reporting year',max:4},{key:'reference',label:'Official reference number'},{key:'date',label:'Issue date',type:'date'},{key:'deadline',label:'Bidding deadline',type:'date'},{key:'budget',label:'Project budget (as officially reported)'},{key:'status',label:'Project status'}]},
+  {kind:'news',label:'News',titleLabel:'Headline',group:'news',fields:[{key:'category',label:'News category',options:['ARTICLE','ANNOUNCEMENT','NOTICE','ADVISORY','UPDATE'],optionLabels:{ARTICLE:'News',ANNOUNCEMENT:'Announcement',NOTICE:'Notice',ADVISORY:'Advisory',UPDATE:'Update'},required:true,advanced:true},...article]},
+  {kind:'advisories',label:'Advisories',titleLabel:'Headline',group:'news',fields:article},
+  {kind:'updates',label:'Updates',titleLabel:'Headline',group:'news',fields:article},
+  {kind:'tourism_spots',label:'Tourist spots',titleLabel:'Destination name',group:'tourism',fields:[description,{key:'location',label:'Location / address'},{key:'opening_hours',label:'Opening hours (optional)'},{key:'highlights',label:'Highlights',repeatable:true,max:500},{key:'address',label:'Additional address details',advanced:true},{key:'contact',label:'Contact information',advanced:true}]},
+  {kind:'tourism_festivals',label:'Festivals',titleLabel:'Event name',group:'tourism',fields:eventFields},
+  {kind:'events',label:'Events',titleLabel:'Event name',group:'events',fields:[...eventFields,{key:'category',label:'Event category',options:['event','festivity'],optionLabels:{event:'Municipal event',festivity:'Tourism festival'},required:true}]},
+  {kind:'tourism_festivals',label:'Festivals',titleLabel:'Event name',group:'events',fields:eventFields},
+  {kind:'tourism_delicacies',label:'Local delicacies',titleLabel:'Delicacy name',group:'tourism',fields:[description]},
+  {kind:'galleries',label:'Tourism galleries',titleLabel:'Album title',group:'tourism',fields:[description,{key:'category',label:'Collection category',options:['tourism'],required:true}]},
+  {kind:'transparency_reports',label:'Transparency documents',titleLabel:'Document title',group:'transparency',fields:[{key:'category',label:'Category',options:['full-disclosure','infrastructure','finance','executive-order','budget','bidding'],optionLabels:{'full-disclosure':'Full Disclosure',infrastructure:'Infrastructure Projects',finance:'Financial Reports','executive-order':'Executive Orders',budget:'Budget',bidding:'Biddings'},required:true},description,{key:'year',label:'Verified reporting year (optional)',max:4,advanced:true},{key:'reference',label:'Official reference number',advanced:true},{key:'date',label:'Issue date',type:'date',advanced:true},{key:'deadline',label:'Bidding deadline',type:'date',when:['bidding']},{key:'budget',label:'Verified project budget',when:['infrastructure']},{key:'status',label:'Project status',when:['infrastructure']}]},
   {kind:'pages',label:'Executive mandate',group:'government',slug:'executive-mandate',fields:[{key:'content',label:'Official mandate',multiline:true,max:100000,required:true}]},
   {kind:'pages',label:'Legislative mandate',group:'government',slug:'legislative-mandate',fields:[{key:'content',label:'Official mandate',multiline:true,max:100000,required:true}]},
+  {kind:'pages',label:'Public pages',titleLabel:'Page title',group:'government',fields:[{key:'content',label:'Page content',multiline:true,max:100000,required:true}]},
   {kind:'organizational_chart',label:'Organizational chart',group:'government',slug:'executive-chart',fields:[]},
-  {kind:'departments',label:'Departments & offices',group:'government',fields:[description,{key:'head',label:'Office head'},{key:'contact',label:'Contact number'},{key:'address',label:'Office address'}]},
-  {kind:'galleries',label:'Photo collections',group:'galleries',fields:[description,{key:'category',label:'Collection category',options:['municipal','tourism'],required:true}]},
-  {kind:'downloadables',label:'Downloadable documents',group:'downloadables',fields:[description,{key:'category',label:'Document category',required:true},{key:'year',label:'Issue year',max:4},{key:'reference',label:'Official reference number'}]},
+  {kind:'departments',label:'Departments & offices',titleLabel:'Department / office name',group:'government',fields:[description,{key:'contact',label:'Contact information'},{key:'address',label:'Verified office address (optional)'},{key:'email',label:'Email (optional)',type:'email'},{key:'head',label:'Office head',advanced:true}]},
+  {kind:'galleries',label:'Photo collections',titleLabel:'Album title',group:'galleries',fields:[{...description,required:false},{key:'category',label:'Collection category',options:['municipal','tourism'],optionLabels:{municipal:'Municipal',tourism:'Tourism'},required:true}]},
+  {kind:'downloadables',label:'Downloadable documents',titleLabel:'Document title',group:'downloadables',fields:[{key:'category',label:'Category',required:true},description,{key:'year',label:'Verified issue year (optional)',max:4,advanced:true},{key:'reference',label:'Official reference number',advanced:true}]},
 ];
 export type Attachment = { assetId: string; caption: string; altText: string };
 export type ContentRow = { id: string; kind: string; title: string; slug: string; source_id: string; publication: 'draft'|'published'|'archived'; version: number; updated_at: string; body: Record<string,unknown> & { attachments?: Attachment[]; featuredAssetId?: string } };

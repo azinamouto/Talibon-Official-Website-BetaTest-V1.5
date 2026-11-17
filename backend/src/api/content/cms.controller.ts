@@ -2,7 +2,7 @@ import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Header, Inject, Param, ParseUUIDPipe, Post, Query, Req } from '@nestjs/common';
 import { StaffRoles } from '../../authentication/staff.guard';
 import { ContentService } from './content.service';
-import { CmsContentDto, CmsUpdateDto, ContentSourceDto, ContentVersionDto, ListContentDto } from './content.dto';
+import { CmsContentDto, CmsUpdateDto, CmsPublishUpdateDto, ContentPublishDto, ContentSourceDto, ContentVersionDto, ListContentDto } from './content.dto';
 import { StaffRequest, contentMutation } from './staff-request';
 import { ContentErrors } from './content.openapi';
 @ApiTags('Information CMS') @ApiCookieAuth('staffCookie')
@@ -35,8 +35,11 @@ export class CmsContentController {
   @Post(':kind/:id/delete') @StaffRoles('admin') remove(@Req() req: StaffRequest,@Param('kind') kind: string,@Param('id',ParseUUIDPipe) id: string,@Body() body: ContentVersionDto) {
     contentMutation(req); return this.content.remove(kind,id,body.version,req.staff,req.requestId);
   }
-  @Post(':kind/:id/publish') publish(@Req() req: StaffRequest,@Param('kind') kind: string,@Param('id',ParseUUIDPipe) id: string,@Body() body: ContentVersionDto) {
-    contentMutation(req); return this.content.change(kind,id,body.version,'publish',req.staff,req.requestId);
+  @Post(':kind/:id/update') update(@Req() req: StaffRequest,@Param('kind') kind: string,@Param('id',ParseUUIDPipe) id: string,@Body() body: CmsPublishUpdateDto) {
+    contentMutation(req);const {media,...input}=body;return this.content.updatePublished(kind,id,input,req.staff,req.requestId,media);
+  }
+  @Post(':kind/:id/publish') publish(@Req() req: StaffRequest,@Param('kind') kind: string,@Param('id',ParseUUIDPipe) id: string,@Body() body: ContentPublishDto) {
+    contentMutation(req); return this.content.change(kind,id,body.version,'publish',req.staff,req.requestId,body.media);
   }
   @Post(':kind/:id/unpublish') unpublish(@Req() req: StaffRequest,@Param('kind') kind: string,@Param('id',ParseUUIDPipe) id: string,@Body() body: ContentVersionDto) {
     contentMutation(req); return this.content.change(kind,id,body.version,'unpublish',req.staff,req.requestId);

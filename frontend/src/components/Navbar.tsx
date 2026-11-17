@@ -126,6 +126,7 @@ export default function Navbar() {
         { name: "Advisories", href: "/news/advisories" },
         { name: "Updates", href: "/news/updates" },
         { name: "Gallery", href: "/news/gallery" },
+        { name: "Events", href: "/news/events" },
       ])
     },
     { name: "SOCIAL MEDIA", href: "https://web.facebook.com/TalibonOfficialPage?_rdc=1&_rdr#", isExternal: true },

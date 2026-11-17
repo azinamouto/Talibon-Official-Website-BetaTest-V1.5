@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ArrayMaxSize, IsArray, IsObject, IsUUID, IsIn, IsInt, IsString, Length, Matches, Max, Min, ValidateIf } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsObject, IsUUID, IsIn, IsInt, IsString, Length, Matches, Max, Min, ValidateIf, ValidateNested } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 // Unlike IsOptional, this does not let explicit null bypass validation.
@@ -106,15 +106,29 @@ export class UpdateServiceDto extends PartialType(CreateServiceDto, { skipNullPr
 }
 
 export class ContentVersionDto { @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number; }
+export class AttachedMediaVersionDto {
+  @ApiProperty() @IsUUID() assetId: string;
+  @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
+}
+export class ContentPublishDto extends ContentVersionDto {
+  @ApiPropertyOptional({ type: [AttachedMediaVersionDto], description: 'Explicit consent to publish these ready attachments atomically with this record.' })
+  @Optional() @IsArray() @ArrayMaxSize(50) @ValidateNested({ each: true }) @Type(() => AttachedMediaVersionDto)
+  media?: AttachedMediaVersionDto[];
+}
 export class CmsContentDto {
   @ApiProperty() @IsString() @Length(1,200) @Matches(/\S/) title: string;
-  @ApiProperty() @IsString() @Length(1,160) @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) slug: string;
+  @ApiPropertyOptional({ description: 'Generated from the title when omitted; existing addresses are retained on edit.' }) @Optional() @IsString() @Length(1,160) @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) slug?: string;
   @ApiProperty() @IsUUID() sourceId: string;
   @ApiProperty({ type: 'object', additionalProperties: true }) @IsObject() body: Record<string, unknown>;
   @ApiPropertyOptional({ enum: ['draft'], description: 'Publishing uses the separate versioned publish action.' }) @Optional() @IsIn(['draft']) status?: string;
 }
 export class CmsUpdateDto extends PartialType(CmsContentDto, { skipNullProperties: false }) {
   @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
+}
+export class CmsPublishUpdateDto extends CmsUpdateDto {
+  @ApiPropertyOptional({ type: [AttachedMediaVersionDto] })
+  @Optional() @IsArray() @ArrayMaxSize(50) @ValidateNested({ each: true }) @Type(() => AttachedMediaVersionDto)
+  media?: AttachedMediaVersionDto[];
 }
 export class ContentSourceDto {
   @ApiProperty() @IsString() @Length(1,1000) @Matches(/\S/) reference: string;

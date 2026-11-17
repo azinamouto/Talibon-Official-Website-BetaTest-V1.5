@@ -9,6 +9,7 @@ import { GoneException } from '@nestjs/common';
 import { MEDIA_CMS_ONLY_MESSAGE } from '../../security/deferred-routes.middleware';
 import { CmsValidationError } from '../../database/cms-validation';
 import { CmsInputError } from '../../security/cms-validation';
+import type { MediaPublication } from '../../database/media.repository';
 export const CONTENT = {
   pages: { table: 'pages', title: 'title', visible: 'published', fields: 'id,title,slug,content,status,created_at,updated_at' },
   news: { table: 'news', title: 'title', visible: 'published', fields: 'id,title,slug,summary,content,category,date,image_url,file_url,author,status,created_at,updated_at' },
@@ -54,12 +55,15 @@ export class ContentService {
     const table=this.kind(kind);
     return this.run(repo=>repo.save(actor,table,input,request,id));
   }
+  updatePublished(kind: string,id: string,input: Partial<ContentInput>,actor: StaffPrincipal,request: string,media?: MediaPublication[]) {
+    const table=this.kind(kind);return this.run(repo=>repo.save(actor,table,input,request,id,true,media));
+  }
   dashboard(actor: StaffPrincipal) { return this.run(repo=>repo.dashboard(actor)); }
   sources(actor: StaffPrincipal) { return this.run(repo=>repo.sources(actor)); }
   createSource(input: {reference:string;owner:string;sha256:string},actor: StaffPrincipal,request: string) { return this.run(repo=>repo.createSource(actor,input,request)); }
   approveSource(id: string,actor: StaffPrincipal,request: string) { return this.run(repo=>repo.approveSource(actor,id,request)); }
-  change(kind: string,id: string,version: number,action: string,actor: StaffPrincipal,request: string) {
-    const table=this.kind(kind); return this.run(repo=>repo.change(actor,table,id,version,action,request));
+  change(kind: string,id: string,version: number,action: string,actor: StaffPrincipal,request: string,media?: MediaPublication[]) {
+    const table=this.kind(kind); return this.run(repo=>repo.change(actor,table,id,version,action,request,media));
   }
   async onModuleDestroy() { await this.database?.close(); }
   private legacyView(row: Record<string, any>, kind: ContentKind) {

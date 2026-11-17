@@ -36,13 +36,17 @@ export class MediaController {
   @ApiQuery({ name: 'kind', required: false, enum: ['photo','document'] })
   @ApiQuery({ name: 'q', required: false, type: String })
   @ApiQuery({ name: 'ready', required: false, enum: ['true','false'] })
+  @ApiQuery({ name: 'publication', required: false, enum: ['draft','published'] })
+  @ApiQuery({ name: 'categoryId', required: false, type: String })
   @ApiOkResponse({schema:{type:'object',required:['data','hasMore'],properties:{data:{type:'array',items:STAFF_MEDIA_SCHEMA},hasMore:{type:'boolean'}}}})
-  list(@Req() req: StaffRequest, @Query('page') page = '1', @Query('kind') kind = '', @Query('q') q = '', @Query('ready') ready = 'false') {
+  list(@Req() req: StaffRequest, @Query('page') page = '1', @Query('kind') kind = '', @Query('q') q = '', @Query('ready') ready = 'false', @Query('publication') publication = '', @Query('categoryId') categoryId = '') {
     if (typeof page !== 'string' || !/^[1-9]\d{0,3}$/.test(page)) invalidField('page','invalid');
     if (typeof kind !== 'string' || !['','photo','document'].includes(kind)) invalidField('kind','invalid');
     if (typeof q !== 'string' || q.length > 100 || /[\x00-\x1f]/.test(q)) invalidField('q','invalid');
     if (typeof ready !== 'string' || !['true','false'].includes(ready)) invalidField('request','invalid');
-    return this.media.list(req.staff,Number(page),{kind,q,ready:ready === 'true'});
+    if (typeof publication!=='string' || !['','draft','published'].includes(publication)) invalidField('request','invalid');
+    if (typeof categoryId!=='string' || (categoryId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(categoryId))) invalidField('categoryId','uuid');
+    return this.media.list(req.staff,Number(page),{kind,q,ready:ready === 'true',publication,categoryId});
   }
   @Get('options') options(@Req() req: StaffRequest) { return this.media.options(req.staff); }
   @Get(':id') @ApiOperation({ summary: 'Get ready private media metadata for a draft attachment' })

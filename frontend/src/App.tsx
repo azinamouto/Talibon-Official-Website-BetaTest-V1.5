@@ -67,6 +67,7 @@ const BudgetView = lazy(() => import("./pages/transparency/BudgetView"));
 const BiddingsView = lazy(() => import("./pages/transparency/BiddingsView"));
 const SpotsView = lazy(() => import("./pages/tourism/SpotsView"));
 const FestivitiesView = lazy(() => import("./pages/tourism/FestivitiesView"));
+const PublishedEvents = lazy(() => import('./components/PublishedEvents'));
 const DelicaciesView = lazy(() => import("./pages/tourism/DelicaciesView"));
 const GadImsHeader = lazy(() => import("./components/GadImsSystem").then(module => ({ default: module.GadImsHeader })));
 
@@ -123,6 +124,7 @@ const router = createBrowserRouter(createRoutesFromElements(
                       {/* News */}
                       <Route path="/news/view/:id" element={<NewsDetailPage />} />
                       <Route path="/news/gallery" element={<PublicShell standardSpacing title="Municipal photo galleries"><PublishedCollections /></PublicShell>} />
+                      <Route path="/news/events" element={<PublicShell standardSpacing title="Events"><PublishedEvents /></PublicShell>} />
                       <Route path="/news/:category" element={<NewsCategoryPage />} />
 
                       {/* Transparency */}

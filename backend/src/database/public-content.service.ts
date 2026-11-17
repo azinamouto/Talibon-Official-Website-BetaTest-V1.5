@@ -47,11 +47,17 @@ export class PublicContentService {
             bytes:asset.bytes,sha256:asset.sha256,download_url:`/api/media/${asset.id}/download`,preview_url:`/api/media/${asset.id}/preview`}]:[];
         });
         const firstDocument=attachments.find(asset=>asset.kind==='document');
+        const officials=(entries:Record<string,any>[])=>(entries || []).map(entry=>{
+          const photo=media.find(asset=>asset.id===entry.photoAssetId && asset.kind==='photo');
+          return {...entry,...(photo?{image_url:`/api/media/${photo.id}/preview`}:{})};
+        });
         return {...body,kind:row.kind,id:row.id,slug:row.slug,title:row.title,name:body.name ?? row.title,
-          ...(row.kind==='departments'?{department:body.department ?? row.title}:{}),
+          ...(row.kind==='departments'?{department:row.title,name:row.title,officialName:row.title,...(Array.isArray(body.officials)?{officials:officials(body.officials)}:{})}:{}),
+          ...(row.kind==='organizational_chart' && Array.isArray(body.nodes)?{nodes:officials(body.nodes)}:{}),
+          ...(['events','tourism_festivals'].includes(row.kind) && body.start_time?{time:[body.start_time,body.end_time].filter(Boolean).join(' - ')}:{}),
           ...(row.kind==='tourism_spots'?{contact_details:body.contact_details ?? body.contact,gallery_images:attachments.filter(asset=>asset.kind==='photo').map(asset=>asset.preview_url)}:{}),
           ...(['news','advisories','updates'].includes(row.kind)?{date:body.date || row.published_at,category:row.kind==='advisories'?'ADVISORY':row.kind==='updates'?'UPDATE':body.category}:{}),
-          ...(featured?{image_url:`/api/media/${featured.id}/preview`,featured_image:`/api/media/${featured.id}/preview`,banner_image:`/api/media/${featured.id}/preview`,image_alt:featured.alt_text}:{}),
+          ...(featured?{image_url:`/api/media/${featured.id}/preview`,featured_image:`/api/media/${featured.id}/preview`,banner_image:`/api/media/${featured.id}/preview`,image_alt:attachments.find(asset=>asset.id===featured.id)?.alt_text || featured.alt_text}:{}),
           ...(firstDocument?{file_url:firstDocument.download_url,url:firstDocument.download_url}:{}),
           ...(body.attachments!==undefined?{attachments}:{}),created_at:row.published_at};
       });

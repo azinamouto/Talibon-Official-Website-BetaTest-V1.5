@@ -5,7 +5,7 @@ import { StaffPrincipal } from '../authentication/authentication.adapter';
 import { CmsValidationError } from './cms-validation';
 import type { SqlSession } from './postgres';
 
-export type StaffMediaFilters = { kind?: string; q?: string; ready?: boolean };
+export type StaffMediaFilters = { kind?: string; q?: string; ready?: boolean; publication?: string; categoryId?: string };
 export type MediaPublication = { assetId: string; version: number };
 
 export async function publishAttachedMedia(tx: SqlSession, actor: StaffPrincipal, body: Record<string,any>, ids: string[], consent: MediaPublication[] | undefined, request: string) {
@@ -51,8 +51,9 @@ export class MediaRepository extends PgRepositories {
       return tx.query(`SELECT * FROM app.media_assets WHERE deleted_at IS NULL
         AND ($2::text IS NULL OR kind=$2) AND (NOT $3::boolean OR processing='ready')
         AND ($4::text IS NULL OR title ILIKE $4 OR original_filename ILIKE $4)
+        AND ($5::text IS NULL OR publication=$5) AND ($6::uuid IS NULL OR category_id=$6)
         ORDER BY created_at DESC,id LIMIT 51 OFFSET $1`, [(page-1)*50, filters.kind || null, !!filters.ready,
-        filters.q ? `%${filters.q.replace(/[\\%_]/g,'\\$&')}%` : null]);
+        filters.q ? `%${filters.q.replace(/[\\%_]/g,'\\$&')}%` : null,filters.publication || null,filters.categoryId || null]);
     });
   }
   options(actor: StaffPrincipal) {

@@ -1,6 +1,8 @@
 import layout from "../../styles/InnerPageLayout.module.css";
 import React from "react";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import PublishedAttachments from '../../components/PublishedAttachments';
+import type { PublicAttachment } from '../../services/publicApi';
 
 interface Festivity {
   name: string;
@@ -9,6 +11,7 @@ interface Festivity {
   banner_image?: string;
   venue?: string;
   time?: string;
+  attachments?: PublicAttachment[];
 }
 
 interface FestivitiesViewProps {
@@ -24,7 +27,7 @@ export default function FestivitiesView({ data }: FestivitiesViewProps) {
           className="bg-brand-surface rounded-xl sm:rounded-2xl border border-brand-border p-3.5 sm:p-4 shadow-2xs flex flex-col justify-between space-y-3 hover:border-brand-primary/40 transition-all group"
         >
           <div className="space-y-2.5">
-            <div className="aspect-[16/9] max-h-44 sm:max-h-48 relative overflow-hidden rounded-lg sm:rounded-xl border border-brand-border/50 bg-white">
+            {fest.banner_image && <div className="aspect-[16/9] max-h-44 sm:max-h-48 relative overflow-hidden rounded-lg sm:rounded-xl border border-brand-border/50 bg-white">
               <img
                 src={fest.banner_image || undefined}
                 alt={fest.name}
@@ -34,7 +37,8 @@ export default function FestivitiesView({ data }: FestivitiesViewProps) {
               <div className="absolute top-2 left-2 bg-brand-primary text-white px-2.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider shadow-xs">
                 {fest.date}
               </div>
-            </div>
+            </div>}
+            {!fest.banner_image && <p>{fest.date}</p>}
 
             <div className="space-y-1.5">
               <h3 className="text-sm sm:text-base font-bold text-brand-text group-hover:text-brand-primary transition-colors font-display tracking-tight leading-snug">
@@ -63,10 +67,11 @@ export default function FestivitiesView({ data }: FestivitiesViewProps) {
             {!fest.venue && !fest.time && (
               <div className="flex items-center gap-1.5 text-brand-muted">
                 <Calendar size={12} className="text-brand-primary shrink-0" />
-                <span>Annual Municipal Celebration</span>
+                <span>{fest.date}</span>
               </div>
             )}
           </div>
+          <PublishedAttachments attachments={fest.attachments}/>
         </div>
       ))}
     </div>

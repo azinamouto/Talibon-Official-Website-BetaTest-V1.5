@@ -18,6 +18,7 @@ export default function NewsCategoryPage() {
   return <PublicShell standardSpacing title="News & Updates">
     <nav aria-label="News categories" className="flex flex-wrap gap-4 text-brand-primary">
       <Link to="/news">All news</Link><Link to="/news/articles">Articles</Link><Link to="/news/updates">Updates</Link><Link to="/news/announcements">Announcements</Link>
+      <Link to="/news/advisories">Advisories</Link><Link to="/news/events">Events</Link>
     </nav>
     <form key={`${category}-${q}`} role="search" onSubmit={event => {
       event.preventDefault();

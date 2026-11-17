@@ -10,6 +10,7 @@ import DraftMediaPanel from './DraftMediaPanel';
 import EditorActions, { EditorBack } from './EditorActions';
 import EditorFields from './EditorFields';
 import OfficialEditor, { chartEntries, emptyOfficial, type OfficialEntry } from './OfficialEditor';
+import ReportingChart from '../ReportingChart';
 import { CmsLink, CmsSkeleton, ErrorNotice, ReviewedSelect } from './CmsControls';
 import { errorFields, fieldMessages, StaffRequestError } from '../../lib/staffErrors';
 import { useCmsEditor, type EditorState } from '../../hooks/useCmsEditor';
@@ -153,6 +154,7 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
     </div>}
     {preview && <Modal open title="Preview" onClose={()=>setPreview(null)}><ContentPreview row={preview} onClose={()=>setPreview(null)}/></Modal>}
     {confirmation && <Modal open title={confirmation.update?'Update published content?':'Publish content?'} onClose={()=>{if(!working)setConfirmation(null);}}><p className={styles.confirmTitle}>{confirmation.row.title}</p>
+      {error && <ErrorNotice message={error} fields={validation}/>}
       {!!confirmation.media.length && <p>Attached photos and PDFs will be public with this content. Official material and file categories must be approved.</p>}
       <div className={styles.editorActions}><Button busy={working} onClick={()=>void confirmPublish()}>{confirmation.update?'Confirm update':'Confirm publication'}</Button><Button variant="secondary" disabled={working} onClick={()=>setConfirmation(null)}>Keep editing</Button></div>
     </Modal>}
@@ -176,7 +178,8 @@ function ContentPreview({row,onClose}:{row:ContentRow;onClose():void}) {
   const definitions=municipalModules.find(module=>module.kind===row.kind)?.fields || [];
   return <section className={styles.preview} aria-label="Private content preview"><span className={styles.badge}>Private preview</span><h3>{row.title}</h3>
     {row.body.featuredAssetId && <img src={`/api/admin/media/${row.body.featuredAssetId}/preview`} alt={row.body.attachments?.find(item=>item.assetId===row.body.featuredAssetId)?.altText || row.title}/>}
-    {Object.entries(row.body).filter(([key])=>!['attachments','featuredAssetId'].includes(key)).map(([key,value])=><div key={key}><strong>{definitions.find(field=>field.key===key)?.label || key.replace(/_/g,' ')}</strong><PreviewValue value={value}/></div>)}
+    {Array.isArray(row.body.nodes) && <ReportingChart privatePreview nodes={row.body.nodes as OfficialEntry[]}/>}
+    {Object.entries(row.body).filter(([key])=>!['attachments','featuredAssetId','nodes'].includes(key)).map(([key,value])=><div key={key}><strong>{definitions.find(field=>field.key===key)?.label || key.replace(/_/g,' ')}</strong><PreviewValue value={value}/></div>)}
     {row.body.attachments?.map(item=><div key={item.assetId}><a href={`/api/admin/media/${item.assetId}/download`}>{item.caption}</a>{media[item.assetId]?.kind==='photo' && <img src={`/api/admin/media/${item.assetId}/preview`} alt={item.altText || media[item.assetId]!.alt_text}/>}{Object.hasOwn(media,item.assetId) && !media[item.assetId] && <p className={styles.hint}>Attachment unavailable.</p>}</div>)}
     <Button variant="secondary" onClick={onClose}>Close preview</Button>
   </section>;

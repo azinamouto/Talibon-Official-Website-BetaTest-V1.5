@@ -133,3 +133,10 @@
   .pagination button { flex: 1; padding-left: 12px; padding-right: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { .navItem { transition: none; } }
+.shell :is(h1,h2,h3,p,span,dt,dd,button) { letter-spacing:0; }
+.header { border:0; border-radius:0; box-shadow:none; border-bottom:1px solid #e2e8f0; padding-inline:0; }
+.sidebar { border:0; border-radius:0; border-right:1px solid #e2e8f0; }
+.panel { border:0; border-radius:0; box-shadow:none; }
+.stat { border:0; border-radius:0; border-bottom:1px solid #e2e8f0; background:white; }
+.quickAction,.empty,.mfaPanel { border-radius:8px; }
+@media(max-width:1023px) { .sidebar { border-right:0; border-bottom:1px solid #e2e8f0; } }

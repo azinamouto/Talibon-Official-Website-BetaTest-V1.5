@@ -8,6 +8,7 @@ import React, { lazy } from "react";
 import { createBrowserRouter, createRoutesFromElements, RouterProvider, Outlet, Route, Navigate } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
+import PublishedEvents from './components/PublishedEvents';
 import ContentPage from "./pages/ContentPage";
 import EServicesPage from "./pages/EServicesPage";
 import AccessDenied from "./pages/AccessDenied";
@@ -123,6 +124,7 @@ const router = createBrowserRouter(createRoutesFromElements(
                       {/* News */}
                       <Route path="/news/view/:id" element={<NewsDetailPage />} />
                       <Route path="/news/gallery" element={<PublicShell standardSpacing title="Municipal photo galleries"><PublishedCollections /></PublicShell>} />
+                      <Route path="/news/events" element={<PublicShell standardSpacing title="Events"><PublishedEvents /></PublicShell>} />
                       <Route path="/news/:category" element={<NewsCategoryPage />} />
 
                       {/* Transparency */}

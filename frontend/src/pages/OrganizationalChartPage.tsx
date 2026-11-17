@@ -1,4 +1,6 @@
 import PublishedAttachments from '../components/PublishedAttachments';
+import ReportingChart, { validReportingChart } from '../components/ReportingChart';
+import type { OfficialEntry } from '../components/admin/OfficialEditor';
 import type { PublicAttachment } from '../services/publicApi';
 import sectionTheme from "../styles/SectionTheme.module.css";
 import React, { useEffect, useState } from 'react';
@@ -12,6 +14,7 @@ interface Official {
   image_url?: string;
 }
 interface OrganizationalChart {
+  nodes?: OfficialEntry[];
   attachments?: PublicAttachment[];
   mayor: Official;
   level2: Official[];
@@ -28,6 +31,7 @@ function isOfficial(value: unknown): value is Official {
 function isOrganizationalChart(value: unknown): value is OrganizationalChart {
   if (!value || typeof value !== 'object') return false;
   const record = value as Record<string, unknown>;
+  if(record.nodes!==undefined)return validReportingChart(record.nodes);
   return isOfficial(record.mayor) &&
     Array.isArray(record.level2) && record.level2.every(isOfficial) &&
     Array.isArray(record.departments) && record.departments.every(isOfficial);
@@ -107,6 +111,7 @@ const OrganizationalChartPage: React.FC = () => {
     );
   }
 
+  if(data.nodes)return <div className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 px-4 md:px-6 max-w-6xl mx-auto min-h-screen bg-brand-bg`}><h1 className="text-2xl font-bold">Organizational Chart</h1><ReportingChart nodes={data.nodes}/></div>;
   return (
     <div className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 px-4 md:px-6 max-w-6xl mx-auto min-h-screen bg-brand-bg relative overflow-hidden`}>
       <div className="relative z-10">

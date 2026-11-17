@@ -29,6 +29,7 @@ export default function AdminMedia({ role, kind, onEditorStateChange }: { role: 
   const [uploadStage,setUploadStage] = useState<UploadProgress | null>(null);
   const [filename,setFilename] = useState(''),[retryMetadata,setRetryMetadata]=useState<UploadMetadata|null>(null),[baseline,setBaseline]=useState(JSON.stringify(empty));
   const [validation,setValidation]=useState<Record<string,string>>({}),[query,setQuery]=useState('');
+  const [visibility,setVisibility]=useState(''),[libraryCategory,setLibraryCategory]=useState(''),[readyOnly,setReadyOnly]=useState(false);
   const [loading,setLoading] = useState(true);
   const [page,setPage] = useState(1);
   const [hasMore,setHasMore] = useState(false);
@@ -38,11 +39,11 @@ export default function AdminMedia({ role, kind, onEditorStateChange }: { role: 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview.url); }, [preview]);
   async function load(isCurrent: () => boolean = () => true) {
     const [result,choices] = await Promise.all([
-      staffRequest<{ data: Asset[]; hasMore: boolean }>(`/api/admin/media?${new URLSearchParams({page:String(page),...(kind?{kind}:{}),...(query?{q:query}:{})})}`), staffRequest<MediaOptions>('/api/admin/media/options'),
+      staffRequest<{ data: Asset[]; hasMore: boolean }>(`/api/admin/media?${new URLSearchParams({page:String(page),...(kind?{kind}:{}),...(query?{q:query}:{}),...(visibility?{publication:visibility}:{}),...(libraryCategory?{categoryId:libraryCategory}:{}),...(readyOnly?{ready:'true'}:{})})}`), staffRequest<MediaOptions>('/api/admin/media/options'),
     ]);
     if (isCurrent()) { setAssets(result.data); setHasMore(result.hasMore); setOptions(choices); }
   }
-  useEffect(() => { let current = true; setLoading(true); setLoadError(''); const timer=window.setTimeout(()=>void load(() => current).catch(() => { if (current) setLoadError('Media is unavailable. Please retry.'); }).finally(() => { if (current) setLoading(false); }),query?250:0); return () => { current = false;window.clearTimeout(timer); }; }, [page,query,kind]);
+  useEffect(() => { let current = true; setLoading(true); setLoadError(''); const timer=window.setTimeout(()=>void load(() => current).catch(() => { if (current) setLoadError('Media is unavailable. Please retry.'); }).finally(() => { if (current) setLoading(false); }),query?250:0); return () => { current = false;window.clearTimeout(timer); }; }, [page,query,kind,visibility,libraryCategory,readyOnly]);
   async function act(work: () => Promise<void>) {
     if(busy)return;setBusy(true); setError(''); setValidation({}); setMessage('');
     try { await work();setLoadError('');try{await load();}catch{setLoadError('The media library could not be refreshed. Use Refresh media to retry.');} }
@@ -121,6 +122,7 @@ export default function AdminMedia({ role, kind, onEditorStateChange }: { role: 
         <div className={styles.libraryHeading}><h3>{kind === 'photo' ? 'Photo library' : kind === 'document' ? 'Document library' : 'Media library'}</h3><span>Library page {page}</span></div>
         <p className={styles.scope}>{kind ? 'Showing ' + (kind === 'photo' ? 'photos' : 'documents') + '. Up to 50 matching files per page.' : 'Up to 50 matching files per library page.'}</p>
         <Input label="Search library files" type="search" maxLength={100} value={query} disabled={busy} onChange={event=>{setQuery(event.target.value);setPage(1);}} />
+        <div className={styles.formActions}><label>Visibility<select className="block min-h-11 border p-2 bg-white" value={visibility} disabled={busy} onChange={event=>{setVisibility(event.target.value);setPage(1);}}><option value="">All files</option><option value="draft">Private drafts</option><option value="published">Published</option></select></label><label>Library category<select className="block min-h-11 border p-2 bg-white" value={libraryCategory} disabled={busy} onChange={event=>{setLibraryCategory(event.target.value);setPage(1);}}><option value="">All categories</option>{options.categories.filter(category=>!kind || category.kind===kind).map(category=><option key={category.id} value={category.id}>{category.title}</option>)}</select></label><label className="flex items-center gap-2 min-h-11"><input type="checkbox" checked={readyOnly} disabled={busy} onChange={event=>{setReadyOnly(event.target.checked);setPage(1);}}/>Ready files only</label></div>
         {loading ? <CmsSkeleton label="Loading media" rows={3} variant="cards" /> : !loadError && !visibleAssets.length && <div className={styles.empty}><h3>No {kind === 'photo' ? 'photos' : kind === 'document' ? 'documents' : 'media'} on this library page</h3><p>{query?'Clear your search or upload a new private draft.':hasMore ? 'Check the next library page for more files.' : 'Add a private draft using the upload form, or upload directly inside a content editor.'}</p></div>}
         {!loading && !loadError && <ul className={styles.assets}>
           {visibleAssets.map(asset => <li key={asset.id}>

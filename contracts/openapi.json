@@ -1167,6 +1167,140 @@
         ]
       }
     },
+    "/api/admin/content/{kind}/{id}/update": {
+      "post": {
+        "operationId": "CmsContentController_update_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CmsPublishUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
     "/api/admin/content/{kind}/{id}/publish": {
       "post": {
         "operationId": "CmsContentController_publish_1",
@@ -1205,7 +1339,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ContentVersionDto"
+                "$ref": "#/components/schemas/ContentPublishDto"
               }
             }
           }
@@ -2132,6 +2266,26 @@
       "get": {
         "operationId": "MediaController_list_1",
         "parameters": [
+          {
+            "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "publication",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "draft",
+                "published"
+              ],
+              "type": "string"
+            }
+          },
           {
             "name": "ready",
             "required": false,
@@ -9633,7 +9787,8 @@
             "type": "string"
           },
           "slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Generated from the title when omitted; existing addresses are retained on edit."
           },
           "sourceId": {
             "type": "string"
@@ -9652,7 +9807,6 @@
         },
         "required": [
           "title",
-          "slug",
           "sourceId",
           "body"
         ]
@@ -9664,7 +9818,8 @@
             "type": "string"
           },
           "slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Generated from the title when omitted; existing addresses are retained on edit."
           },
           "sourceId": {
             "type": "string"
@@ -9695,6 +9850,80 @@
           "version": {
             "type": "number",
             "minimum": 1
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "AttachedMediaVersionDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "assetId",
+          "version"
+        ]
+      },
+      "CmsPublishUpdateDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Generated from the title when omitted; existing addresses are retained on edit."
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft"
+            ],
+            "description": "Publishing uses the separate versioned publish action."
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "media": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttachedMediaVersionDto"
+            }
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ContentPublishDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "media": {
+            "description": "Explicit consent to publish these ready attachments atomically with this record.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttachedMediaVersionDto"
+            }
           }
         },
         "required": [

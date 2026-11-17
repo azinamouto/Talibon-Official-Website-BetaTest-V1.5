@@ -138,10 +138,10 @@ test('municipal dashboard uses complete content totals and supported modules on 
   }
   await expect(page.getByText('Totals include all municipal records and library files. Archived records: 3.')).toBeVisible();
   await expect(page.getByRole('region', { name: 'Your recent activity' }).getByText('content.publish')).toBeVisible();
-  const moduleLabels = ['News & Updates', 'Tourism', 'Transparency', 'Local Government', 'Galleries', 'Downloadables',
+  const moduleLabels = ['News & Updates', 'Tourism', 'Events & Festivals', 'Transparency', 'Local Government', 'Galleries', 'Downloadables',
     'Photos', 'Documents', 'Source approvals', 'Staff management', 'Audit logs'];
   const navigation = page.getByRole('navigation', { name: 'CMS navigation' });
-  await expect(navigation.getByRole('button')).toHaveCount(12);
+  await expect(navigation.getByRole('button')).toHaveCount(13);
   for (const label of moduleLabels) await expect(navigation.getByRole('button', { name: label, exact: true })).toBeVisible();
   await expect(page.locator('a[href*="eservices"]')).toHaveCount(0);
   await expect(navigation.getByRole('button', { name: 'Dashboard overview' })).toHaveAttribute('aria-current', 'page');

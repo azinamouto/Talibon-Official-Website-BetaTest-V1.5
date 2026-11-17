@@ -11,7 +11,7 @@ import EditorActions, { EditorBack } from './EditorActions';
 import EditorFields from './EditorFields';
 import OfficialEditor, { chartEntries, emptyOfficial, type OfficialEntry } from './OfficialEditor';
 import ReportingChart from '../ReportingChart';
-import { CmsLink, CmsSkeleton, ErrorNotice, ReviewedSelect } from './CmsControls';
+import { CmsLink, CmsSkeleton, CmsToast, ErrorNotice, ReviewedSelect } from './CmsControls';
 import { errorFields, fieldMessages, StaffRequestError } from '../../lib/staffErrors';
 import { useCmsEditor, type EditorState } from '../../hooks/useCmsEditor';
 import styles from './AdminContent.module.css';
@@ -118,7 +118,7 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
     <div className={styles.heading}><div><h2>{showForm?module.label:groups[group]}</h2>{showForm && <span className={styles.badge}>{editing?.publication==='published'?'Published':'Draft'}{dirty?' - Unsaved changes':''}</span>}</div>
       {showForm?<EditorBack busy={working} onBack={cancel}/>:<Button disabled={working||loading} onClick={()=>{clear();setShowForm(true);}}><Plus size={18} aria-hidden="true" />New draft</Button>}
     </div>
-    {(error || loadError) && <ErrorNotice message={error || loadError} fields={error?validation:{}} />}{message && <p role="status" className={styles.notice}>{message}</p>}
+    {(error || loadError) && <ErrorNotice message={error || loadError} fields={error?validation:{}} />}<CmsToast message={message} onDismiss={()=>setMessage('')}/>
     <div className={styles.toolbar}>
       <label className={styles.field}>{group==='news'?'Content type':'Section'}<select value={moduleId} disabled={working} onChange={event=>{const value=event.target.value;requestDiscard(()=>{setModuleId(value);setPage(1);setShowForm(false);setPendingUploads(false);setPreview(null);setDeleting(null);});}}>{modules.map(item=><option key={item.kind+item.slug} value={item.kind+':'+(item.slug || '')}>{item.label}</option>)}</select></label>
       {!showForm && <><label className={styles.field}>Status<select value={publication} disabled={working} onChange={event=>{setPublication(event.target.value);setPage(1);}}><option value="">All content</option><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
@@ -158,7 +158,7 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
       {!!confirmation.media.length && <p>Attached photos and PDFs will be public with this content. Official material and file categories must be approved.</p>}
       <div className={styles.editorActions}><Button busy={working} onClick={()=>void confirmPublish()}>{confirmation.update?'Confirm update':'Confirm publication'}</Button><Button variant="secondary" disabled={working} onClick={()=>setConfirmation(null)}>Keep editing</Button></div>
     </Modal>}
-    {deleting && <Modal open title="Delete content?" onClose={()=>{if(!working)setDeleting(null);}}><p>{deleting.title}</p><p>Content will leave the website and CMS. Audit history and private attachments are retained.</p><Input label="Deletion authenticator code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={event=>setCode(event.target.value)}/><div className={styles.editorActions}><Button variant="danger" disabled={working||!/^\d{6}$/.test(code)} onClick={()=>void act(async()=>{const value=code;setCode('');await staffRequest('/api/staff-auth/two-factor/verify-totp',{code:value});await staffRequest(`/api/admin/content/${deleting.kind}/${deleting.id}/delete`,{version:deleting.version});setDeleting(null);setMessage('Content deleted.');})}>Confirm deletion</Button><Button variant="secondary" disabled={working} onClick={()=>setDeleting(null)}>Keep record</Button></div></Modal>}
+    {deleting && <Modal open title="Delete content?" onClose={()=>{if(!working)setDeleting(null);}}><p>{deleting.title}</p><p>Content will leave the website and CMS. Audit history and private attachments are retained.</p>{error && <ErrorNotice message={error} fields={validation}/>}<Input label="Deletion authenticator code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={event=>setCode(event.target.value)}/><div className={styles.editorActions}><Button variant="danger" disabled={working||!/^\d{6}$/.test(code)} onClick={()=>void act(async()=>{const value=code;setCode('');await staffRequest('/api/staff-auth/two-factor/verify-totp',{code:value});await staffRequest(`/api/admin/content/${deleting.kind}/${deleting.id}/delete`,{version:deleting.version});setDeleting(null);setMessage('Content deleted.');})}>Confirm deletion</Button><Button variant="secondary" disabled={working} onClick={()=>setDeleting(null)}>Keep record</Button></div></Modal>}
     {dialog}
   </section>;
 }

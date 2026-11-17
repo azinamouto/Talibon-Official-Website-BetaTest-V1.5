@@ -111,7 +111,7 @@ const OrganizationalChartPage: React.FC = () => {
     );
   }
 
-  if(data.nodes)return <div className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 px-4 md:px-6 max-w-6xl mx-auto min-h-screen bg-brand-bg`}><h1 className="text-2xl font-bold">Organizational Chart</h1><ReportingChart nodes={data.nodes}/></div>;
+  if(data.nodes)return <div className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 px-4 md:px-6 max-w-6xl mx-auto min-h-screen bg-brand-bg`}><h1 className="text-2xl font-bold">Organizational Chart</h1><ReportingChart nodes={data.nodes}/><PublishedAttachments attachments={data.attachments}/></div>;
   return (
     <div className={`${sectionTheme.section} ${sectionTheme.headerClearance} pb-12 px-4 md:px-6 max-w-6xl mx-auto min-h-screen bg-brand-bg relative overflow-hidden`}>
       <div className="relative z-10">

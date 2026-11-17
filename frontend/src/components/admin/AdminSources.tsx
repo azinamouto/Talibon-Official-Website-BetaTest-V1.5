@@ -4,7 +4,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import type { ContentSource } from './municipalModules';
 import styles from './AdminContent.module.css';
-import { CmsSkeleton, ErrorNotice, approvalLabel } from './CmsControls';
+import { CmsSkeleton, CmsToast, ErrorNotice, approvalLabel } from './CmsControls';
 import { errorFields } from '../../lib/staffErrors';
 import { useCmsEditor, type EditorState } from '../../hooks/useCmsEditor';
 export default function AdminSources({onEditorStateChange}:{onEditorStateChange?(state:EditorState):void}={}) {
@@ -20,7 +20,7 @@ export default function AdminSources({onEditorStateChange}:{onEditorStateChange?
     catch(reason){setError((reason as Error).message);setValidation(errorFields(reason));}finally{setBusy(false);}
   }
   return <section className={styles.root} aria-label="Source approvals"><div className={styles.heading}><div><h2>Source approvals</h2><p>Register actual official source material and review it before publication. Existing sources remain intact.</p></div></div>
-    {(error || loadError) && <ErrorNotice message={error || loadError} fields={error?validation:{}} />}{message && <p role="status" className={styles.notice}>{message}</p>}
+    {(error || loadError) && <ErrorNotice message={error || loadError} fields={error?validation:{}} />}<CmsToast message={message} onDismiss={()=>setMessage('')}/>
     <Input label="Current authenticator code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} disabled={busy} value={code} onChange={event=>setCode(event.target.value)} />
     <form className={styles.form} onSubmit={event=>{event.preventDefault();void act(async()=>{await staffRequest('/api/admin/content/sources',{reference,owner,sha256});setReference('');setOwner('');setSha256('');setMessage('Source registered. Review it before approving.');});}}><h3>Register official source</h3><p className={styles.hint}>Use the actual official record and its custodian. Registration creates a pending source; approval is a separate administrator review.</p><fieldset disabled={busy || hashing} className={styles.fields}>
       <Input label="Source reference (official record or URL)" required maxLength={1000} value={reference} error={validation.reference} onChange={event=>setReference(event.target.value)} />

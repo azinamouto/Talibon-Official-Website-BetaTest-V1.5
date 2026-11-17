@@ -41,11 +41,14 @@ async function mockCms(page:Page,role:'admin'|'editor'='editor') {
   mutations.push(url.pathname);
   if(action==='publish' || action==='unpublish'){
    const row=records.get(id);expect(body.version).toBe(row.version);
+   if(action==='publish')for(const selected of body.media || []){const asset=files.get(selected.assetId);expect(selected.version).toBe(asset.version);asset.publication='published';asset.version++;}
    if(action==='publish')expect(row.body.attachments.every((entry:any)=>files.get(entry.assetId)?.publication==='published')).toBe(true);
    row.publication=action==='publish'?'published':'draft';row.version++;return route.fulfill({status:201,json:{data:row}});
   }
   if(action==='edit')expect(body.version).toBe(records.get(id).version);
-  const row={id:id || '66666666-6666-4666-8666-666666666666',kind,title:body.title,slug:body.slug,source_id:body.sourceId,body:body.body,publication:'draft',version:action==='edit'?records.get(id).version+1:1,updated_at:'2026-11-17'};records.set(row.id,row);
+  if(action==='delete'){records.delete(id);return route.fulfill({status:201,json:{data:{id}}});}
+  if(action==='update'){const row=records.get(id);expect(body.version).toBe(row.version);Object.assign(row,{title:body.title,body:body.body,source_id:body.sourceId,version:row.version+1});return route.fulfill({status:201,json:{data:row}});}
+  const row={id:id || '66666666-6666-4666-8666-666666666666',kind,title:body.title,slug:body.slug || records.get(id)?.slug || 'synthetic-generated-address',source_id:body.sourceId,body:body.body,publication:'draft',version:action==='edit'?records.get(id).version+1:1,updated_at:'2026-11-17'};records.set(row.id,row);
   return route.fulfill({status:201,json:{data:row}});
  });
  await page.route('**/api/public-content/**',route=>{const kind=new URL(route.request().url()).pathname.split('/')[3];return route.fulfill({json:{data:[...records.values()].filter(row=>row.kind===kind && row.publication==='published'),pagination:{totalPages:1}}});});
@@ -54,8 +57,8 @@ async function mockCms(page:Page,role:'admin'|'editor'='editor') {
 for(const width of [375,1280])test(`direct private photo upload, recovery, draft attachment and publication at ${width}px`,async({page})=>{
  test.setTimeout(60000);const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
  const state=await mockCms(page);await page.setViewportSize({width,height:1000});await page.goto('/cms?tab=news');
- await page.getByRole('button',{name:'New draft'}).click();await page.getByLabel('Title',{exact:true}).fill('Synthetic municipal draft');await page.getByLabel('Public slug').fill('synthetic-municipal-draft');await page.getByLabel('Source record',{exact:true}).selectOption(sourceId);
- await page.getByLabel('Summary',{exact:true}).fill('Synthetic summary');await page.getByLabel('Article text').fill('Synthetic article text');
+ await page.getByRole('button',{name:'New draft'}).click();await page.getByLabel('Headline',{exact:true}).fill('Synthetic municipal draft');await expect(page.getByLabel('Public slug')).toHaveCount(0);await page.getByLabel('Official material',{exact:true}).selectOption(sourceId);
+ await page.getByLabel('Article content').fill('Synthetic article text');
  await page.getByLabel('Upload files for this draft').setInputFiles({name:'Council photo (1).png',mimeType:'image/png',buffer:image});
  await page.getByLabel('File 1 alternative text').fill('White test image');await page.getByLabel('File 1 category',{exact:true}).selectOption(photoCategory);
  expect(await page.getByRole('option',{name:/Pending photos/}).isDisabled()).toBe(true);
@@ -64,30 +67,74 @@ for(const width of [375,1280])test(`direct private photo upload, recovery, draft
  await expect.poll(()=>state.uploads.length).toBe(1);state.release();await page.getByRole('button',{name:'Retry upload and attach'}).click();
  await expect(page.getByLabel('Attachment 1 caption')).toHaveValue('Council photo (1)');expect(state.uploads[0].uploadId).toBe(state.uploads[1].uploadId);expect(Buffer.from(state.uploads[1].base64,'base64')).toEqual(image);
  expect(state.mutations.filter(path=>path.endsWith('/publish'))).toEqual([]);
- await page.getByLabel('Featured photo').selectOption(photoId);await page.getByRole('button',{name:'Save draft'}).click();await expect(page.getByText('Draft saved. Preview and publish when ready.')).toBeVisible();
- await page.getByRole('button',{name:'Preview',exact:true}).click();await expect(page.getByRole('region',{name:'Private content preview'})).toContainText('Synthetic article text');await page.getByRole('button',{name:'Close preview'}).click();
+ await page.getByLabel('Featured photo').selectOption(photoId);await page.getByRole('button',{name:'Save draft'}).click();await expect(page.getByText('Draft saved.')).toBeVisible();
+ await page.getByRole('button',{name:'Preview',exact:true}).click();await expect(page.getByRole('region',{name:'Private content preview'})).toContainText('Synthetic article text');await page.getByRole('button',{name:'Close preview',exact:true}).click();
  await page.getByRole('button',{name:'Edit draft'}).click();await expect(page.getByLabel('Featured photo')).toHaveValue(photoId);await expect(page.getByLabel('Attachment 1 alternative text (photos)')).toHaveValue('White test image');
- await page.getByRole('button',{name:'Publish file'}).click();await expect(page.getByText('File published. Save and preview this draft before publishing the record.')).toBeVisible();
- await page.getByRole('button',{name:'Save draft'}).click();await page.getByRole('button',{name:'Publish',exact:true}).click();await expect(page.getByText('Content published.')).toBeVisible();
+ await page.getByRole('button',{name:'Save draft'}).click();await page.getByRole('button',{name:'Publish',exact:true}).click();await page.getByRole('button',{name:'Confirm publication'}).click();await expect(page.getByText('Content published.')).toBeVisible();
  expect(await page.evaluate(()=>fetch('/api/public-content/news').then(response=>response.json()).then(result=>result.data.length))).toBe(1);
- await page.getByRole('button',{name:'Unpublish to edit'}).click();await expect(page.getByText('Content returned to draft.')).toBeVisible();
+ await page.getByRole('button',{name:'Unpublish'}).click();await expect(page.getByText('Content returned to draft.')).toBeVisible();
  expect(await page.evaluate(()=>fetch('/api/public-content/news').then(response=>response.json()).then(result=>result.data.length))).toBe(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });
 test('native dialog protects keyboard navigation, source-approval links and browser back',async({page})=>{
  await mockCms(page,'admin');await page.goto('/cms');await page.getByRole('navigation',{name:'CMS navigation'}).getByRole('button',{name:'News & Updates'}).click();
- await page.getByRole('button',{name:'New draft'}).click();await page.getByLabel('Title',{exact:true}).fill('Unsaved official draft');
+ await page.getByRole('button',{name:'New draft'}).click();await page.getByLabel('Headline',{exact:true}).fill('Unsaved official draft');
  await page.getByRole('link',{name:'Open Source approvals'}).first().click();const dialog=page.getByRole('dialog',{name:'Discard unsaved changes?'});await expect(dialog).toBeVisible();
- await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();await expect(page.getByLabel('Title',{exact:true})).toHaveValue('Unsaved official draft');
- await page.goBack();await expect(dialog).toBeVisible();await dialog.getByRole('button',{name:'Keep editing'}).click();await expect(page.getByLabel('Title',{exact:true})).toHaveValue('Unsaved official draft');
- await page.getByRole('button',{name:'Close editor'}).click();await page.getByRole('dialog').getByRole('button',{name:'Discard changes'}).click();await expect(page.getByLabel('Title',{exact:true})).toHaveCount(0);
+ await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();await expect(page.getByLabel('Headline',{exact:true})).toHaveValue('Unsaved official draft');
+ await page.goBack();await expect(dialog).toBeVisible();await dialog.getByRole('button',{name:'Keep editing'}).click();await expect(page.getByLabel('Headline',{exact:true})).toHaveValue('Unsaved official draft');
+ await page.getByRole('button',{name:'Cancel'}).click();await page.getByRole('dialog').getByRole('button',{name:'Discard changes'}).click();await expect(page.getByLabel('Headline',{exact:true})).toHaveCount(0);
 });
 test('PDF drag and drop attaches a document with a safe download preview',async({page})=>{
  const state=await mockCms(page);const document=await PDFDocument.create();document.addPage();const bytes=await document.save();await page.goto('/cms?tab=transparency');
- await page.getByRole('button',{name:'New draft'}).click();await page.getByLabel('Source record',{exact:true}).selectOption(sourceId);
+ await page.getByRole('button',{name:'New draft'}).click();await page.getByLabel('Official material',{exact:true}).selectOption(sourceId);
  const transfer=await page.evaluateHandle(data=>{const transfer=new DataTransfer();transfer.items.add(new File([new Uint8Array(data)],'official-report.pdf',{type:'application/pdf'}));return transfer;},Array.from(bytes));
  await page.getByLabel('Upload files for this draft').locator('..').dispatchEvent('drop',{dataTransfer:transfer});await page.getByLabel('File 1 category',{exact:true}).selectOption(documentCategory);
  await page.getByRole('button',{name:'Upload and attach'}).click();await expect(page.getByLabel('Attachment 1 caption')).toHaveValue('official-report');
  await expect(page.getByRole('link',{name:'Preview / download PDF'})).toHaveAttribute('href',`/api/admin/media/${documentId}/download`);await expect(page.locator('iframe')).toHaveCount(0);
  expect(Buffer.from(state.uploads[0].base64,'base64')).toEqual(Buffer.from(bytes));expect(state.mutations.filter(path=>path.endsWith('/publish'))).toEqual([]);
+});
+
+const editorCases=[
+ {group:'news',section:'news:',title:'Headline',content:'Article content'},
+ {group:'news',section:'advisories:',title:'Headline',content:'Article content'},
+ {group:'news',section:'updates:',title:'Headline',content:'Article content'},
+ {group:'tourism',section:'tourism_spots:',title:'Destination name',content:'Description'},
+ {group:'tourism',section:'tourism_delicacies:',title:'Delicacy name',content:'Description'},
+ {group:'tourism',section:'galleries:',title:'Album title',content:'Description'},
+ {group:'events',section:'tourism_festivals:',title:'Event name',content:'Description'},
+ {group:'events',section:'events:',title:'Event name',content:'Description'},
+ {group:'galleries',section:'galleries:',title:'Album title',content:'Description'},
+ {group:'transparency',section:'transparency_reports:',title:'Document title',content:'Description',pdf:true},
+ {group:'downloadables',section:'downloadables:',title:'Document title',content:'Description',pdf:true},
+ {group:'government',section:'departments:',title:'Department / office name',content:'Description'},
+ {group:'government',section:'organizational_chart:executive-chart',title:'Title',chart:true},
+ {group:'government',section:'pages:executive-mandate',title:'Title',content:'Official mandate'},
+ {group:'government',section:'pages:legislative-mandate',title:'Title',content:'Official mandate'},
+ {group:'government',section:'pages:',title:'Page title',content:'Page content'},
+];
+for(const width of [375,1280])for(const module of editorCases)test(`fictional ${module.group}/${module.section} full content lifecycle at ${width}px`,async({page},testInfo)=>{
+ test.setTimeout(60000);await mockCms(page,'admin');await page.setViewportSize({width,height:1000});await page.goto(`/cms?tab=${module.group}`);
+ await page.getByRole('combobox',{name:module.group==='news'?'Content type':'Section',exact:true}).selectOption(module.section);
+ await page.getByRole('button',{name:'New draft'}).click();await page.getByLabel(module.title,{exact:true}).fill('Fictional municipal fixture');
+ await page.getByLabel('Official material',{exact:true}).selectOption(sourceId);
+ if(module.content)await page.getByLabel(module.content,{exact:true}).fill('Fictional municipal text for automated testing only.');
+ if(module.section.startsWith('events') || module.section.startsWith('tourism_festivals')){await page.getByLabel('Event date').fill('2026-11-17');await page.getByLabel('Start time (optional)').fill('09:00');await page.getByLabel('End time (optional)').fill('10:00');}
+ if(module.section==='downloadables:')await page.getByLabel('Category',{exact:true}).fill('Fictional forms');
+ if(module.chart){await page.getByLabel('Official 1 name').fill('Fictional official');await page.getByLabel('Official 1 position').fill('Test position');await page.getByLabel('Official 1 office / department').fill('Fictional office');}
+ if(module.section==='tourism_spots:'){await page.getByRole('button',{name:'Add highlight'}).click();await page.getByLabel('Highlight 1',{exact:true}).fill('Fictional highlight');}
+ const pdf=await PDFDocument.create();pdf.addPage();const bytes=module.pdf?Buffer.from(await pdf.save()):image;
+ await page.getByLabel('Upload files for this draft').setInputFiles({name:module.pdf?'fictional.pdf':'fictional.png',mimeType:module.pdf?'application/pdf':'image/png',buffer:bytes});
+ if(!module.pdf)await page.getByLabel('File 1 alternative text').fill('Fictional white test photo');
+ await page.getByRole('button',{name:'Upload and attach'}).click();await expect(page.getByLabel('Attachment 1 caption')).toBeVisible();
+ if(module.chart)await page.getByLabel('Official 1 photo').selectOption(photoId);
+ if(module.section==='news:' || module.chart)await page.screenshot({path:testInfo.outputPath('editor.png'),fullPage:true});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.getByRole('button',{name:'Save draft'}).click();await expect(page.getByText('Draft saved.')).toBeVisible();
+ await page.getByRole('button',{name:'Edit draft'}).click();await expect(page.getByLabel(module.title,{exact:true})).toHaveValue('Fictional municipal fixture');
+ await page.getByRole('button',{name:'Preview',exact:true}).click();await expect(page.getByRole('region',{name:'Private content preview'})).toContainText('Fictional municipal fixture');await page.getByRole('button',{name:'Close preview',exact:true}).click();
+ await page.getByRole('button',{name:'Publish',exact:true}).click();await page.getByRole('button',{name:'Confirm publication'}).click();await expect(page.getByText('Content published.')).toBeVisible();
+ const kind=module.section.split(':')[0];expect(await page.evaluate(kind=>fetch('/api/public-content/'+kind).then(response=>response.json()).then(result=>result.data.length),kind)).toBe(1);
+ await page.getByRole('button',{name:'Edit',exact:true}).click();await page.getByLabel(module.title,{exact:true}).fill('Fictional reviewed revision');await page.getByRole('button',{name:'Update',exact:true}).click();await page.getByRole('button',{name:'Confirm update'}).click();await expect(page.getByText('Content updated.')).toBeVisible();
+ await page.getByRole('button',{name:'Unpublish',exact:true}).click();expect(await page.evaluate(kind=>fetch('/api/public-content/'+kind).then(response=>response.json()).then(result=>result.data.length),kind)).toBe(0);
+ await page.getByRole('button',{name:'Delete',exact:true}).click();await page.getByLabel('Deletion authenticator code').fill('123456');await page.getByRole('button',{name:'Confirm deletion'}).click();await expect(page.getByText('Content deleted.')).toBeVisible();
 });

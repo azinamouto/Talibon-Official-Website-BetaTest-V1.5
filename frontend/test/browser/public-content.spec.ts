@@ -105,3 +105,25 @@ test('site search calls search API, retries failures and opens service and page 
   await page.getByRole('link', { name: /Permit information/ }).click();
   await expect(page.getByText('Published municipal page.')).toBeVisible();
 });
+
+for (const width of [375, 1280]) test(`fictional events and structured chart render at ${width}px`, async ({ page }, testInfo) => {
+  await page.setViewportSize({ width, height: 900 });
+  const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=', 'base64');
+  const attachment = { id: 'fictional-poster', kind: 'photo', title: 'Fictional poster', caption: 'Fictional event poster', alt_text: 'White fixture image', preview_url: '/api/media/fictional-poster/preview', download_url: '/api/media/fictional-poster/download' };
+  await page.route('**/api/media/*/preview', route => route.fulfill({ contentType: 'image/png', body: image }));
+  await page.route('**/api/public-content/events?**', route => route.fulfill({ json: listing([{ name: 'Fictional municipal event', description: 'Automated test fixture only', date: '2026-11-17', time: '09:00 - 10:00', venue: 'Fictional venue', banner_image: attachment.preview_url, attachments: [attachment] }]) }));
+  await page.goto('/news/events');
+  await expect(page.getByRole('heading', { name: 'Fictional municipal event' })).toBeVisible();
+  await expect(page.getByText('09:00 - 10:00')).toBeVisible();
+  await expect(page.getByText('Fictional venue')).toBeVisible();
+  await expect.poll(() => page.getByRole('img', { name: 'Fictional municipal event' }).evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.route('**/api/executive/chart', route => route.fulfill({ json: { nodes: [{ id: 'leader', name: 'Fictional leader', role: 'Fixture role', reportsTo: null, image_url: attachment.preview_url }, { id: 'child', name: 'Fictional colleague', role: 'Fixture deputy', reportsTo: 'leader' }], attachments: [attachment] } }));
+  await page.goto('/executive/chart');
+  await expect(page.getByRole('heading', { name: 'Fictional colleague' })).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Organizational reporting relationships' })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Fictional leader portrait' })).toHaveAttribute('src', attachment.preview_url);
+  await expect(page.getByText('Fictional event poster')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('public-chart.png'), fullPage: true });
+});

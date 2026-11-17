@@ -1,7 +1,8 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Link, useInRouterContext } from 'react-router-dom';
-import { FileText, Image as ImageIcon, Upload } from 'lucide-react';
+import { CircleCheck, FileText, Image as ImageIcon, Upload, X } from 'lucide-react';
 import { Input } from '../ui/Input';
+import { Button } from '../ui/Button';
 import type { Asset } from './AdminMedia';
 import type { UploadProgress, MediaKind } from '../../lib/mediaUpload';
 import styles from './CmsControls.module.css';
@@ -38,8 +39,13 @@ export function ReviewedSelect({label,value,onChange,choices,disabled,error,allo
   </div>;
 }
 export function ErrorNotice({message,fields={}}:{message:string;fields?:Record<string,string>}) {
-  const label=(field:string)=>field.replace(/^attachments\.(\d+)\./,(_,index)=>`Attachment ${Number(index)+1} `).replace(/^mayor\./,'Executive leader ').replace(/^level2\.(\d+)\./,(_,index)=>`Second level ${Number(index)+1} `).replace(/^departments\.(\d+)\./,(_,index)=>`Department ${Number(index)+1} `).replace(/([a-z])([A-Z])/g,'$1 $2').replace(/_/g,' ');
+  const labels:Record<string,string>={sourceId:'Official material',categoryId:'File category',featuredAssetId:'Featured photo'};
+  const label=(field:string)=>labels[field] || field.replace(/^(?:nodes|officials)\.(\d+)\./,(_,index)=>`Official ${Number(index)+1} `).replace(/photoAssetId$/,'photo').replace(/^attachments\.(\d+)\./,(_,index)=>`Attachment ${Number(index)+1} `).replace(/^mayor\./,'Executive leader ').replace(/^level2\.(\d+)\./,(_,index)=>`Second level ${Number(index)+1} `).replace(/^departments\.(\d+)\./,(_,index)=>`Department ${Number(index)+1} `).replace(/([a-z])([A-Z])/g,'$1 $2').replace(/_/g,' ');
   return <div role="alert" className={styles.error}><p>{message}</p>{!!Object.keys(fields).length && <ul>{Object.entries(fields).map(([field,text])=><li key={field}><strong>{label(field)}: </strong>{text}</li>)}</ul>}</div>;
+}
+export function CmsToast({message,onDismiss}:{message:string;onDismiss():void}) {
+  if(!message)return null;
+  return <div role="status" className={styles.toast}><CircleCheck size={20} aria-hidden="true"/><p>{message}</p><Button variant="secondary" aria-label="Dismiss notification" title="Dismiss notification" onClick={onDismiss}><X size={18} aria-hidden="true"/></Button></div>;
 }
 export function CmsSkeleton({label,rows=3,variant='rows'}:{label:string;rows?:number;variant?:'rows'|'cards'|'stats'}) {
   return <div role="status" aria-label={label} aria-busy="true" className={`${styles.skeletons} ${styles[variant]}`}>

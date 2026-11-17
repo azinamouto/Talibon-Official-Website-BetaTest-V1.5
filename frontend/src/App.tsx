@@ -8,7 +8,6 @@ import React, { lazy } from "react";
 import { createBrowserRouter, createRoutesFromElements, RouterProvider, Outlet, Route, Navigate } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
-import PublishedEvents from './components/PublishedEvents';
 import ContentPage from "./pages/ContentPage";
 import EServicesPage from "./pages/EServicesPage";
 import AccessDenied from "./pages/AccessDenied";
@@ -68,6 +67,7 @@ const BudgetView = lazy(() => import("./pages/transparency/BudgetView"));
 const BiddingsView = lazy(() => import("./pages/transparency/BiddingsView"));
 const SpotsView = lazy(() => import("./pages/tourism/SpotsView"));
 const FestivitiesView = lazy(() => import("./pages/tourism/FestivitiesView"));
+const PublishedEvents = lazy(() => import('./components/PublishedEvents'));
 const DelicaciesView = lazy(() => import("./pages/tourism/DelicaciesView"));
 const GadImsHeader = lazy(() => import("./components/GadImsSystem").then(module => ({ default: module.GadImsHeader })));
 

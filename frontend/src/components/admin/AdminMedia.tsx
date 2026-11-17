@@ -3,7 +3,7 @@ import { staffRequest } from '../../contexts/StaffAuthContext';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import styles from './AdminMedia.module.css';
-import { CmsLink, CmsSkeleton, ErrorNotice, FileDropzone, MediaThumbnail, ReviewedSelect, UploadIndicator } from './CmsControls';
+import { CmsLink, CmsSkeleton, CmsToast, ErrorNotice, FileDropzone, MediaThumbnail, ReviewedSelect, UploadIndicator } from './CmsControls';
 import { errorFields, fieldMessages, StaffRequestError } from '../../lib/staffErrors';
 import { fileKind, simpleFilename, uploadPrivateMedia, validateUploadFile, type UploadMetadata, type UploadProgress } from '../../lib/mediaUpload';
 import { useCmsEditor, type EditorState } from '../../hooks/useCmsEditor';
@@ -91,7 +91,7 @@ export default function AdminMedia({ role, kind, onEditorStateChange }: { role: 
       <Button variant="secondary" disabled={busy || loading} onClick={() => void act(async () => {})}>Refresh media</Button>
     </div>
     {(error || loadError) && <ErrorNotice message={error || loadError} fields={error?validation:{}} />}
-    {message && <p role="status" className={styles.notice}>{message}</p>}
+    <CmsToast message={message} onDismiss={()=>setMessage('')}/>
     {uploadStage && <UploadIndicator progress={uploadStage} />}
     <div className={styles.workspace}>
       <form className={styles.upload} onSubmit={event => { event.preventDefault(); void act(save); }}>

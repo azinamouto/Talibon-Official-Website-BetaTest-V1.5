@@ -83,7 +83,9 @@ export class ContentRepository {
       const title=input.title ?? prior?.title;
       if (typeof title!=='string' || !title.trim()) throw new CmsValidationError({title:'required'});
       const slug=input.slug ?? prior?.slug ?? (kind==='organizational_chart'?'executive-chart':await contentSlug(tx,kind,title));
-      const merged={title,slug,sourceId:input.sourceId ?? prior?.source_id,body:input.body ?? prior?.body} as ContentInput;
+      const body=input.body ?? prior?.body;
+      if (['news','advisories','updates'].includes(kind) && body && body.summary===undefined && typeof body.content==='string') body.summary=body.content.trim().slice(0,280);
+      const merged={title,slug,sourceId:input.sourceId ?? prior?.source_id,body} as ContentInput;
       const ids=await this.assets(tx,kind,merged,false,prior?.body,publish);
       if (publish) {
         await publishAttachedMedia(tx,actor,merged.body,ids,media,request);

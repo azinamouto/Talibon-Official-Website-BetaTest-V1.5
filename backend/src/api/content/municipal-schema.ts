@@ -7,7 +7,7 @@ export type ContentAttachment = { assetId: string; caption: string; altText: str
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const fields: Record<string, string[]> = {
   news:['summary','content','category','author','date'], advisories:['summary','content','author','date'], updates:['summary','content','author','date'],
-  tourism_spots:['description','location','address','contact','opening_hours'], tourism_festivals:['description','date','venue','time'], tourism_delicacies:['description'],
+  tourism_spots:['description','location','address','contact','opening_hours','highlights'], tourism_festivals:['description','date','venue','time'], tourism_delicacies:['description'],
   transparency_reports:['description','category','year','date','deadline','budget','status','reference'],
   pages:['content'], organizational_chart:['mayor','level2','departments'],
   departments:['description','head','contact','address'], galleries:['description','category'], downloadables:['description','category','year','reference'],
@@ -43,7 +43,7 @@ export function validateMunicipal(kind: string, input: { title?: string; slug?: 
   if (Object.keys(body).some(key=>!fields[kind].includes(key) && !['featuredAssetId','attachments'].includes(key)
     && !(legacyBody && Object.hasOwn(legacyBody,key) && JSON.stringify(legacyBody[key])===JSON.stringify(body[key])))) fail('Unsupported metadata field.');
   for (const key of fields[kind]) {
-    if (kind==='organizational_chart') continue;
+    if (kind==='organizational_chart' || key==='highlights') continue;
     text(body[key],key,key==='content'?100000:key==='description'?10000:key==='summary'?2000:500);
   }
   if (['news','advisories','updates','pages'].includes(kind)) text(body.content,'content',100000,true);
@@ -53,6 +53,10 @@ export function validateMunicipal(kind: string, input: { title?: string; slug?: 
   if (kind==='downloadables') text(body.category,'document category',100,true);
   if (kind==='galleries' && !['municipal','tourism'].includes(String(body.category))) fail('Choose a municipal or tourism collection.');
   if (['tourism_spots','tourism_festivals','tourism_delicacies','departments'].includes(kind)) text(body.description,'description',10000,true);
+  if (body.highlights!==undefined) {
+    if (!Array.isArray(body.highlights) || body.highlights.length>30) fail('Invalid highlights.','highlights','length');
+    (body.highlights as unknown[]).forEach((value,index)=>text(value,`highlights.${index}`,500,true));
+  }
   if (body.year!==undefined && !/^(19|20|21)\d{2}$/.test(String(body.year))) throw new CmsInputError({year:'invalid'});
   for (const key of ['date','deadline']) if (body[key] && body[key]!==legacyBody?.[key]) {
     const date=String(body[key]);

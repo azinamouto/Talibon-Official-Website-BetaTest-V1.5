@@ -28,6 +28,7 @@ export function staffResponseError(status: number, value: unknown): StaffRequest
   if (status === 400 && codes && typeof codes === 'object' && !Array.isArray(codes)) {
     for (const [field,code] of Object.entries(codes).slice(0,50)) {
       if (/^(title|description|altText|categoryId|sourceId|uploadId|filename|mime|base64|file|slug|version|body|summary|content|category|date|deadline|year|featuredAssetId|attachments|mayor|level2|departments|reference|owner|sha256|author|location|address|contact|opening_hours|venue|time|budget|status|head|q|kind|page|request)$/.test(field)
+        || /^(highlights|media)$/.test(field) || /^highlights\.[0-9]{1,2}$/.test(field)
         || /^attachments\.[0-9]{1,2}\.(altText|caption|assetId)$/.test(field)
         || /^(mayor\.(name|role)|(level2|departments)\.[0-9]{1,2}\.(name|role))$/.test(field)) {
         if (typeof code === 'string' && Object.hasOwn(fieldMessages,code)) fields[field] = fieldMessages[code];

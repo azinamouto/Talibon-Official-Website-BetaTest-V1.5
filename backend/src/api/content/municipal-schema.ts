@@ -1,13 +1,13 @@
 import { CmsInputError, type CmsErrorCode } from '../../security/cms-validation';
 
-export const MUNICIPAL_KINDS = ['news','advisories','updates','tourism_spots','tourism_festivals',
+export const MUNICIPAL_KINDS = ['news','advisories','updates','tourism_spots','tourism_festivals','events',
   'tourism_delicacies','transparency_reports','pages','organizational_chart','departments','galleries','downloadables'] as const;
 export const REPORT_CATEGORIES = ['full-disclosure','infrastructure','finance','budget','bidding','executive-order'] as const;
 export type ContentAttachment = { assetId: string; caption: string; altText: string };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const fields: Record<string, string[]> = {
   news:['summary','content','category','author','date'], advisories:['summary','content','author','date'], updates:['summary','content','author','date'],
-  tourism_spots:['description','location','address','contact','opening_hours','highlights'], tourism_festivals:['description','date','venue','time'], tourism_delicacies:['description'],
+  tourism_spots:['description','location','address','contact','opening_hours','highlights'], tourism_festivals:['description','date','venue','time','start_time','end_time'], events:['description','date','venue','time','start_time','end_time','category'], tourism_delicacies:['description'],
   transparency_reports:['description','category','year','date','deadline','budget','status','reference'],
   pages:['content'], organizational_chart:['mayor','level2','departments'],
   departments:['description','head','contact','address'], galleries:['description','category'], downloadables:['description','category','year','reference'],
@@ -52,7 +52,11 @@ export function validateMunicipal(kind: string, input: { title?: string; slug?: 
   if (kind==='transparency_reports' && !(REPORT_CATEGORIES as readonly string[]).includes(String(body.category))) throw new CmsInputError({category:'invalid'});
   if (kind==='downloadables') text(body.category,'document category',100,true);
   if (kind==='galleries' && !['municipal','tourism'].includes(String(body.category))) fail('Choose a municipal or tourism collection.');
-  if (['tourism_spots','tourism_festivals','tourism_delicacies','departments'].includes(kind)) text(body.description,'description',10000,true);
+  if (['tourism_spots','tourism_festivals','tourism_delicacies','departments','events'].includes(kind)) text(body.description,'description',10000,true);
+  if (kind==='events' && !['event','festivity'].includes(String(body.category)) && body.category!==legacyBody?.category) fail('Choose an event category.','category');
+  for (const key of ['start_time','end_time']) if (body[key]!==undefined && !/^([01]\d|2[0-3]):[0-5]\d$/.test(String(body[key]))) fail('Enter a valid time.',key,'invalid');
+  if (body.end_time && (!body.start_time || String(body.end_time)<=String(body.start_time))) fail('End time must follow start time.','end_time','invalid');
+  if (['events','tourism_festivals'].includes(kind) && !legacyBody) text(body.date,'date',10,true);
   if (body.highlights!==undefined) {
     if (!Array.isArray(body.highlights) || body.highlights.length>30) fail('Invalid highlights.','highlights','length');
     (body.highlights as unknown[]).forEach((value,index)=>text(value,`highlights.${index}`,500,true));

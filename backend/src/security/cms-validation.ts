@@ -18,7 +18,7 @@ export function safeFieldErrors(value: unknown): CmsFieldErrors {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return result;
   for (const [field, code] of Object.entries(value).slice(0, 50)) {
     if (/^(title|description|altText|categoryId|sourceId|uploadId|filename|mime|base64|file|slug|version|body|summary|content|category|date|deadline|year|featuredAssetId|attachments|mayor|level2|departments|reference|owner|sha256|author|location|address|contact|opening_hours|venue|time|budget|status|head|q|kind|page|request)$/.test(field)
-      || /^(highlights|attachments|media)$/.test(field) || /^highlights\.[0-9]{1,2}$/.test(field)
+      || /^(highlights|attachments|media|start_time|end_time)$/.test(field) || /^highlights\.[0-9]{1,2}$/.test(field)
       || /^attachments\.[0-9]{1,2}\.(altText|caption|assetId)$/.test(field)
       || /^(mayor\.(name|role)|(level2|departments)\.[0-9]{1,2}\.(name|role))$/.test(field)) {
       if ((CMS_ERROR_CODES as readonly unknown[]).includes(code)) result[field] = code as CmsErrorCode;

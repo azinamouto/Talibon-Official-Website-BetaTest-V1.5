@@ -1,6 +1,6 @@
 import { Link, Navigate, useSearchParams, UNSAFE_DataRouterContext } from 'react-router-dom';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Activity, Building2, Camera, ExternalLink, FileText, Image, Landmark, LayoutDashboard, ListCollapse, LogOut, MapPin, Newspaper, RefreshCw, ShieldCheck, Users } from 'lucide-react';
+import { Activity, Building2, CalendarDays, Camera, ExternalLink, FileText, Image, Landmark, LayoutDashboard, ListCollapse, LogOut, MapPin, Newspaper, RefreshCw, ShieldCheck, Users } from 'lucide-react';
 import { staffRequest, useStaffAuth } from '../contexts/StaffAuthContext';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
@@ -22,6 +22,7 @@ const contentModules = [
   { id: 'overview', label: 'Dashboard overview', icon: LayoutDashboard },
   { id: 'news', label: 'News & Updates', icon: Newspaper },
   { id: 'tourism', label: 'Tourism', icon: MapPin },
+  { id: 'events', label: 'Events & Festivals', icon: CalendarDays },
   { id: 'transparency', label: 'Transparency', icon: Landmark },
   { id: 'government', label: 'Local Government', icon: Building2 },
   { id: 'galleries', label: 'Galleries', icon: Camera },
@@ -131,7 +132,7 @@ export default function StaffPortal() {
       <div className={styles.panel}>
         {message && <p role="status" className={styles.notice}>{message}</p>}
         {activeTab === 'overview' && <MunicipalDashboard openModule={openModule} />}
-        {(['news','tourism','transparency','government','galleries','downloadables'] as string[]).includes(activeTab) && <AdminContent key={activeTab} role={staff.role} group={activeTab as MunicipalGroup} onEditorStateChange={setEditorState} />}
+        {(['news','tourism','events','transparency','government','galleries','downloadables'] as string[]).includes(activeTab) && <AdminContent key={activeTab} role={staff.role} group={activeTab as MunicipalGroup} onEditorStateChange={setEditorState} />}
         {staff.role === 'admin' && activeTab === 'sources' && <AdminSources onEditorStateChange={setEditorState} />}
         {(activeTab === 'photos' || activeTab === 'documents') && <AdminMedia key={activeTab} role={staff.role} kind={activeTab === 'photos' ? 'photo' : 'document'} onEditorStateChange={setEditorState} />}
         {staff.role === 'admin' && (activeTab === 'staff' || activeTab === 'audit') && <>

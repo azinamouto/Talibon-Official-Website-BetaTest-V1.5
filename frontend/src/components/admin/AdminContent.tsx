@@ -16,7 +16,7 @@ import styles from './AdminContent.module.css';
 
 type Official={name:string;role:string};
 type Publication={row:ContentRow;media:{assetId:string;version:number}[];update:boolean};
-const groups: Record<MunicipalGroup,string>={news:'News & Updates',tourism:'Tourism',transparency:'Transparency',government:'Local Government',galleries:'Galleries',downloadables:'Downloadables'};
+const groups: Record<MunicipalGroup,string>={news:'News & Updates',tourism:'Tourism',events:'Events & Festivals',transparency:'Transparency',government:'Local Government',galleries:'Galleries',downloadables:'Downloadables'};
 export default function AdminContent({role,group,onEditorStateChange}:{role:'admin'|'editor';group:MunicipalGroup;onEditorStateChange?(state:EditorState):void}) {
   const modules=municipalModules.filter(item=>item.group===group);
   const [moduleId,setModuleId]=useState(modules[0].kind+':'+(modules[0].slug || ''));
@@ -136,7 +136,7 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
         <EditorFields definitions={module.fields.filter(field=>!field.advanced)} values={fields} errors={validation} onChange={setFields}/>
         {module.kind==='organizational_chart' && <>{chart('mayor','Executive leader',true)}{chart('level2','Second level')}{chart('departments','Department')}</>}
         {module.fields.some(field=>field.advanced) && <details className={styles.wide} open={module.fields.some(field=>field.advanced && validation[field.key]) || undefined}><summary>Additional details</summary><div className={styles.fields}><EditorFields definitions={module.fields.filter(field=>field.advanced)} values={fields} errors={validation} onChange={setFields}/></div></details>}
-        <section className={styles.wide} aria-label="Official material"><ReviewedSelect label="Official material" name="sourceId" allowPending choices={sources.map(item=>({...item,label:item.reference}))} disabled={working} value={source} error={validation.sourceId} onChange={setSource} hint="Administrator approval is required before publication."/>
+        <section className={styles.wide} aria-label="Verification"><ReviewedSelect label="Official material" name="sourceId" allowPending choices={sources.map(item=>({...item,label:item.reference}))} disabled={working} value={source} error={validation.sourceId} onChange={setSource} hint="Administrator approval is required before publication."/>
           {!sources.length && <p className={styles.hint}>An administrator must register official source material in Source approvals.</p>}
           {role==='admin' && <CmsLink className={styles.approvalLink} href="/cms?tab=sources">Open Source approvals</CmsLink>}
         </section>

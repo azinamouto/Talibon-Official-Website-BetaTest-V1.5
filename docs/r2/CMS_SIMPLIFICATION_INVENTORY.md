@@ -11,13 +11,15 @@ Base: both GitHub main refs verified as `38c7728851a41a2351daa9efb7f944e88eede67
 | Updates | updates | `/news/updates`, `/api/news?category=UPDATE` |
 | Tourist spots | tourism_spots | `/tourism/spots`, tourism API |
 | Festivals | tourism_festivals | `/tourism/festivities`, tourism API |
+| Municipal events | events | `/news/events`, `/api/public-content/events` |
 | Local delicacies | tourism_delicacies | `/tourism/delicacies`, tourism API |
 | Transparency | transparency_reports | Full Disclosure, infrastructure, finance, budget, bidding, executive orders; six existing category values |
 | Executive/legislative mandates | pages | Existing executive/legislative mandate routes |
-| Organizational chart | organizational_chart | `/executive/organizational-chart`, executive API |
+| General public pages | pages | `/pages/:id`, published pages API and search |
+| Organizational chart | organizational_chart | `/executive/chart`, executive API |
 | Departments | departments | `/about/departments`, existing imported IDs retained |
 | Municipal/tourism albums | galleries | `/news/gallery`, tourism gallery |
-| Downloadables | downloadables | `/news/downloadables`, downloads API |
+| Downloadables | downloadables | `/downloads`, downloads API |
 | Photos / documents | media_assets | `/api/media`, authorized public previews/downloads |
 | Official material review | content_sources | Administrator source registration/approval, fresh MFA |
 | Staff access / audits | staff_accounts / audit_events | Existing administrator controls retained |

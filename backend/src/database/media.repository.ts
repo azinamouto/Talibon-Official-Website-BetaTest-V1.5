@@ -6,6 +6,28 @@ import { CmsValidationError } from './cms-validation';
 import type { SqlSession } from './postgres';
 
 export type StaffMediaFilters = { kind?: string; q?: string; ready?: boolean };
+export type MediaPublication = { assetId: string; version: number };
+
+export async function publishAttachedMedia(tx: SqlSession, actor: StaffPrincipal, body: Record<string,any>, ids: string[], consent: MediaPublication[] | undefined, request: string) {
+  if (consent===undefined) return;
+  if (consent.length>50 || new Set(consent.map(item=>item.assetId)).size!==consent.length || consent.some(item=>!ids.includes(item.assetId) || !Number.isInteger(item.version) || item.version<1)) throw new CmsValidationError({attachments:'invalid'});
+  // Lock all selected media in a stable order before changing any publication.
+  const rows=consent.length?await tx.query('SELECT * FROM app.media_assets WHERE id=ANY($1::uuid[]) ORDER BY id FOR UPDATE',[consent.map(item=>item.assetId)]):[];
+  if (rows.length!==consent.length) throw new CmsValidationError({attachments:'attachment_missing'});
+  for (const row of rows) {
+    if (row.version!==consent.find(item=>item.assetId===row.id)?.version) throw new DatabaseError('conflict');
+    if (row.deleted_at || row.processing!=='ready') throw new CmsValidationError({attachments:'attachment_missing'});
+    const [category]=await tx.query('SELECT id FROM app.media_categories WHERE id=$1 AND kind=$2 AND approved',[row.category_id,row.kind]);
+    const [source]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1 AND approved',[row.source_id]);
+    if (!category) throw new CmsValidationError({attachments:'category_unapproved'});
+    if (!source) throw new CmsValidationError({attachments:'source_unapproved'});
+    if (row.publication==='published') continue;
+    const altText=row.alt_text || body.attachments?.find((item:any)=>item.assetId===row.id)?.altText || '';
+    if (row.kind==='photo' && !altText.trim()) throw new CmsValidationError({attachments:'photo_alt'});
+    await tx.query("UPDATE app.media_assets SET publication='published',published_at=now(),alt_text=$1,updated_by=$2,version=version+1,updated_at=now() WHERE id=$3",[altText,actor.id,row.id]);
+    await tx.query("INSERT INTO app.audit_events(actor_id,action,resource_id,request_id) VALUES($1,'media.publish',$2,$3)",[actor.id,row.id,request]);
+  }
+}
 
 export class MediaRepository extends PgRepositories {
   constructor(private readonly mediaDb: PostgresDatabase) { super(mediaDb); }

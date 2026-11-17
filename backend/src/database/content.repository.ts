@@ -5,6 +5,8 @@ import { authorizeStaff } from './staff-authorization';
 import { MUNICIPAL_KINDS, validateMunicipal } from '../api/content/municipal-schema';
 import { CmsValidationError } from './cms-validation';
 import { CmsInputError } from '../security/cms-validation';
+import { contentSlug } from '../api/content/content-slug';
+import { publishAttachedMedia, type MediaPublication } from './media.repository';
 export interface ContentInput { title: string; slug: string; sourceId: string; body: Record<string, unknown>; status?: string; version?: number; }
 export class ContentRepository {
   constructor(private readonly db: PostgresDatabase) {}
@@ -54,12 +56,12 @@ export class ContentRepository {
   private audit(tx: SqlSession,actor: StaffPrincipal,action: string,id: string,request: string) {
     return tx.query('INSERT INTO app.audit_events(actor_id,action,resource_id,request_id) VALUES($1,$2,$3,$4)',[actor.id,action,id,request]);
   }
-  private async assets(tx: SqlSession,kind: string,input: ContentInput,publishing=false,legacyBody?: Record<string,unknown>) {
+  private async assets(tx: SqlSession,kind: string,input: ContentInput,publishing=false,legacyBody?: Record<string,unknown>,exclusive=false) {
     let checked: ReturnType<typeof validateMunicipal>;
     try { checked=validateMunicipal(kind,input,legacyBody); }
     catch (error) { throw error instanceof CmsInputError ? new CmsValidationError(error.fields) : new DatabaseError('invalid'); }
     const rows=checked.assetIds.length ? await tx.query(`SELECT m.id,m.kind,m.processing,m.deleted_at,m.alt_text,
-      EXISTS(SELECT 1 FROM app.published_media p WHERE p.id=m.id) AS visible FROM app.media_assets m WHERE m.id=ANY($1::uuid[]) ORDER BY m.id FOR SHARE OF m`,[checked.assetIds]) : [];
+      EXISTS(SELECT 1 FROM app.published_media p WHERE p.id=m.id) AS visible FROM app.media_assets m WHERE m.id=ANY($1::uuid[]) ORDER BY m.id FOR ${exclusive?'UPDATE':'SHARE'} OF m`,[checked.assetIds]) : [];
     if (rows.length!==checked.assetIds.length || rows.some(row=>row.deleted_at || row.processing!=='ready')) throw new CmsValidationError({attachments:'attachment_missing'});
     if (publishing && rows.some(row=>!row.visible)) throw new CmsValidationError({attachments:'attachment_private'});
     if (input.body.featuredAssetId && rows.find(row=>row.id===input.body.featuredAssetId)?.kind!=='photo') throw new CmsValidationError({featuredAssetId:'featured_photo'});
@@ -69,17 +71,26 @@ export class ContentRepository {
     if (publishing && kind==='galleries' && !checked.attachments.length) throw new CmsValidationError({attachments:'gallery_required'});
     return checked.assetIds;
   }
-  save(actor: StaffPrincipal,kind: string,input: Partial<ContentInput>,request: string,id?: string) {
+  save(actor: StaffPrincipal,kind: string,input: Partial<ContentInput>,request: string,id?: string,publish=false,media?: MediaPublication[]) {
     return this.db.transaction(async tx=>{
       await authorizeStaff(tx,actor);
       let prior: Record<string,any> | undefined;
       if (id) {
         [prior]=await tx.query('SELECT * FROM app.public_content WHERE id=$1 AND kind=$2 AND version=$3 AND deleted_at IS NULL FOR UPDATE',[id,kind,input.version]);
-        if (!prior || prior.publication!=='draft') throw new DatabaseError('conflict');
+        if (!prior || !['draft',...(publish?['published']:[])].includes(prior.publication)) throw new DatabaseError('conflict');
       }
       if (input.status!==undefined && input.status!=='draft') throw new DatabaseError('invalid');
-      const merged={title:input.title ?? prior?.title,slug:input.slug ?? prior?.slug,sourceId:input.sourceId ?? prior?.source_id,body:input.body ?? prior?.body} as ContentInput;
-      const ids=await this.assets(tx,kind,merged,false,prior?.body);
+      const title=input.title ?? prior?.title;
+      if (typeof title!=='string' || !title.trim()) throw new CmsValidationError({title:'required'});
+      const slug=input.slug ?? prior?.slug ?? (kind==='organizational_chart'?'executive-chart':await contentSlug(tx,kind,title));
+      const merged={title,slug,sourceId:input.sourceId ?? prior?.source_id,body:input.body ?? prior?.body} as ContentInput;
+      const ids=await this.assets(tx,kind,merged,false,prior?.body,publish);
+      if (publish) {
+        await publishAttachedMedia(tx,actor,merged.body,ids,media,request);
+        await this.assets(tx,kind,merged,true,prior?.body);
+        const [approved]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1 AND approved',[merged.sourceId]);
+        if (!approved) throw new CmsValidationError({sourceId:'source_unapproved'});
+      }
       const [source]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1',[merged.sourceId]);
       if (!source) throw new CmsValidationError({sourceId:'source_missing'});
       const values=[merged.title,merged.slug,JSON.stringify(merged.body),merged.sourceId];
@@ -88,10 +99,15 @@ export class ContentRepository {
       await tx.query('DELETE FROM app.content_asset_links WHERE content_id=$1',[row.id]);
       if (ids.length) await tx.query('INSERT INTO app.content_asset_links(content_id,asset_id) SELECT $1,unnest($2::uuid[])',[row.id,ids]);
       await this.audit(tx,actor,id?'content.update':'content.create',row.id,request);
+      if (publish) {
+        const [published]=await tx.query("UPDATE app.public_content SET publication='published',published_at=now(),version=version+1,updated_at=now() WHERE id=$1 RETURNING *",[row.id]);
+        await this.audit(tx,actor,'content.publish',row.id,request);
+        return {data:published};
+      }
       return {data:row};
     });
   }
-  change(actor: StaffPrincipal,kind: string,id: string,version: number,action: string,request: string) {
+  change(actor: StaffPrincipal,kind: string,id: string,version: number,action: string,request: string,media?: MediaPublication[]) {
     return this.db.transaction(async tx=>{
       await authorizeStaff(tx,actor,action==='delete');
       const [prior]=await tx.query('SELECT * FROM app.public_content WHERE id=$1 AND kind=$2 AND version=$3 AND deleted_at IS NULL FOR UPDATE',[id,kind,version]);
@@ -99,6 +115,8 @@ export class ContentRepository {
       const allowed: Record<string,string[]>={publish:['draft'],unpublish:['published'],archive:['draft','published'],restore:['archived'],delete:['draft','published','archived']};
       if (!allowed[action]?.includes(prior.publication)) throw new DatabaseError('conflict');
       if (action==='publish') {
+        const ids=await this.assets(tx,kind,{title:prior.title,slug:prior.slug,sourceId:prior.source_id,body:prior.body},false,prior.body,true);
+        await publishAttachedMedia(tx,actor,prior.body,ids,media,request);
         await this.assets(tx,kind,{title:prior.title,slug:prior.slug,sourceId:prior.source_id,body:prior.body},true,prior.body);
         // The existing SECURITY DEFINER publication trigger locks this source.
         // Runtime must not gain UPDATE privileges just to take a source row lock.

@@ -1,4 +1,4 @@
-param([ValidateSet('staging-database.integration.cjs','content-database.integration.cjs','staff-auth.integration.cjs','first-admin-bootstrap.integration.cjs','media.integration.cjs','generate-content-catalog.cjs','performance-database.cjs')][string]$TestFile = 'staging-database.integration.cjs', [ValidateSet('baseline','after')][string]$PerformanceLabel = 'baseline', [string]$TestNamePattern = '', [ValidateSet('true','false')][string]$PasswordRecoveryEnabled = 'true')
+param([ValidateSet('staging-database.integration.cjs','content-database.integration.cjs','cms-upload-workflow.integration.cjs','staff-auth.integration.cjs','first-admin-bootstrap.integration.cjs','media.integration.cjs','generate-content-catalog.cjs','performance-database.cjs')][string]$TestFile = 'staging-database.integration.cjs', [ValidateSet('baseline','after')][string]$PerformanceLabel = 'baseline', [string]$TestNamePattern = '', [ValidateSet('true','false')][string]$PasswordRecoveryEnabled = 'true')
 $ErrorActionPreference = 'Stop'
 $pgBin = Split-Path (Get-Command psql -ErrorAction Stop).Source
 $node = (Get-Command node -ErrorAction Stop).Source

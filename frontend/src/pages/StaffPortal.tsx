@@ -1,5 +1,5 @@
-import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import { useCallback, useEffect, useState } from 'react';
+import { Link, Navigate, useSearchParams, UNSAFE_DataRouterContext } from 'react-router-dom';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Activity, Building2, Camera, ExternalLink, FileText, Image, Landmark, LayoutDashboard, ListCollapse, LogOut, MapPin, Newspaper, RefreshCw, ShieldCheck, Users } from 'lucide-react';
 import { staffRequest, useStaffAuth } from '../contexts/StaffAuthContext';
 import { Input } from '../components/ui/Input';
@@ -10,6 +10,9 @@ import AdminSources from '../components/admin/AdminSources';
 import MunicipalDashboard from '../components/admin/MunicipalDashboard';
 import type { MunicipalGroup } from '../components/admin/municipalModules';
 import styles from './StaffPortal.module.css';
+import { CmsSkeleton } from '../components/admin/CmsControls';
+import CmsRouteGuard from '../components/admin/CmsRouteGuard';
+import { useCmsEditor, type EditorState } from '../hooks/useCmsEditor';
 
 type StaffAccount = { id: string; email: string; role: 'admin' | 'editor'; active: boolean; version: number };
 type StaffEvent = { id: string; source: string; action: string; actorId: string | null; subjectId: string | null; occurredAt: string };
@@ -49,9 +52,13 @@ export default function StaffPortal() {
   const [adminBusy, setAdminBusy] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [reload, setReload] = useState(0);
+  const [editorState,setEditorState]=useState<EditorState>({dirty:false,busy:false});
+  const {requestDiscard,dialog}=useCmsEditor(editorState.dirty,editorState.busy);
+  const dataRouter=useContext(UNSAFE_DataRouterContext);
   const modules = staff?.role === 'admin' ? [...contentModules, ...administrationModules] : [...contentModules];
   const requestedTab = searchParams.get('tab') || 'overview';
   const activeTab: Module = modules.find(module => module.id === requestedTab)?.id || 'overview';
+  useEffect(()=>setEditorState({dirty:false,busy:false}),[activeTab]);
   useEffect(() => {
     if (!loading && staff && requestedTab !== activeTab) setSearchParams({ tab: activeTab }, { replace: true });
   }, [loading, staff, requestedTab, activeTab, setSearchParams]);
@@ -74,7 +81,7 @@ export default function StaffPortal() {
     return () => { current = false; };
   }, [loadAdminData, staff?.role, staff?.id, activeTab, reload]);
   function openModule(module: Module) { setCode(''); setMessage(''); setSearchParams({ tab: module }); }
-  if (loading) return <main className={styles.shell}><p role="status" className={styles.loading}>Checking staff access…</p></main>;
+  if (loading) return <main className={styles.shell}><CmsSkeleton label="Checking staff access" rows={4} variant="stats" /></main>;
   if (error) return <main className={styles.shell}><div className={styles.panel}><p role="alert" className={styles.error}>{error}</p><Button onClick={() => void refresh()}>Retry</Button></div></main>;
   if (!staff) return <Navigate to="/staff/login" replace />;
   async function act(account: StaffAccount, action: 'activate' | 'deactivate' | 'revoke' | 'role') {
@@ -93,13 +100,13 @@ export default function StaffPortal() {
   }
   async function exit() {
     setSigningOut(true);
-    try { await signOut(); } catch { setMessage('Could not confirm sign out. Please retry.'); }
+    try { await signOut(); } catch { setMessage('Could not confirm sign out. Please retry.');setEditorState({dirty:editorState.dirty,busy:false}); }
     finally { setSigningOut(false); }
   }
   const navigation = (items: typeof contentModules | typeof administrationModules) => items.map(({ id, label, icon: Icon }) => <button
     key={id} className={styles.navItem + (activeTab === id ? ' ' + styles.navActive : '')}
     aria-label={label} aria-current={activeTab === id ? 'page' : undefined}
-    disabled={adminBusy || signingOut} onClick={() => openModule(id)} title={collapsed ? label : undefined}>
+    disabled={adminBusy || signingOut || editorState.busy} onClick={() => openModule(id)} title={collapsed ? label : undefined}>
     <Icon size={20} aria-hidden="true" /><span className={styles.navLabel}>{label}</span>
   </button>);
   return <main className={styles.shell + (collapsed ? ' ' + styles.collapsed : '')}>
@@ -109,8 +116,8 @@ export default function StaffPortal() {
           <div className={styles.identity}><span><ShieldCheck size={15} aria-hidden="true" />Staff session verified</span><span className={styles.role}>{staff.role === 'admin' ? 'Administrator' : 'Editor'}</span></div>
         </div>
       </div>
-      <div className={styles.headerActions}><Link to="/" className={styles.websiteLink}><ExternalLink size={16} aria-hidden="true" />View website</Link>
-        <Button variant="secondary" busy={signingOut} disabled={adminBusy} onClick={() => void exit()}><LogOut size={16} aria-hidden="true" />{signingOut ? 'Signing out…' : 'Sign out'}</Button>
+      <div className={styles.headerActions}><Link to="/" className={styles.websiteLink} aria-disabled={editorState.busy} tabIndex={editorState.busy?-1:undefined} onClick={event=>{if(editorState.busy)event.preventDefault();}}><ExternalLink size={16} aria-hidden="true" />View website</Link>
+        <Button variant="secondary" busy={signingOut} disabled={adminBusy || editorState.busy} onClick={() => requestDiscard(()=>{setEditorState({dirty:false,busy:false});void exit();})}><LogOut size={16} aria-hidden="true" />{signingOut ? 'Signing out…' : 'Sign out'}</Button>
       </div>
     </header>
     <div className={styles.layout}>
@@ -124,15 +131,15 @@ export default function StaffPortal() {
       <div className={styles.panel}>
         {message && <p role="status" className={styles.notice}>{message}</p>}
         {activeTab === 'overview' && <MunicipalDashboard openModule={openModule} />}
-        {(['news','tourism','transparency','government','galleries','downloadables'] as string[]).includes(activeTab) && <AdminContent key={activeTab} role={staff.role} group={activeTab as MunicipalGroup} />}
-        {staff.role === 'admin' && activeTab === 'sources' && <AdminSources />}
-        {(activeTab === 'photos' || activeTab === 'documents') && <AdminMedia key={activeTab} role={staff.role} kind={activeTab === 'photos' ? 'photo' : 'document'} />}
+        {(['news','tourism','transparency','government','galleries','downloadables'] as string[]).includes(activeTab) && <AdminContent key={activeTab} role={staff.role} group={activeTab as MunicipalGroup} onEditorStateChange={setEditorState} />}
+        {staff.role === 'admin' && activeTab === 'sources' && <AdminSources onEditorStateChange={setEditorState} />}
+        {(activeTab === 'photos' || activeTab === 'documents') && <AdminMedia key={activeTab} role={staff.role} kind={activeTab === 'photos' ? 'photo' : 'document'} onEditorStateChange={setEditorState} />}
         {staff.role === 'admin' && (activeTab === 'staff' || activeTab === 'audit') && <>
           <div className={styles.panelHeading}><div><p className={styles.eyebrow}>Administration · Admin only</p><h2>{activeTab === 'staff' ? 'Staff management' : 'Audit logs'}</h2><p>{activeTab === 'staff' ? 'Review staff roles, active access and sessions.' : 'Review recorded authentication and administrative activity.'}</p></div>
             <Button variant="secondary" disabled={adminLoading || adminBusy} onClick={() => setReload(value => value + 1)}><RefreshCw size={16} aria-hidden="true" />Refresh records</Button>
           </div>
           {adminError && <p role="alert" className={styles.error}>{adminError}</p>}
-          {adminLoading && <p role="status" className={styles.loading}>Loading access records…</p>}
+          {adminLoading && <CmsSkeleton label="Loading access records" rows={4} />}
           {activeTab === 'staff' && <>
             <div className={styles.mfaPanel}><ShieldCheck size={22} aria-hidden="true" /><div><h3>Confirm access changes</h3><p>A current authenticator code is required before changing a role, activating access or revoking sessions.</p><Input label="Current authenticator code" autoComplete="one-time-code" inputMode="numeric" maxLength={6} disabled={adminBusy} value={code} onChange={event => setCode(event.target.value)} /></div></div>
             {!adminLoading && !adminError && (accounts.length ? <ul className={styles.accountList}>{accounts.map(account => <li key={account.id}>
@@ -155,5 +162,7 @@ export default function StaffPortal() {
         </>}
       </div>
     </div>
+    {dataRouter && <CmsRouteGuard dirty={editorState.dirty} busy={editorState.busy} />}
+    {dialog}
   </main>;
 }

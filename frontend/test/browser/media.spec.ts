@@ -31,7 +31,7 @@ test('editor uploads, previews, edits and publishes a private photo on mobile an
   await expect(page.getByRole('heading',{name:'Photos',exact:true})).toBeVisible();
   await page.getByLabel('File',{exact:true}).setInputFiles({name:'test.png',mimeType:'image/png',buffer:Buffer.from('synthetic-browser-upload')});
   await page.getByLabel('Title',{exact:true}).fill('Test photo');
-  await page.getByLabel('Alternative text').fill('Test image');await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record').selectOption(source);
+  await page.getByLabel('Alternative text').fill('Test image');await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record',{exact:true}).selectOption(source);
   await page.getByRole('button',{name:'Upload private draft'}).click();await expect(page.getByRole('alert')).toBeVisible();
   await page.getByRole('button',{name:'Upload private draft'}).click();await expect(page.getByRole('heading',{name:'Test photo'})).toBeVisible();expect(uploadIds[0]).toBe(uploadIds[1]);
   await page.getByRole('button',{name:'Preview',exact:true}).click();await expect(page.getByRole('img',{name:'Test photo'})).toBeVisible();
@@ -116,10 +116,11 @@ test('staff uploads a PDF with progress and uses only the photo/document CMS',as
   await expect(page.getByRole('heading',{name:'Public information'})).toHaveCount(0);
   await page.getByLabel('File',{exact:true}).setInputFiles({name:'synthetic.pdf',mimeType:'application/pdf',buffer:bytes});
   await page.getByLabel('Title',{exact:true}).fill('Synthetic PDF upload');
-  await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record').selectOption(source);
+  await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record',{exact:true}).selectOption(source);
   await page.getByRole('button',{name:'Upload private draft'}).click();
   await expect(page.getByRole('progressbar',{name:'File upload progress'})).toBeVisible();
-  await expect(page.getByText('Uploading and verifying file…',{exact:true})).toBeVisible();
+  await expect(page.getByRole('status').filter({hasText:/^Uploading and verifying file…(?: \d+% transferred)?$/})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Saving…',exact:true})).toBeDisabled();
   releaseUpload!();
   await expect(page.getByRole('heading',{name:'Synthetic PDF upload'})).toBeVisible();
   await expect(page.getByRole('progressbar')).toHaveCount(0);

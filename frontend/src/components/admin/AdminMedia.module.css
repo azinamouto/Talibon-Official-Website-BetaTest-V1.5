@@ -34,6 +34,7 @@
 .empty p { margin-top: 12px; font-size: 13px; line-height: 1.6; }
 .assets { display: grid; gap: 16px; }
 .assets > li { min-width: 0; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; }
+.assets > li > div:first-child { margin-bottom:16px; }
 .assetHeading { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
 .assetHeading > div { min-width: 0; flex: 1 1 180px; }
 .assetHeading h3 { font-size: 16px; font-weight: 700; overflow-wrap: anywhere; }

@@ -23,7 +23,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -76,7 +131,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -137,7 +247,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -198,7 +363,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -267,7 +487,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -414,7 +689,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -483,7 +813,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -562,7 +947,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -641,7 +1081,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -720,7 +1215,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -799,7 +1349,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -878,7 +1483,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -957,7 +1617,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -1418,6 +2133,38 @@
         "operationId": "MediaController_list_1",
         "parameters": [
           {
+            "name": "ready",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "photo",
+                "document"
+              ],
+              "type": "string"
+            }
+          },
+          {
             "in": "header",
             "name": "X-API-Version",
             "required": false,
@@ -1432,10 +2179,162 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "hasMore"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "kind",
+                          "title",
+                          "processing",
+                          "publication",
+                          "version",
+                          "can_resume"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "photo",
+                              "document"
+                            ]
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "alt_text": {
+                            "type": "string"
+                          },
+                          "category_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "source_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "mime": {
+                            "type": "string"
+                          },
+                          "bytes": {
+                            "type": "integer"
+                          },
+                          "processing": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "ready"
+                            ]
+                          },
+                          "publication": {
+                            "type": "string",
+                            "enum": [
+                              "draft",
+                              "published"
+                            ]
+                          },
+                          "version": {
+                            "type": "integer"
+                          },
+                          "original_filename": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "can_resume": {
+                            "type": "boolean",
+                            "description": "True only for a recoverable pending reservation created by the authenticated staff member."
+                          },
+                          "upload_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Present only when can_resume is true. Recovery must use the same original metadata and bytes."
+                          }
+                        }
+                      }
+                    },
+                    "hasMore": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1489,7 +2388,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1515,6 +2469,205 @@
             "staffCookie": []
           }
         ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}": {
+      "get": {
+        "operationId": "MediaController_metadata_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "kind",
+                    "title",
+                    "processing",
+                    "publication",
+                    "version",
+                    "can_resume"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "photo",
+                        "document"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "alt_text": {
+                      "type": "string"
+                    },
+                    "category_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "source_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "mime": {
+                      "type": "string"
+                    },
+                    "bytes": {
+                      "type": "integer"
+                    },
+                    "processing": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "ready"
+                      ]
+                    },
+                    "publication": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "published"
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    },
+                    "original_filename": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "can_resume": {
+                      "type": "boolean",
+                      "description": "True only for a recoverable pending reservation created by the authenticated staff member."
+                    },
+                    "upload_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "Present only when can_resume is true. Recovery must use the same original metadata and bytes."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "summary": "Get ready private media metadata for a draft attachment",
         "tags": [
           "Media CMS"
         ]
@@ -1549,10 +2702,147 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Verified private draft. Uploading does not publish the file.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "kind",
+                    "title",
+                    "processing",
+                    "publication",
+                    "version",
+                    "can_resume"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "photo",
+                        "document"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "alt_text": {
+                      "type": "string"
+                    },
+                    "category_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "source_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "mime": {
+                      "type": "string"
+                    },
+                    "bytes": {
+                      "type": "integer"
+                    },
+                    "processing": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "ready"
+                      ]
+                    },
+                    "publication": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "published"
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    },
+                    "original_filename": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "can_resume": {
+                      "type": "boolean",
+                      "description": "True only for a recoverable pending reservation created by the authenticated staff member."
+                    },
+                    "upload_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "Present only when can_resume is true. Recovery must use the same original metadata and bytes."
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1623,7 +2913,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1694,7 +3039,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1765,7 +3165,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1836,7 +3291,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1897,7 +3407,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -1958,7 +3523,62 @@
             "description": ""
           },
           "400": {
-            "description": "Invalid file, metadata or unapproved publication."
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Live staff session and MFA required."
@@ -4278,7 +5898,62 @@
             }
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -4608,7 +6283,62 @@
             }
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -4986,7 +6716,62 @@
             }
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -5352,7 +7137,62 @@
             }
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -5753,7 +7593,62 @@
             }
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."
@@ -6142,7 +8037,62 @@
             }
           },
           "400": {
-            "description": "Invalid body, query, UUID or department reference."
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing, invalid or ended session."

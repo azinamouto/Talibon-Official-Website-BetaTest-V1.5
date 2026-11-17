@@ -47,7 +47,7 @@ it('uses website-wide content statistics and keeps administration requests lazy'
   expect(nav('Dashboard overview')).toHaveAttribute('aria-current', 'page');
 });
 
-it('separates photo and document files and categories without inventing a backend filter', async () => {
+it('separates photo and document files and categories using the validated backend kind filter', async () => {
   portal();
   fireEvent.click(nav('Photos'));
   await screen.findByRole('heading', { name: 'Synthetic photo' });
@@ -60,7 +60,10 @@ it('separates photo and document files and categories without inventing a backen
   expect(screen.queryByRole('heading', { name: 'Synthetic photo' })).not.toBeInTheDocument();
   expect(screen.getByLabelText('File', { exact: true })).toHaveAttribute('accept', '.pdf');
   expect(screen.queryByLabelText(/Alternative text/)).not.toBeInTheDocument();
-  expect(mocks.request.mock.calls.filter(([path]) => String(path).startsWith('/api/admin/media?')).every(([path]) => /^\/api\/admin\/media\?page=\d+$/.test(String(path)))).toBe(true);
+  const queries=mocks.request.mock.calls.filter(([path])=>String(path).startsWith('/api/admin/media?')).map(([path])=>new URL(String(path),'https://local.invalid').searchParams);
+  expect(queries.every(query=>/^\d+$/.test(query.get('page')!) && ['photo','document'].includes(query.get('kind')!))).toBe(true);
+  expect(queries.some(query=>query.get('kind')==='photo')).toBe(true);
+  expect(queries.some(query=>query.get('kind')==='document')).toBe(true);
 });
 
 it('hides admin modules and rejects a privileged deep link for an editor', async () => {

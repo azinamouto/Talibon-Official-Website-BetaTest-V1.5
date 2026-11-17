@@ -3,6 +3,8 @@ import { DatabaseError, PostgresDatabase, SqlSession } from './postgres';
 import { StaffPrincipal } from '../authentication/authentication.adapter';
 import { authorizeStaff } from './staff-authorization';
 import { MUNICIPAL_KINDS, validateMunicipal } from '../api/content/municipal-schema';
+import { CmsValidationError } from './cms-validation';
+import { CmsInputError } from '../security/cms-validation';
 export interface ContentInput { title: string; slug: string; sourceId: string; body: Record<string, unknown>; status?: string; version?: number; }
 export class ContentRepository {
   constructor(private readonly db: PostgresDatabase) {}
@@ -55,15 +57,16 @@ export class ContentRepository {
   private async assets(tx: SqlSession,kind: string,input: ContentInput,publishing=false,legacyBody?: Record<string,unknown>) {
     let checked: ReturnType<typeof validateMunicipal>;
     try { checked=validateMunicipal(kind,input,legacyBody); }
-    catch { throw new DatabaseError('invalid'); }
+    catch (error) { throw error instanceof CmsInputError ? new CmsValidationError(error.fields) : new DatabaseError('invalid'); }
     const rows=checked.assetIds.length ? await tx.query(`SELECT m.id,m.kind,m.processing,m.deleted_at,m.alt_text,
       EXISTS(SELECT 1 FROM app.published_media p WHERE p.id=m.id) AS visible FROM app.media_assets m WHERE m.id=ANY($1::uuid[]) ORDER BY m.id FOR SHARE OF m`,[checked.assetIds]) : [];
-    if (rows.length!==checked.assetIds.length || rows.some(row=>row.deleted_at || row.processing!=='ready' || (publishing && !row.visible))) throw new DatabaseError('invalid');
-    if (input.body.featuredAssetId && rows.find(row=>row.id===input.body.featuredAssetId)?.kind!=='photo') throw new DatabaseError('invalid');
-    if (kind==='galleries' && rows.some(row=>row.kind!=='photo')) throw new DatabaseError('invalid');
-    for (const attachment of checked.attachments) if (rows.find(row=>row.id===attachment.assetId)?.kind==='photo' && !attachment.altText?.trim()) throw new DatabaseError('invalid');
-    if (publishing && ['downloadables','transparency_reports'].includes(kind) && !checked.attachments.some(a=>rows.find(row=>row.id===a.assetId)?.kind==='document')) throw new DatabaseError('invalid');
-    if (publishing && kind==='galleries' && !checked.attachments.length) throw new DatabaseError('invalid');
+    if (rows.length!==checked.assetIds.length || rows.some(row=>row.deleted_at || row.processing!=='ready')) throw new CmsValidationError({attachments:'attachment_missing'});
+    if (publishing && rows.some(row=>!row.visible)) throw new CmsValidationError({attachments:'attachment_private'});
+    if (input.body.featuredAssetId && rows.find(row=>row.id===input.body.featuredAssetId)?.kind!=='photo') throw new CmsValidationError({featuredAssetId:'featured_photo'});
+    if (kind==='galleries' && rows.some(row=>row.kind!=='photo')) throw new CmsValidationError({attachments:'gallery_photo'});
+    for (const [index,attachment] of checked.attachments.entries()) if (rows.find(row=>row.id===attachment.assetId)?.kind==='photo' && !attachment.altText?.trim()) throw new CmsValidationError({[`attachments.${index}.altText`]:'photo_alt'});
+    if (publishing && ['downloadables','transparency_reports'].includes(kind) && !checked.attachments.some(a=>rows.find(row=>row.id===a.assetId)?.kind==='document')) throw new CmsValidationError({attachments:'document_required'});
+    if (publishing && kind==='galleries' && !checked.attachments.length) throw new CmsValidationError({attachments:'gallery_required'});
     return checked.assetIds;
   }
   save(actor: StaffPrincipal,kind: string,input: Partial<ContentInput>,request: string,id?: string) {
@@ -77,6 +80,8 @@ export class ContentRepository {
       if (input.status!==undefined && input.status!=='draft') throw new DatabaseError('invalid');
       const merged={title:input.title ?? prior?.title,slug:input.slug ?? prior?.slug,sourceId:input.sourceId ?? prior?.source_id,body:input.body ?? prior?.body} as ContentInput;
       const ids=await this.assets(tx,kind,merged,false,prior?.body);
+      const [source]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1',[merged.sourceId]);
+      if (!source) throw new CmsValidationError({sourceId:'source_missing'});
       const values=[merged.title,merged.slug,JSON.stringify(merged.body),merged.sourceId];
       const [row]=id ? await tx.query(`UPDATE app.public_content SET title=$1,slug=$2,body=$3,source_id=$4,version=version+1,updated_at=now() WHERE id=$5 RETURNING *`,[...values,id])
         : await tx.query(`INSERT INTO app.public_content(title,slug,body,source_id,kind,legacy_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,[...values,kind,randomUUID()]);
@@ -98,7 +103,7 @@ export class ContentRepository {
         // The existing SECURITY DEFINER publication trigger locks this source.
         // Runtime must not gain UPDATE privileges just to take a source row lock.
         const [source]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1 AND approved',[prior.source_id]);
-        if (!source) throw new DatabaseError('invalid');
+        if (!source) throw new CmsValidationError({sourceId:'source_unapproved'});
       }
       const publication=action==='publish'?'published':['archive','delete'].includes(action)?'archived':'draft';
       const [row]=await tx.query(`UPDATE app.public_content SET publication=$1,published_at=CASE WHEN $1='published' THEN now() ELSE NULL END,

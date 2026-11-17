@@ -3,6 +3,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import AdminContent from '../../src/components/admin/AdminContent';
 import AdminSources from '../../src/components/admin/AdminSources';
 import { staffRequest } from '../../src/contexts/StaffAuthContext';
+import { StaffRequestError } from '../../src/lib/staffErrors';
 vi.mock('../../src/contexts/StaffAuthContext',()=>({staffRequest:vi.fn()}));
 afterEach(()=>{cleanup();vi.resetAllMocks();});
 const source={id:'source',reference:'Synthetic approved source',owner:'Test office',sha256:'a'.repeat(64),approved:true};
@@ -52,4 +53,24 @@ it('reviews source approvals only after fresh administrator MFA',async()=>{
  await waitFor(()=>expect(request).toHaveBeenCalledWith('/api/admin/content/sources/source/approve',{}));
  const paths=request.mock.calls.map(([path])=>path);expect(paths.indexOf('/api/staff-auth/two-factor/verify-totp')).toBeLessThan(paths.indexOf('/api/admin/content/sources/source/approve'));
  expect(screen.getByLabelText('Current authenticator code')).toHaveValue('');
+});
+it('maps organizational chart validation to the affected input and preserves the draft',async()=>{
+ const request=vi.mocked(staffRequest);request.mockImplementation(async(path,body)=>{
+  if(path==='/api/admin/content/sources')return {data:[source]};
+  if(path==='/api/admin/media/options')return {categories:[],sources:[source]};
+  if(body && path.startsWith('/api/admin/content/organizational_chart'))throw new StaffRequestError(400,{'mayor.name':'Complete this field.'});
+  return {data:[],pagination:{totalPages:0},hasMore:false};
+ });
+ render(<AdminContent role="editor" group="government"/>);
+ await waitFor(()=>expect(screen.getByRole('button',{name:'New draft'})).toBeEnabled());
+ fireEvent.change(screen.getByLabelText('Section'),{target:{value:'organizational_chart:executive-chart'}});
+ await waitFor(()=>expect(screen.getByRole('button',{name:'New draft'})).toBeEnabled());
+ fireEvent.click(screen.getByRole('button',{name:'New draft'}));
+ fireEvent.change(screen.getByLabelText('Title'),{target:{value:'Synthetic organization draft'}});
+ fireEvent.change(screen.getByLabelText('Source record'),{target:{value:'source'}});
+ fireEvent.submit(screen.getByLabelText('Title').closest('form')!);
+ await screen.findByRole('alert');
+ expect(screen.getByLabelText('Executive leader 1 name')).toHaveAttribute('aria-invalid','true');
+ expect(screen.getByRole('alert')).toHaveTextContent('Executive leader name: Complete this field.');
+ expect(screen.getByLabelText('Title')).toHaveValue('Synthetic organization draft');
 });

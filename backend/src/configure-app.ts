@@ -8,6 +8,7 @@ import { requestMetrics } from './security/request-metrics.middleware';
 import { staffAuthentication } from './authentication/runtime';
 import { emitStaffAuthFailure } from './security/failure-diagnostics';
 import { staffOriginConfiguration } from './config/staff-origin';
+import { dtoValidationException } from './security/cms-validation';
 
 export function isAllowedOrigin(origin: string | undefined): boolean {
   let config: ReturnType<typeof staffOriginConfiguration>;
@@ -56,6 +57,7 @@ export function configureApp(app: INestApplication) {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, forbidNonWhitelisted: true, transform: true,
     forbidUnknownValues: true,
+    exceptionFactory: dtoValidationException,
   }));
   // Existing clients default to v1; explicit unsupported versions receive 404.
   app.enableVersioning({

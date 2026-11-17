@@ -84,7 +84,7 @@ Desktop/mobile chart editor and public chart screenshots were visually inspected
 
 Exploratory browser failures from stale selectors, duplicate fixture names, changed navigation count and hot reload interruptions were corrected or rerun from stable sources. A five-second historical mayors lazy-load assertion was extended to a bounded fifteen seconds; its record counts and layout assertions are unchanged and all four viewports passed. The interrupted broad run was not treated as qualification. The final broad gate uses one Vite server, two Playwright workers and per-process `DISABLE_HMR=true` to avoid development reloads; no hosted flag was changed. Final results must be read from the completed verification table rather than inferred from focused passing cases.
 
-The final standalone React coverage run passed all 144 tests after an earlier competing-workload run timed out in two tests. Assertions were retained. GitHub's database job now also runs the disposable CMS upload/publication integration suite; CI qualification will be recorded after the PR checks complete.
+The final standalone React coverage run passed all 144 tests after an earlier competing-workload run timed out in two tests. Assertions were retained. GitHub's database job now also runs the disposable CMS upload/publication integration suite. Current CI results and the final qualification receipt are tracked on [PR #119](https://github.com/azinamouto/Talibon-Official-Website-BetaTest-V1.5/pull/119/checks), separately from the local evidence above.
 
 Dependency audits: frontend and root report zero vulnerabilities. Backend reports 25 moderate, zero high and zero critical advisories; its production-only audit reports zero vulnerabilities. No manifest or lockfile changes were made, so these development dependency advisories are inherited, not introduced by this diff. No automatic dependency upgrades were applied.
 
@@ -117,7 +117,8 @@ Paths below are relative to the feature worktree.
 | `929c1e0` | Documents, offices, pages and chart relationships |
 | `3858651` | Public integrations and library improvements |
 | `77417bf` | Regression verification and contract snapshot |
-| Report commit | CMS CI coverage and final report |
+| `da3ad6c` | CMS CI coverage and final report |
+| Handoff commit | PR reference and local preview limitation |
 
 ## Limitations and handoff
 
@@ -130,4 +131,6 @@ Paths below are relative to the feature worktree.
 - No migration approval is needed for this change. Any later hosted validation/deployment or merge needs separate authorization; the branch push and PR are authorized.
 - Review the isolated branch and completed local evidence, then perform authorized hosted editor/public/media/MFA/revocation acceptance before release.
 
-Local front-end preview URL and final commit will be recorded after verification completes. The preview is not an authenticated hosted CMS environment.
+PR: https://github.com/azinamouto/Talibon-Official-Website-BetaTest-V1.5/pull/119. The feature branch is pushed for review, not merged.
+
+The attempt to launch a persistent local frontend preview was rejected by the execution policy. No persistent preview is running. Completed browser verification used isolated test servers; it does not establish an authenticated hosted CMS environment.

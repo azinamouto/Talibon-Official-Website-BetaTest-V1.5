@@ -11,6 +11,8 @@ const {fixtureConfig,verifyFixture}=require('./local-staging-fixture.cjs');
 const {migrations}=require('../scripts/staging/runner.cjs');
 const {PostgresDatabase,connectionConfig,runtimeConnectionConfig,DatabaseError}=require('../dist/database/postgres');
 const {ContentRepository}=require('../dist/database/content.repository');
+const {assertContentPublishingReady,assertMediaUploadsReady}=require('../dist/database/cms-readiness');
+const {classifyFailure}=require('../dist/security/failure-diagnostics');
 const {MediaRepository}=require('../dist/database/media.repository');
 const {ContentService}=require('../dist/api/content/content.service');
 const {MediaService}=require('../dist/api/media/media.service');
@@ -47,12 +49,13 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
   }
   const editor=await actor('editor'),admin=await actor('admin');
   runtime.staffAuthentication=()=>({verify:async headers=>({'fixture=editor':editor,'fixture=admin':admin,'fixture=ordinary':{...editor,role:'staff'}})[headers.get('cookie')] || null});
-  const objects=new Map();let failStorage=false,failPrivate=false;
-  const storage={verifyPrivate:async()=>{if(failPrivate)throw Error('Fictional private access failure');},put:async(key,bytes)=>{if(failStorage)throw Error('Fictional transfer failure');objects.set(key,Buffer.from(bytes));},read:async key=>{if(!objects.has(key))throw Error('Fictional missing object');return objects.get(key);}};
+  const objects=new Map();let failStorage=false,failPrivate=false,beforePut;
+  const storage={verifyPrivate:async()=>{if(failPrivate)throw Error('Fictional private access failure');},put:async(key,bytes)=>{if(failStorage)throw Error('Fictional transfer failure');await beforePut?.();objects.set(key,Buffer.from(bytes));},read:async key=>{if(!objects.has(key))throw Error('Fictional missing object');return objects.get(key);}};
   const media=new MediaService();media.configure(new MediaRepository(db),storage);
   const publicContent=new PublicContentService();publicContent.configure(db);
   const repository=new ContentRepository(db),content=new ContentService(publicContent);content.configure(repository);
   const logs=[];content.logger={warn:text=>logs.push(JSON.parse(text))};
+  media.logger={warn:text=>logs.push(JSON.parse(text))};
   const limiter=new RateLimiterGuard(new Reflector());
   limiterDb=new PostgresDatabase(runtimeConnectionConfig(runtimeUrl.toString(),true));limiter.configure(limiterDb);
   class TestModule {}
@@ -66,6 +69,10 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
   await owner.query("INSERT INTO app.content_sources(id,reference,owner,sha256,approved,reviewed_at) VALUES($1,'Fictional historical evidence','Test custodian',$2,true,now())",[sourceId,'a'.repeat(64)]);
   const oldBody={category:'ARTICLE',content:'Fictional article body'};
   const draft={title:'Fictional legacy authoring',sourceId,body:oldBody};
+  const image=await sharp({create:{width:8,height:8,channels:3,background:'white'}}).jpeg().toBuffer();
+  const pdfFile=await PDFDocument.create();pdfFile.addPage();const pdfBytes=Buffer.from(await pdfFile.save());
+  const upload=(extra={})=>({title:'Fictional photo',description:'',altText:'White test image',uploadId:randomUUID(),filename:'fixture.jpg',mime:'image/jpeg',base64:image.toString('base64'),...extra});
+  const pdfUpload=()=>upload({title:'Fictional PDF',filename:'fixture.pdf',mime:'application/pdf',altText:'',base64:pdfBytes.toString('base64')});
   t.afterEach(async()=>{await owner.query("DELETE FROM app.staff_auth_throttle WHERE key LIKE 'http:%'");await owner.query('DELETE FROM app.media_throttle');});
   let historical,photo,pdf,current;
   await t.test('GET works before 003, but the exact POST link-delete permission failure produces sanitized 503 and rollback',async()=>{
@@ -76,11 +83,38 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
    assert.ok(logs.some(log=>log.component==='content' && log.operation==='content_save' && log.error_code==='42501' && log.reason==='permission_denied' && log.phase==='query' && log.transaction_outcome==='rollback_confirmed'));
    assert.doesNotMatch(JSON.stringify(logs),/Fictional|postgres:|content_asset_links|cookie|token/);
   });
+  await t.test('direct publish before 004 fails at the missing receipt table, independently of the earlier link grant defect',async()=>{
+   const before={content:await count('public_content'),audit:await count('audit_events')};
+   const response=await publish('news',{content:'Fictional schema failure'});assert.equal(response.status,503);
+   assert.ok(logs.some(log=>log.operation==='content_publish' && log.error_code==='42P01' && log.reason==='relation_missing' && log.transaction_outcome==='rollback_confirmed'));
+   assert.deepEqual({content:await count('public_content'),audit:await count('audit_events')},before);
+   assert.doesNotMatch(JSON.stringify(await response.json()),/42P01|receipt|postgres:|Fictional/);
+   await assert.rejects(db.transaction(assertContentPublishingReady,true),e=>classifyFailure(e).reason==='cms_schema_missing');
+  });
+  await t.test('absent default categories are a service failure for valid images and PDFs; the qualification fixture is neither offered nor used',async()=>{
+   await owner.query("INSERT INTO app.media_categories(kind,slug,title,approved) VALUES('document','r2-qualification','R2 Qualification',false)");
+   const before={media:await count('media_assets'),revisions:await count('media_revisions'),audit:await count('audit_events')};
+   for(const body of [upload(),pdfUpload()]) {
+    const response=await http('/api/admin/media/uploads',body);assert.equal(response.status,503);
+    const result=await response.json();assert.equal(result.fieldErrors,undefined);assert.ok(result.requestId);
+    assert.ok(logs.some(log=>log.component==='media' && log.operation==='media_upload' && log.request_id===result.requestId && log.reason==='media_category_missing' && log.transaction_outcome==='rollback_confirmed'));
+    assert.doesNotMatch(JSON.stringify(result),/category|42501|Fictional|fixture|postgres:/);
+   }
+   assert.equal(objects.size,0);assert.deepEqual({media:await count('media_assets'),revisions:await count('media_revisions'),audit:await count('audit_events')},before);
+   assert.equal(await count('media_categories',"slug='r2-qualification' AND NOT approved"),1);
+   assert.deepEqual((await (await http('/api/admin/media/options')).json()).categories,[]);
+   await assert.rejects(db.transaction(assertMediaUploadsReady,true),e=>classifyFailure(e).reason==='cms_schema_missing');
+  });
   await t.test('003 grants resolve the reproduced authoring failure without changing authentication',async()=>{
    await owner.query(sql('003_municipal_content_foundation.sql'));
    const response=await http('/api/admin/content/news',draft);assert.equal(response.status,201);historical=(await response.json()).data;
    assert.equal(historical.publication,'draft');
    assert.equal((await http('/api/admin/content/news',draft,'')).status,401);
+  });
+  await t.test('link grant repair alone leaves the direct publication receipt dependency unresolved',async()=>{
+   const response=await publish('news',{content:'Fictional incomplete upgrade'});assert.equal(response.status,503);
+   assert.ok(logs.some(log=>log.operation==='content_publish' && log.error_code==='42P01'));
+   assert.equal(await count('public_content'),1);
   });
   await t.test('004 dry-run rolls back schema, grants and defaults without changing historical records',async()=>{
    const rehearsal=await owner.connect();
@@ -101,6 +135,17 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
    for(const field of ['title','slug','body','source_id','publication','version'])assert.deepEqual(after[field],before[field]);
    assert.equal(await count('content_sources'),1);assert.equal(await count('audit_events'),auditBefore);
    assert.equal(await count('media_categories',"slug IN ('website-photos','website-documents')"),2);
+   assert.equal(await count('media_categories',"slug='r2-qualification' AND NOT approved"),1);
+   await db.transaction(assertContentPublishingReady,true);await db.transaction(assertMediaUploadsReady,true);
+  });
+  await t.test('CMS readiness rejects revoked runtime link grants or default categories even while the database remains reachable',async()=>{
+   await owner.query('REVOKE DELETE ON app.content_asset_links FROM talgov_runtime');
+   try {await assert.rejects(db.transaction(assertContentPublishingReady,true),e=>classifyFailure(e).reason==='cms_permission_missing');}
+   finally {await owner.query('GRANT DELETE ON app.content_asset_links TO talgov_runtime');}
+   await owner.query("UPDATE app.media_categories SET approved=false WHERE slug='website-photos'");
+   try {await assert.rejects(db.transaction(assertMediaUploadsReady,true),e=>classifyFailure(e).reason==='media_category_missing');}
+   finally {await owner.query("UPDATE app.media_categories SET approved=true WHERE slug='website-photos'");}
+   await db.transaction(assertContentPublishingReady,true);await db.transaction(assertMediaUploadsReady,true);
   });
   await t.test('one direct action publishes news with no source or draft call and exposes it publicly',async()=>{
    const before=Date.now(),response=await publish('news',{content:'Fictional direct news',date:'1900-01-01'});assert.equal(response.status,201);current=(await response.json()).data;
@@ -115,17 +160,40 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
    assert.equal((await response.json()).data.source_id,pending);assert.equal((await owner.query('SELECT approved FROM app.content_sources WHERE id=$1',[pending])).rows[0].approved,false);
    assert.equal(await count('content_sources'),2);
   });
-  const image=await sharp({create:{width:8,height:8,channels:3,background:'white'}}).jpeg().toBuffer();
-  const pdfFile=await PDFDocument.create();pdfFile.addPage();const pdfBytes=Buffer.from(await pdfFile.save());
-  const upload=(extra={})=>({title:'Fictional photo',description:'',altText:'White test image',uploadId:randomUUID(),filename:'fixture.jpg',mime:'image/jpeg',base64:image.toString('base64'),...extra});
   const attachment=asset=>({assetId:asset.id,caption:asset.title,altText:asset.alt_text});
+  await t.test('explicit missing or mismatched categories remain validation errors and runtime cannot create category approvals',async()=>{
+   const categories=(await owner.query("SELECT id,kind FROM app.media_categories WHERE slug IN ('website-photos','website-documents')")).rows;
+   for(const [body,code] of [[upload({categoryId:randomUUID()}),'category_missing'],[upload({categoryId:categories.find(c=>c.kind==='document').id}),'category_kind'],[{...pdfUpload(),categoryId:categories.find(c=>c.kind==='photo').id},'category_kind']]) {
+    const response=await http('/api/admin/media/uploads',body);assert.equal(response.status,400);assert.equal((await response.json()).fieldErrors.categoryId,code);
+   }
+   await assert.rejects(db.transaction(tx=>tx.query("UPDATE app.media_categories SET approved=true WHERE slug='r2-qualification'")),e=>classifyFailure(e).error_code==='42501');
+   assert.equal(await count('media_assets'),0);
+  });
   await t.test('private upload defaults and durable recovery retain the same file without credentials or duplicate revisions',async()=>{
    const body=upload();failStorage=true;assert.equal((await http('/api/admin/media/uploads',body)).status,503);failStorage=false;
    const a=await http('/api/admin/media/uploads',body);assert.equal(a.status,201);photo=await a.json();
    const b=await (await http('/api/admin/media/uploads',body)).json();assert.equal(b.id,photo.id);assert.equal(photo.source_id,null);assert.equal(photo.publication,'draft');
    assert.equal(await count('media_revisions','asset_id=$1',[photo.id]),1);assert.equal((await http('/api/media/'+photo.id+'/download',undefined,'')).status,404);
    assert.doesNotMatch(JSON.stringify(photo),/object_key|assets\/|AWS_ACCESS|SECRET/);
+   assert.equal((await owner.query('SELECT slug FROM app.media_categories WHERE id=$1',[photo.category_id])).rows[0].slug,'website-photos');
    const response=await http('/api/admin/media/uploads',upload({title:'Fictional PDF',filename:'fixture.pdf',mime:'application/pdf',altText:'',base64:pdfBytes.toString('base64')}));assert.equal(response.status,201);pdf=await response.json();
+   assert.equal(pdf.kind,'document');assert.equal(pdf.source_id,null);
+   assert.equal((await owner.query('SELECT slug FROM app.media_categories WHERE id=$1',[pdf.category_id])).rows[0].slug,'website-documents');
+  });
+  await t.test('concurrent identical upload retries return one ready file with one revision and readiness audit',async()=>{
+   let arrived=0,release;const gate=new Promise(resolve=>{release=resolve;});
+   beforePut=async()=>{if(++arrived===2)release();await gate;};
+   const body=upload(),before=objects.size;
+   try {
+    const responses=await Promise.all([http('/api/admin/media/uploads',body),http('/api/admin/media/uploads',body)]);
+    assert.deepEqual(responses.map(r=>r.status),[201,201]);const files=await Promise.all(responses.map(r=>r.json()));
+    assert.equal(files[0].id,files[1].id);assert.equal(files[0].version,2);assert.equal(files[1].version,2);
+    assert.equal(objects.size,before+1);assert.equal(await count('media_revisions','asset_id=$1',[files[0].id]),1);
+    assert.equal(await count('audit_events',"resource_id=$1 AND action='media.create'",[files[0].id]),1);
+    assert.equal(await count('audit_events',"resource_id=$1 AND action='media.update'",[files[0].id]),1);
+    assert.equal((await http('/api/admin/media/uploads',{...body,title:'Changed fictional metadata'})).status,409);
+    assert.equal(objects.size,before+1);
+   } finally {release();beforePut=undefined;}
   });
   await t.test('content and file validation failures retain uploads privately and make no publication or receipt',async()=>{
    const before=await count('content_publication_receipts');

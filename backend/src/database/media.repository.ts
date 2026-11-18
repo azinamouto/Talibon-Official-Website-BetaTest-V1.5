@@ -4,6 +4,7 @@ import { MediaInput, PgRepositories } from './repositories';
 import { StaffPrincipal } from '../authentication/authentication.adapter';
 import { CmsValidationError } from './cms-validation';
 import type { SqlSession } from './postgres';
+import { attachFailure } from '../security/failure-diagnostics';
 
 export type StaffMediaFilters = { kind?: string; q?: string; ready?: boolean; publication?: string; categoryId?: string };
 export type MediaPublication = { assetId: string; version: number };
@@ -72,7 +73,7 @@ export class MediaRepository extends PgRepositories {
   options(actor: StaffPrincipal) {
     return this.mediaDb.transaction(async tx => {
       await authorizeStaff(tx, actor);
-      return { categories: await tx.query('SELECT id,kind,title,approved FROM app.media_categories ORDER BY title LIMIT 500'),
+      return { categories: await tx.query("SELECT id,kind,title,approved FROM app.media_categories WHERE slug<>'r2-qualification' ORDER BY title LIMIT 500"),
         sources: await tx.query('SELECT id,reference,approved,reviewed_at FROM app.content_sources ORDER BY reference LIMIT 500') };
     });
   }
@@ -92,6 +93,10 @@ export class MediaRepository extends PgRepositories {
       await authorizeStaff(tx, actor);
       const categoryId=input.categoryId || (await tx.query('SELECT id FROM app.media_categories WHERE slug=$1 AND kind=$2 AND approved',
         [input.kind==='photo'?'website-photos':'website-documents',input.kind]))[0]?.id;
+      // An omitted category is resolved by server configuration, never by a
+      // qualification fixture or an arbitrary category. Staff cannot fix absent
+      // defaults by changing the file; keep the upload recoverable as a 503.
+      if (!categoryId) throw attachFailure(new DatabaseError('unavailable'), { phase:'configuration',reason:'media_category_missing' });
       input={...input,categoryId,sourceId:input.sourceId ?? null};
       await this.metadataRules(tx,input.categoryId,input.sourceId,input.kind);
       const [created] = await tx.query(`INSERT INTO app.media_assets
@@ -112,8 +117,14 @@ export class MediaRepository extends PgRepositories {
   ready(actor: StaffPrincipal, id: string, request: string) {
     return this.mediaDb.transaction(async tx => {
       await authorizeStaff(tx, actor);
-      const [row] = await tx.query("UPDATE app.media_assets SET processing='ready',updated_at=now(),version=version+1 WHERE id=$1 AND processing='pending' AND deleted_at IS NULL RETURNING *", [id]);
-      if (!row) throw new DatabaseError('conflict');
+      const [row] = await tx.query("UPDATE app.media_assets SET processing='ready',updated_at=now(),version=version+1 WHERE id=$1 AND created_by=$2 AND processing='pending' AND deleted_at IS NULL RETURNING *", [id,actor.id]);
+      if (!row) {
+        // Concurrent identical retries may both finish storage verification.
+        // The winner records readiness once; the other returns that same file.
+        const [ready] = await tx.query("SELECT * FROM app.media_assets WHERE id=$1 AND created_by=$2 AND processing='ready' AND deleted_at IS NULL FOR SHARE", [id,actor.id]);
+        if (ready) return ready;
+        throw new DatabaseError('conflict');
+      }
       await tx.query('INSERT INTO app.media_revisions(asset_id,object_key,sha256,bytes,mime,actor_id) VALUES($1,$2,$3,$4,$5,$6)', [id,row.object_key,row.sha256,row.bytes,row.mime,actor.id]);
       await tx.query("INSERT INTO app.audit_events(actor_id,action,resource_id,request_id) VALUES($1,'media.update',$2,$3)", [actor.id,id,request]);
       return row;

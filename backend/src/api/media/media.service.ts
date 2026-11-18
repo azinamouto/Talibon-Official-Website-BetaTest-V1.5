@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { StaffPrincipal } from '../../authentication/authentication.adapter';
 import { runtimeConnectionConfig, DatabaseError, PostgresDatabase } from '../../database/postgres';
 import { MediaRepository } from '../../database/media.repository';
@@ -8,6 +8,7 @@ import { EditDto, UploadDto } from './media.dto';
 import { CmsValidationError } from '../../database/cms-validation';
 import { CmsInputError, invalidField } from '../../security/cms-validation';
 import type { StaffMediaFilters } from '../../database/media.repository';
+import { emitFailure, type FailureOperation } from '../../security/failure-diagnostics';
 
 export const mediaView = (row: Record<string, unknown>, actor?: StaffPrincipal) => {
   const { object_key: _key, created_by: _creator, updated_by: _editor, ...safe } = row;
@@ -18,6 +19,7 @@ export const mediaView = (row: Record<string, unknown>, actor?: StaffPrincipal) 
 };
 @Injectable()
 export class MediaService {
+  private readonly logger = new Logger(MediaService.name);
   private database: PostgresDatabase;
   private repository: MediaRepository;
   private storage: ObjectStore;
@@ -30,17 +32,19 @@ export class MediaService {
       this.repository = new MediaRepository(this.database);
     }
   }
-  async run<T>(fn: (repo: MediaRepository, store: ObjectStore) => Promise<T>): Promise<T> {
+  async run<T>(fn: (repo: MediaRepository, store: ObjectStore) => Promise<T>, operation: FailureOperation = 'media_operation', request?: string): Promise<T> {
     return this.runRepository(repo => {
       this.storage ??= new NeonObjectStore();
       return fn(repo,this.storage);
-    });
+    },operation,request);
   }
-  private async runRepository<T>(fn: (repo: MediaRepository) => Promise<T>): Promise<T> {
+  private async runRepository<T>(fn: (repo: MediaRepository) => Promise<T>, operation: FailureOperation = 'media_operation', request?: string): Promise<T> {
+    const started=performance.now();
     try { this.init(); return await fn(this.repository); }
     catch (error) {
       if (error instanceof HttpException) throw error;
       if (error instanceof CmsValidationError) throw new CmsInputError(error.fields);
+      emitFailure(error,{component:'media',operation,route:operation==='media_upload'?'admin_media_uploads':'other',request_id:request,elapsed_ms:performance.now()-started},this.logger);
       if (error instanceof DatabaseError) {
         if (error.code === 'conflict') throw new ConflictException('Media changed; refresh before retrying.');
         if (error.code === 'forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');
@@ -73,7 +77,7 @@ export class MediaService {
     await store.put(row.object_key,bytes,file.mime);
     if (checksum(await store.read(row.object_key)) !== file.sha256) throw new Error('Checksum mismatch');
     return mediaView(await repo.ready(actor,row.id,request),actor);
-  }); }
+  },'media_upload',request); }
   change(actor: StaffPrincipal, id: string, version: number, action: string, input: EditDto | Record<string, never>, request: string, direct=false) {
     return this.run(async (repo,store) => {
       if (action === 'publish') {

@@ -2634,7 +2634,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -2743,7 +2743,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -2942,7 +2942,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -3144,7 +3144,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -3270,7 +3270,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -3396,7 +3396,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -3522,7 +3522,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -3649,7 +3649,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -3775,7 +3775,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -3891,7 +3891,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [
@@ -4007,7 +4007,7 @@
             "description": "Upload attempt limit reached."
           },
           "503": {
-            "description": "Storage/database operation unconfirmed; safe retry allowed."
+            "description": "Upload configuration or storage/database operation unavailable; retry with the same upload identity."
           }
         },
         "security": [

@@ -3,6 +3,7 @@ import { runtimeConnectionConfig, PostgresDatabase } from '../../database/postgr
 import { NeonObjectStore } from '../../storage/neon-object-store';
 import { Public } from '../../security/auth.guard';
 import { PublicContentService } from '../../database/public-content.service';
+import { assertContentPublishingReady, assertMediaUploadsReady } from '../../database/cms-readiness';
 
 @Public()
 @Controller('api/health')
@@ -23,9 +24,9 @@ export class HealthController {
     try {
       if (!this.dependencies.length) this.dependencies = [process.env.STAFF_AUTH_DATABASE_URL, process.env.MEDIA_DATABASE_URL].map(url => new PostgresDatabase(runtimeConnectionConfig(url)));
       await Promise.all([
-        this.content.query(async tx => { await tx.query('SELECT 1 FROM app.published_content LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_auth_throttle LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_auth_audit LIMIT 1'); }),
+        this.content.query(async tx => { await tx.query('SELECT 1 FROM app.published_content LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_auth_throttle LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_auth_audit LIMIT 1'); await assertContentPublishingReady(tx); }),
         this.dependencies[0].transaction(async tx => { await tx.query('SELECT 1 FROM public.r2_auth_session LIMIT 1'); await tx.query('SELECT 1 FROM app.staff_session_assurance LIMIT 1'); }, true),
-        this.dependencies[1].transaction(async tx => { await tx.query('SELECT 1 FROM app.published_media LIMIT 1'); await tx.query('SELECT original_filename FROM app.media_assets LIMIT 1'); }, true),
+        this.dependencies[1].transaction(async tx => { await tx.query('SELECT 1 FROM app.published_media LIMIT 1'); await tx.query('SELECT original_filename FROM app.media_assets LIMIT 1'); await assertMediaUploadsReady(tx); }, true),
         new NeonObjectStore().verifyPrivate(),
       ]);
       return { status: 'ok', service: 'talibon-api', database: 'reachable' };

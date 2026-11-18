@@ -80,6 +80,41 @@ it('recovers a failed upload using the same identity and original file details',
  const calls=vi.mocked(uploadPrivateMedia).mock.calls;expect(calls).toHaveLength(2);expect(calls[0][2]).toBe(calls[1][2]);expect(calls[0][1]).toEqual(calls[1][1]);
  expect(screen.queryByRole('button',{name:'Retry upload'})).not.toBeInTheDocument();
 });
+it.each([
+ ['news','photo.png','image/png'],['galleries','photo.png','image/png'],['transparency','report.pdf','application/pdf'],
+] as const)('preserves the %s form and selected file during an unavailable upload service',async(group,filename,mime)=>{
+ vi.mocked(uploadPrivateMedia).mockRejectedValueOnce(staffResponseError(503,{message:'private database detail'}));
+ await editor(group);
+ const file=new File(['fictional local fixture'],filename,{type:mime});
+ fireEvent.change(screen.getByLabelText('Choose files'),{target:{files:[file]}});
+ const retry=await screen.findByRole('button',{name:'Retry upload'});
+ expect(screen.getByLabelText(group==='news'?'Title':group==='galleries'?'Album title':'Document title')).toHaveValue('Fictional record');
+ expect(screen.getByLabelText(group==='news'?'Description / body':'Description')).toHaveValue('Fictional body');
+ expect(screen.getByRole('article',{name:'Selected file 1'})).toHaveTextContent(filename);
+ expect(screen.getByRole('button',{name:'Publish'})).toBeDisabled();
+ expect(screen.queryByText(/Upload the file again|private database detail/)).not.toBeInTheDocument();
+ fireEvent.click(retry);await screen.findByLabelText('Attachment 1 caption');
+ const calls=vi.mocked(uploadPrivateMedia).mock.calls;
+ expect(calls).toHaveLength(2);expect(calls[0][0]).toBe(file);expect(calls[1][0]).toBe(file);
+ expect(calls[0][1]).toEqual(calls[1][1]);expect(calls[0][2]).toBe(calls[1][2]);
+});
+it('preserves news and the submission identity when direct publication is unavailable',async()=>{
+ const request=vi.mocked(staffRequest),original=request.getMockImplementation()!;
+ const submissions:unknown[]=[];
+ request.mockImplementation(async(path,body)=>{
+  if(path==='/api/admin/content/news/publish') {
+   submissions.push(body);throw staffResponseError(503,{message:'private missing schema detail'});
+  }
+  return original(path,body);
+ });
+ await editor();fireEvent.click(screen.getByRole('button',{name:'Publish'}));
+ const retry=await screen.findByRole('button',{name:'Retry publication'});
+ expect(screen.getByLabelText('Title')).toHaveValue('Fictional record');
+ expect(screen.getByLabelText('Description / body')).toHaveValue('Fictional body');
+ fireEvent.click(retry);await waitFor(()=>expect(submissions).toHaveLength(2));
+ expect(submissions[0]).toEqual(submissions[1]);expect(screen.getByLabelText('Title')).toHaveValue('Fictional record');
+ expect(screen.queryByText(/private missing schema/)).not.toBeInTheDocument();
+});
 it('preserves uploaded attachments and cover photos after a publication conflict',async()=>{
  const request=vi.mocked(staffRequest),original=request.getMockImplementation()!;
  request.mockImplementation(async(path,body)=>{if(body && path==='/api/admin/content/news/publish')throw new StaffRequestError(409);return original(path,body);});

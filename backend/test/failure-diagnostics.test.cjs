@@ -107,4 +107,16 @@ test('route labels never contain caller paths or identifiers', () => {
   assert.equal(diagnosticRoute('/api/health/ready'), 'readiness');
   assert.equal(diagnosticRoute('/api/about/profile'), 'about_profile');
   assert.equal(diagnosticRoute('/api/news/private-id?token=private'), 'other');
+  assert.equal(diagnosticRoute('/api/admin/media/uploads'), 'admin_media_uploads');
+  assert.equal(diagnosticRoute('/api/admin/media/private-id'), 'admin_media');
+});
+
+test('upload configuration diagnostics retain a safe reason and request ID without exposing files', () => {
+  const records=[];
+  const error=attachFailure(new DatabaseError('unavailable'),{phase:'configuration',reason:'media_category_missing',transaction_outcome:'rollback_confirmed'});
+  emitFailure(error,{component:'media',operation:'media_upload',route:'admin_media_uploads',request_id:requestId,filename:'private-photo.jpg',base64:'private bytes'}, {warn:value=>records.push(JSON.parse(value))});
+  assert.equal(records[0].reason,'media_category_missing');assert.equal(records[0].component,'media');
+  assert.equal(records[0].operation,'media_upload');assert.equal(records[0].request_id,requestId);
+  assert.equal(records[0].transaction_outcome,'rollback_confirmed');
+  assert.doesNotMatch(JSON.stringify(records),/private-photo|private bytes|filename|base64/);
 });

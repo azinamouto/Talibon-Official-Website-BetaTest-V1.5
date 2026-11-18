@@ -111,7 +111,7 @@ test('readiness rejects failures in each required dependency',async()=>{
  const saved={};for(const key of ['MEDIA_BUCKET','AWS_ENDPOINT_URL_S3','AWS_ACCESS_KEY_ID','AWS_SECRET_ACCESS_KEY','AWS_REGION'])saved[key]=process.env[key];
  Object.assign(process.env,{MEDIA_BUCKET:'test',AWS_ENDPOINT_URL_S3:'https://br-test.storage.c-1.ap-southeast-1.aws.neon.tech',AWS_ACCESS_KEY_ID:'test',AWS_SECRET_ACCESS_KEY:'test',AWS_REGION:'ap-southeast-1'});
  try {for(const failure of ['none','content','auth','media','storage']){
-   const work=name=>async fn=>{if(failure===name)throw Error('unavailable');return fn({query:async()=>[]});};
+   const work=name=>async fn=>{if(failure===name)throw Error('unavailable');return fn({query:async()=>[{schema_ready:true,permissions_ready:true,categories_ready:true}]});};
    const health=new HealthController({query:work('content')});health.dependencies=[{transaction:work('auth')},{transaction:work('media')}];
    NeonObjectStore.prototype.verifyPrivate=async()=>{if(failure==='storage')throw Error('unavailable');};
    if(failure==='none')assert.equal((await health.ready()).status,'ok');else await assert.rejects(health.ready(),e=>e.getStatus()===503);

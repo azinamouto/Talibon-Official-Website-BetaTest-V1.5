@@ -133,15 +133,15 @@ test('municipal dashboard uses complete content totals and supported modules on 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/admin');
   await expect(page.getByText('Synthetic municipal update')).toBeVisible();
-  for (const [label, value] of [['Municipal records', '21'], ['Published records', '14'], ['Drafts awaiting publication', '4'], ['Media library files', '130']]) {
+  for (const [label, value] of [['Municipal records', '21'], ['Published records', '14'], ['Unpublished records', '4'], ['Media library files', '130']]) {
     await expect(page.getByText(label, { exact: true }).locator('..').locator('dd')).toHaveText(value);
   }
   await expect(page.getByText('Totals include all municipal records and library files. Archived records: 3.')).toBeVisible();
   await expect(page.getByRole('region', { name: 'Your recent activity' }).getByText('content.publish')).toBeVisible();
-  const moduleLabels = ['News & Updates', 'Tourism', 'Events & Festivals', 'Transparency', 'Local Government', 'Galleries', 'Downloadables',
-    'Photos', 'Documents', 'Source approvals', 'Staff management', 'Audit logs'];
+  const moduleLabels = ['News & Updates', 'Tourism', 'Events & Festivals', 'Transparency', 'Local Government', 'Organizational Chart', 'Galleries', 'Downloadables',
+    'Photos', 'Documents', 'Supporting evidence', 'Staff management', 'Audit logs'];
   const navigation = page.getByRole('navigation', { name: 'CMS navigation' });
-  await expect(navigation.getByRole('button')).toHaveCount(13);
+  await expect(navigation.getByRole('button')).toHaveCount(14);
   for (const label of moduleLabels) await expect(navigation.getByRole('button', { name: label, exact: true })).toBeVisible();
   await expect(page.locator('a[href*="eservices"]')).toHaveCount(0);
   await expect(navigation.getByRole('button', { name: 'Dashboard overview' })).toHaveAttribute('aria-current', 'page');

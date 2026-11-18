@@ -39,7 +39,7 @@ it('uses website-wide content statistics and keeps administration requests lazy'
   portal();
   await screen.findByText('Synthetic municipal update');
   expect(screen.getByRole('heading', { name: 'CMS Administration' })).toBeVisible();
-  for (const [label,value] of [['Municipal records','16'],['Published records','12'],['Drafts awaiting publication','4'],['Media library files','120']]) {
+  for (const [label,value] of [['Municipal records','16'],['Published records','12'],['Unpublished records','4'],['Media library files','120']]) {
     expect(screen.getByText(label).parentElement?.querySelector('dd')).toHaveTextContent(value);
   }
   expect(screen.getByText(/Totals include all municipal records/)).toBeVisible();
@@ -52,8 +52,10 @@ it('separates photo and document files and categories using the validated backen
   fireEvent.click(nav('Photos'));
   await screen.findByRole('heading', { name: 'Synthetic photo' });
   expect(screen.queryByRole('heading', { name: 'Synthetic document' })).not.toBeInTheDocument();
-  expect(screen.getByRole('option', { name: 'Photo category (photo)' })).toBeVisible();
-  expect(screen.queryByRole('option', { name: 'Document category (document)' })).not.toBeInTheDocument();
+  expect(screen.getByRole('option', { name: 'Photo category' })).toBeVisible();
+  expect(screen.queryByRole('option', { name: 'Document category' })).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Category', { exact: true })).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Source record')).not.toBeInTheDocument();
   expect(screen.getByLabelText('File', { exact: true })).toHaveAttribute('accept', '.jpg,.jpeg,.png,.webp');
   fireEvent.click(nav('Documents'));
   await screen.findByRole('heading', { name: 'Synthetic document' });
@@ -144,12 +146,12 @@ it('preserves sign-out and offers a retry when it cannot be confirmed', async ()
 
 it('rejects a PDF in the photo workspace before sending an upload request', async () => {
   portal('/admin?tab=photos');
-  await screen.findByRole('option', { name: 'Photo category (photo)' });
+  await screen.findByRole('option', { name: 'Photo category' });
   await waitFor(() => expect(screen.getByLabelText('Title', { exact: true })).toBeEnabled());
   fireEvent.change(screen.getByLabelText('File', { exact: true }), { target: { files: [new File(['synthetic PDF'], 'test.pdf', { type: 'application/pdf' })] } });
   fireEvent.change(screen.getByLabelText('Title', { exact: true }), { target: { value: 'Synthetic mismatch' } });
-  fireEvent.change(screen.getByLabelText('Category', { exact: true }), { target: { value: 'photo-category' } });
-  fireEvent.change(screen.getByLabelText('Source record'), { target: { value: 'source' } });
+  expect(screen.queryByLabelText('Category', { exact: true })).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Source record')).not.toBeInTheDocument();
   // A synthetic FileList does not populate jsdom's native file value. Submit the React handler directly.
   fireEvent.submit(screen.getByLabelText('File', { exact: true }).closest('form')!);
   await screen.findByText('Choose a JPEG, PNG or WebP photo.');

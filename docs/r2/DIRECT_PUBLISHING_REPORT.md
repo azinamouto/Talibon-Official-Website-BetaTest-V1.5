@@ -48,6 +48,8 @@ All database writes below use fresh loopback-only PostgreSQL clusters pinned by 
 | --- | --- |
 | Backend lint and build | Passed |
 | Backend Jest and Node regression suites | 4 + 263 passed |
+| Foundation migration, privilege and backup/restore rehearsal | 13 passed; 10 tables and 23 rows restored with exact digests, migration checksums, grants and constraints |
+| Staff password/TOTP and first-administrator bootstrap suites | 12 + 6 passed across separate recovery-enabled/disabled fixtures |
 | Frontend typecheck and Node tests | Passed; 17 Node tests |
 | Full React coverage run | 148 passed; existing coverage surface 98.94% statements / 96.06% branches |
 | Focused CMS/media/public browser suite | 55 passed, including every editor lifecycle at 375px and 1280px |
@@ -60,11 +62,13 @@ All database writes below use fresh loopback-only PostgreSQL clusters pinned by 
 | Frontend production build | Passed; existing bundle-size warning retained |
 | OpenAPI snapshot and operations tests | Passed; 17 operations tests |
 
-Earlier failures were corrected without weakening runtime controls or test thresholds: stale browser selection and incomplete pagination fixtures; an initial local startup timeout that did not recur; and a combined fixture that exceeded the retained publishing rate limit. Module cases now run independently, and a dedicated duplicate-retry test explicitly exercises the rate limit. Temporary setup tracing was removed. Final local runs have no failed or skipped tests. GitHub CI is checked against the PR head separately.
+Earlier failures were corrected without weakening runtime controls or test thresholds: stale browser selection and incomplete pagination fixtures; an initial local startup timeout that did not recur; and a combined fixture that exceeded the retained publishing rate limit. Module cases now run independently, and a dedicated duplicate-retry test explicitly exercises the rate limit. Temporary setup tracing was removed. All final local CMS checks pass without skipped cases. Authentication conditionally skips the inactive password recovery mode; both modes were verified in separate local fixtures. GitHub CI is checked against the PR head separately.
+
+The initial GitHub database failure was a foundation rehearsal that still expected three migrations after this PR added 004. The corrected test covers every checked-in migration, upgrades from 001 through the current schema, checks replay and checksum drift, and runs its failing DDL after the latest migration. It asserts SQLSTATE 42703 and verifies that both the DDL and migration ledger roll back, rather than accepting an unrelated migration-history rejection. The complete database CI chain plus the separate recovery-disabled check passed locally: 98 tests, including logical backup/restore reconciliation.
 
 ## Changed files
 
-The PR changes 41 source, contract, test, workflow and documentation files. No build outputs, credentials or local test clusters are included.
+The PR changes 42 source, contract, test, workflow and documentation files. No build outputs, credentials or local test clusters are included.
 
 | Area | Files |
 | --- | --- |
@@ -74,7 +78,7 @@ The PR changes 41 source, contract, test, workflow and documentation files. No b
 | Validation and diagnostics | `backend/src/security/cms-validation.ts`, `failure-diagnostics.ts`; `contracts/openapi.json` |
 | Staff forms and controls | `frontend/src/components/admin/AdminContent.tsx`, `AdminMedia.tsx`, `CmsControls.tsx`, `CmsRouteGuard.tsx`, `DraftMediaPanel.tsx`, `EditorActions.tsx`, `MunicipalDashboard.tsx`, `OfficialEditor.tsx`, `municipalModules.ts` |
 | Editor state and public display | `frontend/src/hooks/useCmsEditor.tsx`; `frontend/src/lib/mediaUpload.ts`, `staffErrors.ts`; `frontend/src/pages/StaffPortal.tsx`, `about/DepartmentsView.tsx` |
-| Backend verification | `backend/test/direct-publication.integration.cjs`, `officials-schema.test.cjs`, `run-staging-database-tests.ps1`; `.github/workflows/backend.yml` |
+| Backend verification | `backend/test/direct-publication.integration.cjs`, `officials-schema.test.cjs`, `r2-database.integration.cjs`, `run-staging-database-tests.ps1`; `.github/workflows/backend.yml` |
 | Frontend verification | `frontend/test/browser/admin.spec.ts`, `cms-uploads.spec.ts`, `media.spec.ts`; `frontend/test/react/admin-content.test.tsx`, `cms-upload.test.tsx`, `staff-portal-dashboard.test.tsx` |
 | Handoff | This report and `docs/r2/POST_AUTHORING_READ_ONLY_EVIDENCE_2026-11-18.json` |
 

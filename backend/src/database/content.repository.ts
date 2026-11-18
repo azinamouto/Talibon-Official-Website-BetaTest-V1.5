@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { DatabaseError, PostgresDatabase, SqlSession } from './postgres';
 import { StaffPrincipal } from '../authentication/authentication.adapter';
 import { authorizeStaff } from './staff-authorization';
@@ -7,7 +7,9 @@ import { CmsValidationError } from './cms-validation';
 import { CmsInputError } from '../security/cms-validation';
 import { contentSlug } from '../api/content/content-slug';
 import { publishAttachedMedia, type MediaPublication } from './media.repository';
-export interface ContentInput { title: string; slug: string; sourceId: string; body: Record<string, unknown>; status?: string; version?: number; }
+export interface ContentInput { title: string; slug: string; sourceId?: string | null; body: Record<string, unknown>; status?: string; version?: number; }
+const canonical = (value: unknown): string => JSON.stringify(value, (_key, item) => item && typeof item==='object' && !Array.isArray(item)
+  ? Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])) : item);
 export class ContentRepository {
   constructor(private readonly db: PostgresDatabase) {}
   list(actor: StaffPrincipal, kind: string, page: number, limit: number, id?: string, filters: { q?: string; publication?: string; slug?: string } = {}) {
@@ -74,8 +76,30 @@ export class ContentRepository {
     return checked.assetIds;
   }
   save(actor: StaffPrincipal,kind: string,input: Partial<ContentInput>,request: string,id?: string,publish=false,media?: MediaPublication[]) {
+    return this.db.transaction(tx=>this.write(tx,actor,kind,input,request,id,publish,media));
+  }
+  publishDirect(actor: StaffPrincipal,kind: string,input: Partial<ContentInput>,request: string,submissionId: string,id?: string,media?: MediaPublication[]) {
     return this.db.transaction(async tx=>{
       await authorizeStaff(tx,actor);
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(submissionId)) throw new CmsValidationError({submissionId:'uuid'});
+      submissionId=submissionId.toLowerCase();
+      const digest=createHash('sha256').update(canonical({kind,id,input,media})).digest('hex');
+      // Same actor/key serializes concurrent submissions. A committed receipt
+      // resolves a lost response without replaying content, media or audit writes.
+      await tx.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',[actor.id+':'+submissionId]);
+      const [receipt]=await tx.query('SELECT payload_sha256,result FROM app.content_publication_receipts WHERE actor_id=$1 AND submission_id=$2',[actor.id,submissionId]);
+      if (receipt) {
+        if (receipt.payload_sha256!==digest) throw new DatabaseError('conflict');
+        return {data:receipt.result};
+      }
+      const result=await this.write(tx,actor,kind,input,request,id,true,media,true);
+      await tx.query('INSERT INTO app.content_publication_receipts(actor_id,submission_id,payload_sha256,resource_id,result) VALUES($1,$2,$3,$4,$5)',
+        [actor.id,submissionId,digest,result.data.id,JSON.stringify(result.data)]);
+      return result;
+    });
+  }
+  private async write(tx: SqlSession,actor: StaffPrincipal,kind: string,input: Partial<ContentInput>,request: string,id?: string,publish=false,media?: MediaPublication[],direct=false) {
+      if (!direct) await authorizeStaff(tx,actor);
       let prior: Record<string,any> | undefined;
       if (id) {
         [prior]=await tx.query('SELECT * FROM app.public_content WHERE id=$1 AND kind=$2 AND version=$3 AND deleted_at IS NULL FOR UPDATE',[id,kind,input.version]);
@@ -85,31 +109,43 @@ export class ContentRepository {
       const title=input.title ?? prior?.title;
       if (typeof title!=='string' || !title.trim()) throw new CmsValidationError({title:'required'});
       const slug=input.slug ?? prior?.slug ?? (kind==='organizational_chart'?'executive-chart':await contentSlug(tx,kind,title));
-      const body=input.body ?? prior?.body;
+      const body=structuredClone(input.body ?? prior?.body);
+      if (kind==='news' && body && body.category===undefined) body.category='ARTICLE';
       if (['news','advisories','updates'].includes(kind) && body && body.summary===undefined && typeof body.content==='string') body.summary=body.content.trim().slice(0,280);
-      const merged={title,slug,sourceId:input.sourceId ?? prior?.source_id,body} as ContentInput;
+      if (direct && ['news','advisories','updates'].includes(kind) && body) delete body.date;
+      if (direct && ['transparency_reports','downloadables'].includes(kind) && !body?.description?.trim()) throw new CmsValidationError({description:'required'});
+      const merged={title:title.trim(),slug,sourceId:input.sourceId===undefined?(prior?.source_id ?? null):input.sourceId,body} as ContentInput;
       const ids=await this.assets(tx,kind,merged,false,prior?.body,publish);
       if (publish) {
-        await publishAttachedMedia(tx,actor,merged.body,ids,media,request);
+        await publishAttachedMedia(tx,actor,merged.body,ids,media,request,direct);
         await this.assets(tx,kind,merged,true,prior?.body);
-        const [approved]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1 AND approved',[merged.sourceId]);
-        if (!approved) throw new CmsValidationError({sourceId:'source_unapproved'});
+        if (!direct) {
+          const [approved]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1 AND approved',[merged.sourceId]);
+          if (!approved) throw new CmsValidationError({sourceId:'source_unapproved'});
+        }
       }
-      const [source]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1',[merged.sourceId]);
-      if (!source) throw new CmsValidationError({sourceId:'source_missing'});
+      if (merged.sourceId) {
+        const [source]=await tx.query('SELECT id FROM app.content_sources WHERE id=$1',[merged.sourceId]);
+        if (!source) throw new CmsValidationError({sourceId:'source_missing'});
+      }
       const values=[merged.title,merged.slug,JSON.stringify(merged.body),merged.sourceId];
-      const [row]=id ? await tx.query(`UPDATE app.public_content SET title=$1,slug=$2,body=$3,source_id=$4,version=version+1,updated_at=now() WHERE id=$5 RETURNING *`,[...values,id])
-        : await tx.query(`INSERT INTO app.public_content(title,slug,body,source_id,kind,legacy_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,[...values,kind,randomUUID()]);
+      const [row]=id ? await tx.query(`UPDATE app.public_content SET title=$1,slug=$2,body=$3,source_id=$4,version=version+1,updated_at=now()
+          ${direct?",publication='draft',published_at=NULL,updated_by=$6":''} WHERE id=$5 RETURNING *`,[...values,id,...(direct?[actor.id]:[])])
+        : await tx.query(`INSERT INTO app.public_content(title,slug,body,source_id,kind,legacy_id${direct?',created_by,updated_by':''})
+          VALUES($1,$2,$3,$4,$5,$6${direct?',$7,$7':''}) RETURNING *`,[...values,kind,randomUUID(),...(direct?[actor.id]:[])]);
       await tx.query('DELETE FROM app.content_asset_links WHERE content_id=$1',[row.id]);
       if (ids.length) await tx.query('INSERT INTO app.content_asset_links(content_id,asset_id) SELECT $1,unnest($2::uuid[])',[row.id,ids]);
       await this.audit(tx,actor,id?'content.update':'content.create',row.id,request);
       if (publish) {
+        if (direct) {
+          const [published]=await tx.query('SELECT * FROM app.publish_staff_content($1,$2,$3,$4,$5,$6)',[actor.id,actor.subject,actor.sessionId,row.id,row.version,request]);
+          return {data:published};
+        }
         const [published]=await tx.query("UPDATE app.public_content SET publication='published',published_at=now(),version=version+1,updated_at=now() WHERE id=$1 RETURNING *",[row.id]);
         await this.audit(tx,actor,'content.publish',row.id,request);
         return {data:published};
       }
       return {data:row};
-    });
   }
   change(actor: StaffPrincipal,kind: string,id: string,version: number,action: string,request: string,media?: MediaPublication[]) {
     return this.db.transaction(async tx=>{

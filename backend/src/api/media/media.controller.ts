@@ -11,7 +11,7 @@ import { CMS_VALIDATION_SCHEMA, invalidField } from '../../security/cms-validati
 type StaffRequest = Request & { staff: StaffPrincipal; requestId: string };
 const STAFF_MEDIA_SCHEMA = { type: 'object' as const, required: ['id','kind','title','processing','publication','version','can_resume'], properties: {
   id: {type:'string' as const,format:'uuid'}, kind: {type:'string' as const,enum:['photo','document']}, title: {type:'string' as const},
-  description: {type:'string' as const}, alt_text: {type:'string' as const}, category_id: {type:'string' as const,format:'uuid'}, source_id: {type:'string' as const,format:'uuid'},
+  description: {type:'string' as const}, alt_text: {type:'string' as const}, category_id: {type:'string' as const,format:'uuid'}, source_id: {type:'string' as const,format:'uuid',nullable:true},
   mime: {type:'string' as const}, bytes: {type:'integer' as const}, processing: {type:'string' as const,enum:['pending','ready']},
   publication: {type:'string' as const,enum:['draft','published']}, version: {type:'integer' as const}, original_filename: {type:'string' as const,nullable:true},
   can_resume: {type:'boolean' as const,description:'True only for a recoverable pending reservation created by the authenticated staff member.'},
@@ -56,6 +56,10 @@ export class MediaController {
   upload(@Req() req: StaffRequest, @Body() body: UploadDto) { mediaMutation(req); return this.media.upload(req.staff,body,req.requestId); }
   @Post(':id/edit') edit(@Req() req: StaffRequest, @Param('id',ParseUUIDPipe) id: string, @Body() body: EditDto) { mediaMutation(req); return this.media.change(req.staff,id,body.version,'edit',body,req.requestId); }
   @Post(':id/publish') publish(@Req() req: StaffRequest, @Param('id',ParseUUIDPipe) id: string, @Body() body: VersionDto) { mediaMutation(req); return this.media.change(req.staff,id,body.version,'publish',{},req.requestId); }
+  @Post(':id/publish-direct') @ApiOperation({ summary: 'Publish a verified file using the staff session and MFA, with optional supporting evidence' })
+  publishDirect(@Req() req: StaffRequest, @Param('id',ParseUUIDPipe) id: string, @Body() body: VersionDto) {
+    mediaMutation(req);return this.media.change(req.staff,id,body.version,'publish',{},req.requestId,true);
+  }
   @Post(':id/unpublish') unpublish(@Req() req: StaffRequest, @Param('id',ParseUUIDPipe) id: string, @Body() body: VersionDto) { mediaMutation(req); return this.media.change(req.staff,id,body.version,'unpublish',{},req.requestId); }
   @Post(':id/delete') @StaffRoles('admin') remove(@Req() req: StaffRequest, @Param('id',ParseUUIDPipe) id: string, @Body() body: VersionDto) { mediaMutation(req); return this.media.change(req.staff,id,body.version,'delete',{},req.requestId); }
   @Get(':id/download') @ApiProduces('application/octet-stream')

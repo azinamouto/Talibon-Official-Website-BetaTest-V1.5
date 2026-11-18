@@ -17,7 +17,7 @@ export function safeFieldErrors(value: unknown): CmsFieldErrors {
   const result: CmsFieldErrors = {};
   if (!value || typeof value !== 'object' || Array.isArray(value)) return result;
   for (const [field, code] of Object.entries(value).slice(0, 50)) {
-    if (/^(title|description|altText|categoryId|sourceId|uploadId|filename|mime|base64|file|slug|version|body|summary|content|category|date|deadline|year|featuredAssetId|attachments|mayor|level2|departments|reference|owner|sha256|author|location|address|contact|opening_hours|venue|time|budget|status|head|q|kind|page|request)$/.test(field)
+    if (/^(title|description|altText|categoryId|sourceId|uploadId|submissionId|filename|mime|base64|file|slug|version|body|summary|content|category|date|deadline|year|featuredAssetId|attachments|mayor|level2|departments|reference|owner|sha256|author|location|address|contact|opening_hours|venue|time|budget|status|head|q|kind|page|request)$/.test(field)
       || /^(highlights|attachments|media|start_time|end_time|nodes|officials|email)$/.test(field) || /^highlights\.[0-9]{1,2}$/.test(field)
       || /^(nodes|officials)\.[0-9]{1,2}(\.(id|name|role|office|reportsTo|photoAssetId))?$/.test(field)
       || /^attachments\.[0-9]{1,2}\.(altText|caption|assetId)$/.test(field)

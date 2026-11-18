@@ -30,11 +30,11 @@ function official(value: unknown, field: string) {
   text(row.name,`${field}.name`,200,true); text(row.role,`${field}.role`,200,true);
 }
 /** Plain text and explicit municipal metadata only; never store executable markup or arbitrary URLs. */
-export function validateMunicipal(kind: string, input: { title?: string; slug?: string; sourceId?: string; body?: Record<string,unknown> }, legacyBody?: Record<string,unknown>) {
+export function validateMunicipal(kind: string, input: { title?: string; slug?: string; sourceId?: string | null; body?: Record<string,unknown> }, legacyBody?: Record<string,unknown>) {
   if (!(MUNICIPAL_KINDS as readonly string[]).includes(kind)) fail('Unknown municipal module.');
   text(input.title,'title',200,true);
   if (!input.slug || input.slug.length>160 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.slug)) throw new CmsInputError({slug:'slug'});
-  if (!input.sourceId || !uuid.test(input.sourceId)) throw new CmsInputError({sourceId:'uuid'});
+  if (input.sourceId !== undefined && input.sourceId !== null && !uuid.test(input.sourceId)) throw new CmsInputError({sourceId:'uuid'});
   if (kind==='organizational_chart' && input.slug!=='executive-chart') fail('The organizational chart slug is executive-chart.');
   const body=input.body;
   if (!body || typeof body!=='object' || Array.isArray(body) || Buffer.byteLength(JSON.stringify(body))>180000) fail('Invalid content body.');

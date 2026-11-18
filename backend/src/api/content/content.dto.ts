@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { ArrayMaxSize, IsArray, IsObject, IsUUID, IsIn, IsInt, IsString, Length, Matches, Max, Min, ValidateIf, ValidateNested } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
 
 // Unlike IsOptional, this does not let explicit null bypass validation.
 const Optional = () => ValidateIf((_object, value) => value !== undefined);
@@ -118,7 +118,7 @@ export class ContentPublishDto extends ContentVersionDto {
 export class CmsContentDto {
   @ApiProperty() @IsString() @Length(1,200) @Matches(/\S/) title: string;
   @ApiPropertyOptional({ description: 'Generated from the title when omitted; existing addresses are retained on edit.' }) @Optional() @IsString() @Length(1,160) @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) slug?: string;
-  @ApiProperty() @IsUUID() sourceId: string;
+  @ApiPropertyOptional({ nullable: true, description: 'Optional supporting evidence. Null detaches the association while retaining the evidence record.' }) @ValidateIf((_object,value)=>value!==undefined && value!==null) @IsUUID() sourceId?: string | null;
   @ApiProperty({ type: 'object', additionalProperties: true }) @IsObject() body: Record<string, unknown>;
   @ApiPropertyOptional({ enum: ['draft'], description: 'Publishing uses the separate versioned publish action.' }) @Optional() @IsIn(['draft']) status?: string;
 }
@@ -126,7 +126,14 @@ export class CmsUpdateDto extends PartialType(CmsContentDto, { skipNullPropertie
   @ApiProperty({ minimum: 1 }) @IsInt() @Min(1) version: number;
 }
 export class CmsPublishUpdateDto extends CmsUpdateDto {
+  @ApiPropertyOptional({ description: 'Stable submission UUID for safe direct-publication retries.' }) @Optional() @IsUUID() submissionId?: string;
   @ApiPropertyOptional({ type: [AttachedMediaVersionDto] })
+  @Optional() @IsArray() @ArrayMaxSize(50) @ValidateNested({ each: true }) @Type(() => AttachedMediaVersionDto)
+  media?: AttachedMediaVersionDto[];
+}
+export class CmsDirectPublishDto extends OmitType(CmsContentDto,['status'] as const) {
+  @ApiProperty({ description: 'Generate once per submission and reuse unchanged after an uncertain response.' }) @IsUUID() submissionId: string;
+  @ApiPropertyOptional({ type: [AttachedMediaVersionDto], description: 'Selected attachment versions. Omit to publish the currently locked, verified attachments.' })
   @Optional() @IsArray() @ArrayMaxSize(50) @ValidateNested({ each: true }) @Type(() => AttachedMediaVersionDto)
   media?: AttachedMediaVersionDto[];
 }

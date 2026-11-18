@@ -1,12 +1,11 @@
-import { ArrowLeft, Eye, Save, Send, X } from 'lucide-react';
+import { ArrowLeft, Eye, Send, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import styles from './AdminContent.module.css';
 
-export default function EditorActions({busy,blocked,published,onPreview,onPublish,onCancel}:{busy:boolean;blocked:boolean;published:boolean;onPreview():void;onPublish():void;onCancel():void}) {
+export default function EditorActions({busy,blocked,retrying,onPreview,onCancel}:{busy:boolean;blocked:boolean;retrying:boolean;onPreview():void;onCancel():void}) {
   return <div className={styles.editorActions}>
-    {!published && <Button type="submit" variant="secondary" busy={busy} disabled={blocked}><Save size={18} aria-hidden="true" />Save draft</Button>}
-    <Button variant="secondary" disabled={busy || blocked} onClick={onPreview}><Eye size={18} aria-hidden="true" />Preview</Button>
-    <Button disabled={busy || blocked} onClick={onPublish}><Send size={18} aria-hidden="true" />{published?'Update':'Publish'}</Button>
+    <Button type="submit" busy={busy} disabled={blocked}><Send size={18} aria-hidden="true" />{retrying?'Retry publication':'Publish'}</Button>
+    <Button type="button" variant="secondary" disabled={busy || blocked} onClick={onPreview}><Eye size={18} aria-hidden="true" />Preview</Button>
     <Button variant="secondary" disabled={busy} onClick={onCancel}><X size={18} aria-hidden="true" />Cancel</Button>
   </div>;
 }

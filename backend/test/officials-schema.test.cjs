@@ -28,3 +28,10 @@ test('official arrays and event times remain bounded and strictly validated',()=
  assert.throws(()=>validateMunicipal('events',input));
  input.body.end_time='10:00';assert.doesNotThrow(()=>validateMunicipal('events',input));
 });
+test('office officials accept a bounded department while rejecting unrelated reporting metadata',()=>{
+ const {reportsTo:_parent,...row}=official();
+ assert.deepEqual(validateOfficials([row],'officials'),[]);
+ assert.throws(()=>validateOfficials([{...row,office:'x'.repeat(201)}],'officials'));
+ assert.throws(()=>validateOfficials([{...row,office:42}],'officials'));
+ assert.throws(()=>validateOfficials([{...row,reportsTo:randomUUID()}],'officials'));
+});

@@ -1,0 +1,197 @@
+{
+  "captured_at": "2026-11-18T07:36:43Z",
+  "access": "read-only metadata and SELECT queries; no hosted writes",
+  "staging": {
+    "project": "misty-silence-69777617",
+    "branch": "br-steep-sea-ao0qw05a",
+    "branch_name": "staging-talgov-r2",
+    "endpoint": "ep-sparkling-bird-ao5precf",
+    "database": "neondb"
+  },
+  "observed_request": {
+    "url": "https://talgov-r2-staging.vercel.app/api/admin/content/news",
+    "method": "POST",
+    "status": 503,
+    "duration_seconds": 10.57,
+    "request_id_available": false,
+    "runtime_log_available": false
+  },
+  "runtime_privileges": [
+    {
+      "runtime_login": "talgov_staging_runtime",
+      "session_login": "talgov_staging_runtime",
+      "inherits_runtime": true,
+      "can_delete_content_links": false,
+      "can_read_content_links": false,
+      "can_insert_content_links": false,
+      "can_insert_content_title": true,
+      "can_insert_content_body": true,
+      "can_update_publication": true,
+      "can_insert_audit": true,
+      "can_mutate_audit": false
+    }
+  ],
+  "schema": [
+    {
+      "table_schema": "app",
+      "table_name": "content_asset_links",
+      "column_name": "content_id",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "content_asset_links",
+      "column_name": "asset_id",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "id",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "kind",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "legacy_id",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "slug",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "title",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "body",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "source_id",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "publication",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "published_at",
+      "is_nullable": "YES"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "deleted_at",
+      "is_nullable": "YES"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "version",
+      "is_nullable": "NO"
+    },
+    {
+      "table_schema": "app",
+      "table_name": "public_content",
+      "column_name": "updated_at",
+      "is_nullable": "NO"
+    }
+  ],
+  "constraints": [
+    {
+      "constraint": "public_content_body_check",
+      "definition": "CHECK (((jsonb_typeof(body) = 'object'::text) AND (octet_length((body)::text) <= 200000)))"
+    },
+    {
+      "constraint": "public_content_check",
+      "definition": "CHECK (((publication <> 'published'::text) OR ((published_at IS NOT NULL) AND (deleted_at IS NULL))))"
+    },
+    {
+      "constraint": "public_content_kind_check",
+      "definition": "CHECK ((kind = ANY (ARRAY['barangays'::text, 'departments'::text, 'officials'::text, 'news'::text, 'pages'::text, 'tourism_spots'::text, 'events'::text, 'navigation'::text, 'downloadables'::text, 'ordinances'::text, 'resolutions'::text, 'citizens_charter_cms'::text, 'services_cms'::text])))"
+    },
+    {
+      "constraint": "public_content_legacy_id_check",
+      "definition": "CHECK (((length(legacy_id) >= 1) AND (length(legacy_id) <= 300)))"
+    },
+    {
+      "constraint": "public_content_publication_check",
+      "definition": "CHECK ((publication = ANY (ARRAY['draft'::text, 'published'::text, 'archived'::text])))"
+    },
+    {
+      "constraint": "public_content_slug_check",
+      "definition": "CHECK ((slug ~ '^[a-z0-9][a-z0-9_-]{0,199}$'::text))"
+    },
+    {
+      "constraint": "public_content_title_check",
+      "definition": "CHECK (((length(btrim(title)) >= 1) AND (length(btrim(title)) <= 200)))"
+    },
+    {
+      "constraint": "public_content_version_check",
+      "definition": "CHECK ((version > 0))"
+    }
+  ],
+  "migration_history": [
+    {
+      "position": 1,
+      "file": "migrations/001_foundation.sql",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 2,
+      "file": "migrations/002_privileges.sql",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 3,
+      "file": "auth/001_provider.sql",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 4,
+      "file": "auth/002_staff_policy.sql",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 5,
+      "file": "media/001_media_policy.sql",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 6,
+      "file": "content/001_content_policy.sql",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    }
+  ],
+  "lock_inspection": {
+    "held_locks": 0,
+    "point_in_time_only": true
+  },
+  "vercel_log_access": {
+    "status": 403,
+    "error_code": "forbidden",
+    "operation": "read_staging_project",
+    "requested_team_matched": true
+  },
+  "conclusion": "The inspected staging runtime cannot read, insert or delete content_asset_links. POST authoring always deletes content links even for a post without files; local reproduction produces SQLSTATE 42501, sanitized HTTP 503 and confirmed rollback. Staging schema lacks the municipal 003 changes and direct-publication 004 changes. The exact captured Vercel failure and its timing remain uncorrelated without a request ID/runtime log and deployed database binding."
+}

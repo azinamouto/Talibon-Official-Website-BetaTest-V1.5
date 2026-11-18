@@ -8,12 +8,25 @@ import type { SqlSession } from './postgres';
 export type StaffMediaFilters = { kind?: string; q?: string; ready?: boolean; publication?: string; categoryId?: string };
 export type MediaPublication = { assetId: string; version: number };
 
-export async function publishAttachedMedia(tx: SqlSession, actor: StaffPrincipal, body: Record<string,any>, ids: string[], consent: MediaPublication[] | undefined, request: string) {
+export async function publishAttachedMedia(tx: SqlSession, actor: StaffPrincipal, body: Record<string,any>, ids: string[], consent: MediaPublication[] | undefined, request: string, direct=false) {
+  if (direct && consent===undefined) {
+    consent=(ids.length?await tx.query('SELECT id,version FROM app.media_assets WHERE id=ANY($1::uuid[]) ORDER BY id FOR UPDATE',[ids]):[])
+      .map(row=>({assetId:row.id,version:row.version}));
+  }
   if (consent===undefined) return;
   if (consent.length>50 || new Set(consent.map(item=>item.assetId)).size!==consent.length || consent.some(item=>!ids.includes(item.assetId) || !Number.isInteger(item.version) || item.version<1)) throw new CmsValidationError({attachments:'invalid'});
   // Lock all selected media in a stable order before changing any publication.
   const rows=consent.length?await tx.query('SELECT * FROM app.media_assets WHERE id=ANY($1::uuid[]) ORDER BY id FOR UPDATE',[consent.map(item=>item.assetId)]):[];
   if (rows.length!==consent.length) throw new CmsValidationError({attachments:'attachment_missing'});
+  if (direct) {
+    const files=rows.map(row=>{
+      if (row.version!==consent.find(item=>item.assetId===row.id)?.version) throw new DatabaseError('conflict');
+      if (row.deleted_at || row.processing!=='ready') throw new CmsValidationError({attachments:'attachment_missing'});
+      return {asset_id:row.id,version:row.version,alt_text:row.alt_text || body.attachments?.find((item:any)=>item.assetId===row.id)?.altText || ''};
+    });
+    if (files.length) await tx.query('SELECT app.publish_staff_media_bundle($1,$2,$3,$4,$5)',[actor.id,actor.subject,actor.sessionId,JSON.stringify(files),request]);
+    return;
+  }
   for (const row of rows) {
     if (row.version!==consent.find(item=>item.assetId===row.id)?.version) throw new DatabaseError('conflict');
     if (row.deleted_at || row.processing!=='ready') throw new CmsValidationError({attachments:'attachment_missing'});
@@ -63,20 +76,23 @@ export class MediaRepository extends PgRepositories {
         sources: await tx.query('SELECT id,reference,approved,reviewed_at FROM app.content_sources ORDER BY reference LIMIT 500') };
     });
   }
-  private async metadataRules(tx: SqlSession, categoryId: string, sourceId: string, kind: string, publishing = false) {
+  private async metadataRules(tx: SqlSession, categoryId: string, sourceId: string | null | undefined, kind: string, publishing = false) {
     const [category] = await tx.query('SELECT id,kind,approved FROM app.media_categories WHERE id=$1',[categoryId]);
     if (!category) throw new CmsValidationError({categoryId:'category_missing'});
     if (category.kind !== kind) throw new CmsValidationError({categoryId:'category_kind'});
-    const [source] = await tx.query('SELECT id,approved FROM app.content_sources WHERE id=$1',[sourceId]);
-    if (!source) throw new CmsValidationError({sourceId:'source_missing'});
+    const [source] = sourceId ? await tx.query('SELECT id,approved FROM app.content_sources WHERE id=$1',[sourceId]) : [];
+    if (sourceId && !source) throw new CmsValidationError({sourceId:'source_missing'});
     if (publishing && !category.approved) throw new CmsValidationError({categoryId:'category_unapproved'});
-    if (publishing && !source.approved) throw new CmsValidationError({sourceId:'source_unapproved'});
+    if (publishing && !source?.approved) throw new CmsValidationError({sourceId:'source_unapproved'});
     // Foreign keys and the publication trigger remain authoritative, including
     // concurrent approval changes. Do not grant runtime UPDATE just to lock choices.
   }
   reserve(actor: StaffPrincipal, input: MediaInput, filename: string, request: string) {
     return this.mediaDb.transaction(async tx => {
       await authorizeStaff(tx, actor);
+      const categoryId=input.categoryId || (await tx.query('SELECT id FROM app.media_categories WHERE slug=$1 AND kind=$2 AND approved',
+        [input.kind==='photo'?'website-photos':'website-documents',input.kind]))[0]?.id;
+      input={...input,categoryId,sourceId:input.sourceId ?? null};
       await this.metadataRules(tx,input.categoryId,input.sourceId,input.kind);
       const [created] = await tx.query(`INSERT INTO app.media_assets
         (kind,category_id,source_id,title,description,alt_text,object_key,mime,bytes,sha256,created_by,updated_by,original_filename)
@@ -111,16 +127,18 @@ export class MediaRepository extends PgRepositories {
       return row;
     });
   }
-  change(actor: StaffPrincipal, id: string, version: number, action: string, data: { title?: string; description?: string; altText?: string; categoryId?: string }, request: string) {
+  change(actor: StaffPrincipal, id: string, version: number, action: string, data: { title?: string; description?: string; altText?: string; categoryId?: string }, request: string, direct=false) {
     return this.mediaDb.transaction(async tx => {
       await authorizeStaff(tx, actor, action === 'delete');
       const [row] = await tx.query('SELECT * FROM app.media_assets WHERE id=$1 AND version=$2 AND deleted_at IS NULL FOR UPDATE', [id,version]);
       if (!row) throw new DatabaseError('conflict');
       if (action === 'edit' || action === 'publish') {
-        await this.metadataRules(tx, action === 'edit' ? data.categoryId : row.category_id, row.source_id, row.kind, row.publication === 'published' || action === 'publish');
+        await this.metadataRules(tx, action === 'edit' ? (data.categoryId ?? row.category_id) : row.category_id, row.source_id, row.kind,
+          !direct && (row.publication === 'published' || action === 'publish') && !row.published_by && !!row.source_id);
         if ((row.publication === 'published' || action === 'publish') && row.kind === 'photo' && !(data.altText ?? row.alt_text)?.trim()) throw new CmsValidationError({altText:'photo_alt'});
       }
-      if (action === 'edit') await tx.query('UPDATE app.media_assets SET title=$1,description=$2,alt_text=$3,category_id=$4 WHERE id=$5', [data.title,data.description,data.altText,data.categoryId,id]);
+      if (action==='publish' && (direct || !row.source_id || row.published_by)) return (await tx.query('SELECT * FROM app.publish_staff_media($1,$2,$3,$4,$5,$6,$7)',[actor.id,actor.subject,actor.sessionId,id,version,row.alt_text,request]))[0];
+      if (action === 'edit') await tx.query('UPDATE app.media_assets SET title=$1,description=$2,alt_text=$3,category_id=$4 WHERE id=$5', [data.title,data.description,data.altText,data.categoryId ?? row.category_id,id]);
       else if (action === 'delete') await tx.query("UPDATE app.media_assets SET publication='draft',published_at=NULL,deleted_at=now() WHERE id=$1", [id]);
       else await tx.query("UPDATE app.media_assets SET publication=$1,published_at=CASE WHEN $1='published' THEN now() ELSE NULL END WHERE id=$2", [action === 'publish' ? 'published' : 'draft',id]);
       const [updated] = await tx.query('UPDATE app.media_assets SET updated_by=$1,updated_at=now(),version=version+1 WHERE id=$2 RETURNING *', [actor.id,id]);

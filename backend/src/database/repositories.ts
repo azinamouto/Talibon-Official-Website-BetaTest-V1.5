@@ -4,7 +4,7 @@ import { DatabaseError, PostgresDatabase, SqlSession } from './postgres';
 // Never accept this object from a request body, JWT decode alone, or browser role claims.
 export interface VerifiedStaffIdentity { provider: string; subject: string; sessionVerified: true; assurance: 'mfa'; }
 export interface MediaInput {
-  kind: 'photo' | 'document'; categoryId: string; sourceId: string; title: string;
+  kind: 'photo' | 'document'; categoryId?: string; sourceId?: string | null; title: string;
   description: string; altText: string; objectKey: string; mime: string; bytes: number; sha256: string;
 }
 export interface PublicContentRepository { list(kind: string, limit?: number): Promise<Record<string, unknown>[]>; }

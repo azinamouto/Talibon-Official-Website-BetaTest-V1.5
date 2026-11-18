@@ -3,7 +3,7 @@ import { PDFDocument } from 'pdf-lib';
 const id='11111111-1111-4111-8111-111111111111';
 const category='22222222-2222-4222-8222-222222222222';
 const source='33333333-3333-4333-8333-333333333333';
-test('editor uploads, previews, edits and publishes a private photo on mobile and desktop', async ({page,context},info) => {
+test('editor publishes, previews and edits a photo with one action on mobile and desktop', async ({page,context},info) => {
   test.setTimeout(60000);
   await context.route('**/api/**', route => route.fulfill({status:404,json:{}}));
   await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
@@ -29,17 +29,21 @@ test('editor uploads, previews, edits and publishes a private photo on mobile an
   });
   await page.setViewportSize({width:375,height:812});await page.goto('/cms?tab=photos');
   await expect(page.getByRole('heading',{name:'Photos',exact:true})).toBeVisible();
+  await expect(page.getByLabel('File',{exact:true})).toBeEnabled();
   await page.getByLabel('File',{exact:true}).setInputFiles({name:'test.png',mimeType:'image/png',buffer:Buffer.from('synthetic-browser-upload')});
   await page.getByLabel('Title',{exact:true}).fill('Test photo');
-  await page.getByLabel('Alternative text').fill('Test image');await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record',{exact:true}).selectOption(source);
-  await page.getByRole('button',{name:'Upload private draft'}).click();await expect(page.getByRole('alert')).toBeVisible();
-  await page.getByRole('button',{name:'Upload private draft'}).click();await expect(page.getByRole('heading',{name:'Test photo'})).toBeVisible();expect(uploadIds[0]).toBe(uploadIds[1]);
+  await page.getByLabel('Photo description').fill('Test image');await expect(page.getByLabel('Category',{exact:true})).toHaveCount(0);await expect(page.getByLabel('Source record',{exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Publish',exact:true}).click();await expect(page.getByRole('alert')).toBeVisible();
+  await page.getByRole('button',{name:'Retry upload'}).click();await expect(page.getByRole('heading',{name:'Test photo'})).toBeVisible();expect(uploadIds[0]).toBe(uploadIds[1]);
+  await expect(page.getByText('Published successfully.')).toBeVisible();await expect(page.getByRole('button',{name:'Unpublish',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Preview',exact:true}).click();await expect(page.getByRole('img',{name:'Test photo'})).toBeVisible();
   await page.getByRole('button',{name:'Close preview'}).click();
-  await page.getByRole('button',{name:'Edit metadata',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Updated photo');await page.getByRole('button',{name:'Save metadata'}).click();
+  await page.getByRole('button',{name:'Edit file details',exact:true}).click();await page.getByLabel('Title',{exact:true}).fill('Updated photo');await page.getByRole('button',{name:'Save changes'}).click();
   await expect(page.getByRole('heading',{name:'Updated photo'})).toBeVisible();
-  await page.getByRole('button',{name:'Publish',exact:true}).click();await expect(page.getByRole('button',{name:'Unpublish',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Unpublish',exact:true}).click();await expect(page.getByRole('button',{name:'Publish',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Unpublish',exact:true}).click();
+  const file=page.getByRole('listitem').filter({has:page.getByRole('heading',{name:'Updated photo',exact:true})});
+  await file.getByRole('button',{name:'Publish',exact:true}).click();await expect(page.getByRole('button',{name:'Unpublish',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Unpublish',exact:true}).click();await expect(file.getByRole('button',{name:'Publish',exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Delete',exact:true})).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.evaluate(()=>window.scrollTo(0,0));
@@ -89,7 +93,7 @@ test('document viewing offers the validated PDF download without an embedded fra
   await page.getByRole('button',{name:'Close preview'}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toHaveCount(0);
 });
 
-test('staff uploads a PDF with progress and uses only the photo/document CMS',async({page,context})=>{
+test('staff publishes a PDF with progress and automatic defaults in the document library',async({page,context})=>{
   await context.route('**/api/**', route => route.fulfill({status:404,json:{}}));
   await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
   const pdf=await PDFDocument.create();pdf.addPage();const bytes=Buffer.from(await pdf.save());
@@ -107,6 +111,7 @@ test('staff uploads a PDF with progress and uses only the photo/document CMS',as
       asset={id,title:body.title,description:body.description,alt_text:'',category_id:category,source_id:source,kind:'document',mime:'application/pdf',bytes:bytes.length,processing:'ready',publication:'draft',version:2};
       return route.fulfill({json:asset});
     }
+    if(path.endsWith('/publish-direct')){asset={...asset,publication:'published',version:3};return route.fulfill({json:asset});}
     return route.fulfill({json:{data:asset?[asset]:[],hasMore:false}});
   });
   const textCmsRequests: string[]=[];
@@ -114,17 +119,19 @@ test('staff uploads a PDF with progress and uses only the photo/document CMS',as
   await page.goto('/cms?tab=documents');
   await expect(page.getByRole('heading',{name:'Documents',exact:true})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Public information'})).toHaveCount(0);
+  await expect(page.getByLabel('File',{exact:true})).toBeEnabled();
   await page.getByLabel('File',{exact:true}).setInputFiles({name:'synthetic.pdf',mimeType:'application/pdf',buffer:bytes});
   await page.getByLabel('Title',{exact:true}).fill('Synthetic PDF upload');
-  await page.getByLabel('Category',{exact:true}).selectOption(category);await page.getByLabel('Source record',{exact:true}).selectOption(source);
-  await page.getByRole('button',{name:'Upload private draft'}).click();
+  await expect(page.getByLabel('Category',{exact:true})).toHaveCount(0);await expect(page.getByLabel('Source record',{exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Publish',exact:true}).click();
   await expect(page.getByRole('progressbar',{name:'File upload progress'})).toBeVisible();
   await expect(page.getByRole('status').filter({hasText:/^Uploading and verifying file…(?: \d+% transferred)?$/})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Saving…',exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'Publish',exact:true})).toBeDisabled();
   releaseUpload!();
   await expect(page.getByRole('heading',{name:'Synthetic PDF upload'})).toBeVisible();
   await expect(page.getByRole('progressbar')).toHaveCount(0);
-  await expect(page.getByText('Media saved. New uploads remain private drafts.')).toBeVisible();
+  await expect(page.getByText('Published successfully.')).toBeVisible();
+  await expect(page.getByRole('link',{name:'View on website'})).toHaveAttribute('href','/downloads');
   await expect(page.getByRole('link',{name:'Download',exact:true})).toHaveAttribute('href',`/api/admin/media/${id}/download`);
   expect(textCmsRequests).toEqual([]);
 });

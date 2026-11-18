@@ -9,10 +9,10 @@ export function validateOfficials(input:unknown,field:'nodes'|'officials',legacy
   for(const [index,row] of rows.entries()) {
     const path=`${field}.${index}`;
     if(!row || typeof row!=='object' || Array.isArray(row))invalid(path);
-    const allowed=field==='nodes'?['id','name','role','office','reportsTo','photoAssetId','image_url']:['id','name','role','photoAssetId','image_url'];
+    const allowed=field==='nodes'?['id','name','role','office','reportsTo','photoAssetId','image_url']:['id','name','role','office','photoAssetId','image_url'];
     if(Object.keys(row).some(key=>!allowed.includes(key)))invalid(path,'unsupported');
     if(!uuid.test(row.id || ''))invalid(`${path}.id`);
-    for(const key of ['name','role',...(field==='nodes'?['office']:[])]) {
+    for(const key of ['name','role',...(field==='nodes' || row.office!==undefined?['office']:[])]) {
       if(typeof row[key]!=='string' || row[key].length>200 || (key!=='office' && !row[key].trim()) || /[\x00-\x1f]/.test(row[key]))invalid(`${path}.${key}`);
     }
     if(row.photoAssetId!==undefined && !uuid.test(row.photoAssetId))invalid(`${path}.photoAssetId`);

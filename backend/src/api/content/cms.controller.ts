@@ -1,8 +1,8 @@
-import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Header, Inject, Param, ParseUUIDPipe, Post, Query, Req } from '@nestjs/common';
 import { StaffRoles } from '../../authentication/staff.guard';
 import { ContentService } from './content.service';
-import { CmsContentDto, CmsUpdateDto, CmsPublishUpdateDto, ContentPublishDto, ContentSourceDto, ContentVersionDto, ListContentDto } from './content.dto';
+import { CmsContentDto, CmsDirectPublishDto, CmsUpdateDto, CmsPublishUpdateDto, ContentPublishDto, ContentSourceDto, ContentVersionDto, ListContentDto } from './content.dto';
 import { StaffRequest, contentMutation } from './staff-request';
 import { ContentErrors } from './content.openapi';
 @ApiTags('Information CMS') @ApiCookieAuth('staffCookie')
@@ -24,7 +24,12 @@ export class CmsContentController {
     return this.content.manage(kind,{page:1,limit:1},req.staff,id);
   }
   @Get(':kind') @Header('Cache-Control','private, no-store') list(@Req() req: StaffRequest,@Param('kind') kind: string,@Query() query: ListContentDto) {
-    return this.content.manage(kind,query,req.staff);
+    return this.content.manage(kind,query,req.staff,undefined,req.requestId);
+  }
+  @Post(':kind/publish') @ApiOperation({ summary: 'Create and publish municipal content and verified attachments in one transaction' })
+  publishNew(@Req() req: StaffRequest,@Param('kind') kind: string,@Body() body: CmsDirectPublishDto) {
+    contentMutation(req); const {submissionId,media,...input}=body;
+    return this.content.publish(kind,input,req.staff,req.requestId,submissionId,media);
   }
   @Post(':kind') create(@Req() req: StaffRequest,@Param('kind') kind: string,@Body() body: CmsContentDto) {
     contentMutation(req); return this.content.save(kind,body,req.staff,req.requestId);
@@ -36,7 +41,7 @@ export class CmsContentController {
     contentMutation(req); return this.content.remove(kind,id,body.version,req.staff,req.requestId);
   }
   @Post(':kind/:id/update') update(@Req() req: StaffRequest,@Param('kind') kind: string,@Param('id',ParseUUIDPipe) id: string,@Body() body: CmsPublishUpdateDto) {
-    contentMutation(req);const {media,...input}=body;return this.content.updatePublished(kind,id,input,req.staff,req.requestId,media);
+    contentMutation(req);const {media,submissionId,...input}=body;return this.content.updatePublished(kind,id,input,req.staff,req.requestId,media,submissionId);
   }
   @Post(':kind/:id/publish') publish(@Req() req: StaffRequest,@Param('kind') kind: string,@Param('id',ParseUUIDPipe) id: string,@Body() body: ContentPublishDto) {
     contentMutation(req); return this.content.change(kind,id,body.version,'publish',req.staff,req.requestId,body.media);

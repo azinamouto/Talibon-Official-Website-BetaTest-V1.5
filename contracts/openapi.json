@@ -899,6 +899,133 @@
         ]
       }
     },
+    "/api/admin/content/{kind}/publish": {
+      "post": {
+        "operationId": "CmsContentController_publishNew_1",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CmsDirectPublishDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid body, query, UUID or department reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid or ended session."
+          },
+          "403": {
+            "description": "Requires an active admin/editor session with MFA; deletion requires fresh administrator MFA."
+          },
+          "404": {
+            "description": "Missing, deleted or non-public content."
+          },
+          "409": {
+            "description": "Slug already exists, including soft-deleted records."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "503": {
+            "description": "Database unavailable."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "summary": "Create and publish municipal content and verified attachments in one transaction",
+        "tags": [
+          "Information CMS"
+        ]
+      }
+    },
     "/api/admin/content/{kind}/{id}/edit": {
       "post": {
         "operationId": "CmsContentController_edit_1",
@@ -2383,7 +2510,8 @@
                           },
                           "source_id": {
                             "type": "string",
-                            "format": "uuid"
+                            "format": "uuid",
+                            "nullable": true
                           },
                           "mime": {
                             "type": "string"
@@ -2696,7 +2824,8 @@
                     },
                     "source_id": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "nullable": true
                     },
                     "mime": {
                       "type": "string"
@@ -2897,7 +3026,8 @@
                     },
                     "source_id": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "nullable": true
                     },
                     "mime": {
                       "type": "string"
@@ -3274,6 +3404,133 @@
             "staffCookie": []
           }
         ],
+        "tags": [
+          "Media CMS"
+        ]
+      }
+    },
+    "/api/admin/media/{id}/publish-direct": {
+      "post": {
+        "operationId": "MediaController_publishDirect_1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Version",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1"
+              ],
+              "default": "1"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid file, metadata or unapproved publication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "requestId": {
+                      "type": "string"
+                    },
+                    "fieldErrors": {
+                      "type": "object",
+                      "maxProperties": 50,
+                      "description": "Bounded field paths mapped to safe validation codes; input values and provider diagnostics are never included.",
+                      "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                          "required",
+                          "uuid",
+                          "length",
+                          "invalid",
+                          "unsupported",
+                          "filename",
+                          "file_type",
+                          "file_size",
+                          "file_content",
+                          "base64",
+                          "category_kind",
+                          "category_missing",
+                          "source_missing",
+                          "source_unapproved",
+                          "category_unapproved",
+                          "photo_alt",
+                          "attachment_missing",
+                          "attachment_private",
+                          "featured_photo",
+                          "gallery_photo",
+                          "document_required",
+                          "gallery_required",
+                          "date",
+                          "slug",
+                          "chart",
+                          "body"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Live staff session and MFA required."
+          },
+          "403": {
+            "description": "Role, same-origin JSON or fresh administrator MFA required."
+          },
+          "404": {
+            "description": "Ready accessible media not found."
+          },
+          "409": {
+            "description": "Version or upload identity conflict; refresh and retry."
+          },
+          "429": {
+            "description": "Upload attempt limit reached."
+          },
+          "503": {
+            "description": "Storage/database operation unconfirmed; safe retry allowed."
+          }
+        },
+        "security": [
+          {
+            "staffCookie": []
+          }
+        ],
+        "summary": "Publish a verified file using the staff session and MFA, with optional supporting evidence",
         "tags": [
           "Media CMS"
         ]
@@ -9780,6 +10037,59 @@
         "type": "object",
         "properties": {}
       },
+      "AttachedMediaVersionDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "assetId",
+          "version"
+        ]
+      },
+      "CmsDirectPublishDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Generated from the title when omitted; existing addresses are retained on edit."
+          },
+          "sourceId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional supporting evidence. Null detaches the association while retaining the evidence record."
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "submissionId": {
+            "type": "string",
+            "description": "Generate once per submission and reuse unchanged after an uncertain response."
+          },
+          "media": {
+            "description": "Selected attachment versions. Omit to publish the currently locked, verified attachments.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttachedMediaVersionDto"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "body",
+          "submissionId"
+        ]
+      },
       "CmsContentDto": {
         "type": "object",
         "properties": {
@@ -9791,7 +10101,9 @@
             "description": "Generated from the title when omitted; existing addresses are retained on edit."
           },
           "sourceId": {
-            "type": "string"
+            "type": "string",
+            "nullable": true,
+            "description": "Optional supporting evidence. Null detaches the association while retaining the evidence record."
           },
           "body": {
             "type": "object",
@@ -9807,7 +10119,6 @@
         },
         "required": [
           "title",
-          "sourceId",
           "body"
         ]
       },
@@ -9822,7 +10133,9 @@
             "description": "Generated from the title when omitted; existing addresses are retained on edit."
           },
           "sourceId": {
-            "type": "string"
+            "type": "string",
+            "nullable": true,
+            "description": "Optional supporting evidence. Null detaches the association while retaining the evidence record."
           },
           "body": {
             "type": "object",
@@ -9856,22 +10169,6 @@
           "version"
         ]
       },
-      "AttachedMediaVersionDto": {
-        "type": "object",
-        "properties": {
-          "assetId": {
-            "type": "string"
-          },
-          "version": {
-            "type": "number",
-            "minimum": 1
-          }
-        },
-        "required": [
-          "assetId",
-          "version"
-        ]
-      },
       "CmsPublishUpdateDto": {
         "type": "object",
         "properties": {
@@ -9883,7 +10180,9 @@
             "description": "Generated from the title when omitted; existing addresses are retained on edit."
           },
           "sourceId": {
-            "type": "string"
+            "type": "string",
+            "nullable": true,
+            "description": "Optional supporting evidence. Null detaches the association while retaining the evidence record."
           },
           "body": {
             "type": "object",
@@ -9899,6 +10198,10 @@
           "version": {
             "type": "number",
             "minimum": 1
+          },
+          "submissionId": {
+            "type": "string",
+            "description": "Stable submission UUID for safe direct-publication retries."
           },
           "media": {
             "type": "array",
@@ -9943,13 +10246,15 @@
             "type": "string"
           },
           "categoryId": {
-            "type": "string"
+            "type": "string",
+            "description": "Defaults to Website photos or Website documents according to the verified file type."
           },
           "uploadId": {
             "type": "string"
           },
           "sourceId": {
-            "type": "string"
+            "type": "string",
+            "description": "Optional supporting evidence; new uploads stay private until authorized publication."
           },
           "filename": {
             "type": "string"
@@ -9966,9 +10271,7 @@
           "title",
           "description",
           "altText",
-          "categoryId",
           "uploadId",
-          "sourceId",
           "filename",
           "mime",
           "base64"
@@ -9987,7 +10290,8 @@
             "type": "string"
           },
           "categoryId": {
-            "type": "string"
+            "type": "string",
+            "description": "Defaults to Website photos or Website documents according to the verified file type."
           },
           "version": {
             "type": "number"
@@ -9997,7 +10301,6 @@
           "title",
           "description",
           "altText",
-          "categoryId",
           "version"
         ]
       },

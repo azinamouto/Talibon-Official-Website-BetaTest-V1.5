@@ -3,8 +3,8 @@ import type { Asset } from '../components/admin/AdminMedia';
 export const MAX_MEDIA_BYTES = 2 * 1024 * 1024;
 export const mediaTypes: Record<string,string> = {jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',pdf:'application/pdf'};
 export type MediaKind = 'photo'|'document';
-export type UploadProgress = { stage:'reading'|'uploading'|'verifying'; percent?:number };
-export type UploadMetadata = {title:string;description:string;altText:string;categoryId:string;sourceId:string;filename:string};
+export type UploadProgress = { stage:'reading'|'uploading'|'verifying'|'publishing'; percent?:number };
+export type UploadMetadata = {title:string;description:string;altText:string;categoryId?:string;sourceId?:string;filename:string};
 export function fileMime(file: File) { return file.type || mediaTypes[file.name.split('.').pop()!.toLowerCase()] || ''; }
 export function fileKind(file: File): MediaKind { return fileMime(file) === 'application/pdf' ? 'document' : 'photo'; }
 export function simpleFilename(name: string) {
@@ -49,7 +49,7 @@ export async function uploadPrivateMedia(file: File, metadata: UploadMetadata, u
       let body: unknown; try { body = JSON.parse(request.responseText); } catch { reject(new StaffRequestError(503)); return; }
       if (request.status < 200 || request.status >= 300) { reject(staffResponseError(request.status,body)); return; }
       const asset = body as Asset;
-      if (!asset || typeof asset.id !== 'string' || asset.processing !== 'ready' || asset.publication !== 'draft') { reject(new StaffRequestError(503)); return; }
+      if (!asset || typeof asset.id !== 'string' || asset.processing !== 'ready' || !['draft','published'].includes(asset.publication)) { reject(new StaffRequestError(503)); return; }
       resolve(asset);
     };
     progress({stage:'uploading',percent:0});

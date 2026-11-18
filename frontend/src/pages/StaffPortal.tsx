@@ -25,13 +25,14 @@ const contentModules = [
   { id: 'events', label: 'Events & Festivals', icon: CalendarDays },
   { id: 'transparency', label: 'Transparency', icon: Landmark },
   { id: 'government', label: 'Local Government', icon: Building2 },
+  { id: 'chart', label: 'Organizational Chart', icon: Users },
   { id: 'galleries', label: 'Galleries', icon: Camera },
   { id: 'downloadables', label: 'Downloadables', icon: FileText },
   { id: 'photos', label: 'Photos', icon: Image },
   { id: 'documents', label: 'Documents', icon: FileText },
 ] as const;
 const administrationModules = [
-  { id: 'sources', label: 'Source approvals', icon: ShieldCheck },
+  { id: 'sources', label: 'Supporting evidence', icon: ShieldCheck },
   { id: 'staff', label: 'Staff management', icon: Users },
   { id: 'audit', label: 'Audit logs', icon: Activity },
 ] as const;
@@ -54,7 +55,7 @@ export default function StaffPortal() {
   const [signingOut, setSigningOut] = useState(false);
   const [reload, setReload] = useState(0);
   const [editorState,setEditorState]=useState<EditorState>({dirty:false,busy:false});
-  const {requestDiscard,dialog}=useCmsEditor(editorState.dirty,editorState.busy);
+  const {requestDiscard,dialog}=useCmsEditor(editorState.dirty,editorState.busy,undefined,editorState.uncertain);
   const dataRouter=useContext(UNSAFE_DataRouterContext);
   const modules = staff?.role === 'admin' ? [...contentModules, ...administrationModules] : [...contentModules];
   const requestedTab = searchParams.get('tab') || 'overview';
@@ -101,7 +102,7 @@ export default function StaffPortal() {
   }
   async function exit() {
     setSigningOut(true);
-    try { await signOut(); } catch { setMessage('Could not confirm sign out. Please retry.');setEditorState({dirty:editorState.dirty,busy:false}); }
+    try { await signOut(); } catch { setMessage('Could not confirm sign out. Please retry.');setEditorState({...editorState,busy:false}); }
     finally { setSigningOut(false); }
   }
   const navigation = (items: typeof contentModules | typeof administrationModules) => items.map(({ id, label, icon: Icon }) => <button
@@ -127,12 +128,12 @@ export default function StaffPortal() {
         <nav id="cms-navigation" aria-label="CMS navigation"><p className={styles.navGroup + ' ' + styles.navLabel}>Content library</p><div className={styles.navItems}>{navigation(contentModules)}</div>
           {staff.role === 'admin' && <div className={styles.adminNavigation}><p className={styles.navGroup + ' ' + styles.navLabel}>Administration</p><div className={styles.navItems}>{navigation(administrationModules)}</div></div>}
         </nav>
-        <div className={styles.sidebarNote}><ShieldCheck size={18} aria-hidden="true" /><p className={styles.navLabel}>Official municipal content.<br />Reviewed before publication.</p></div>
+        <div className={styles.sidebarNote}><ShieldCheck size={18} aria-hidden="true" /><p className={styles.navLabel}>Official municipal content.<br />Published by authorized staff.</p></div>
       </aside>
       <div className={styles.panel}>
         {message && <p role="status" className={styles.notice}>{message}</p>}
         {activeTab === 'overview' && <MunicipalDashboard openModule={openModule} />}
-        {(['news','tourism','events','transparency','government','galleries','downloadables'] as string[]).includes(activeTab) && <AdminContent key={activeTab} role={staff.role} group={activeTab as MunicipalGroup} onEditorStateChange={setEditorState} />}
+        {(['news','tourism','events','transparency','government','chart','galleries','downloadables'] as string[]).includes(activeTab) && <AdminContent key={activeTab} role={staff.role} group={activeTab as MunicipalGroup} onEditorStateChange={setEditorState} />}
         {staff.role === 'admin' && activeTab === 'sources' && <AdminSources onEditorStateChange={setEditorState} />}
         {(activeTab === 'photos' || activeTab === 'documents') && <AdminMedia key={activeTab} role={staff.role} kind={activeTab === 'photos' ? 'photo' : 'document'} onEditorStateChange={setEditorState} />}
         {staff.role === 'admin' && (activeTab === 'staff' || activeTab === 'audit') && <>
@@ -163,7 +164,7 @@ export default function StaffPortal() {
         </>}
       </div>
     </div>
-    {dataRouter && <CmsRouteGuard dirty={editorState.dirty} busy={editorState.busy} />}
+    {dataRouter && <CmsRouteGuard dirty={editorState.dirty} busy={editorState.busy} uncertain={editorState.uncertain} />}
     {dialog}
   </main>;
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, HttpException, Inject, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, Inject, Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { PublicContentService } from '../../database/public-content.service';
 import { ListContentDto } from './content.dto';
 import { ContentInput, ContentRepository } from '../../database/content.repository';
@@ -10,6 +10,7 @@ import { MEDIA_CMS_ONLY_MESSAGE } from '../../security/deferred-routes.middlewar
 import { CmsValidationError } from '../../database/cms-validation';
 import { CmsInputError } from '../../security/cms-validation';
 import type { MediaPublication } from '../../database/media.repository';
+import { emitFailure, type FailureOperation } from '../../security/failure-diagnostics';
 export const CONTENT = {
   pages: { table: 'pages', title: 'title', visible: 'published', fields: 'id,title,slug,content,status,created_at,updated_at' },
   news: { table: 'news', title: 'title', visible: 'published', fields: 'id,title,slug,summary,content,category,date,image_url,file_url,author,status,created_at,updated_at' },
@@ -23,8 +24,10 @@ export class ContentService {
   constructor(@Inject(PublicContentService) private readonly content: PublicContentService) {}
   private database: PostgresDatabase;
   private repository: ContentRepository;
+  private readonly logger=new Logger('ContentDiagnostics');
   configure(repository: ContentRepository) { this.repository = repository; }
-  private async run<T>(work: (repo: ContentRepository) => Promise<T>): Promise<T> {
+  private async run<T>(work: (repo: ContentRepository) => Promise<T>,operation: FailureOperation='content_save',request?: string,kind?: string): Promise<T> {
+    const started=performance.now();
     try {
       if (!this.repository) {
         this.database=new PostgresDatabase(runtimeConnectionConfig(process.env.DATABASE_URL));
@@ -34,10 +37,11 @@ export class ContentService {
     } catch (error) {
       if (error instanceof HttpException) throw error;
       if (error instanceof CmsValidationError) throw new CmsInputError(error.fields);
+      emitFailure(error,{component:'content',operation,route:kind==='news'?'admin_content_news':'admin_content',request_id:request,elapsed_ms:performance.now()-started},this.logger);
       if (error instanceof DatabaseError) {
-        if (error.code==='conflict') throw new ConflictException('Content changed or is not a draft. Refresh before retrying.');
+        if (error.code==='conflict') throw new ConflictException('Content or attachments changed. Refresh before retrying.');
         if (error.code==='forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');
-        if (error.code==='invalid') throw new BadRequestException('Check metadata, source approval and published attachments.');
+        if (error.code==='invalid') throw new BadRequestException('Check the content and selected attachments.');
       }
       throw new ServiceUnavailableException('Content operation could not be confirmed. Refresh before retrying.');
     }
@@ -47,16 +51,19 @@ export class ContentService {
     if (!(MUNICIPAL_KINDS as readonly string[]).includes(table)) throw new GoneException(MEDIA_CMS_ONLY_MESSAGE);
     return table;
   }
-  manage(kind: string, query: ListContentDto, actor: StaffPrincipal, id?: string) {
+  manage(kind: string, query: ListContentDto, actor: StaffPrincipal, id?: string,request?: string) {
     const table=this.kind(kind);
-    return this.run(repo=>repo.list(actor,table,query.page,query.limit,id,query));
+    return this.run(repo=>repo.list(actor,table,query.page,query.limit,id,query),'content_list',request,table);
   }
   save(kind: string, input: Partial<ContentInput>, actor: StaffPrincipal, request: string, id?: string) {
     const table=this.kind(kind);
-    return this.run(repo=>repo.save(actor,table,input,request,id));
+    return this.run(repo=>repo.save(actor,table,input,request,id),'content_save',request,table);
   }
-  updatePublished(kind: string,id: string,input: Partial<ContentInput>,actor: StaffPrincipal,request: string,media?: MediaPublication[]) {
-    const table=this.kind(kind);return this.run(repo=>repo.save(actor,table,input,request,id,true,media));
+  publish(kind: string,input: Partial<ContentInput>,actor: StaffPrincipal,request: string,submissionId: string,media?: MediaPublication[]) {
+    const table=this.kind(kind);return this.run(repo=>repo.publishDirect(actor,table,input,request,submissionId,undefined,media),'content_publish',request,table);
+  }
+  updatePublished(kind: string,id: string,input: Partial<ContentInput>,actor: StaffPrincipal,request: string,media?: MediaPublication[],submissionId?: string) {
+    const table=this.kind(kind);return this.run(repo=>submissionId?repo.publishDirect(actor,table,input,request,submissionId,id,media):repo.save(actor,table,input,request,id,true,media),'content_publish',request,table);
   }
   dashboard(actor: StaffPrincipal) { return this.run(repo=>repo.dashboard(actor)); }
   sources(actor: StaffPrincipal) { return this.run(repo=>repo.sources(actor)); }

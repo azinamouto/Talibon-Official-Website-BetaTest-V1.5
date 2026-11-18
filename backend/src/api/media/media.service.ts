@@ -44,7 +44,7 @@ export class MediaService {
       if (error instanceof DatabaseError) {
         if (error.code === 'conflict') throw new ConflictException('Media changed; refresh before retrying.');
         if (error.code === 'forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');
-        if (error.code === 'invalid') throw new BadRequestException('Check metadata, category, source approval and publication requirements.');
+        if (error.code === 'invalid') throw new BadRequestException('Check the file details and publication requirements.');
       }
       throw new ServiceUnavailableException('Media operation could not be confirmed. Retry safely.');
     }
@@ -74,14 +74,14 @@ export class MediaService {
     if (checksum(await store.read(row.object_key)) !== file.sha256) throw new Error('Checksum mismatch');
     return mediaView(await repo.ready(actor,row.id,request),actor);
   }); }
-  change(actor: StaffPrincipal, id: string, version: number, action: string, input: EditDto | Record<string, never>, request: string) {
+  change(actor: StaffPrincipal, id: string, version: number, action: string, input: EditDto | Record<string, never>, request: string, direct=false) {
     return this.run(async (repo,store) => {
       if (action === 'publish') {
         await store.verifyPrivate();
         const row = await repo.get(id,actor); if (!row) throw new NotFoundException();
         if (checksum(await store.read(row.object_key)) !== row.sha256) throw new Error('Checksum mismatch');
       }
-      return mediaView(await repo.change(actor,id,version,action,input,request),actor);
+      return mediaView(await repo.change(actor,id,version,action,input,request,direct),actor);
     });
   }
   download(id: string, actor?: StaffPrincipal) { return this.run(async (repo,store) => {

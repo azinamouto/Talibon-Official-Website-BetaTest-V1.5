@@ -4,8 +4,8 @@ import { randomUUID } from 'node:crypto';
 const PHASES = ['configuration', 'ip_validation', 'connect', 'tls', 'channel_binding', 'runtime_role', 'transaction_setup', 'work', 'query', 'commit', 'response'] as const;
 const REASONS = ['ip_missing', 'ip_non_string', 'ip_ambiguous', 'ip_invalid', 'invalid_configuration', 'connection_failure', 'connection_timeout', 'tls_failure', 'channel_binding_rejected', 'database_authentication_failed', 'runtime_role_guard_rejected', 'permission_denied', 'relation_missing', 'column_missing', 'query_timeout', 'query_cancelled', 'lock_unavailable', 'transaction_timeout', 'idle_transaction_timeout', 'database_conflict', 'invalid_database_input', 'unexpected_exception'] as const;
 const OUTCOMES = ['not_started', 'rollback_confirmed', 'commit_confirmed', 'unknown'] as const;
-const OPERATIONS = ['ip_validation', 'configuration', 'throttle_cleanup', 'throttle_upsert', 'throttle_result', 'audit_insert', 'unexpected'] as const;
-const ROUTES = ['liveness', 'readiness', 'news', 'pages', 'services', 'about_profile', 'other'] as const;
+const OPERATIONS = ['ip_validation', 'configuration', 'throttle_cleanup', 'throttle_upsert', 'throttle_result', 'audit_insert', 'content_list', 'content_save', 'content_publish', 'unexpected'] as const;
+const ROUTES = ['liveness', 'readiness', 'news', 'pages', 'services', 'about_profile', 'admin_content_news', 'admin_content', 'other'] as const;
 const TLS_CODES = ['CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'SELF_SIGNED_CERT_IN_CHAIN', 'UNABLE_TO_GET_ISSUER_CERT', 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'ERR_TLS_CERT_ALTNAME_INVALID'] as const;
 const CONNECTION_CODES = ['08000', '08001', '08003', '08004', '08006', '08007', '08P01', 'ECONNREFUSED', 'ECONNRESET', 'ENOTFOUND', 'EHOSTUNREACH', 'ENETUNREACH', 'EPIPE', 'ETIMEDOUT'] as const;
 const CODES = new Set<string>([...TLS_CODES, ...CONNECTION_CODES, '28P01', '28000', '42501', '42P01', '42703', '57014', '55P03', '25P03', '25P04', '53300', '23505', '40001', '40P01', '23001', '23502', '23503', '23514', '22P02', '22001']);
@@ -39,7 +39,7 @@ export interface FailureMetadata {
   runtime_role?: Readonly<RuntimeRoleSnapshot>;
 }
 export interface FailureContext {
-  component: 'rate_limiter' | 'audit';
+  component: 'rate_limiter' | 'audit' | 'content';
   operation: FailureOperation;
   route?: DiagnosticRoute;
   request_id?: string;
@@ -176,6 +176,8 @@ export function classifyFailure(error: unknown, phase: FailurePhase = 'work'): R
 }
 
 export function diagnosticRoute(path: unknown): DiagnosticRoute {
+  if (typeof path==='string' && /^\/api\/admin\/content\/news(?:\/|$)/.test(path)) return 'admin_content_news';
+  if (typeof path==='string' && path.startsWith('/api/admin/content/')) return 'admin_content';
   switch (path) {
     case '/api/health': return 'liveness';
     case '/api/health/ready': return 'readiness';
@@ -199,7 +201,7 @@ export function emitFailure(error: unknown, context: FailureContext, logger: Pic
     const outcome = details.transaction_outcome ?? scalar(context, 'transaction_outcome');
     logger.warn(JSON.stringify({
       event: 'runtime_dependency_failure',
-      component: scalar(context, 'component') === 'audit' ? 'audit' : 'rate_limiter',
+      component: scalar(context, 'component') === 'audit' ? 'audit' : scalar(context, 'component') === 'content' ? 'content' : 'rate_limiter',
       operation: member(OPERATIONS, operation) ? operation : 'unexpected',
       route: member(ROUTES, route) ? route : 'other',
       phase: details.phase, reason: details.reason,

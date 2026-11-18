@@ -39,7 +39,7 @@ export function ReviewedSelect({label,value,onChange,choices,disabled,error,allo
   </div>;
 }
 export function ErrorNotice({message,fields={}}:{message:string;fields?:Record<string,string>}) {
-  const labels:Record<string,string>={sourceId:'Official material',categoryId:'File category',featuredAssetId:'Featured photo'};
+  const labels:Record<string,string>={sourceId:'Supporting evidence',categoryId:'File category',featuredAssetId:'Cover photo',submissionId:'Publication'};
   const label=(field:string)=>labels[field] || field.replace(/^(?:nodes|officials)\.(\d+)\./,(_,index)=>`Official ${Number(index)+1} `).replace(/photoAssetId$/,'photo').replace(/^attachments\.(\d+)\./,(_,index)=>`Attachment ${Number(index)+1} `).replace(/^mayor\./,'Executive leader ').replace(/^level2\.(\d+)\./,(_,index)=>`Second level ${Number(index)+1} `).replace(/^departments\.(\d+)\./,(_,index)=>`Department ${Number(index)+1} `).replace(/([a-z])([A-Z])/g,'$1 $2').replace(/_/g,' ');
   return <div role="alert" className={styles.error}><p>{message}</p>{!!Object.keys(fields).length && <ul>{Object.entries(fields).map(([field,text])=><li key={field}><strong>{label(field)}: </strong>{text}</li>)}</ul>}</div>;
 }
@@ -53,9 +53,9 @@ export function CmsSkeleton({label,rows=3,variant='rows'}:{label:string;rows?:nu
   </div>;
 }
 export function UploadIndicator({progress}:{progress:UploadProgress}) {
-  return <div className={styles.progress} aria-busy="true"><p role="status">{progress.stage==='reading'?'Reading file…':'Uploading and verifying file…'}{progress.stage==='uploading' && progress.percent!==undefined?` ${progress.percent}% transferred`:''}</p>
-    <progress aria-label="File upload progress" max={100} value={progress.stage==='verifying'?undefined:progress.percent} />
-    {progress.stage==='verifying' && <p className={styles.hint}>Transfer complete. Verifying the file and saving its private draft.</p>}
+  return <div className={styles.progress} aria-busy="true"><p role="status">{progress.stage==='reading'?'Reading file…':progress.stage==='publishing'?'Publishing file…':'Uploading and verifying file…'}{progress.stage==='uploading' && progress.percent!==undefined?` ${progress.percent}% transferred`:''}</p>
+    <progress aria-label="File upload progress" max={100} value={['verifying','publishing'].includes(progress.stage)?undefined:progress.percent} />
+    {progress.stage==='verifying' && <p className={styles.hint}>Transfer complete. Checking and saving the file.</p>}
   </div>;
 }
 export function FileDropzone({onFiles,disabled,kind,multiple=false,label='File',inputKey=0}:{onFiles(files:File[]):void;disabled?:boolean;kind?:MediaKind;multiple?:boolean;label?:string;inputKey?:number}) {

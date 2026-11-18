@@ -13,7 +13,7 @@ interface Department {
   serviceLink?: string;
   address?:string;
   email?:string;
-  officials?:{id:string;name:string;role:string;image_url?:string}[];
+  officials?:{id:string;name:string;role:string;office?:string;image_url?:string}[];
 }
 
 interface DepartmentsViewProps {
@@ -90,7 +90,7 @@ export default function DepartmentsView({ data }: DepartmentsViewProps) {
 
                     {dept.address && <p className="text-sm py-2">{dept.address}</p>}
                     {dept.email && <p className="text-sm py-2">{dept.email}</p>}
-                    {dept.officials?.map(official=><div key={official.id} className="flex gap-3 py-2 text-sm">{official.image_url && <img src={official.image_url} alt={`${official.name} portrait`} className="w-12 h-12 object-cover"/>}<div><p>{official.name}</p><p>{official.role}</p></div></div>)}
+                    {dept.officials?.map(official=><div key={official.id} className="flex gap-3 py-2 text-sm">{official.image_url && <img src={official.image_url} alt={`${official.name} portrait`} className="w-12 h-12 object-cover"/>}<div><p>{official.name}</p><p>{official.role}</p>{official.office && <p>{official.office}</p>}</div></div>)}
                     <a 
                       href={dept.serviceLink || "/about/services"}
                       className="w-full flex items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-wider px-3 py-2 bg-gray-50 hover:bg-brand-text hover:text-white rounded-lg transition-all border border-brand-border/40"

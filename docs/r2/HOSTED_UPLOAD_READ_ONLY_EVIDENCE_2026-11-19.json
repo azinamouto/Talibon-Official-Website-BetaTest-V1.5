@@ -1,0 +1,777 @@
+{
+  "scope": "Read-only metadata/catalog/privilege and aggregate queries on the explicitly pinned staging branch, existing Neon Storage log reads, and one GET each to liveness/readiness. No hosted upload retry, application write, migration, grant, environment change, credential change, merge or deployment.",
+  "report_date_local": "2026-11-19",
+  "timezone": "Asia/Shanghai (UTC+08:00)",
+  "source_base": "8e32c388b9b1f33bf9084e367c5d405f133b67a0",
+  "source_code_commit": "60e307161fa94fb31a3485a22aae595eb822c500",
+  "target": {
+    "project": "misty-silence-69777617",
+    "branch": "br-steep-sea-ao0qw05a",
+    "branch_name": "staging-talgov-r2",
+    "database": "neondb",
+    "endpoint_id": "ep-sparkling-bird-ao5precf",
+    "runtime_role": "talgov_staging_runtime",
+    "runtime_group": "talgov_runtime",
+    "migration_login": "talgov_staging_migrator"
+  },
+  "existing_failed_upload": {
+    "method": "POST",
+    "path": "/api/admin/media/uploads",
+    "host": "talgov-r2-staging.vercel.app",
+    "reported_status": 503,
+    "reported_type": "image/png",
+    "reported_size": "approximately 937 KB",
+    "response_request_id": null,
+    "timestamp": null,
+    "vercel_runtime_entry": null,
+    "correlation": "unverified",
+    "deployed_database_and_storage_bindings": "unverified"
+  },
+  "database_state": {
+    "observed_at": "2026-11-18T20:41:38.917Z",
+    "database_name": "neondb",
+    "inspecting_role": "neondb_owner",
+    "categories": [
+      {
+        "kind": "document",
+        "slug": "r2-qualification",
+        "approved": false
+      }
+    ],
+    "table_privileges": [
+      {
+        "table": "app.audit_events",
+        "delete": false,
+        "insert": true,
+        "select": true,
+        "update": false,
+        "present": true
+      },
+      {
+        "table": "app.content_asset_links",
+        "delete": false,
+        "insert": false,
+        "select": false,
+        "update": false,
+        "present": true
+      },
+      {
+        "table": "app.content_publication_receipts",
+        "delete": false,
+        "insert": false,
+        "select": false,
+        "update": false,
+        "present": false
+      },
+      {
+        "table": "app.content_sources",
+        "delete": false,
+        "insert": false,
+        "select": true,
+        "update": false,
+        "present": true
+      },
+      {
+        "table": "app.media_assets",
+        "delete": false,
+        "insert": false,
+        "select": true,
+        "update": false,
+        "present": true
+      },
+      {
+        "table": "app.media_categories",
+        "delete": false,
+        "insert": false,
+        "select": true,
+        "update": false,
+        "present": true
+      },
+      {
+        "table": "app.media_revisions",
+        "delete": false,
+        "insert": true,
+        "select": false,
+        "update": false,
+        "present": true
+      },
+      {
+        "table": "app.media_throttle",
+        "delete": false,
+        "insert": true,
+        "select": true,
+        "update": true,
+        "present": true
+      },
+      {
+        "table": "app.staff_accounts",
+        "delete": false,
+        "insert": false,
+        "select": true,
+        "update": false,
+        "present": true
+      },
+      {
+        "table": "app.staff_session_assurance",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true,
+        "present": true
+      },
+      {
+        "table": "public.r2_auth_session",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true,
+        "present": true
+      },
+      {
+        "table": "public.r2_auth_user",
+        "delete": true,
+        "insert": true,
+        "select": true,
+        "update": true,
+        "present": true
+      }
+    ],
+    "cms_columns": [
+      {
+        "table": "media_assets",
+        "column": "source_id",
+        "nullable": "NO"
+      },
+      {
+        "table": "public_content",
+        "column": "source_id",
+        "nullable": "NO"
+      }
+    ],
+    "publication_functions": [
+      {
+        "function": "app.require_approved_source()",
+        "runtime_execute": false,
+        "security_definer": true
+      }
+    ],
+    "media_aggregates": [
+      {
+        "count": 1,
+        "processing": "ready",
+        "publication": "draft",
+        "first_created_at": "2026-11-16T19:12:22.185913+00:00",
+        "latest_created_at": "2026-11-16T19:12:22.185913+00:00"
+      }
+    ],
+    "media_audit_aggregates": [
+      {
+        "count": 1,
+        "action": "media.create",
+        "latest_at": "2026-11-16T19:12:22.185913+00:00"
+      },
+      {
+        "count": 1,
+        "action": "media.update",
+        "latest_at": "2026-11-16T19:12:25.622304+00:00"
+      }
+    ]
+  },
+  "final_runtime_preflight": {
+    "runtime_security": {
+      "observed_at": "2026-11-18T21:07:53.637Z",
+      "effective_role": "talgov_staging_runtime",
+      "session_role": "talgov_staging_runtime",
+      "database_name": "neondb",
+      "inherits_runtime": true,
+      "database_create": false,
+      "database_temp": false,
+      "app_create": false,
+      "public_create": false,
+      "role_flags": [
+        {
+          "role": "talgov_runtime",
+          "createdb": false,
+          "superuser": false,
+          "bypass_rls": false,
+          "createrole": false,
+          "replication": false
+        },
+        {
+          "role": "talgov_staging_runtime",
+          "createdb": false,
+          "superuser": false,
+          "bypass_rls": false,
+          "createrole": false,
+          "replication": false
+        }
+      ],
+      "row_security": [
+        {
+          "table": "app.audit_events",
+          "rls_forced": false,
+          "rls_enabled": false
+        },
+        {
+          "table": "app.media_assets",
+          "rls_forced": false,
+          "rls_enabled": false
+        },
+        {
+          "table": "app.media_categories",
+          "rls_forced": false,
+          "rls_enabled": false
+        },
+        {
+          "table": "app.media_revisions",
+          "rls_forced": false,
+          "rls_enabled": false
+        },
+        {
+          "table": "app.media_throttle",
+          "rls_forced": false,
+          "rls_enabled": false
+        },
+        {
+          "table": "app.staff_accounts",
+          "rls_forced": false,
+          "rls_enabled": false
+        },
+        {
+          "table": "app.staff_session_assurance",
+          "rls_forced": false,
+          "rls_enabled": false
+        }
+      ]
+    },
+    "upload_row_locks_and_schema": {
+      "observed_at": "2026-11-18T21:11:10.145Z",
+      "runtime_role": "talgov_staging_runtime",
+      "staff_account_row_lock": true,
+      "auth_session_row_lock": true,
+      "mfa_assurance_row_lock": true,
+      "media_row_lock": true,
+      "current_categories": [
+        {
+          "kind": "document",
+          "slug": "r2-qualification",
+          "approved": false
+        }
+      ],
+      "media_source_nullable": "NO",
+      "receipt_table_present": false
+    },
+    "api_throttle_privileges": [
+      {
+        "observed_at": "2026-11-18T21:11:40.870Z",
+        "privilege": "SELECT",
+        "allowed": true
+      },
+      {
+        "observed_at": "2026-11-18T21:11:40.870Z",
+        "privilege": "INSERT",
+        "allowed": true
+      },
+      {
+        "observed_at": "2026-11-18T21:11:40.870Z",
+        "privilege": "UPDATE",
+        "allowed": true
+      },
+      {
+        "observed_at": "2026-11-18T21:11:40.870Z",
+        "privilege": "DELETE",
+        "allowed": true
+      }
+    ]
+  },
+  "runtime_column_privileges": [
+    {
+      "table_name": "audit_events",
+      "column_name": "id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "actor_id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "action",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "resource_id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "request_id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "audit_events",
+      "column_name": "occurred_at",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "id",
+      "can_insert": false,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "kind",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "category_id",
+      "can_insert": true,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "source_id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "title",
+      "can_insert": true,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "description",
+      "can_insert": true,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "alt_text",
+      "can_insert": true,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "object_key",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "mime",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "bytes",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "sha256",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "processing",
+      "can_insert": false,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "publication",
+      "can_insert": false,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "version",
+      "can_insert": false,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "created_by",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "updated_by",
+      "can_insert": true,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "created_at",
+      "can_insert": false,
+      "can_update": false
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "updated_at",
+      "can_insert": false,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "published_at",
+      "can_insert": false,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "deleted_at",
+      "can_insert": false,
+      "can_update": true
+    },
+    {
+      "table_name": "media_assets",
+      "column_name": "original_filename",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "asset_id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "object_key",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "sha256",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "bytes",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "mime",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "actor_id",
+      "can_insert": true,
+      "can_update": false
+    },
+    {
+      "table_name": "media_revisions",
+      "column_name": "created_at",
+      "can_insert": true,
+      "can_update": false
+    }
+  ],
+  "runtime_column_privileges_observed_at": "2026-11-18T20:42:17.332Z",
+  "migration_history": [
+    {
+      "observed_at": "2026-11-18T20:52:25.317Z",
+      "position": 1,
+      "file": "migrations/001_foundation.sql",
+      "sha256": "b2a3f230afcd6fa060589714107946b0759f0e5cfb5018878d500d96ff2a195e",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "observed_at": "2026-11-18T20:52:25.317Z",
+      "position": 2,
+      "file": "migrations/002_privileges.sql",
+      "sha256": "761c527a55a88fa32ba9b7b27477a9ab6c7a39d02b46175619da16240a3c14fc",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "observed_at": "2026-11-18T20:52:25.317Z",
+      "position": 3,
+      "file": "auth/001_provider.sql",
+      "sha256": "20012bf69d4231fc48199fa3c0e8764ccf104e8f1c26817c7a328ae80c083d8e",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "observed_at": "2026-11-18T20:52:25.317Z",
+      "position": 4,
+      "file": "auth/002_staff_policy.sql",
+      "sha256": "4d6f87ca064a90ddde1b7a4db1cb6489a19bb2974bf1918cdc68fab9464e3a73",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "observed_at": "2026-11-18T20:52:25.317Z",
+      "position": 5,
+      "file": "media/001_media_policy.sql",
+      "sha256": "d257a2ce39fade50817a0e4e17f6b31e95121d579834ecbae8ff0d51d95cba72",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "observed_at": "2026-11-18T20:52:25.317Z",
+      "position": 6,
+      "file": "content/001_content_policy.sql",
+      "sha256": "41b5ebee6a82ec19fb45c128a5f7cd1acdbf807319cd2c96711200ec0b0607bc",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    }
+  ],
+  "storage": {
+    "configuration": {
+      "enabled": true,
+      "s3_endpoint": "https://br-steep-sea-ao0qw05a.storage.c-2.ap-southeast-1.aws.neon.tech",
+      "region": "ap-southeast-1",
+      "force_path_style": true
+    },
+    "buckets": [
+      {
+        "name": "talgov-staging-media",
+        "access_level": "private",
+        "created_at": "2026-11-09T17:49:47Z"
+      }
+    ],
+    "credential_metadata": [
+      {
+        "name": "Default object storage credential",
+        "branch_id": "br-steep-sea-ao0qw05a",
+        "scopes": [
+          "storage:read",
+          "storage:write"
+        ],
+        "created_at": "2026-11-08T12:35:06Z",
+        "last_used_at": "2026-11-18T20:32:07Z",
+        "expires_at": null,
+        "revoked_at": null
+      }
+    ],
+    "existing_logs": [
+      {
+        "timestamp": "2026-11-18T20:32:07Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 15.773
+      },
+      {
+        "timestamp": "2026-11-18T20:32:06Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 9.038
+      },
+      {
+        "timestamp": "2026-11-18T20:31:14Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 10.274
+      },
+      {
+        "timestamp": "2026-11-18T20:31:13Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 7.273
+      },
+      {
+        "timestamp": "2026-11-18T20:30:53Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 48.022
+      },
+      {
+        "timestamp": "2026-11-18T20:30:52Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 46.926
+      },
+      {
+        "timestamp": "2026-11-18T13:26:11Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 30.225
+      },
+      {
+        "timestamp": "2026-11-18T13:26:11Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 15.437
+      },
+      {
+        "timestamp": "2026-11-18T09:54:57Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 28.008
+      },
+      {
+        "timestamp": "2026-11-18T09:54:57Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 29.972
+      },
+      {
+        "timestamp": "2026-11-18T09:53:24Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 28.868
+      },
+      {
+        "timestamp": "2026-11-18T09:53:23Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 12.999
+      },
+      {
+        "timestamp": "2026-11-18T09:52:50Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 29.563
+      },
+      {
+        "timestamp": "2026-11-18T09:52:50Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 12.546
+      },
+      {
+        "timestamp": "2026-11-18T09:52:09Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 3.414
+      },
+      {
+        "timestamp": "2026-11-18T09:52:09Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 4.451
+      },
+      {
+        "timestamp": "2026-11-18T09:51:48Z",
+        "severity": "WARN",
+        "operation": "GET",
+        "http_status": 404,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 15.722
+      },
+      {
+        "timestamp": "2026-11-18T09:51:48Z",
+        "severity": "INFO",
+        "operation": "GET",
+        "http_status": 200,
+        "target": "bucket_or_unspecified",
+        "duration_ms": 30.064
+      }
+    ],
+    "logs_limitations": "Storage records identify GET and status only; target query/operation details are unavailable. GET 404 can be expected NoSuchBucketPolicy and is not proof of failure. No PUT appears in the inspected 24-hour window ending around 2026-11-18T20:42:00Z. These records are not correlated to the failed upload. This Neon log backend exposes Storage/Functions; the empty pg_endpoint lookup does not establish absence of PostgreSQL errors."
+  },
+  "vercel": {
+    "log_access": "No callable Vercel connector or local Vercel credentials available. Secure credential request received no response.",
+    "github_main_status": {
+      "sha": "8e32c388b9b1f33bf9084e367c5d405f133b67a0",
+      "status": "success",
+      "recorded_at": "2026-11-18T20:22:51Z",
+      "deployment_metadata_url": "https://vercel.com/rynzz22s-projects/talgov-r2-staging/2XYzxxh6F5HzMNhfbAAsup8ithyW"
+    },
+    "alias_assignment": "not independently verified"
+  },
+  "read_only_control_requests": {
+    "warning": "These request IDs/timestamps belong only to new GET health checks, not the existing failed upload.",
+    "requests": [
+      {
+        "path": "/api/health",
+        "status": 200,
+        "observed_at": "2026-11-18T20:51:21.197Z",
+        "response_date": "Wed, 18 Nov 2026 20:51:20 GMT",
+        "request_id": "7dea0087-e4d4-4b23-baa4-058c082270f7",
+        "service": "talibon-api",
+        "health": "ok"
+      },
+      {
+        "path": "/api/health/ready",
+        "status": 503,
+        "observed_at": "2026-11-18T20:51:28.906Z",
+        "response_date": "Wed, 18 Nov 2026 20:51:28 GMT",
+        "request_id": "44a78485-43b0-4809-8136-42c877a3b64d",
+        "json_request_id": "44a78485-43b0-4809-8136-42c877a3b64d",
+        "message": "An internal server error occurred. Please contact the administrator if this persists."
+      }
+    ]
+  },
+  "confirmed_blockers": [
+    "Approved website-photos and website-documents defaults absent; only unapproved r2-qualification document category exists.",
+    "app.media_assets.source_id remains NOT NULL and published_by is absent; direct upload without supporting evidence cannot satisfy this schema.",
+    "Required upload INSERT/UPDATE column grants, throttle rights, revision INSERT and immutable audit INSERT are present; whole-table INSERT/UPDATE false is expected least privilege, not a missing upload grant.",
+    "Municipal/direct publication migration markers are absent; the ledger contains six original files.",
+    "content_asset_links SELECT/INSERT/DELETE and the receipt table/functions are separate publishing blockers; content_asset_links is not queried by inline upload."
+  ],
+  "minimal_proposed_hosted_operation": {
+    "status": "not executed; approval required",
+    "files": [
+      "backend/database/migrations/003_municipal_content_foundation.sql",
+      "backend/database/migrations/004_direct_staff_publication.sql"
+    ],
+    "transaction": "one reviewed transaction after confirming deployment bindings, catalog drift, and backup/restore readiness",
+    "normalized_lf_sha256": {
+      "migration_003": "455c81c7d511c2bf0bdbc45b3bf2ff9d78c5e180fc4ee9b150d05f5fc056a0b7",
+      "migration_004": "755577d2f635f2c6eebb8a08c2a6c859664cc8ef24f968e421a092ad0165a411"
+    },
+    "not_sufficient": [
+      "Only an attachment-link grant",
+      "Only inserting categories while media source_id remains required"
+    ]
+  },
+  "minimum_additional_evidence": "Existing failed upload response request ID and failure timestamp with timezone, plus a matching sanitized Vercel entry (method/path/status, deployment ID, dependency phase/error code/transaction outcome). If the response is gone, an operator can search the existing deployment logs using an approximate failure-time window and the exact POST path. No new upload is required."
+}

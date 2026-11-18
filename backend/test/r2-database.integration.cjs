@@ -42,28 +42,29 @@ before(async()=>{
 after(async()=>{await db?.close();await owner.end();});
 
 test('migrations replay, upgrade, checksum drift and failed DDL roll back atomically',async()=>{
-  assert.deepEqual(await migrate(owner),{migrations:3,applied:0});
-  const directory=path.join(process.env.R2_TEST_SCRATCH,'migrations'); fs.mkdirSync(directory);
   const original=path.join(__dirname,'../database/migrations');
+  const files=fs.readdirSync(original).filter(file=>file.endsWith('.sql')).sort();
+  for(const file of files) assert.match(file,/^\d{3}_[a-z_]+\.sql$/);
+  assert.deepEqual(await migrate(owner),{migrations:files.length,applied:0});
+  const directory=path.join(process.env.R2_TEST_SCRATCH,'migrations'); fs.mkdirSync(directory);
   fs.copyFileSync(path.join(original,'001_foundation.sql'),path.join(directory,'001_foundation.sql'));
   const next=new URL(url); next.pathname='/'+upgradeName; const upgrade=new Pool(operatorConfig(next.toString()));
   try {
     assert.equal((await migrate(upgrade,directory,true)).applied,1);
     assert.equal((await upgrade.query("SELECT to_regclass('app.staff_accounts') AS t")).rows[0].t,null);
     assert.equal((await migrate(upgrade,directory)).applied,1);
-    assert.equal((await migrate(upgrade)).applied,2);
-    fs.copyFileSync(path.join(original,'003_municipal_content_foundation.sql'),path.join(directory,'003_municipal_content_foundation.sql'));
-    fs.copyFileSync(path.join(original,'002_privileges.sql'),path.join(directory,'002_privileges.sql'));
+    assert.deepEqual(await migrate(upgrade),{migrations:files.length,applied:files.length-1});
+    for(const file of files) fs.copyFileSync(path.join(original,file),path.join(directory,file));
     fs.writeFileSync(path.join(directory,'001_foundation.sql'),fs.readFileSync(path.join(original,'001_foundation.sql'),'utf8').replace(/\r\n/g,'\n').replace(/\n/g,'\r\n'));
     assert.equal((await migrate(upgrade,directory)).applied,0);
     fs.appendFileSync(path.join(directory,'001_foundation.sql'),'\n-- drift');
-    fs.copyFileSync(path.join(original,'002_privileges.sql'),path.join(directory,'002_privileges.sql'));
     await assert.rejects(migrate(upgrade,directory),/checksum/);
     fs.copyFileSync(path.join(original,'001_foundation.sql'),path.join(directory,'001_foundation.sql'));
-    fs.writeFileSync(path.join(directory,'004_failure.sql'),'CREATE TABLE app.should_rollback(id int); SELECT nonexistent_column;');
-    await assert.rejects(migrate(upgrade,directory));
+    const failureVersion=String(Number(files.at(-1).slice(0,3))+1).padStart(3,'0');
+    fs.writeFileSync(path.join(directory,failureVersion+'_failure.sql'),'CREATE TABLE app.should_rollback(id int); SELECT nonexistent_column;');
+    await assert.rejects(migrate(upgrade,directory),error=>error.code==='42703');
     assert.equal((await upgrade.query("SELECT to_regclass('app.should_rollback') AS t")).rows[0].t,null);
-    assert.equal((await upgrade.query('SELECT count(*)::int AS n FROM public.r2_schema_migrations')).rows[0].n,3);
+    assert.deepEqual((await upgrade.query('SELECT version FROM public.r2_schema_migrations ORDER BY version')).rows.map(row=>row.version),files);
   } finally {await upgrade.end();}
 });
 test('TLS/configuration is fail closed and rehearsal commands reject remote or unmarked targets',()=>{

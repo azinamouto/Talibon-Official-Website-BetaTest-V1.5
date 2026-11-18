@@ -1,0 +1,297 @@
+{
+  "captured_at": "2026-11-18T13:38:38Z",
+  "scope": "Read-only catalog queries and an empty-result SELECT as the staging runtime. No hosted uploads, publication requests, migrations, environment changes or deployments.",
+  "staging": {
+    "project": "misty-silence-69777617",
+    "branch": "br-steep-sea-ao0qw05a",
+    "branch_name": "staging-talgov-r2",
+    "endpoint": "ep-sparkling-bird-ao5precf",
+    "database": "neondb"
+  },
+  "user_reported_requests": [
+    {
+      "method": "POST",
+      "path": "/api/admin/media/uploads",
+      "status": 400,
+      "message": "File category: This file category is unavailable. Upload the file again.",
+      "request_id": null,
+      "timestamp": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/content/news/publish",
+      "status": 503,
+      "message": "The operation could not be confirmed. Use Retry to check the same submission.",
+      "request_id": null,
+      "timestamp": null
+    }
+  ],
+  "category_records": [
+    {
+      "id": "d200f539-e0d2-4223-b745-3df493a6f933",
+      "kind": "document",
+      "slug": "r2-qualification",
+      "title": "R2 Qualification",
+      "approved": false
+    }
+  ],
+  "migration_history": [
+    {
+      "position": 1,
+      "file": "migrations/001_foundation.sql",
+      "sha256": "b2a3f230afcd6fa060589714107946b0759f0e5cfb5018878d500d96ff2a195e",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 2,
+      "file": "migrations/002_privileges.sql",
+      "sha256": "761c527a55a88fa32ba9b7b27477a9ab6c7a39d02b46175619da16240a3c14fc",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 3,
+      "file": "auth/001_provider.sql",
+      "sha256": "20012bf69d4231fc48199fa3c0e8764ccf104e8f1c26817c7a328ae80c083d8e",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 4,
+      "file": "auth/002_staff_policy.sql",
+      "sha256": "4d6f87ca064a90ddde1b7a4db1cb6489a19bb2974bf1918cdc68fab9464e3a73",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 5,
+      "file": "media/001_media_policy.sql",
+      "sha256": "d257a2ce39fade50817a0e4e17f6b31e95121d579834ecbae8ff0d51d95cba72",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    },
+    {
+      "position": 6,
+      "file": "content/001_content_policy.sql",
+      "sha256": "41b5ebee6a82ec19fb45c128a5f7cd1acdbf807319cd2c96711200ec0b0607bc",
+      "applied_at": "2026-11-09T16:24:19.578Z"
+    }
+  ],
+  "runtime_identity_and_grants": [
+    {
+      "runtime_login": "talgov_staging_runtime",
+      "session_login": "talgov_staging_runtime",
+      "database": "neondb",
+      "inherits_runtime": true,
+      "app_create": false,
+      "database_create": false,
+      "link_select": false,
+      "link_insert": false,
+      "link_delete": false,
+      "category_select": true,
+      "category_insert": false,
+      "category_update": false,
+      "audit_insert": true,
+      "audit_update": false,
+      "audit_delete": false
+    }
+  ],
+  "media_runtime_grants": [
+    {
+      "media_select": true,
+      "media_kind_insert": true,
+      "media_category_insert": true,
+      "media_source_insert": true,
+      "media_creator_insert": true,
+      "media_filename_insert": true,
+      "media_ready_update": true,
+      "media_version_update": true,
+      "revision_insert": true,
+      "throttle_any_privilege": true
+    }
+  ],
+  "schema_markers": [
+    {
+      "database": "neondb",
+      "catalog_login": "neondb_owner",
+      "category_table": "app.media_categories",
+      "publication_receipts": null,
+      "publish_content_function": null,
+      "publish_media_bundle_function": null,
+      "approve_source_function": null,
+      "history_table": "r2_staging.history",
+      "runtime_category_select": true,
+      "runtime_link_select": false,
+      "runtime_link_insert": false,
+      "runtime_link_delete": false
+    }
+  ],
+  "source_and_publisher_columns": [
+    {
+      "table_name": "media_assets",
+      "column_name": "source_id",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "public_content",
+      "column_name": "source_id",
+      "is_nullable": "NO"
+    }
+  ],
+  "constraints": [
+    {
+      "table_name": "content_asset_links",
+      "constraint_name": "content_asset_links_asset_id_fkey",
+      "definition": "FOREIGN KEY (asset_id) REFERENCES app.media_assets(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "content_asset_links",
+      "constraint_name": "content_asset_links_asset_id_not_null",
+      "definition": "NOT NULL asset_id"
+    },
+    {
+      "table_name": "content_asset_links",
+      "constraint_name": "content_asset_links_content_id_fkey",
+      "definition": "FOREIGN KEY (content_id) REFERENCES app.public_content(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "content_asset_links",
+      "constraint_name": "content_asset_links_content_id_not_null",
+      "definition": "NOT NULL content_id"
+    },
+    {
+      "table_name": "content_asset_links",
+      "constraint_name": "content_asset_links_pkey",
+      "definition": "PRIMARY KEY (content_id, asset_id)"
+    },
+    {
+      "table_name": "media_assets",
+      "constraint_name": "media_assets_category_id_kind_fkey",
+      "definition": "FOREIGN KEY (category_id, kind) REFERENCES app.media_categories(id, kind) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "media_assets",
+      "constraint_name": "media_assets_created_by_fkey",
+      "definition": "FOREIGN KEY (created_by) REFERENCES app.staff_accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "media_assets",
+      "constraint_name": "media_assets_source_id_fkey",
+      "definition": "FOREIGN KEY (source_id) REFERENCES app.content_sources(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "media_assets",
+      "constraint_name": "media_assets_updated_by_fkey",
+      "definition": "FOREIGN KEY (updated_by) REFERENCES app.staff_accounts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_approved_not_null",
+      "definition": "NOT NULL approved"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_id_kind_key",
+      "definition": "UNIQUE (id, kind)"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_id_not_null",
+      "definition": "NOT NULL id"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_kind_check",
+      "definition": "CHECK ((kind = ANY (ARRAY['photo'::text, 'document'::text])))"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_kind_not_null",
+      "definition": "NOT NULL kind"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_kind_slug_key",
+      "definition": "UNIQUE (kind, slug)"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_slug_check",
+      "definition": "CHECK ((slug ~ '^[a-z0-9][a-z0-9_-]{0,99}$'::text))"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_slug_not_null",
+      "definition": "NOT NULL slug"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_title_check",
+      "definition": "CHECK (((length(btrim(title)) >= 1) AND (length(btrim(title)) <= 200)))"
+    },
+    {
+      "table_name": "media_categories",
+      "constraint_name": "media_categories_title_not_null",
+      "definition": "NOT NULL title"
+    },
+    {
+      "table_name": "public_content",
+      "constraint_name": "public_content_kind_check",
+      "definition": "CHECK ((kind = ANY (ARRAY['barangays'::text, 'departments'::text, 'officials'::text, 'news'::text, 'pages'::text, 'tourism_spots'::text, 'events'::text, 'navigation'::text, 'downloadables'::text, 'ordinances'::text, 'resolutions'::text, 'citizens_charter_cms'::text, 'services_cms'::text])))"
+    }
+  ],
+  "empty_result_runtime_probe": {
+    "query": "SELECT payload_sha256,result FROM app.content_publication_receipts WHERE false",
+    "sqlstate": "42P01",
+    "reason": "relation_missing",
+    "role": "talgov_staging_runtime",
+    "database": "neondb",
+    "note": "This read-only diagnostic establishes a missing dependency, not correlation with the user's failed POST."
+  },
+  "locks": {
+    "held_locks": 0,
+    "source": "neon inspect db locks, explicitly pinned staging branch/database",
+    "point_in_time_only": true
+  },
+  "deployment": {
+    "source_sha": "a690280bca1c314a504fcc6ec5a4743c8c5b7630",
+    "github_vercel_status": "success",
+    "status_recorded_at": "2026-11-18T09:37:30Z",
+    "deployment_metadata_url": "https://vercel.com/rynzz22s-projects/talgov-r2-staging/7LWimeovK79n6u8o3DqiiyhZkaKT",
+    "current_alias_to_deployment_binding_verified": false,
+    "deployed_database_environment_binding_verified": false
+  },
+  "read_only_health_observations": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "request_id": "66f8a244-123a-4889-ad4f-7f0f65073ea4"
+    },
+    {
+      "path": "/api/health/ready",
+      "status": 200,
+      "request_id": "600a01c1-1220-4278-9971-0f2ed7a92e66"
+    }
+  ],
+  "health_note": "These IDs identify the read-only health probes, not either failed POST. The existing readiness code omits the direct CMS schema, category and link-grant requirements.",
+  "runtime_logs": {
+    "available": false,
+    "previous_investigation_access_status": 403,
+    "previous_investigation_error": "forbidden",
+    "current_local_vercel_credential_available": false
+  },
+  "conclusions": [
+    "Neither approved default category exists. The only category is an unapproved legacy document qualification fixture. Current inline uploads omit categoryId; server default resolution therefore fails on this inspected database.",
+    "The six foundation/auth/media/content migrations are recorded. Municipal 003 and direct publication 004 markers are absent, including nullable supporting evidence, publisher columns, publication receipts and functions.",
+    "The direct publish repository queries content_publication_receipts before any content/link write. That SELECT fails with 42P01 on the inspected staging database.",
+    "SELECT, INSERT and DELETE on content_asset_links remain unavailable to the runtime. These are independent later blockers; earlier 42501 evidence does not prove the cause of the exact new failed POST.",
+    "Runtime can read categories and use inspected media insert/readiness/revision privileges. It cannot create or approve categories, mutate audits, or create schema/database objects.",
+    "Exact failed-request correlation and deployed environment bindings remain unverified. No live publishing request was repeated."
+  ],
+  "minimum_additional_evidence": [
+    "Failed POST response X-Request-Id or JSON requestId and timestamp with timezone.",
+    "A matching sanitized Vercel runtime entry with deployment ID, failure phase/SQLSTATE and transaction outcome.",
+    "Sanitized deployed database endpoint and runtime-role identifiers to tie that deployment to this inspected branch; omit passwords and full URLs."
+  ]
+}

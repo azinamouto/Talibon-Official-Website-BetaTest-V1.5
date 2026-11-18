@@ -28,7 +28,7 @@ function headers(res: Response) { res.set({ 'Cache-Control': 'private, no-store'
 @ApiResponse({status:404,description:'Ready accessible media not found.'})
 @ApiResponse({status:409,description:'Version or upload identity conflict; refresh and retry.'})
 @ApiResponse({status:429,description:'Upload attempt limit reached.'})
-@ApiResponse({status:503,description:'Storage/database operation unconfirmed; safe retry allowed.'})
+@ApiResponse({status:503,description:'Upload configuration or storage/database operation unavailable; retry with the same upload identity.'})
 @Controller('api/admin/media')
 export class MediaController {
   constructor(@Inject(MediaService) private readonly media: MediaService) {}

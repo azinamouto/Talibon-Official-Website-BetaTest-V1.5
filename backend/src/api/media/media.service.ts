@@ -8,7 +8,9 @@ import { EditDto, UploadDto } from './media.dto';
 import { CmsValidationError } from '../../database/cms-validation';
 import { CmsInputError, invalidField } from '../../security/cms-validation';
 import type { StaffMediaFilters } from '../../database/media.repository';
-import { emitFailure, type FailureOperation } from '../../security/failure-diagnostics';
+import { attachFailure, emitFailure, type FailureOperation, type MediaFailureStage } from '../../security/failure-diagnostics';
+
+type UploadTrace = { stage: MediaFailureStage };
 
 export const mediaView = (row: Record<string, unknown>, actor?: StaffPrincipal) => {
   const { object_key: _key, created_by: _creator, updated_by: _editor, ...safe } = row;
@@ -27,24 +29,30 @@ export class MediaService {
   configure(repository: MediaRepository, storage: ObjectStore) { this.repository = repository; this.storage = storage; }
   private init() {
     if (!this.repository) {
-      if (!process.env.MEDIA_DATABASE_URL) throw new ServiceUnavailableException('Media is not configured.');
+      if (!process.env.MEDIA_DATABASE_URL) throw attachFailure(new ServiceUnavailableException('Media is not configured.'),
+        { phase:'configuration',reason:'invalid_configuration',transaction_outcome:'not_started' });
       this.database = new PostgresDatabase(runtimeConnectionConfig(process.env.MEDIA_DATABASE_URL));
       this.repository = new MediaRepository(this.database);
     }
   }
-  async run<T>(fn: (repo: MediaRepository, store: ObjectStore) => Promise<T>, operation: FailureOperation = 'media_operation', request?: string): Promise<T> {
+  async run<T>(fn: (repo: MediaRepository, store: ObjectStore, stage: (value: MediaFailureStage) => void) => Promise<T>, operation: FailureOperation = 'media_operation', request?: string): Promise<T> {
+    // The trace belongs to this request, never to the singleton service.
+    const trace: UploadTrace | undefined = operation==='media_upload' ? { stage:'database_configuration' } : undefined;
     return this.runRepository(repo => {
+      if (trace) trace.stage='storage_configuration';
       this.storage ??= new NeonObjectStore();
-      return fn(repo,this.storage);
-    },operation,request);
+      return fn(repo,this.storage,value => { if (trace) trace.stage=value; });
+    },operation,request,trace);
   }
-  private async runRepository<T>(fn: (repo: MediaRepository) => Promise<T>, operation: FailureOperation = 'media_operation', request?: string): Promise<T> {
+  private async runRepository<T>(fn: (repo: MediaRepository) => Promise<T>, operation: FailureOperation = 'media_operation', request?: string, trace?: UploadTrace): Promise<T> {
     const started=performance.now();
     try { this.init(); return await fn(this.repository); }
     catch (error) {
-      if (error instanceof HttpException) throw error;
+      if (error instanceof HttpException && error.getStatus()<500) throw error;
       if (error instanceof CmsValidationError) throw new CmsInputError(error.fields);
-      emitFailure(error,{component:'media',operation,route:operation==='media_upload'?'admin_media_uploads':'other',request_id:request,elapsed_ms:performance.now()-started},this.logger);
+      emitFailure(error,{component:'media',operation,route:operation==='media_upload'?'admin_media_uploads':'other',request_id:request,
+        elapsed_ms:performance.now()-started,...(trace ? { media_stage:trace.stage,deployment_id:process.env.VERCEL_DEPLOYMENT_ID } : {})},this.logger);
+      if (error instanceof HttpException) throw error;
       if (error instanceof DatabaseError) {
         if (error.code === 'conflict') throw new ConflictException('Media changed; refresh before retrying.');
         if (error.code === 'forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');
@@ -65,17 +73,26 @@ export class MediaService {
   metadata(actor: StaffPrincipal, id: string) { return this.runRepository(async repo => {
     const row = await repo.get(id,actor); if (!row) throw new NotFoundException(); return mediaView(row,actor);
   }); }
-  upload(actor: StaffPrincipal, input: UploadDto, request: string) { return this.run(async (repo,store) => {
+  upload(actor: StaffPrincipal, input: UploadDto, request: string) { return this.run(async (repo,store,stage) => {
+    stage('authorization_throttle');
     if (!await repo.throttle(actor)) throw new HttpException('Upload limit reached. Retry in one minute.', 429);
+    stage('file_validation');
     const bytes = Buffer.from(input.base64,'base64');
     if (bytes.toString('base64') !== input.base64) invalidField('base64','base64');
     const file = await validateFile(input.filename,input.mime,bytes);
+    stage('storage_privacy');
     await store.verifyPrivate();
+    stage('reservation');
     const row = await repo.reserve(actor,{ ...input,...file,objectKey: `assets/${actor.id}/${input.uploadId}` }, input.filename,request);
     if (row.processing === 'ready') return mediaView(row,actor);
     // A pending row is a durable recovery record. Retries may only write the same bytes.
+    stage('storage_put');
     await store.put(row.object_key,bytes,file.mime);
-    if (checksum(await store.read(row.object_key)) !== file.sha256) throw new Error('Checksum mismatch');
+    stage('storage_read');
+    const stored = await store.read(row.object_key);
+    stage('checksum_verification');
+    if (checksum(stored) !== file.sha256) throw attachFailure(new Error('Checksum mismatch'), { phase:'work',reason:'storage_integrity_failed' });
+    stage('readiness');
     return mediaView(await repo.ready(actor,row.id,request),actor);
   },'media_upload',request); }
   change(actor: StaffPrincipal, id: string, version: number, action: string, input: EditDto | Record<string, never>, request: string, direct=false) {

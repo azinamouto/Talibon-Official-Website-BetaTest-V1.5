@@ -2,7 +2,21 @@ import { Logger } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 
 const PHASES = ['configuration', 'ip_validation', 'connect', 'tls', 'channel_binding', 'runtime_role', 'transaction_setup', 'work', 'query', 'commit', 'response'] as const;
-const REASONS = ['ip_missing', 'ip_non_string', 'ip_ambiguous', 'ip_invalid', 'invalid_configuration', 'media_category_missing', 'cms_schema_missing', 'cms_permission_missing', 'connection_failure', 'connection_timeout', 'tls_failure', 'channel_binding_rejected', 'database_authentication_failed', 'runtime_role_guard_rejected', 'permission_denied', 'relation_missing', 'column_missing', 'query_timeout', 'query_cancelled', 'lock_unavailable', 'transaction_timeout', 'idle_transaction_timeout', 'database_conflict', 'invalid_database_input', 'unexpected_exception'] as const;
+const STORAGE_REASONS = {
+  AccessDenied: 'storage_access_denied', InvalidAccessKeyId: 'storage_authentication_failed',
+  SignatureDoesNotMatch: 'storage_authentication_failed', ExpiredToken: 'storage_authentication_failed',
+  NoSuchBucket: 'storage_bucket_missing', NoSuchKey: 'storage_object_missing',
+  RequestTimeout: 'storage_timeout', TimeoutError: 'storage_timeout', AbortError: 'storage_timeout',
+  SlowDown: 'storage_unavailable', InternalError: 'storage_unavailable', ServiceUnavailable: 'storage_unavailable',
+  NotImplemented: 'storage_operation_unsupported',
+} as const;
+const REASONS = ['ip_missing', 'ip_non_string', 'ip_ambiguous', 'ip_invalid', 'invalid_configuration', 'media_category_missing', 'cms_schema_missing', 'cms_permission_missing', 'connection_failure', 'connection_timeout', 'tls_failure', 'channel_binding_rejected', 'database_authentication_failed', 'runtime_role_guard_rejected', 'permission_denied', 'relation_missing', 'column_missing', 'query_timeout', 'query_cancelled', 'lock_unavailable', 'transaction_timeout', 'idle_transaction_timeout', 'database_conflict', 'invalid_database_input', 'unexpected_exception', 'storage_privacy_unverified', 'storage_integrity_failed', ...Object.values(STORAGE_REASONS)] as const;
+const MEDIA_STAGES = {
+  database_configuration: 'database', storage_configuration: 'storage', authorization_throttle: 'database',
+  file_validation: 'application', storage_privacy: 'storage', reservation: 'database',
+  storage_put: 'storage', storage_read: 'storage', checksum_verification: 'storage', readiness: 'database',
+} as const;
+export type MediaFailureStage = keyof typeof MEDIA_STAGES;
 const OUTCOMES = ['not_started', 'rollback_confirmed', 'commit_confirmed', 'unknown'] as const;
 const OPERATIONS = ['ip_validation', 'configuration', 'throttle_cleanup', 'throttle_upsert', 'throttle_result', 'audit_insert', 'content_list', 'content_save', 'content_publish', 'media_upload', 'media_operation', 'unexpected'] as const;
 const ROUTES = ['liveness', 'readiness', 'news', 'pages', 'services', 'about_profile', 'admin_content_news', 'admin_content', 'admin_media_uploads', 'admin_media', 'other'] as const;
@@ -46,6 +60,8 @@ export interface FailureContext {
   elapsed_ms?: number;
   phase?: FailurePhase;
   transaction_outcome?: TransactionOutcome;
+  media_stage?: MediaFailureStage;
+  deployment_id?: unknown;
 }
 
 // Metadata is never an enumerable exception property or a provider error/cause.
@@ -143,19 +159,20 @@ export function attachFailure<T>(error: T, details: FailureMetadata): T {
     if (isObject(error)) metadata.set(error, Object.freeze({
       phase: member(PHASES, phase) ? phase : 'work',
       reason: member(REASONS, reason) ? reason : 'unexpected_exception',
-      ...(typeof code === 'string' && CODES.has(code) ? { error_code: code } : {}),
+      ...(typeof code === 'string' && (CODES.has(code) || Object.hasOwn(STORAGE_REASONS, code)) ? { error_code: code } : {}),
       ...(member(OUTCOMES, outcome) ? { transaction_outcome: outcome } : {}),
       ...(isObject(runtimeRole) ? { runtime_role: validatedRuntimeRole(runtimeRole) } : {}),
     }));
   } catch { /* Diagnostics cannot replace the original failure. */ }
   return error;
 }
-export function classifyFailure(error: unknown, phase: FailurePhase = 'work'): Readonly<FailureMetadata> {
+export function classifyFailure(error: unknown, phase: FailurePhase = 'work', storage = false): Readonly<FailureMetadata> {
   try {
     const saved = isObject(error) ? metadata.get(error) : undefined;
     if (saved) return saved;
   } catch { /* Hostile objects fall through to the fixed classification. */ }
-  const code = failureCode(error);
+  const name = storage ? scalar(error, 'name') : undefined;
+  const code = failureCode(error) ?? (typeof name === 'string' && Object.hasOwn(STORAGE_REASONS, name) ? name : undefined);
   const message = scalar(error, 'message');
   let reason: FailureMetadata['reason'] = 'unexpected_exception';
   if (code && (TLS_CODES as readonly string[]).includes(code)) { phase = 'tls'; reason = 'tls_failure'; }
@@ -172,6 +189,7 @@ export function classifyFailure(error: unknown, phase: FailurePhase = 'work'): R
   else if (code === '25P03') reason = 'idle_transaction_timeout';
   else if (code && ['23505', '40001', '40P01'].includes(code)) reason = 'database_conflict';
   else if (code && ['23001', '23502', '23503', '23514', '22P02', '22001'].includes(code)) reason = 'invalid_database_input';
+  else if (code && Object.hasOwn(STORAGE_REASONS, code)) reason = STORAGE_REASONS[code as keyof typeof STORAGE_REASONS];
   return Object.freeze({ phase: member(PHASES, phase) ? phase : 'work', reason, ...(code ? { error_code: code } : {}) });
 }
 
@@ -197,10 +215,14 @@ export function emitFailure(error: unknown, context: FailureContext, logger: Pic
     const phase = scalar(context, 'phase');
     const operation = scalar(context, 'operation');
     const route = scalar(context, 'route');
-    const details = classifyFailure(error, member(PHASES, phase) ? phase : 'work');
     const requestId = scalar(context, 'request_id');
     const elapsed = scalar(context, 'elapsed_ms');
+    const mediaStage = scalar(context, 'media_stage');
+    const upload = scalar(context, 'component') === 'media' && operation === 'media_upload';
+    const stage = upload && typeof mediaStage === 'string' && Object.hasOwn(MEDIA_STAGES, mediaStage) ? mediaStage as MediaFailureStage : undefined;
+    const details = classifyFailure(error, member(PHASES, phase) ? phase : 'work', !!stage && MEDIA_STAGES[stage]==='storage');
     const outcome = details.transaction_outcome ?? scalar(context, 'transaction_outcome');
+    const deployment = scalar(context, 'deployment_id');
     logger.warn(JSON.stringify({
       event: 'runtime_dependency_failure',
       component: scalar(context, 'component') === 'audit' ? 'audit' : scalar(context, 'component') === 'content' ? 'content' : scalar(context, 'component') === 'media' ? 'media' : 'rate_limiter',
@@ -212,6 +234,8 @@ export function emitFailure(error: unknown, context: FailureContext, logger: Pic
       ...(typeof elapsed === 'number' && Number.isFinite(elapsed) ? { elapsed_ms: Math.round(Math.max(0, Math.min(60000, elapsed))) } : {}),
       ...(member(OUTCOMES, outcome) ? { transaction_outcome: outcome } : {}),
       ...(details.runtime_role ? { runtime_role: details.runtime_role } : {}),
+      ...(stage ? { media_stage: stage, dependency: MEDIA_STAGES[stage], timestamp: new Date().toISOString() } : {}),
+      ...(upload && typeof deployment === 'string' && /^dpl_[A-Za-z0-9]{1,80}$/.test(deployment) ? { deployment_id: deployment } : {}),
     }));
   } catch { /* Logging cannot weaken denial, change exceptions or delay audit completion. */ }
 }

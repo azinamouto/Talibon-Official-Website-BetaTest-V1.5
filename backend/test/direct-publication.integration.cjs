@@ -70,9 +70,15 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
   const oldBody={category:'ARTICLE',content:'Fictional article body'};
   const draft={title:'Fictional legacy authoring',sourceId,body:oldBody};
   const image=await sharp({create:{width:8,height:8,channels:3,background:'white'}}).jpeg().toBuffer();
+  // Synthetic, fully parsed PNG close to the reported size; no supplied photo is read.
+  const pixels=Buffer.alloc(512*624*3);let noise=1729;
+  for(let i=0;i<pixels.length;i++){noise^=noise<<13;noise^=noise>>>17;noise^=noise<<5;pixels[i]=noise&255;}
+  const pngBytes=await sharp(pixels,{raw:{width:512,height:624,channels:3}}).png({compressionLevel:0}).toBuffer();
+  assert.ok(pngBytes.length>900*1024 && pngBytes.length<1024*1024);
   const pdfFile=await PDFDocument.create();pdfFile.addPage();const pdfBytes=Buffer.from(await pdfFile.save());
   const upload=(extra={})=>({title:'Fictional photo',description:'',altText:'White test image',uploadId:randomUUID(),filename:'fixture.jpg',mime:'image/jpeg',base64:image.toString('base64'),...extra});
   const pdfUpload=()=>upload({title:'Fictional PDF',filename:'fixture.pdf',mime:'application/pdf',altText:'',base64:pdfBytes.toString('base64')});
+  const pngUpload=()=>upload({filename:'fixture.png',mime:'image/png',base64:pngBytes.toString('base64')});
   t.afterEach(async()=>{await owner.query("DELETE FROM app.staff_auth_throttle WHERE key LIKE 'http:%'");await owner.query('DELETE FROM app.media_throttle');});
   let historical,photo,pdf,current;
   await t.test('GET works before 003, but the exact POST link-delete permission failure produces sanitized 503 and rollback',async()=>{
@@ -94,10 +100,10 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
   await t.test('absent default categories are a service failure for valid images and PDFs; the qualification fixture is neither offered nor used',async()=>{
    await owner.query("INSERT INTO app.media_categories(kind,slug,title,approved) VALUES('document','r2-qualification','R2 Qualification',false)");
    const before={media:await count('media_assets'),revisions:await count('media_revisions'),audit:await count('audit_events')};
-   for(const body of [upload(),pdfUpload()]) {
+   for(const body of [upload(),pngUpload(),pdfUpload()]) {
     const response=await http('/api/admin/media/uploads',body);assert.equal(response.status,503);
     const result=await response.json();assert.equal(result.fieldErrors,undefined);assert.ok(result.requestId);
-    assert.ok(logs.some(log=>log.component==='media' && log.operation==='media_upload' && log.request_id===result.requestId && log.reason==='media_category_missing' && log.transaction_outcome==='rollback_confirmed'));
+    assert.ok(logs.some(log=>log.component==='media' && log.operation==='media_upload' && log.request_id===result.requestId && log.reason==='media_category_missing' && log.media_stage==='reservation' && log.dependency==='database' && log.transaction_outcome==='rollback_confirmed'));
     assert.doesNotMatch(JSON.stringify(result),/category|42501|Fictional|fixture|postgres:/);
    }
    assert.equal(objects.size,0);assert.deepEqual({media:await count('media_assets'),revisions:await count('media_revisions'),audit:await count('audit_events')},before);
@@ -179,6 +185,31 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
    const response=await http('/api/admin/media/uploads',upload({title:'Fictional PDF',filename:'fixture.pdf',mime:'application/pdf',altText:'',base64:pdfBytes.toString('base64')}));assert.equal(response.status,201);pdf=await response.json();
    assert.equal(pdf.kind,'document');assert.equal(pdf.source_id,null);
    assert.equal((await owner.query('SELECT slug FROM app.media_categories WHERE id=$1',[pdf.category_id])).rows[0].slug,'website-documents');
+  });
+  await t.test('PNG readiness permission failure preserves one reservation, rolls back completion, and retries safely into public news',async()=>{
+   const body=pngUpload(),before=await count('media_assets');let pending;
+   await owner.query('REVOKE INSERT ON app.media_revisions FROM talgov_runtime');
+   try {
+    const response=await http('/api/admin/media/uploads',body);assert.equal(response.status,503);
+    const failure=await response.json();
+    assert.ok(logs.some(log=>log.request_id===failure.requestId && log.operation==='media_upload' && log.media_stage==='readiness'
+      && log.dependency==='database' && log.error_code==='42501' && log.reason==='permission_denied' && log.transaction_outcome==='rollback_confirmed'));
+    pending=(await owner.query("SELECT id,processing FROM app.media_assets WHERE original_filename='fixture.png'")).rows[0];
+    assert.equal(pending.processing,'pending');assert.equal(await count('media_assets'),before+1);
+    assert.equal(await count('media_revisions','asset_id=$1',[pending.id]),0);
+    assert.equal(await count('audit_events',"resource_id=$1 AND action='media.create'",[pending.id]),1);
+    assert.equal(await count('audit_events',"resource_id=$1 AND action='media.update'",[pending.id]),0);
+   } finally {await owner.query('GRANT INSERT ON app.media_revisions TO talgov_runtime');}
+   const response=await http('/api/admin/media/uploads',body);assert.equal(response.status,201);
+   const file=await response.json();assert.equal(file.id,pending.id);assert.equal(file.processing,'ready');assert.equal(file.mime,'image/png');
+   const retry=await (await http('/api/admin/media/uploads',body)).json();assert.equal(retry.id,file.id);
+   assert.equal(await count('media_assets'),before+1);assert.equal(await count('media_revisions','asset_id=$1',[file.id]),1);
+   assert.equal(await count('audit_events',"resource_id=$1 AND action='media.update'",[file.id]),1);
+   const news=await publish('news',{category:'ARTICLE',content:'Fictional PNG regression',attachments:[attachment(file)]});
+   assert.equal(news.status,201,await news.clone().text());
+   const download=await http('/api/media/'+file.id+'/download',undefined,'');assert.equal(download.status,200);
+   assert.equal(download.headers.get('content-type'),'image/png');assert.deepEqual(Buffer.from(await download.arrayBuffer()),pngBytes);
+   assert.equal(await count('audit_events',"resource_id=$1 AND action='media.publish'",[file.id]),1);
   });
   await t.test('concurrent identical upload retries return one ready file with one revision and readiness audit',async()=>{
    let arrived=0,release;const gate=new Promise(resolve=>{release=resolve;});

@@ -18,8 +18,8 @@ const fallback: Record<number,string> = {400:'Check the content fields and selec
   404:'This record or file is no longer available. Refresh and try again.',409:'This record or a selected file changed. Refresh it before retrying.',
   413:'The upload is too large. Choose a file up to 2 MiB.',429:'Too many requests. Wait a moment before retrying.',503:'The operation could not be confirmed. Use Retry to check the same submission.'};
 export class StaffRequestError extends Error {
-  constructor(public readonly status: number, public readonly fields: Record<string,string> = {}) {
-    super(Object.keys(fields).length ? 'Check the highlighted fields.' : fallback[status] || 'Request could not be completed. Please try again.');
+  constructor(public readonly status: number, public readonly fields: Record<string,string> = {}, message?: string, public readonly requestId?: string) {
+    super((message || (Object.keys(fields).length ? 'Check the highlighted fields.' : fallback[status] || 'Request could not be completed. Please try again.')) + (requestId ? ` Reference: ${requestId}.` : ''));
   }
 }
 export function staffResponseError(status: number, value: unknown): StaffRequestError {
@@ -36,7 +36,11 @@ export function staffResponseError(status: number, value: unknown): StaffRequest
       }
     }
   }
-  return new StaffRequestError(status,fields);
+  const envelope = value && typeof value === 'object' ? value as Record<string,unknown> : {};
+  const requestId = typeof envelope.requestId === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(envelope.requestId) ? envelope.requestId : undefined;
+  const message = status === 503 && envelope.failureCode === 'dependency_unavailable'
+    ? 'The upload or publishing service needs administrator attention. Keep this form and retry the same submission after the service is restored.' : undefined;
+  return new StaffRequestError(status,fields,message,requestId);
 }
 export function errorFields(reason: unknown): Record<string,string> {
   return reason instanceof StaffRequestError ? reason.fields : {};

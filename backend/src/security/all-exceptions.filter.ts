@@ -9,6 +9,7 @@ import {
 } from "@nestjs/common";
 import { Request, Response } from "express";
 import { safeFieldErrors } from './cms-validation';
+import { classifyFailure } from './failure-diagnostics';
 
 @Catch()
 @Injectable()
@@ -58,9 +59,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     // Sanitize response body to avoid leaking internal DB/stack trace details in 500 errors
     let clientMessage = message;
+    let failureCode: 'dependency_unavailable' | 'operation_unconfirmed' | undefined;
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       errorType = "Internal Server Error";
       clientMessage = "An internal server error occurred. Please contact the administrator if this persists.";
+      if (status === 503 && /^\/api\/admin\/(media|content)(\/|$)/.test(request.path)) {
+        const details = classifyFailure(exception);
+        // A fixed recovery hint only: never expose SQLSTATE, role predicates,
+        // schema names, provider messages or transaction internals to clients.
+        failureCode = ['invalid_configuration','media_category_missing','cms_schema_missing','cms_permission_missing',
+          'permission_denied','relation_missing','column_missing','runtime_role_guard_rejected','database_authentication_failed',
+          'storage_bucket_missing','storage_authentication_failed','storage_access_denied','storage_operation_unsupported'].includes(details.reason)
+          ? 'dependency_unavailable' : 'operation_unconfirmed';
+      }
     }
 
     response.status(status).json({
@@ -69,6 +80,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: status,
       error: errorType,
       message: clientMessage,
+      ...(failureCode ? { failureCode } : {}),
       ...(Object.keys(fields).length ? { fieldErrors: fields } : {}),
       timestamp: new Date().toISOString()
     });

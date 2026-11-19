@@ -10,7 +10,7 @@ import { MEDIA_CMS_ONLY_MESSAGE } from '../../security/deferred-routes.middlewar
 import { CmsValidationError } from '../../database/cms-validation';
 import { CmsInputError } from '../../security/cms-validation';
 import type { MediaPublication } from '../../database/media.repository';
-import { emitFailure, type FailureOperation } from '../../security/failure-diagnostics';
+import { attachFailure, classifyFailure, emitFailure, type FailureOperation } from '../../security/failure-diagnostics';
 export const CONTENT = {
   pages: { table: 'pages', title: 'title', visible: 'published', fields: 'id,title,slug,content,status,created_at,updated_at' },
   news: { table: 'news', title: 'title', visible: 'published', fields: 'id,title,slug,summary,content,category,date,image_url,file_url,author,status,created_at,updated_at' },
@@ -43,7 +43,7 @@ export class ContentService {
         if (error.code==='forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');
         if (error.code==='invalid') throw new BadRequestException('Check the content and selected attachments.');
       }
-      throw new ServiceUnavailableException('Content operation could not be confirmed. Refresh before retrying.');
+      throw attachFailure(new ServiceUnavailableException('Content operation could not be confirmed. Refresh before retrying.'), classifyFailure(error));
     }
   }
   private kind(kind: string) {

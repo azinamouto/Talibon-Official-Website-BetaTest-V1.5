@@ -13,6 +13,7 @@ import OfficialEditor, { chartEntries, emptyOfficial, type OfficialEntry } from 
 import ReportingChart from '../ReportingChart';
 import { CmsLink, CmsSkeleton, CmsToast, ErrorNotice } from './CmsControls';
 import { errorFields, fieldMessages, StaffRequestError } from '../../lib/staffErrors';
+import { isReadyMedia } from '../../lib/mediaUpload';
 import { useCmsEditor, type EditorState } from '../../hooks/useCmsEditor';
 import styles from './AdminContent.module.css';
 
@@ -80,7 +81,7 @@ export default function AdminContent({role,group,onEditorStateChange}:{role:'adm
       if(!submission.current || submission.current.identity!==identity) {
         const ids=[...new Set([...attachments.map(item=>item.assetId),...(featured?[featured]:[])])];
         const assets=await Promise.all(ids.map(id=>staffRequest<Asset>('/api/admin/media/'+id)));
-        if(assets.some(asset=>!asset?.id || asset.processing!=='ready'))throw new StaffRequestError(400,{attachments:fieldMessages.attachment_missing});
+        if(assets.some((asset,index)=>!isReadyMedia(asset) || asset.id!==ids[index]))throw new StaffRequestError(400,{attachments:fieldMessages.attachment_missing});
         submission.current={identity,path:'/api/admin/content/'+module.kind+(editing?'/'+editing.id+'/update':'/publish'),
           body:{...content,submissionId:crypto.randomUUID(),media:assets.map(asset=>({assetId:asset.id,version:asset.version}))}};
       }

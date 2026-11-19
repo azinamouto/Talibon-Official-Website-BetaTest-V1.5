@@ -75,6 +75,24 @@ async function mockCms(page:Page,role:'admin'|'editor'='editor') {
  });
  return {uploads,mutations,publications,files,failAndHold(){failFirst=true;hold=true;},release(){hold=false;release?.();},losePublication(){losePublication=true;},loseMediaPublication(){loseMediaPublication=true;}};
 }
+test('inline upload dependency failure retains the file and request reference until recovery',async({page})=>{
+ const state=await mockCms(page);
+ const requestId='99999999-9999-4999-8999-999999999999';
+ await page.route('**/api/admin/media/uploads',route=>route.fulfill({status:503,json:{failureCode:'dependency_unavailable',requestId,message:'private provider detail'}}),{times:1});
+ await page.goto('/cms?tab=news');await page.getByRole('button',{name:'New post'}).click();
+ await page.getByLabel('Title',{exact:true}).fill('Synthetic recovery post');
+ await page.getByLabel('Description / body').fill('Synthetic copy');
+ await page.getByLabel('Choose files').setInputFiles({name:'fixture.png',mimeType:'image/png',buffer:image});
+ await expect(page.getByRole('alert')).toContainText('administrator attention');
+ await expect(page.getByRole('alert')).toContainText(requestId);
+ await expect(page.getByRole('alert')).not.toContainText('private provider detail');
+ await expect(page.getByRole('button',{name:'Publish',exact:true})).toBeDisabled();
+ await page.getByRole('button',{name:'Retry upload'}).click();
+ await expect(page.getByLabel('Attachment 1 caption')).toBeVisible();
+ await page.getByRole('button',{name:'Publish',exact:true}).click();
+ await expect(page.getByText('Published successfully.')).toBeVisible();
+ expect(state.files.size).toBe(1);expect(state.publications).toHaveLength(1);
+});
 for(const kind of ['photo','document'] as const)for(const width of [375,1280])test(`single-action ${kind} library publication recovers a lost response at ${width}px`,async({page})=>{
  test.setTimeout(60000);
  const state=await mockCms(page);await page.setViewportSize({width,height:1000});await page.goto('/cms?tab='+(kind==='photo'?'photos':'documents'));

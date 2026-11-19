@@ -84,7 +84,7 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
   await t.test('GET works before 003, but the exact POST link-delete permission failure produces sanitized 503 and rollback',async()=>{
    assert.equal((await http('/api/admin/content/news?page=1&limit=20')).status,200);
    const response=await http('/api/admin/content/news',draft);assert.equal(response.status,503);
-   const body=await response.json();assert.ok(body.requestId);assert.doesNotMatch(JSON.stringify(body),/42501|content_asset_links|permission denied|postgres:/);
+   const body=await response.json();assert.ok(body.requestId);assert.equal(body.failureCode,'dependency_unavailable');assert.doesNotMatch(JSON.stringify(body),/42501|content_asset_links|permission denied|postgres:/);
    assert.equal(await count('public_content'),0);assert.equal(await count('audit_events'),0);
    assert.ok(logs.some(log=>log.component==='content' && log.operation==='content_save' && log.error_code==='42501' && log.reason==='permission_denied' && log.phase==='query' && log.transaction_outcome==='rollback_confirmed'));
    assert.doesNotMatch(JSON.stringify(logs),/Fictional|postgres:|content_asset_links|cookie|token/);
@@ -94,7 +94,7 @@ test('direct staff publication and authoring failure diagnosis on disposable Pos
    const response=await publish('news',{content:'Fictional schema failure'});assert.equal(response.status,503);
    assert.ok(logs.some(log=>log.operation==='content_publish' && log.error_code==='42P01' && log.reason==='relation_missing' && log.transaction_outcome==='rollback_confirmed'));
    assert.deepEqual({content:await count('public_content'),audit:await count('audit_events')},before);
-   assert.doesNotMatch(JSON.stringify(await response.json()),/42P01|receipt|postgres:|Fictional/);
+   const failure=await response.json();assert.equal(failure.failureCode,'dependency_unavailable');assert.doesNotMatch(JSON.stringify(failure),/42P01|receipt|postgres:|Fictional/);
    await assert.rejects(db.transaction(assertContentPublishingReady,true),e=>classifyFailure(e).reason==='cms_schema_missing');
   });
   await t.test('absent default categories are a service failure for valid images and PDFs; the qualification fixture is neither offered nor used',async()=>{

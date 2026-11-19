@@ -5,6 +5,13 @@ export const mediaTypes: Record<string,string> = {jpg:'image/jpeg',jpeg:'image/j
 export type MediaKind = 'photo'|'document';
 export type UploadProgress = { stage:'reading'|'uploading'|'verifying'|'publishing'; percent?:number };
 export type UploadMetadata = {title:string;description:string;altText:string;categoryId?:string;sourceId?:string;filename:string};
+export function isReadyMedia(value: unknown): value is Asset {
+  if (!value || typeof value !== 'object') return false;
+  const asset = value as Asset;
+  return typeof asset.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(asset.id)
+    && Number.isSafeInteger(asset.version) && asset.version > 0 && asset.processing === 'ready'
+    && ['draft','published'].includes(asset.publication) && ['photo','document'].includes(asset.kind);
+}
 export function fileMime(file: File) { return file.type || mediaTypes[file.name.split('.').pop()!.toLowerCase()] || ''; }
 export function fileKind(file: File): MediaKind { return fileMime(file) === 'application/pdf' ? 'document' : 'photo'; }
 export function simpleFilename(name: string) {
@@ -49,7 +56,7 @@ export async function uploadPrivateMedia(file: File, metadata: UploadMetadata, u
       let body: unknown; try { body = JSON.parse(request.responseText); } catch { reject(new StaffRequestError(503)); return; }
       if (request.status < 200 || request.status >= 300) { reject(staffResponseError(request.status,body)); return; }
       const asset = body as Asset;
-      if (!asset || typeof asset.id !== 'string' || asset.processing !== 'ready' || !['draft','published'].includes(asset.publication)) { reject(new StaffRequestError(503)); return; }
+      if (!isReadyMedia(asset)) { reject(new StaffRequestError(503)); return; }
       resolve(asset);
     };
     progress({stage:'uploading',percent:0});

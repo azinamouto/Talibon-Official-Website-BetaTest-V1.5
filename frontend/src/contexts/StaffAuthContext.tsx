@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { staffResponseError } from '../lib/staffErrors';
+import { StaffRequestError, staffResponseError } from '../lib/staffErrors';
 
 type Staff = { id: string; role: 'admin' | 'editor' };
 function isStaff(value: unknown): value is Staff {
@@ -8,13 +8,16 @@ function isStaff(value: unknown): value is Staff {
   return typeof record.id === 'string' && (record.role === 'admin' || record.role === 'editor');
 }
 export async function staffRequest<T = unknown>(path: string, body?: unknown): Promise<T> {
-  const response = await fetch(path, { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
+  let response: Response;
+  try { response = await fetch(path, { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin',
     headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
-    body: body === undefined ? undefined : JSON.stringify(body), cache: 'no-store' });
+    body: body === undefined ? undefined : JSON.stringify(body), cache: 'no-store' }); }
+  catch { throw new StaffRequestError(503); }
   if (!response.ok) {
     throw staffResponseError(response.status,await response.json().catch(() => null));
   }
-  return response.json() as Promise<T>;
+  try { return await response.json() as T; }
+  catch { throw new StaffRequestError(503); }
 }
 const Context = createContext<{ staff: Staff | null; loading: boolean; error: string | null; refresh(): Promise<void>; signOut(): Promise<void> } | null>(null);
 export function StaffAuthProvider({ children }: { children: ReactNode }) {
@@ -30,7 +33,7 @@ export function StaffAuthProvider({ children }: { children: ReactNode }) {
     }
     catch (reason) {
       setStaff(null);
-      if (!(reason instanceof Error && reason.message === 'Sign in and complete MFA to continue.')) {
+      if (!(reason instanceof StaffRequestError && reason.status === 401)) {
         setError('Staff authentication is unavailable. Please retry.');
       }
     }

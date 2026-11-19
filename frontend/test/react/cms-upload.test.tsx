@@ -123,6 +123,16 @@ it('preserves uploaded attachments and cover photos after a publication conflict
  await screen.findByRole('alert');expect(screen.getByLabelText('Cover photo')).toHaveValue(photo.id);expect(screen.getByLabelText('Attachment 1 caption')).toHaveValue(photo.title);
  expect(request).toHaveBeenCalledWith('/api/admin/content/news/publish',expect.objectContaining({media:[{assetId:photo.id,version:photo.version}],body:expect.objectContaining({featuredAssetId:photo.id,attachments:[{assetId:photo.id,caption:photo.title,altText:photo.alt_text}]})}));
 });
+it('keeps attachments and prevents publishing when metadata returns a different record',async()=>{
+ const request=vi.mocked(staffRequest),original=request.getMockImplementation()!;
+ await editor();choosePhoto();await screen.findByLabelText('Attachment 1 caption');
+ request.mockImplementation(async(path,body)=>path==='/api/admin/media/'+photo.id?{...photo,id:'88888888-8888-4888-8888-888888888888'}:original(path,body));
+ await waitFor(()=>expect(screen.getByRole('button',{name:'Publish'})).toBeEnabled());
+ fireEvent.click(screen.getByRole('button',{name:'Publish'}));
+ await screen.findByRole('alert');
+ expect(screen.getByLabelText('Attachment 1 caption')).toHaveValue(photo.title);
+ expect(request.mock.calls.some(([path,body])=>body && path.endsWith('/publish'))).toBe(false);
+});
 it('removes an attachment and clears its cover selection without deleting the private file',async()=>{
  library=[photo];await editor();await openLibrary();fireEvent.click(await screen.findByRole('button',{name:'Attach file'}));
  fireEvent.change(screen.getByLabelText('Cover photo'),{target:{value:photo.id}});fireEvent.click(screen.getByRole('button',{name:'Remove file'}));

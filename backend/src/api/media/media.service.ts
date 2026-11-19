@@ -8,7 +8,7 @@ import { EditDto, UploadDto } from './media.dto';
 import { CmsValidationError } from '../../database/cms-validation';
 import { CmsInputError, invalidField } from '../../security/cms-validation';
 import type { StaffMediaFilters } from '../../database/media.repository';
-import { attachFailure, emitFailure, type FailureOperation, type MediaFailureStage } from '../../security/failure-diagnostics';
+import { attachFailure, classifyFailure, emitFailure, type FailureOperation, type MediaFailureStage } from '../../security/failure-diagnostics';
 
 type UploadTrace = { stage: MediaFailureStage };
 
@@ -58,7 +58,8 @@ export class MediaService {
         if (error.code === 'forbidden') throw new ForbiddenException('Staff access or fresh administrator MFA required.');
         if (error.code === 'invalid') throw new BadRequestException('Check the file details and publication requirements.');
       }
-      throw new ServiceUnavailableException('Media operation could not be confirmed. Retry safely.');
+      throw attachFailure(new ServiceUnavailableException('Media operation could not be confirmed. Retry safely.'),
+        classifyFailure(error,'work',!!trace?.stage.startsWith('storage_')));
     }
   }
   list(actor: StaffPrincipal, page: number, filters: StaffMediaFilters = {}) { return this.runRepository(async repo => {

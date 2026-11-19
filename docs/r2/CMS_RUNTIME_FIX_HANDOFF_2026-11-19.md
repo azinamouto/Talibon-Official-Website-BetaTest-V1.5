@@ -1,5 +1,7 @@
 # R2.1 CMS runtime fix handoff
 
+The original handoff below records Astra's work through `c094008`. The completion review at the end records the subsequent authorized delivery and integration checks.
+
 Local branch: `codex/r21-cms-runtime-failures`, based on canonical main `33d99ffa7f75589166ed46de6ded65ea2e930e50` (PRs #120–122 already included). The original checkout and its uncommitted changes are preserved. No push, remote PR, merge, deployment, hosted SQL or configuration change was performed.
 
 ## Findings
@@ -63,3 +65,35 @@ All database writes and uploaded bytes in tests belong to fresh loopback Postgre
 ## Next action
 
 Approve pushing only `codex/r21-cms-runtime-failures` to canonical and opening a separate draft PR with [the prepared description](CMS_RUNTIME_FIX_PR.md). Hosted remediation and deployment need separate approval after the pinned preflight. Then verify real staff MFA → upload → attach → preview → Publish → public visibility, including lost-response recovery, on staging.
+
+## Completion review
+
+The user authorized pushing the existing branch to `azinamouto/Talibon-Official-Website-BetaTest-V1.5` and creating a separate draft PR against canonical `main`. Merge, deployment, Vercel changes, hosted Neon changes and execution of migrations 003/004 remain unauthorized.
+
+The existing clean worktree and runtime commit `c0940088cdba6b6a8fd70c9f41b638b991fb1813` were reused. Canonical `main` was fetched and matched the recorded base `33d99ffa7f75589166ed46de6ded65ea2e930e50`. The full diff was reviewed for error redaction, UUID route compatibility, attachment identity/version checks, retry identity, and preservation of MFA/RBAC, private storage, transactions, immutable audits and duplicate protection. No further application changes were required. Other worktrees and uncommitted changes were preserved.
+
+Astra's backend 284 Node tests, four Jest tests in one suite, disposable PostgreSQL 40 tests, lint and builds were carried forward because runtime source and dependencies are unchanged. Canonical-base [frontend CI](https://github.com/azinamouto/Talibon-Official-Website-BetaTest-V1.5/actions/runs/44471050700) and [backend/database CI](https://github.com/azinamouto/Talibon-Official-Website-BetaTest-V1.5/actions/runs/44471050460) were independently confirmed successful. These are baseline evidence, not hosted acceptance or checks on the forthcoming PR.
+
+Fresh local integration results:
+
+| Command / check | Result |
+| --- | --- |
+| `npm --prefix frontend test` | 17 passed; zero failures/skips/TODOs |
+| `node node_modules/vitest/vitest.mjs run --coverage --maxWorkers 1 --testTimeout 30000` (frontend cwd) | 22 files / 163 tests passed; existing coverage thresholds passed |
+| `npm --prefix frontend run test:browser` | 200 passed, including all 42 CMS cases; strict inventory passed, zero skips/issues |
+| `node scripts/run-browser-suite.mjs admin` (frontend cwd) | 10 passed; strict inventory passed |
+| `node scripts/run-browser-suite.mjs contracts` (frontend cwd) | 10 passed; strict inventory passed at original test deadlines |
+| `node scripts/run-browser-suite.mjs login` (frontend cwd) | 21 passed; strict inventory passed for recovery disabled/enabled |
+| `node scripts/run-browser-suite.mjs eservices` and `eservices --grep 'payments remain unavailable by default'` with `TEST_SUBMISSION_PAYMENTS=false` (frontend cwd) | 23 passed plus 1 explicit disabled-payments check; strict inventories passed |
+| `node backend/scripts/export-openapi.cjs --check` | Passed; snapshot unchanged |
+| `node --test ops/test/*.test.mjs` | 17 passed; zero failures/skips/TODOs |
+| `node ops/check-runtime.mjs --artifacts` | Passed; 526 source/build files checked |
+| `npm audit` for root/frontend/backend and backend `--omit=dev` | Root/frontend and backend production: zero vulnerabilities; backend development tree: 25 moderate package findings, zero high/critical |
+
+The coverage percentages apply only to the existing configured Sprint 5 surface: statements 98.94%, branches 96.06%, functions/lines 100%. They are not whole-CMS coverage. An unchanged mayor-layout test hit its original five-second deadline under concurrent local work; its focused recheck passed, and the complete coverage run passed with one worker and a longer local deadline. Assertions, repository test settings and coverage thresholds were retained. Two concurrent contract runs hit the fixed About-page deadline (initially 2 failures/8 passes, then 1 failure/9 passes). The final serial contract run passed all 10 tests at their original deadlines; the earlier timeout results remain recorded rather than erased.
+
+The original 42-case CMS invocation was correctly rejected as a release gate because the other required suites and minimum inventory were missing. The release wrapper was retained without lowering its inventory, permitting skips or overriding its reporter. The final release report records 200 discovered/executed tests, minimum 155, every mandatory suite present, zero skipped tests and no inventory issues. No gate implementation change was needed.
+
+No hosted SQL access was attempted or retried during this continuation. Earlier catalog observations still support the conditional remediation already documented above: unchanged 003 then 004 for the six-file baseline, or only `GRANT SELECT, INSERT, DELETE ON app.content_asset_links TO talgov_runtime` if both migrations are already fully installed and only those link rights are absent. Both normalized migration hashes were rechecked and match the existing report; neither migration was executed. Link rights alone cannot restore the missing upload defaults, nullable source constraints or direct-publication functions/receipts. Current catalogs, deployed database/storage bindings and exact POST 503 log correlation remain unverified.
+
+Next approval: review the draft source PR, then separately authorize a bounded hosted preflight and the evidence-supported staging repair with backup/restore readiness. Merge/deployment and genuine staff MFA/upload/attach/Publish/public-visibility acceptance require separate approval. Local fixtures and passing tests do not qualify hosted functionality.

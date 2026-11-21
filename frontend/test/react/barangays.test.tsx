@@ -57,7 +57,7 @@ it('searches without accents/case, selects a single match and resets empty resul
   expect(within(choices).getAllByRole('radio')).toHaveLength(1);
   expect(within(choices).getByRole('radio')).toBeChecked();
   fireEvent.change(search, { target: { value: 'unmatched-name-123' } });
-  expect(screen.getByText('No barangay found. Try a different spelling or clear the filter.')).toBeVisible();
+  expect(screen.getByText('No barangay matches your search. Try a different name or choose All.')).toBeVisible();
   expect(within(choices).queryAllByRole('radio')).toHaveLength(0);
   expect(screen.getByRole('complementary', { name: /Santo Ni\u00f1o/ })).toHaveTextContent('Not in the current filter');
   fireEvent.click(screen.getByRole('button', { name: 'Reset search and filters' }));

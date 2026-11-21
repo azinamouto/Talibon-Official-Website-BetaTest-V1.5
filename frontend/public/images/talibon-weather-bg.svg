@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="800" viewBox="0 0 2400 800" fill="none">
+  <defs>
+    <linearGradient id="coast" x1="0" y1="0" x2="1800" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#176b9f"/>
+      <stop offset=".55" stop-color="#07548c"/>
+      <stop offset="1" stop-color="#043963"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="1200" y1="420" x2="1200" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#05497f" stop-opacity="0"/>
+      <stop offset="1" stop-color="#032e4e"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#coast)" d="M0 0h2400v800H0z"/>
+  <path fill="url(#sea)" d="M0 380h2400v420H0z"/>
+  <g stroke="#a8dbeb" stroke-opacity=".12" stroke-width="2">
+    <path d="M-80 465C420 425 740 480 1250 447s850-12 1230 20"/>
+    <path d="M-80 492C470 458 790 510 1300 477s810-14 1180 13"/>
+    <path d="M-80 530C500 490 850 555 1400 519s760-9 1080 21"/>
+    <path d="M-80 580C450 536 900 614 1470 570s740-6 1010 25"/>
+    <path d="M-80 650C490 597 970 698 1550 635s700 3 930 39"/>
+    <path d="M-80 738C500 669 1030 792 1640 720s650 15 840 43"/>
+  </g>
+  <g stroke="#8cc7df" stroke-opacity=".1" stroke-width="3">
+    <path d="M-80 788C600 625 1230 605 2480 692"/>
+    <path d="M-80 738C650 595 1300 588 2480 657"/>
+    <path d="M-80 700C700 570 1360 573 2480 628"/>
+  </g>
+</svg>

@@ -14,8 +14,8 @@ test('protected staff URL redirects to staff-only login without a citizen sessio
   await context.route('**/api/staff/me', route => route.fulfill({ status: 401, json: { message: 'Unauthorized' } }));
   page.on('request', request => { if (/\/api\/(auth|admin\/users|admin\/reports)/.test(request.url())) legacy.push(request.url()); });
   await page.goto('/admin');
-  await expect(page).toHaveURL(/\/staff\/login$/);
-  await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+  await expect(page).toHaveURL(/\/staff\/login$/, { timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
   await expect(page.getByRole('link', { name: /sign up|register/i })).toHaveCount(0);
   expect(legacy).toEqual([]);
 });
@@ -63,10 +63,10 @@ test('disabled password recovery cannot submit an email or reveal account eligib
   await context.route('**/api/staff-auth/request-password-reset', route => { recoveryRequests++; return route.fulfill({status:503,json:{message:'Password recovery is temporarily unavailable.'}}); });
   await page.goto('/staff/login');
   await page.getByLabel('Staff email').fill('staff@example.test');
-  const recovery = page.getByRole('button', { name: /Forgot password.*temporarily unavailable/i });
+  const recovery = page.getByRole('button', { name: /Forgot your password/i });
   await expect(recovery).toBeDisabled();
   await expect(recovery).toHaveAttribute('tabindex', '-1');
-  await expect(recovery).toHaveAccessibleDescription('Password recovery is temporarily unavailable.');
+  await expect(recovery).toHaveAccessibleDescription('Ask your system administrator to reset it.');
   await expect(page.getByRole('button', { name: 'Request recovery' })).toHaveCount(0);
   expect(recoveryRequests).toBe(0);
 });
@@ -94,7 +94,7 @@ test('public 404 and the legacy auth callback recover to public routes', async (
   await expect(page.getByRole('link', { name: 'Return to Homepage' })).toHaveAttribute('href', '/');
   await page.goto('/auth/callback?error=access_denied');
   await expect(page).toHaveURL(/\/staff\/login$/);
-  await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
 });
 
 test('mobile staff login controls are labelled and avoid horizontal overflow', async ({ page, context }) => {

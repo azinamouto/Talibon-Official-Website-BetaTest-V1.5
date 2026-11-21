@@ -1,6 +1,5 @@
 import solidTheme from "../styles/SolidTheme.module.css";
 import { motion } from "motion/react";
-import compact from "./CompactSections.module.css";
 import colors from "./EmergencyHotlines.module.css";
 import { Phone, ShieldAlert, HeartPulse, Flame, Siren } from "lucide-react";
 
@@ -41,24 +40,19 @@ export default function EmergencyHotlines() {
   ];
 
   return (
-    <section id="emergency" className={`${solidTheme.photo} ${compact.emergency} ${colors.section} relative overflow-hidden`}>
-      {/* Background Text - Embossment */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-black text-white/[0.02] select-none pointer-events-none leading-none font-display tracking-tighter uppercase whitespace-nowrap">
-        TALIBON
-      </div>
-      {/* Decorative background elements */}
-      <div className={`${colors.glow} absolute top-0 right-0 w-96 h-96 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2`} />
-      <div className={`${colors.glow} absolute bottom-0 left-0 w-96 h-96 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2`} />
+    <section id="emergency" className={`${solidTheme.photo} ${colors.section}`}>
+      <div className={colors.watermark} aria-hidden="true">TALIBON</div>
 
-      <div className="site-container relative z-10">
-        <div className={compact.emergencyHeader}>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight font-display">Emergency Hotlines<span className={colors.emoji} role="img" aria-label="Siren"></span></h2>
-          <p className={`${colors.description} font-normal text-base max-w-2xl mx-auto`}>
+      <div className={`site-container ${colors.container}`}>
+        <div className={colors.header}>
+          <p className={colors.status}><span aria-hidden="true" />Lines open 24/7</p>
+          <h2 className={colors.heading}>Emergency Hotlines</h2>
+          <p className={colors.description}>
             Quick response for life-threatening situations. Our emergency teams are available 24/7 to serve the people of Talibon.
           </p>
         </div>
 
-        <div className={compact.hotlineGrid}>
+        <div className={colors.grid}>
           {hotlines.map((item, idx) => (
             <motion.div
               key={item.name}
@@ -66,42 +60,38 @@ export default function EmergencyHotlines() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className={`${compact.hotlineCard} ${colors.card} bg-white/5 border backdrop-blur-sm hover:bg-white/10 transition-all duration-500 group`}
+              className={colors.card}
             >
-              <div className={`${compact.hotlineIcon} ${item.bgColor} flex items-center justify-center ${item.color} transition-transform group-hover:scale-110 duration-500`}>
-                <item.icon size={28} />
-              </div>
-              
-              <div className={compact.hotlineContent}>
-                <div className={compact.agency}>
-                  <h3 className="text-xl font-bold text-white mb-1 font-display uppercase tracking-tight">{item.name}</h3>
-                  <p className={`${colors.agency} text-[10px] font-bold uppercase tracking-widest leading-tight`}>{item.label}</p>
+              <div className={colors.cardHeading}>
+                <div className={`${item.bgColor} ${item.color}`}>
+                  <item.icon size={26} aria-hidden="true" />
                 </div>
-                
-                <div className={compact.numbers}>
+                <div className={colors.office}>
+                  <h3>{item.name}</h3>
+                  <p className={colors.agency}>{item.label}</p>
+                </div>
+              </div>
+
+              <div className={colors.numbers}>
                   {item.numbers.map((num) => (
                     <a 
                       key={num}
                       href={`tel:${num.replace(/-/g, '')}`}
-                      className={`${compact.call} ${colors.phone} flex items-center gap-3 text-white transition-colors group/link`}
+                      aria-label={`Call ${item.name} at ${num}`}
+                      className={colors.phone}
                     >
-                      <div className={`${colors.phoneChip} w-8 h-8 rounded-xl flex items-center justify-center transition-colors`}>
-                        <Phone size={14} />
-                      </div>
-                      <span className="text-sm font-bold tracking-widest">{num}</span>
+                      <span className={colors.number}>{num}</span>
+                      <span className={colors.callLabel}><Phone size={15} aria-hidden="true" />Call</span>
                     </a>
                   ))}
-                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        <div className={`${compact.landline} ${colors.landline} border text-center`}>
-          <p className="text-white font-bold text-xs tracking-[0.2em] uppercase">
-            Landline: (038) 510-1980
-          </p>
-        </div>
+        <a href="tel:0385101980" className={colors.landline} aria-label="Call Landline at (038) 510-1980">
+          <span>Landline: </span><span className={colors.landlineNumber}>(038) 510-1980</span>
+        </a>
       </div>
     </section>
   );

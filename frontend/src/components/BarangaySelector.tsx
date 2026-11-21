@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowRight, MapPin, Search, Waves } from 'lucide-react';
+import { ArrowRight, Camera, MapPin, Search, Waves } from 'lucide-react';
 import { BARANGAY_REFERENCE, type BarangayReference } from '../data/barangayDirectory';
 import styles from './BarangaySelector.module.css';
 
@@ -64,7 +64,7 @@ export default function BarangaySelector() {
   const townCenter = selected && normalize(selected.name) === 'poblacion';
 
   return <section id="barangays" aria-labelledby="barangays-heading" className={styles.section}>
-    <div className="site-container">
+    <div className={`site-container ${styles.container}`}>
       <div className={styles.header}>
         <div>
           <p className={styles.eyebrow}>Community directory</p>
@@ -73,31 +73,49 @@ export default function BarangaySelector() {
         </div>
         <Link to="/about/barangays" className={styles.button}>View full directory <ArrowRight size={18} aria-hidden="true" /></Link>
       </div>
-      <label className={styles.searchLabel}>
-        <span>Find a barangay</span>
-        <span className={styles.searchField}><Search size={18} aria-hidden="true" />
-          <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search barangays" aria-controls="barangay-options" />
-        </span>
-      </label>
       <div className={styles.picker}>
-        <fieldset className={styles.filters}>
-          <legend className="sr-only">Browse by location</legend>
-          <div className={styles.filterRow}>
-            {filters.map(filter => <label key={filter} className={styles.control}>
-              <input className={styles.radio} type="radio" name="barangay-location" value={filter} checked={location === filter} onChange={() => setLocation(filter)} aria-controls="barangay-options" />
-              <span className={styles.tab}>{filter}<span className={styles.count} aria-hidden="true">{filter === 'All' ? records.length : records.filter(item => item.location === filter).length}</span></span>
-            </label>)}
-          </div>
-        </fieldset>
+        <div className={styles.controls}>
+          <label className={styles.searchLabel}>
+            <span>Find a barangay</span>
+            <span className={styles.searchField}><Search size={18} aria-hidden="true" />
+              <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search barangays" aria-controls="barangay-options" />
+            </span>
+          </label>
+          <fieldset className={styles.filters}>
+            <legend className="sr-only">Browse by location</legend>
+            <div className={styles.filterRow}>
+              {filters.map(filter => <label key={filter} className={styles.control}>
+                <input className={styles.radio} type="radio" name="barangay-location" value={filter} checked={location === filter} onChange={() => setLocation(filter)} aria-controls="barangay-options" />
+                <span className={styles.tab}>{filter}<span className={styles.count} aria-hidden="true">{filter === 'All' ? records.length : records.filter(item => item.location === filter).length}</span></span>
+              </label>)}
+            </div>
+          </fieldset>
+        </div>
         {selected && <aside ref={details} className={styles.details} aria-labelledby="selected-barangay-label selected-barangay-heading" aria-live="polite" aria-atomic="true">
-          <p id="selected-barangay-label" className={styles.selectedLabel}>Selected barangay</p>
-          <span className={styles.location}><SelectedIcon size={16} aria-hidden="true" />{selected.location}{townCenter ? ' \u00b7 Town center' : ''}</span>
-          <h3 id="selected-barangay-heading">{selected.name}</h3>
-          {!matches.some(item => item.name === selected.name) && <p className={styles.filterNote}>Not in the current filter</p>}
-          {detailRows(selected).length > 0 && <dl className={styles.detailRows}>
-            {detailRows(selected).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
-          </dl>}
-          <Link to="/about/barangays" className={`${styles.button} ${styles.viewPage}`}>View barangay page <ArrowRight size={18} aria-hidden="true" /></Link>
+          <div className={styles.cardContent} key={selected.name}>
+            <div className={styles.photo}>
+              <div className={styles.art} data-area={selected.location} data-name={selected.name} aria-hidden="true">
+                <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" focusable="false">
+                  <circle className={styles.sun} cx="92" cy="82" r="26" />
+                  <path className={styles.hillBack} d="M0 230 C65 160 112 203 180 170 S307 125 400 192 V300 H0Z" />
+                  <path className={styles.hillFront} d="M0 263 C90 223 135 260 220 232 S325 194 400 239 V300 H0Z" />
+                  <path className={styles.waveBack} d="M0 186 Q50 158 100 186 T200 186 T300 186 T400 186 V300 H0Z" />
+                  <path className={styles.waveFront} d="M0 244 Q50 216 100 244 T200 244 T300 244 T400 244 V300 H0Z" />
+                </svg>
+              </div>
+              <span className={styles.placeholderLabel}><Camera size={13} aria-hidden="true" />Photo placeholder</span>
+              <span className={styles.location}><SelectedIcon size={16} aria-hidden="true" />{selected.location}{townCenter ? ' \u00b7 Town center' : ''}</span>
+            </div>
+            <div className={styles.detailsBody}>
+              <p id="selected-barangay-label" className={styles.selectedLabel}>Selected barangay</p>
+              <h3 id="selected-barangay-heading">{selected.name}</h3>
+              {!matches.some(item => item.name === selected.name) && <p className={styles.filterNote}>Not in the current filter</p>}
+              {detailRows(selected).length > 0 && <dl className={styles.detailRows}>
+                {detailRows(selected).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+              </dl>}
+              <Link to="/about/barangays" className={`${styles.button} ${styles.viewPage}`}>View barangay page <ArrowRight size={18} aria-hidden="true" /></Link>
+            </div>
+          </div>
         </aside>}
         <fieldset id="barangay-options" className={styles.choices}>
           <legend className="sr-only">Barangays</legend>
@@ -111,7 +129,7 @@ export default function BarangaySelector() {
               </label>;
             })}
           </div> : <div className={styles.empty}>
-            <p>No barangay found. Try a different spelling or clear the filter.</p>
+            <p>No barangay matches your search. Try a different name or choose All.</p>
             <button type="button" onClick={() => { setQuery(''); setLocation('All'); }}>Reset search and filters</button>
           </div>}
         </fieldset>

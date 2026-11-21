@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { textContrast } from './uiContrast';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 const baseline = process.env.TALWEB_CONNECT_BASELINE === '1';
@@ -52,7 +53,7 @@ for (const width of [360, 768, 1280, 1920]) test(`connect with Talibon layout an
   if (width >= 1024) {
     expect(mapBox!.x).toBeGreaterThan(socialBox!.x + socialBox!.width);
     expect(mapBox!.height).toBeGreaterThanOrEqual(576);
-    expect(mapBox!.width / socialBox!.width).toBeCloseTo(1.5, 1);
+    expect(mapBox!.width / socialBox!.width).toBeCloseTo(1.4, 1);
 
   } else expect(mapBox!.y).toBeGreaterThanOrEqual(socialBox!.y + socialBox!.height);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -62,19 +63,7 @@ for (const width of [360, 768, 1280, 1920]) test(`connect with Talibon layout an
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     await expect(link).toHaveAccessibleName(/opens in a new tab/);
   }
-  const contrast = await section.evaluate(el => {
-    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 1;
-    const ctx = canvas.getContext('2d')!;
-    const rgba = (color: string) => { ctx.clearRect(0,0,1,1); ctx.fillStyle=color; ctx.fillRect(0,0,1,1); return [...ctx.getImageData(0,0,1,1).data]; };
-    const lum = (rgb: number[]) => rgb.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
-    return [...el.querySelectorAll('h2,h3,h4,p,time,address,a,button')].filter(node=>!node.closest('.sr-only')).map(node=>{
-      let parent: Element|null=node, background=[255,255,255,255];
-      while(parent) { const color=rgba(getComputedStyle(parent).backgroundColor); if(color[3]===255){background=color;break;} parent=parent.parentElement; }
-      const foreground=rgba(getComputedStyle(node).color);
-      const a=lum(foreground.slice(0,3)), b=lum(background.slice(0,3));
-      return {text:node.textContent?.trim(),ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
-    });
-  });
+  const contrast = await textContrast(section);
   for (const pair of contrast) expect(pair.ratio,pair.text).toBeGreaterThanOrEqual(4.5);
   console.log(JSON.stringify({width,minimumTextContrast:Math.min(...contrast.map(pair=>pair.ratio))}));
   // Opening the disclosure uses a mouse; enter keyboard modality before
@@ -83,9 +72,9 @@ for (const width of [360, 768, 1280, 1920]) test(`connect with Talibon layout an
   for (const control of await section.locator('a,button').all()) {
     await control.focus();
     await expect(control).toBeFocused();
-    await expect(control).toHaveCSS('outline-width','2px');
-    await expect(control).toHaveCSS('outline-offset','2px');
-    await expect(control).toHaveCSS('outline-color','rgb(0, 89, 138)');
+    await expect(control).toHaveCSS('outline-width','3px');
+    await expect(control).toHaveCSS('outline-offset','3px');
+    await expect(control).toHaveCSS('outline-color', await control.evaluate(el => el.closest('[class*="featureHeading"]') || el.closest('[class*="social_"] > [class*="card_"]') ? 'rgb(255, 255, 255)' : 'rgb(0, 89, 138)'));
   }
   await directions.blur();
   await section.screenshot({ path: resolve(artifacts, `after-${width}.png`) });

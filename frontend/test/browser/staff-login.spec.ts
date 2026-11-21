@@ -17,11 +17,13 @@ for (const viewport of [
   test(`${viewport.path} has a dedicated, accessible layout at ${viewport.width}px`, async ({ page }, info) => {
     await page.setViewportSize(viewport);
     await page.goto(viewport.path, { waitUntil: 'domcontentloaded' });
-    await expect(page.getByRole('heading', { name: 'Staff sign in', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Welcome back.', exact: true })).toBeVisible();
     await expect(page.getByRole('banner')).toHaveCount(1);
     await expect(page.getByRole('contentinfo')).toHaveCount(1);
     await expect(page.locator('footer#contact')).toHaveCount(0);
-    await expect(page.getByRole('link', { name: 'Back to public website' })).toHaveAttribute('href', '/');
+    await expect(page.locator('a[href="/"]')).toHaveAttribute('href', '/');
+    if (viewport.width >= 520 && viewport.width <= 1100) await expect(page.locator('a[href="/"]')).toBeHidden();
+    else await expect(page.getByRole('link', { name: 'Back to public website' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Privacy policy', exact: true })).toHaveAttribute('href', '/privacy-policy');
     const seal = page.getByRole('img', { name: 'Official seal of the Municipality of Talibon' });
     await expect.poll(() => seal.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -67,7 +69,7 @@ test('keyboard users can reveal and conceal a password without submitting or los
   await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Privacy policy', exact: true })).toBeFocused();
-  await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Forgot (?:your )?password/ })).toBeDisabled();
   expect(signIns).toEqual([]);
   await expect(password).toHaveValue('synthetic-password');
   await expect(password).toHaveAttribute('type', 'password');
@@ -100,18 +102,18 @@ test('pending authentication disables form actions and exposes the existing fail
   await page.getByLabel('Staff email').fill('staff@example.test');
   await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Signing in…', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Signing in', exact: true })).toBeDisabled();
   await expect(page.getByRole('form')).toHaveAttribute('aria-busy', 'true');
   await expect(page.getByLabel('Staff email')).toBeDisabled();
   await expect(page.getByLabel('Password', { exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Show password' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Forgot (?:your )?password/ })).toBeDisabled();
   finish();
   await expect(page.getByRole('alert')).toHaveText('Sign in and complete MFA to continue.');
   await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeEnabled();
   await expect(page.getByLabel('Password', { exact: true })).toHaveValue('synthetic-password');
   expect(signIns).toEqual([{ email: 'staff@example.test', password: 'synthetic-password' }]);
-  await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Forgot (?:your )?password/ })).toBeDisabled();
   await expect(page.getByRole('alert')).toBeVisible();
 });
 

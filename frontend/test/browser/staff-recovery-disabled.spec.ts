@@ -10,10 +10,10 @@ for (const path of ['/staff/login', '/login']) test(`disabled recovery at ${path
   page.on('request', request => { if (/\/api\/staff-auth\/(request-password-reset|reset-password)/.test(request.url())) recoveryRequests.push(request.url()); });
   await page.goto(`${path}#token=synthetic-expired-token`, { waitUntil: 'domcontentloaded' });
   await expect(page).toHaveURL(new RegExp(`${path}$`));
-  const recovery = page.getByRole('button', { name: 'Forgot password? (temporarily unavailable)', exact: true });
+  const recovery = page.getByRole('button', { name: 'Forgot your password?', exact: true });
   await expect(recovery).toBeDisabled();
   await expect(recovery).toHaveAttribute('tabindex', '-1');
-  await expect(recovery).toHaveAccessibleDescription('Password recovery is temporarily unavailable.');
+  await expect(recovery).toHaveAccessibleDescription('Ask your system administrator to reset it.');
   await expect(page.getByLabel('New password', { exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Sign in', exact: true }).focus();

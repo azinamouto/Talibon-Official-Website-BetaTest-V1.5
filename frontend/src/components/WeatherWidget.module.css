@@ -1,26 +1,42 @@
 .section {
   isolation: isolate;
-  /* The repository's weather JPGs cannot decode. Use the approved token-only
-     fallback until a valid, optimized sky photograph (2400px+) is supplied. */
-  background-color: var(--talweb-deep);
-  background-image: linear-gradient(115deg, var(--talweb-primary), var(--talweb-deep));
+  background-color: #05497f;
+  background-image: url("/images/talibon-weather-bg.svg");
   background-size: cover;
-  background-position: center 40%;
+  background-position: center;
   background-repeat: no-repeat;
 }
+
 .overlay {
-  background:
-    linear-gradient(to top, color-mix(in srgb, var(--talweb-deep) 22%, transparent), transparent 75%),
-    linear-gradient(to right,
-      color-mix(in srgb, var(--talweb-deep) 52%, transparent),
-      color-mix(in srgb, var(--talweb-deep) 62%, transparent) 55%,
-      color-mix(in srgb, var(--talweb-deep) 72%, transparent));
+  background: linear-gradient(90deg, rgba(4, 57, 99, .35), rgba(4, 57, 99, .8));
 }
-@media (max-width: 1023px) {
-  .section { background-position: center 30%; }
-  .overlay {
-    background: linear-gradient(to bottom,
-      color-mix(in srgb, var(--talweb-deep) 52%, transparent),
-      color-mix(in srgb, var(--talweb-deep) 72%, transparent));
+
+/* Keep text readable without changing the existing icon and tide-dot colors. */
+.section :where(p, span, h3) {
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  .section { background-position: left center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section *, .section *::before, .section *::after {
+    animation: none;
+    transition: none;
   }
+}
+
+/* Apply the page gutter once, matching the neighboring edited sections. */
+.section > :global(.site-container) {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: calc(var(--spacing) * 8);
+}
+@media (max-width: 779px) {
+  .section > :global(.site-container) { padding-inline: calc(var(--spacing) * 6); }
+}
+@media (max-width: 519px) {
+  .section > :global(.site-container) { padding-inline: calc(var(--spacing) * 4); }
 }

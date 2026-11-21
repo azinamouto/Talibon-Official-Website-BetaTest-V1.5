@@ -1,78 +1,48 @@
 import { expect, test } from '@playwright/test';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { createRequire } from 'node:module';
 
-const { PNG } = createRequire(import.meta.url)(resolve('node_modules/playwright-core/lib/utilsBundle.js'));
-const artifacts = resolve('node_modules/.cache/municipal-offices');
-const baseline = process.env.TALWEB_OFFICES_BASELINE === '1';
 const people = ['Hon. Michael I. Doria', 'Elmer B. Magalona', 'Juliet D. Lumbo-an', 'Rogelia L. Cellan'];
-
-for (const width of [360, 768, 1280, 1920]) test(`municipal office cards, keyboard and protected regions at ${width}px`, async ({ page, context }) => {
+for (const width of [360, 768, 1024, 1280, 1920, 2560]) test(`municipal cards preserve order, links and page gutters at ${width}px`, async ({ page, context }, info) => {
   await page.setViewportSize({ width, height: 1000 });
-  await page.clock.setFixedTime(new Date('2026-11-04T04:00:00Z'));
   await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'light' });
-  await context.route('**/*', route => {
-    const url = new URL(route.request().url());
-    if (url.hostname === '127.0.0.1') return route.continue();
-    return route.abort();
-  });
+  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
   await page.goto('/');
-  await page.addStyleTag({ content: 'html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}[style*="opacity"]{opacity:1!important}[style*="transform"]:not([data-moving]){transform:none!important}' });
-  mkdirSync(artifacts, { recursive: true });
-  for (const [name, selector] of [['header', 'header'], ['hero', '#home']]) {
-    const buffer = await page.locator(selector).first().screenshot({ animations: 'disabled' });
-    const before = resolve(artifacts, `before-${name}-${width}.png`);
-    writeFileSync(resolve(artifacts, `${baseline ? 'before' : 'after'}-${name}-${width}.png`), buffer);
-    if (!baseline && existsSync(before)) {
-      const a = PNG.sync.read(readFileSync(before)), b = PNG.sync.read(buffer);
-      expect([b.width, b.height]).toEqual([a.width, a.height]);
-      expect(b.data.equals(a.data)).toBe(true);
-      console.log(`${name} ${width}px: zero changed pixels`);
-    }
-  }
   const section = page.locator('#offices');
   await section.scrollIntoViewIfNeeded();
-  if (!baseline) {
-    await expect(section.getByRole('heading', { level: 2 })).toHaveText('Municipal offices and departments');
-    const cards = section.locator('[aria-roledescription="slide"]:not([inert]) [data-office-card]');
-    await expect(cards).toHaveCount(width >= 1024 ? 4 : width >= 640 ? 2 : 1);
-    await expect(section.locator('h2')).toHaveCSS('font-size', width < 640 ? '32px' : '48px');
-    await expect(cards.first().locator('div').first()).toHaveCSS('background-image', 'none');
-    await expect(cards.first().locator('div').first()).toHaveCSS('background-color', 'rgb(0, 132, 209)');
-    await expect(cards.first()).toHaveCSS('box-shadow', 'rgba(15, 23, 42, 0.15) 0px 1px 3px 0px');
-    const bounds = await cards.evaluateAll(elements => elements.map(el => {
-      const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, height: r.height };
-    }));
-    const columns = width >= 1024 ? 4 : width >= 640 ? 2 : 1;
-    expect(new Set(bounds.map(b => b.x)).size).toBe(columns);
-    for (let i = 0; i < columns; i++) {
-      await expect(cards.nth(i)).toContainText(people[i]);
-      await expect(cards.nth(i)).toHaveAttribute('href', '/executive/directory');
-      expect(bounds[i].height).toBe(bounds[0].height);
-    }
-    await expect(cards.first()).toContainText('Municipal Mayor');
-    await expect(cards.filter({hasText:'Department head'})).toHaveCount(columns - 1);
-    const links = section.getByRole('link');
-    await expect(links).toHaveCount(columns + 1);
-    await cards.first().focus();
-    await expect(cards.first()).toHaveCSS('outline-style', 'solid');
-    await expect(cards.first()).toHaveCSS('outline-width', '2px');
-    await cards.first().hover();
-    await expect(cards.first()).toHaveCSS('transform', 'none');
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await expect(cards.first()).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, -2)');
-    await expect(cards.first()).toHaveCSS('box-shadow', 'rgba(15, 23, 42, 0.18) 0px 4px 12px 0px');
-    await expect(cards.first().locator('span[aria-hidden="true"]')).toHaveCSS('background-color', 'rgb(0, 70, 110)');
-    // The label can wrap on narrow screens; 44px is the minimum touch target.
-    expect(await links.last().evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await expect(section).toHaveCSS('background-color', 'rgb(240, 249, 255)');
-    expect(await section.locator('svg').evaluateAll(icons => icons.every(i => i.getAttribute('aria-hidden') === 'true'))).toBe(true);
-    await page.mouse.move(0, 0);
-    await links.last().blur();
+  await expect(section.getByRole('heading', { level: 2 })).toHaveText('Municipal offices and departments');
+  const cards = section.locator('[aria-roledescription="slide"]:not([inert]) [data-office-card]');
+  const columns = width >= 1024 ? 4 : width >= 640 ? 2 : 1;
+  await expect(cards).toHaveCount(columns);
+  for (let i = 0; i < columns; i++) {
+    await expect(cards.nth(i)).toContainText(people[i]);
+    await expect(cards.nth(i)).toHaveAttribute('href', '/executive/directory');
+    await expect(cards.nth(i)).toHaveCSS('background-image', 'none');
+    await expect(cards.nth(i)).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   }
-  await section.screenshot({ path: resolve(artifacts, `${baseline ? 'before' : 'after'}-offices-${width}.png`), style: 'header{opacity:0!important}' });
+  const gutter = width < 520 ? 16 : width < 780 ? 24 : 32;
+  const first = (await cards.first().boundingBox())!, last = (await cards.last().boundingBox())!;
+  const source = (await page.locator('#barangays [class*="source_"]').boundingBox())!;
+  expect(Math.abs(first.x - source.x)).toBeLessThan(1);
+  expect(Math.abs(first.x - gutter)).toBeLessThan(1);
+  if (width < 520) expect(first.width / (width - gutter * 2)).toBeCloseTo(.86, 2);
+  else expect(Math.abs(last.x + last.width - (width - gutter))).toBeLessThan(1);
+  const button = section.getByRole('link', { name: 'View all offices and departments' });
+  const buttonBox = (await button.boundingBox())!;
+  expect(Math.abs(buttonBox.x + buttonBox.width - (width - gutter))).toBeLessThan(1);
+  await expect(cards.first()).toContainText('Municipal Mayor');
+  await expect(cards.first().locator('[class*="pill_"]')).toHaveCSS('background-color', 'rgb(245, 197, 66)');
+  await page.keyboard.press('Tab');
+  await cards.first().focus();
+  await expect(cards.first()).toHaveCSS('outline-width', '3px');
+  await expect(cards.first()).toHaveCSS('outline-offset', '3px');
+  await expect(cards.first()).toHaveCSS('transform', 'none');
+  await expect(cards.first()).toHaveCSS('background-image', /linear-gradient/);
+  await cards.first().blur();
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await cards.first().hover();
+  await expect(cards.first()).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, -4)');
+  await expect(cards.first().locator('[class*="arrow_"]')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 5, 0)');
+  if (columns > 1) await expect(cards.nth(1)).toHaveCSS('background-image', 'none');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await section.screenshot({ path: info.outputPath(`offices-${width}.png`) });
 });

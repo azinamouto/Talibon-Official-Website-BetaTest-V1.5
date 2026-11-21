@@ -6,10 +6,9 @@ for (const width of [375, 768, 1280, 1920]) test(`decorative icon motion is scop
   await context.route('**/api/**', route => route.fulfill({ json: [] }));
   await page.goto('/');
   await page.addStyleTag({ content: '[style*="opacity"]{opacity:1!important}[style*="transform"]:not([data-moving]){transform:none!important}' });
-  const officeCount=width>=1024?4:width>=640?2:1;
   const icons=page.locator('.icon-float:not([inert] *)');
-  await expect(icons).toHaveCount(officeCount+4);
-  await expect(page.locator('#offices .icon-float:not([inert] *)')).toHaveCount(officeCount);
+  await expect(icons).toHaveCount(4);
+  await expect(page.locator('#offices .icon-float:not([inert] *)')).toHaveCount(0);
   await expect(page.locator('#transparency .icon-float')).toHaveCount(4);
   await expect(page.locator('#home .icon-float, header .icon-float, footer .icon-float, button .icon-float, nav .icon-float, input .icon-float')).toHaveCount(0);
   expect(await icons.evaluateAll(els=>els.every(el=>el.getAttribute('aria-hidden')==='true'))).toBe(true);
@@ -33,8 +32,8 @@ for (const width of [375, 768, 1280, 1920]) test(`decorative icon motion is scop
   const timing=await icons.evaluateAll(els=>els.map(el=>{
     const s=getComputedStyle(el);return {duration:s.animationDuration,delay:s.animationDelay,direction:s.animationDirection,easing:s.animationTimingFunction,willChange:s.willChange};
   }));
-  for (let i=0;i<officeCount+4;i++) {
-    expect(timing[i]).toEqual({duration:'4.2s',delay:['0s','0.6s','1.2s','1.8s'][(i<officeCount?i:i-officeCount)%4],direction:'alternate',easing:'ease-in-out',willChange:'transform'});
+  for (let i=0;i<4;i++) {
+    expect(timing[i]).toEqual({duration:'4.2s',delay:['0s','0.6s','1.2s','1.8s'][i%4],direction:'alternate',easing:'ease-in-out',willChange:'transform'});
   }
   await icons.evaluateAll(els=>els.forEach(el=>el.getAnimations().forEach(animation=>{
     animation.pause(); animation.currentTime=Number(animation.effect!.getTiming().delay)+4200;
@@ -47,10 +46,10 @@ for (const width of [375, 768, 1280, 1920]) test(`decorative icon motion is scop
   }))).toBe(true);
   const officeCard=page.locator('[aria-roledescription="slide"]:not([inert]) [data-office-card]').first();
   await officeCard.hover();
-  await expect(officeCard.locator('.icon-float')).toHaveCSS('animation-play-state','paused');
+  await expect(officeCard.locator('svg').first()).toHaveCSS('animation-name','none');
   await page.mouse.move(0,0);
   await officeCard.focus();
-  await expect(officeCard.locator('.icon-float')).toHaveCSS('animation-play-state','paused');
+  await expect(officeCard.locator('svg').first()).toHaveCSS('animation-name','none');
   const documentLink=page.locator('#transparency a').first();
   await documentLink.focus();
   await expect(page.locator('#transparency .icon-float').first()).toHaveCSS('animation-play-state','paused');

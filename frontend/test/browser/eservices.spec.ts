@@ -44,9 +44,9 @@ for (const width of [375, 1280]) test(`anonymous navigation and placeholder fit 
 });
 test('registration remains absent and email recovery remains disabled', async ({ page }) => {
   await page.goto('/login?view=register', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { name: 'Staff sign in', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome back.', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create account' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /Forgot password.*temporarily unavailable/i })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Forgot your password/i })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('Staff email')).toBeVisible();
   await expect(page.getByLabel('Password', { exact: true })).toBeVisible();

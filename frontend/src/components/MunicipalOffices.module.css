@@ -1,62 +1,140 @@
 .section {
   background: var(--talweb-background);
-  padding-block: 40px;
+  padding-block: clamp(40px, 6vw, 80px);
 }
-.intro { text-align: center; margin-bottom: 24px; }
-.label { display: block; margin-bottom: 12px; color: var(--talweb-deep); font-size: 16px; font-weight: 600; }
-.heading { color: #0f172a; font-size: 32px; font-weight: 700; line-height: 1.15; margin-bottom: 12px; }
-.intro p { max-width: 720px; margin-inline: auto; color: var(--talweb-muted); font-size: 18px; line-height: 1.6; }
-.slideshow { min-width: 0; }
-.viewport { overflow: hidden; padding: 4px; margin: -4px; touch-action: pan-y; }
-.track { display: flex; align-items: stretch; gap: var(--office-gap, 16px); }
+.layout {
+  --office-gutter: calc(var(--spacing) * 8);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px 24px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin-inline: 0;
+  padding-inline: var(--office-gutter);
+}
+.intro { grid-area: 1 / 1 / auto / -1; min-width: 0; padding-inline-end: 220px; text-align: left; }
+.label { display: block; margin-bottom: 12px; color: var(--talweb-deep); font-size: 15px; font-weight: 700; }
+.heading { max-width: 720px; margin: 0 0 14px; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(28px, 3.2vw, 42px); font-weight: 800; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
+.intro p { max-width: 720px; margin: 0; color: var(--talweb-muted); font-size: 17px; line-height: 1.7; }
+.slideshow { grid-area: 2 / 1 / auto / -1; min-width: 0; }
+.viewport { grid-area: 2 / 1 / auto / -1; min-width: 0; overflow: clip; overflow-clip-margin: 8px; padding: 4px; margin: -4px; touch-action: pan-y; }
+/* The slide widths and existing translateX share these presentation values. */
+.track {
+  --office-gap: 20px;
+  --office-card-width: calc((100% - 60px) / 4);
+  display: flex;
+  align-items: stretch;
+  gap: var(--office-gap);
+}
 .track[data-moving="true"] { transition: transform 360ms ease-in-out; }
 .slide { display: flex; flex: 0 0 var(--office-card-width, 292px); min-width: 0; }
 .slide .card { width: 100%; }
-.slide[inert] :global(.icon-float) { animation: none; will-change: auto; }
-.controls { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.controls > button { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--color-brand-border); background: var(--talweb-card); color: var(--talweb-deep); font-size: 14px; font-weight: 600; cursor: pointer; }
-.controls > button:hover:not(:disabled) { background: var(--talweb-background); border-color: var(--talweb-deep); }
-.controls > button:disabled { cursor: not-allowed; }
-.dots { display: flex; align-items: center; }
-.dots button { display: grid; place-items: center; width: 32px; min-width: 32px; height: 44px; border: 0; background: transparent; cursor: pointer; }
-.dots button span { display: block; width: 8px; height: 8px; border-radius: 999px; background: var(--talweb-deep); opacity: .3; }
-.dots button[aria-current] span { width: 24px; opacity: 1; }
-.controls button:focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 2px; }
-.progress { width: 240px; max-width: 100%; height: 3px; margin: 16px auto 0; background: var(--color-brand-border); overflow: hidden; }
-.progress span { display: block; height: 100%; background: var(--talweb-deep); transform-origin: left; animation: office-progress 4500ms linear forwards; }
-@keyframes office-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.controls { position: absolute; inset-block-start: 0; inset-inline-end: var(--office-gutter); display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.controls > button { display: inline-flex; align-items: center; justify-content: center; min-width: 46px; height: 46px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--color-brand-border); background: var(--talweb-card); color: var(--talweb-deep); font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color 180ms, border-color 180ms; }
+.controls > button:hover:not(:disabled) { background: color-mix(in srgb, var(--talweb-primary) 10%, var(--talweb-card)); border-color: var(--talweb-deep); }
+.controls > button:disabled { opacity: .4; cursor: not-allowed; }
+/* Preserve the existing starting-office controls and their keyboard handlers. */
+.dots { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.dots:focus-within { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip-path: none; display: flex; gap: 4px; }
+.dots button { display: grid; place-items: center; width: 32px; height: 46px; border-radius: 8px; background: var(--talweb-card); cursor: pointer; }
+.dots button span { width: 8px; height: 8px; border-radius: 999px; background: var(--talweb-deep); opacity: .35; }
+.dots button[aria-current] span { opacity: 1; }
+.controls button:focus-visible, .card:focus-visible, .button:focus-visible { outline: 3px solid var(--talweb-deep); outline-offset: 3px; }
+.progress { position: absolute; inset-block-end: 24px; inset-inline-start: var(--office-gutter); align-self: center; width: 100%; max-width: 360px; height: 4px; border-radius: 999px; background: var(--color-brand-border); overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--talweb-deep); animation: none; }
 .card {
   display: flex;
   flex-direction: column;
+  gap: 22px;
   min-width: 0;
-  color: #0f172a;
-  background: var(--talweb-card);
-  border-radius: 24px;
-  overflow: hidden;
+  min-height: 236px;
+  padding: 22px;
+  border: 1px solid var(--office-card-border, #d3e3f0);
+  border-radius: 22px;
+  background: var(--office-card-background, white);
+  color: var(--office-card-text, #0b2547);
   text-decoration: none;
-  box-shadow: 0 1px 3px rgb(15 23 42 / 15%);
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transform: var(--office-card-transform, none);
+  box-shadow: var(--office-card-shadow, none);
+  transition: background 200ms, color 200ms, border-color 200ms, transform 200ms, box-shadow 200ms;
 }
-.band { display: flex; align-items: center; justify-content: center; height: 80px; flex: none; color: #fff; background: var(--talweb-primary); }
-.body { display: flex; flex-direction: column; flex: 1; padding: 16px; }
-.title { font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--talweb-muted); margin-bottom: 4px; }
-.name { font-size: 18px; font-weight: 700; line-height: 1.4; color: #0f172a; overflow-wrap: anywhere; margin-bottom: 16px; }
-.bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
-.pill { border-radius: 999px; padding: 4px 12px; background: #e0f2fe; color: #082f49; font-size: 14px; font-weight: 600; line-height: 1.5; }
-.arrow { width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center; color: #fff; background: var(--talweb-deep); border-radius: 12px; transition: background-color 160ms ease; }
-.card:hover, .card:focus-visible { transform: translateY(-2px); box-shadow: 0 4px 12px rgb(15 23 42 / 18%); }
-.card:hover .arrow, .card:focus-visible .arrow { background: #00466e; }
-.card:focus-visible, .button:focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 2px; }
-.viewAll { margin-top: 24px; text-align: center; }
-.button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 44px; padding: 10px 20px; border-radius: 12px; background: var(--talweb-deep); color: #fff; font-size: 14px; font-weight: 700; line-height: 1.5; text-decoration: none; transition: background-color 160ms ease; }
+.cardTop { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.band { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex: none; border-radius: 14px; color: var(--office-icon-color, #075f9c); background: var(--office-icon-background, #e4f1fb); }
+.body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.title { margin: 0 0 8px; color: var(--office-title-color, #4a5f7a); font-size: 14px; font-weight: 500; line-height: 1.6; }
+.name { margin: 0 0 22px; color: var(--office-card-text, #0b2547); font-family: var(--font-display); font-size: 21px; font-weight: 800; line-height: 1.35; overflow-wrap: anywhere; letter-spacing: -0.02em; }
+.bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--office-footer-border, #d3e3f0); color: var(--office-footer-color, #075f9c); font-size: 14px; font-weight: 700; }
+.pill { padding: 5px 12px; border-radius: 999px; background: var(--office-chip-background, #e4f1fb); color: var(--office-chip-color, #075f9c); font-size: 12.5px; font-weight: 700; line-height: 1.5; }
+.arrow { display: inline-flex; flex: none; transform: var(--office-arrow-transform, none); transition: transform 200ms; }
+.band, .title, .name, .bottom, .pill { transition: background 200ms, color 200ms, border-color 200ms; }
+.mayorCard { --office-chip-background: #f5c542; --office-chip-color: #3a2a00; }
+.card:focus-visible {
+  --office-card-background: linear-gradient(160deg, #0a5aa0, #06345f);
+  --office-card-border: transparent;
+  --office-card-text: white;
+  --office-title-color: #cfe2f5;
+  --office-icon-background: #ffffff24;
+  --office-icon-color: #f5c542;
+  --office-chip-background: #f5c542;
+  --office-chip-color: #3a2a00;
+  --office-footer-color: white;
+  --office-footer-border: #ffffff40;
+  --office-arrow-transform: translateX(5px);
+  --office-card-transform: translateY(-4px);
+  --office-card-shadow: 0 18px 36px rgba(6, 52, 95, .28);
+}
+@media (hover: hover) {
+  .card:hover {
+    --office-card-background: linear-gradient(160deg, #0a5aa0, #06345f);
+    --office-card-border: transparent;
+    --office-card-text: white;
+    --office-title-color: #cfe2f5;
+    --office-icon-background: #ffffff24;
+    --office-icon-color: #f5c542;
+    --office-chip-background: #f5c542;
+    --office-chip-color: #3a2a00;
+    --office-footer-color: white;
+    --office-footer-border: #ffffff40;
+    --office-arrow-transform: translateX(5px);
+    --office-card-transform: translateY(-4px);
+    --office-card-shadow: 0 18px 36px rgba(6, 52, 95, .28);
+  }
+}
+.viewAll { grid-area: 3 / 2; text-align: right; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 14px 22px; border-radius: 14px; background: var(--talweb-deep); color: white; font-size: 14px; font-weight: 700; line-height: 1.5; text-decoration: none; transition: background-color 180ms; }
 .button svg { flex: none; }
-.button:hover { background: #00466e; }
-@media (min-width: 640px) { .heading { font-size: 48px; } }
-@media (prefers-reduced-motion: reduce) {
-  .card, .arrow, .button { transition: none; }
-  .card:hover, .card:focus-visible { transform: none; }
-  .track[data-moving="true"] { transition: none; }
-  .progress span { animation: none; transform: scaleX(0); }
+.button:hover { background: color-mix(in srgb, var(--talweb-deep) 80%, var(--color-ink)); }
+/* Follow the existing site theme without adding a theme system. */
+:global(.dark) .section {
+  --talweb-background: var(--color-dark-bg);
+  --talweb-card: var(--color-dark-surface);
+  --talweb-muted: var(--color-dark-muted);
+  --talweb-deep: var(--color-blue-300);
+  --color-ink: var(--color-dark-text);
+  --color-brand-border: var(--color-dark-border);
 }
-
-.band svg { width: 36px; height: 36px; }
+:global(.dark) .button { background: var(--color-blue-950); }
+:global(.dark) .button:hover { background: var(--color-dark-surface); }
+@media (max-width: 1023px) { .track { --office-card-width: calc((100% - 20px) / 2); } }
+@media (max-width: 639px) { .track { --office-card-width: 100%; } }
+@media (max-width: 779px) {
+  .layout { --office-gutter: calc(var(--spacing) * 6); grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .intro { padding-inline-end: 0; }
+  .slideshow { grid-area: 2 / 1; display: flex; flex-direction: column; gap: 24px; }
+  .controls { position: static; order: -1; justify-content: flex-end; }
+  .progress { position: static; align-self: flex-start; }
+  .viewAll { grid-area: 3 / 1; text-align: right; }
+}
+@media (max-width: 519px) {
+  .layout { --office-gutter: calc(var(--spacing) * 4); }
+  .track { --office-card-width: 86%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .section *, .section *::before, .section *::after { transition: none; }
+  .card, .arrow { transform: none; }
+  .track[data-moving="true"] { transition: none; }
+  .progress span { animation: none; }
+}

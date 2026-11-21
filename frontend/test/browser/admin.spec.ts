@@ -45,7 +45,7 @@ test('staff portal redirects unauthenticated visitors to staff-only sign in', as
   await context.route('**/api/staff/me', route => route.fulfill({ status: 401, json: { message: 'Unauthorized' } }));
   await page.goto('/admin');
   await expect(page).toHaveURL(/\/staff\/login$/);
-  await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
   await expect(page.getByLabel('Staff email')).toBeVisible();
   await expect(page.getByRole('link', { name: /sign up|register/i })).toHaveCount(0);
 });
@@ -220,7 +220,7 @@ test('sign out preserves protected login routing', async ({ page, context }) => 
   await expect(page.getByRole('heading', { name: 'Dashboard overview' })).toBeVisible();
   await page.getByRole('button', { name: 'Sign out', exact: true }).click();
   await expect(page).toHaveURL(/\/staff\/login$/);
-  await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
 });
 
 test('CMS routes use their own shell while public pages retain public navigation and footer', async ({ page, context }) => {

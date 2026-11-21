@@ -28,6 +28,7 @@ export default function WeatherWidget() {
     >
       {/* Separate scrim keeps all content and its original geometry untouched. */}
       <div 
+        aria-hidden="true"
         className={`${styles.overlay} absolute inset-0 z-0 pointer-events-none`}
       />
 

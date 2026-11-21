@@ -165,9 +165,9 @@ export default function OfficeSlideshow({children}: {children: ReactNode}) {
       </div>
       <button type="button" aria-label="Next office" onClick={() => go(1)}><ArrowRight size={20} aria-hidden="true" /></button>
       <button type="button" disabled={!!reducedMotion} title={reducedMotion ? 'Autoplay is disabled by your reduced-motion preference' : undefined}
-        aria-label={paused || reducedMotion ? 'Play slideshow' : 'Pause slideshow'} onClick={() => setPaused(value => !value)}>{paused || reducedMotion ? 'Play' : 'Pause'}</button>
+        aria-pressed={paused} aria-label={paused || reducedMotion ? 'Play slideshow' : 'Pause slideshow'} onClick={() => setPaused(value => !value)}>{paused || reducedMotion ? 'Play' : 'Pause'}</button>
     </div>
-    <div className={styles.progress} aria-hidden="true"><span key={cycle} style={{animationPlayState:playing ? 'running' : 'paused',animationName:reducedMotion ? 'none' : undefined}} /></div>
+    <div className={styles.progress} aria-hidden="true"><span key={cycle} style={{width:`${((current + 1) / count) * 100}%`, animationPlayState:playing ? 'running' : 'paused',animationName:reducedMotion ? 'none' : undefined}} /></div>
     <p className="sr-only" aria-live={playing ? 'off' : 'polite'} aria-atomic="true">Starting with office {current + 1} of {count}. Showing {Math.min(visible,count)} offices.</p>
   </div>;
 }

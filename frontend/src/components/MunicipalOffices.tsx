@@ -54,7 +54,7 @@ export default function MunicipalOffices() {
 
   return (
     <section id="offices" aria-labelledby="municipal-offices-heading" className={`${solidTheme.section} ${styles.section}`}>
-      <div className="site-container">
+      <div className={`site-container ${styles.layout}`}>
         <div className={styles.intro}>
           <span className={styles.label}>Abante Talibon!</span>
           <h2 id="municipal-offices-heading" className={styles.heading}>Municipal offices and departments</h2>
@@ -65,15 +65,18 @@ export default function MunicipalOffices() {
           {offices.map((office, idx) => (
             <Link key={office.title} to="/executive/directory" data-office-card
               aria-label={`${office.title} ${office.officer}`}
-              className={styles.card}>
-              <div className={styles.band}>
-                <office.icon className="icon-float" size={44} strokeWidth={1.75} aria-hidden="true" />
+              className={`${styles.card} ${idx === 0 ? styles.mayorCard : ''}`}>
+              <div className={styles.cardTop}>
+                <div className={styles.band}>
+                  <office.icon size={24} strokeWidth={1.75} aria-hidden="true" />
+                </div>
+                <span className={styles.pill}>{idx === 0 ? 'Municipal Mayor' : 'Department head'}</span>
               </div>
               <div className={styles.body}>
                 <h3 className={styles.title}>{office.title}</h3>
                 <p className={styles.name}>{office.officer}</p>
                 <div className={styles.bottom}>
-                  <span className={styles.pill}>{idx === 0 ? 'Municipal Mayor' : 'Department head'}</span>
+                  <span>View office</span>
                   <span className={styles.arrow} aria-hidden="true"><ArrowRight size={20} aria-hidden="true" /></span>
                 </div>
               </div>

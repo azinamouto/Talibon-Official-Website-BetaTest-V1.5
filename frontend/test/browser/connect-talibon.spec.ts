@@ -74,7 +74,10 @@ for (const width of [360, 768, 1280, 1920]) test(`connect with Talibon layout an
     await expect(control).toBeFocused();
     await expect(control).toHaveCSS('outline-width','3px');
     await expect(control).toHaveCSS('outline-offset','3px');
-    await expect(control).toHaveCSS('outline-color', await control.evaluate(el => el.closest('[class*="featureHeading"]') || el.closest('[class*="social_"] > [class*="card_"]') ? 'rgb(255, 255, 255)' : 'rgb(0, 89, 138)'));
+    // Only the Information Office card has a dark background. The separate
+    // More Talibon pages card uses a blue outline against its light background.
+    const onDarkCard = await control.evaluate(el => !!el.closest('[aria-labelledby="information-office-heading"]'));
+    await expect(control).toHaveCSS('outline-color', onDarkCard ? 'rgb(255, 255, 255)' : 'rgb(0, 89, 138)');
   }
   await directions.blur();
   await section.screenshot({ path: resolve(artifacts, `after-${width}.png`) });

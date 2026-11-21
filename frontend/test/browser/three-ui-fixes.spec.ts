@@ -18,7 +18,8 @@ for (const width of [375, 768, 1280, 1920]) test(`three scoped UI fixes at ${wid
   expect(new Set(boxes.map(b => b.height)).size).toBe(1);
   expect(boxes[0].x).toBeCloseTo(width >= 1024 ? 32 : width >= 640 ? 24 : 16, 0);
   if (width >= 1024) {
-    expect(boxes[0].width).toBe(292);
+    // Four cards fill the available width, with three 20px gaps and 32px gutters.
+    expect(boxes[0].width).toBeCloseTo((width - 64 - 3 * 20) / 4, 1);
     expect(Math.round(boxes[3].x + boxes[3].width)).toBe(width - 32);
   }
   await offices.screenshot({ path: `test-results/three-fixes-offices-${width}.png` });

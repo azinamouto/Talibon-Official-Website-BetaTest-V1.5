@@ -58,12 +58,12 @@ for (const width of [360, 768, 1280, 1920]) test(`more pages disclosure and unch
   await expect(button).toHaveAttribute('aria-expanded', 'true');
   await expect(card.getByRole('link')).toHaveCount(6);
   const box = await links.evaluateAll(els => els.map(el => ({ x: el.getBoundingClientRect().x, height: el.getBoundingClientRect().height })));
-  expect(new Set(box.map(b => b.x)).size).toBe(width < 640 ? 1 : 2);
+  expect(new Set(box.map(b => b.x)).size).toBe(width < 560 ? 1 : 2);
   expect(box.every(b => b.height === 48)).toBe(true);
   for (const link of await links.all()) {
     await page.keyboard.press('Tab');
     await expect(link).toBeFocused();
-    await expect(link).toHaveCSS('outline-width', '2px');
+    await expect(link).toHaveCSS('outline-width', '3px');
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     await expect(link).toHaveAccessibleName(/opens in a new tab/);

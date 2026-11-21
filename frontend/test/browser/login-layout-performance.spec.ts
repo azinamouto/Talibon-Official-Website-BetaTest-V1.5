@@ -17,7 +17,7 @@ for (const width of [375, 1280]) {
       await expect(page.getByRole('status').filter({ hasText: 'Loading page' })).toBeVisible();
       before = await page.evaluate(() => ({ height: document.querySelector('#main-content')!.getBoundingClientRect().height }));
     } finally { release(); }
-    await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
     const after = await page.evaluate(() => ({ height: document.querySelector('#main-content')!.getBoundingClientRect().height,
       overflow: document.documentElement.scrollWidth > innerWidth }));
     expect(before!.height).toBeGreaterThanOrEqual(width === 375 ? 812 : 900);
@@ -33,7 +33,7 @@ for (const width of [375, 1280]) {
     await email.focus();
     await expect(email).toHaveCSS('outline-style', 'solid');
     await email.fill('lab@example.invalid');
-    await expect(page.getByRole('button', { name: /Forgot password/ })).toBeDisabled();
+    await expect(page.getByRole('button', { name: /Forgot (?:your )?password/ })).toBeDisabled();
     await expect(page.getByRole('button', { name: 'Request recovery', exact: true })).toHaveCount(0);
     await expect(email).toHaveValue('lab@example.invalid');
     await expect(page.getByLabel('Password', { exact: true })).toBeVisible();

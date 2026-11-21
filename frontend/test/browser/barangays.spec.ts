@@ -45,7 +45,7 @@ for (const width of [320, 360, 375, 768, 1280, 1920]) test(`barangay picker, nat
   await expect(choices.getByRole('radio')).toHaveCount(1);
   await expect(card.getByRole('heading')).toHaveText('Santo Ni\u00f1o');
   await search.fill('unmatched-name-123');
-  await expect(section.getByText('No barangay found. Try a different spelling or clear the filter.')).toBeVisible();
+  await expect(section.getByText('No barangay matches your search. Try a different name or choose All.')).toBeVisible();
   await section.getByRole('button', { name: 'Reset search and filters' }).click();
   await choices.getByRole('radio', { name: 'Poblacion', exact: true }).locator('..').click();
   if (width < 900) await expect(card).toBeInViewport({ ratio: 1 });
@@ -56,11 +56,11 @@ for (const width of [320, 360, 375, 768, 1280, 1920]) test(`barangay picker, nat
   await expect(chip.locator('..').locator('span').first()).toHaveCSS('outline-width', '3px');
   await expect(chip.locator('..').locator('span').first()).toHaveCSS('transition-duration', '0s');
   const chipBox = await choices.boundingBox(), filterBox = await filters.boundingBox(), cardBox = await card.boundingBox();
-  if (width >= 900) { expect(cardBox!.width).toBe(400); expect(cardBox!.x).toBeGreaterThan(chipBox!.x); expect(Math.abs(cardBox!.y-filterBox!.y)).toBeLessThan(1); }
+  if (width >= 1000) { expect(cardBox!.width).toBe(420); expect(cardBox!.x).toBeGreaterThan(chipBox!.x); const controls=await section.locator('[class*="controls_"]').boundingBox(); expect(Math.abs(cardBox!.y-controls!.y)).toBeLessThan(1); }
   else { expect(cardBox!.y).toBeGreaterThan(filterBox!.y); expect(chipBox!.y).toBeGreaterThanOrEqual(cardBox!.y+cardBox!.height); }
   for (const name of ['San Francisco', 'Santo Ni\u00f1o']) {
     const input = choices.getByRole('radio', { name, exact: true });
-    expect(await input.locator('..').locator('span').first().evaluate(el => el.getBoundingClientRect().height)).toBe(48);
+    expect(await input.locator('..').locator('span').first().evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(52);
   }
   await chip.blur();
   await page.mouse.move(0, 0);

@@ -12,11 +12,11 @@ it('disables password recovery and discards old reset links while retaining sign
   vi.stubEnv('VITE_STAFF_PASSWORD_RECOVERY_ENABLED','false');
   history.replaceState(null,'','/staff/login#token=synthetic-expired-token');
   render(<MemoryRouter><StaffLogin/></MemoryRouter>);
-  const recovery=screen.getByRole('button',{name:/Forgot password\?/});
+  const recovery=screen.getByRole('button',{name:/Forgot (?:your )?password\?/});
   expect(recovery).toBeDisabled();
   expect(recovery).toHaveAttribute('tabindex','-1');
-  expect(recovery).toHaveAccessibleName('Forgot password? (temporarily unavailable)');
-  expect(recovery).toHaveAccessibleDescription('Password recovery is temporarily unavailable.');
+  expect(recovery).toHaveAccessibleName('Forgot your password?');
+  expect(recovery).toHaveAccessibleDescription('Ask your system administrator to reset it.');
   fireEvent.click(recovery);
   expect(screen.queryByRole('button',{name:'Request recovery'})).not.toBeInTheDocument();
   expect(screen.getByLabelText('Password')).toBeVisible();
@@ -34,7 +34,7 @@ it('retains TOTP and backup-code MFA when password recovery is disabled',async()
   await screen.findByLabelText('Authenticator code');
   fireEvent.click(screen.getByRole('button',{name:'Use recovery code'}));
   expect(screen.getByLabelText('Recovery code')).toBeVisible();
-  expect(screen.getByRole('button',{name:/Forgot password\?/})).toBeDisabled();
+  expect(screen.getByRole('button',{name:/Forgot (?:your )?password\?/})).toBeDisabled();
   fireEvent.change(screen.getByLabelText('Recovery code'),{target:{value:'synthetic-backup-code'}});
   fireEvent.click(screen.getByRole('button',{name:'Continue'}));
   await vi.waitFor(()=>expect(staffRequest).toHaveBeenLastCalledWith('/api/staff-auth/two-factor/verify-backup-code',{code:'synthetic-backup-code'}));
@@ -42,7 +42,7 @@ it('retains TOTP and backup-code MFA when password recovery is disabled',async()
 it.each([undefined,'False',''])('fails closed for missing or unrecognized recovery flag %s',value=>{
   vi.stubEnv('VITE_STAFF_PASSWORD_RECOVERY_ENABLED',value);
   render(<MemoryRouter><StaffLogin/></MemoryRouter>);
-  expect(screen.getByRole('button',{name:/Forgot password\?/})).toBeDisabled();
+  expect(screen.getByRole('button',{name:/Forgot (?:your )?password\?/})).toBeDisabled();
 });
 it('skips unavailable recovery during keyboard navigation',async()=>{
   vi.stubEnv('VITE_STAFF_PASSWORD_RECOVERY_ENABLED','false');

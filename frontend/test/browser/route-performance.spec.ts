@@ -56,7 +56,7 @@ test('every staff portal alias still rejects anonymous sessions', async ({ page 
   for (const route of ['/admin', '/dashboard', '/cms', '/manage/photos']) {
     await page.goto(route);
     await expect(page).toHaveURL(/\/staff\/login$/);
-    await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Welcome back.' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'CMS Administration' })).toHaveCount(0);
   }
 });

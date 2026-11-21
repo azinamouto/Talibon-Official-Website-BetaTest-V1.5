@@ -1,4 +1,4 @@
-import { Clock3, ExternalLink, MapPin, Navigation, Route, Scan } from "lucide-react";
+import { ArrowRight, Clock3, ExternalLink, MapPin, Route, Scan } from "lucide-react";
 import { Link } from "react-router-dom";
 import styles from "./ConnectWithTalibon.module.css";
 
@@ -11,13 +11,18 @@ export default function Location() {
       <div id="talibon-map" className={styles.mapFrame}>
         <iframe id="talibon-interactive-map" src={`${mapsUrl}&output=embed`} className={styles.map} loading="eager"
           referrerPolicy="no-referrer-when-downgrade" title={"Google Maps — Talibon Municipal Hall"} tabIndex={-1} />
+        <div className={styles.explore}>
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={`${styles.button} ${styles.exploreButton}`}>
+            <ExternalLink size={18} aria-hidden="true" />Open in Maps<span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </div>
       </div>
       <div className={styles.infoPanel} data-location-panel>
         <p className={styles.findUs}>Find us</p>
         <h3 id="location-heading">Visit Municipal Hall</h3>
         <address className={styles.infoRow}>
           <span className={styles.rowIcon}><MapPin size={22} aria-hidden="true" /></span>
-          <span><strong>Municipal Hall, Poblacion</strong><br />Talibon, Bohol, 6325, Philippines</span>
+          <span><span className={styles.factLabel}>Address</span><strong>Municipal Hall, Poblacion</strong><br />Talibon, Bohol, 6325, Philippines</span>
         </address>
         <div className={styles.infoRow}>
           <span className={styles.rowIcon}><Clock3 size={22} aria-hidden="true" /></span>
@@ -32,10 +37,7 @@ export default function Location() {
         </div>
         <div className={styles.mapActions}>
           <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`} target="_blank" rel="noopener noreferrer" className={`${styles.button} ${styles.primary}`}>
-            <Navigation size={18} aria-hidden="true" />Get directions<span className="sr-only"> (opens in a new tab)</span>
-          </a>
-          <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={`${styles.button} ${styles.secondary}`}>
-            <ExternalLink size={18} aria-hidden="true" />Open in Maps<span className="sr-only"> (opens in a new tab)</span>
+            Get directions<ArrowRight size={18} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span>
           </a>
         </div>
         <p className={styles.mapCredit}><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Reference map: &#169; OpenStreetMap contributors<span className="sr-only"> (opens in a new tab)</span></a></p>

@@ -45,6 +45,7 @@ jobs:
           name: frontend-qa
           path: |
             frontend/coverage/
+            frontend/browser-gate-reports/
             frontend/test-results/
             frontend/test-results-eservices/
           if-no-files-found: warn

@@ -19,7 +19,8 @@ for (const width of [375, 768, 1280, 1920]) test(`About container and mayoral er
     return route.fulfill({ json: data });
   });
   for(const path of ['profile','seal','history','demographics','location','vicinity','industry','services','hymn','departments','barangays']) {
-    await page.goto(`/about/${path}`);
+    // Wait for lazy route chunks and the mocked API before measuring the page.
+    await page.goto(`/about/${path}`, { waitUntil: 'networkidle' });
     const heading = page.locator('main h1');
     await expect(heading).toBeVisible();
     await expect(page.getByRole('status', { name:'Loading content' })).toHaveCount(0);
@@ -30,7 +31,7 @@ for (const width of [375, 768, 1280, 1920]) test(`About container and mayoral er
       expect(r).not.toBeNull();
       const headerBottom = await page.locator('header').first().evaluate(el => el.getBoundingClientRect().bottom);
       expect(r!.y).toBeGreaterThan(headerBottom);
-      expect(Math.round(r!.x)).toBe(width >= 1024 ? 32 : width >= 640 ? 24 : 16);
+      expect(Math.round(r!.x)).toBe(width <= 768 ? 16 : 24);
     }).toPass({ timeout: 5000 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     if(path==='profile') {
@@ -41,7 +42,7 @@ for (const width of [375, 768, 1280, 1920]) test(`About container and mayoral er
   }
   await page.goto('/executive/directory');
   await expect(page.locator('main article')).toHaveCount(19);
-  expect(Math.round((await page.locator('main h1').boundingBox())!.x)).toBe(width >= 1024 ? 32 : width >= 640 ? 24 : 16);
+  expect(Math.round((await page.locator('main h1').boundingBox())!.x)).toBe(width <= 768 ? 16 : 24);
   await page.goto('/about/mayors');
   const eras = page.locator('main section[aria-labelledby]');
   await expect(eras).toHaveCount(mayors.length, { timeout: 15000 });

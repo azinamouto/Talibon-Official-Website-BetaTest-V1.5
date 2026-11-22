@@ -42,7 +42,7 @@ for(const width of [375,768,1280,1920]) test(`dropdown page spacing and detail l
     return route.fulfill({json:[]});
   });
   await mockMunicipalContent(context);
-  const gutter=width>=1024?32:width>=640?24:16;
+  const gutter=width<=768?16:24;
   for(const [path,title,cards] of routes){
     await page.goto(path);
     await page.addStyleTag({content:'[style*="opacity"]{opacity:1!important}[style*="transform"]{transform:none!important}'});

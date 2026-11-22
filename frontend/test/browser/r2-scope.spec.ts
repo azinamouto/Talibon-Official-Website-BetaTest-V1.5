@@ -18,9 +18,13 @@ test('mobile direct links remain informational', async ({ page }) => {
 test('home shortcuts no longer advertise applications, tracking or payment', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: /Pay Online|Track My Request|Apply for Permit|Access FiliPizen/ })).toHaveCount(0);
-  await page.locator('a[href="/e-services"]').filter({ visible: true }).first().focus();
+  const notice = page.getByRole('region', { name: 'Electronic services', exact: true });
+  await expect(notice.getByRole('heading', { name: 'Coming soon' })).toBeVisible();
+  const currentServices = notice.getByRole('link', { name: 'See how to get services today' });
+  await expect(currentServices).toHaveAttribute('href', '/transparency/charter');
+  await currentServices.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: 'Electronic Services', exact: true })).toBeVisible();
+  await expect(page).toHaveURL('/transparency/charter');
   await expect(page.getByRole('banner')).toBeVisible();
 });
 

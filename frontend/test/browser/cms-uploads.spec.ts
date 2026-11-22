@@ -6,13 +6,15 @@ const photoCategory='22222222-2222-4222-8222-222222222222',documentCategory='888
 const source={id:sourceId,reference:'Synthetic historical source',owner:'Fixture office',sha256:'a'.repeat(64),approved:false,reviewed_at:null};
 const image=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=','base64');
 async function mockCms(page:Page,role:'admin'|'editor'='editor') {
+ // Context routes stay installed during page teardown so late list refreshes cannot reach the dev proxy.
+ const context=page.context();
  const files=new Map<string,any>(),uploadResults=new Map<string,string>(),records=new Map<string,any>(),receipts=new Map<string,any>(),uploads:any[]=[],mutations:string[]=[],publications:any[]=[];
  let failFirst=false,hold=false,release:(()=>void)|null=null,losePublication=false,loseMediaPublication=false;
- await page.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
- await page.route('**/api/**',route=>route.fulfill({json:{data:[],pagination:{totalPages:0}}}));
- await page.route('**/api/staff/me',route=>route.fulfill({json:{id:'fixture-staff',role}}));
- await page.route('**/api/staff-auth/**',route=>route.fulfill({json:{success:true}}));
- await page.route('**/api/admin/media**',async route=>{
+ await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.fallback():route.abort());
+ await context.route('**/api/**',route=>route.fulfill({json:{data:[],pagination:{totalPages:0}}}));
+ await context.route('**/api/staff/me',route=>route.fulfill({json:{id:'fixture-staff',role}}));
+ await context.route('**/api/staff-auth/**',route=>route.fulfill({json:{success:true}}));
+ await context.route('**/api/admin/media**',async route=>{
   const request=route.request(),url=new URL(request.url()),body=request.method()==='POST'?request.postDataJSON():null;
   if(url.pathname.endsWith('/options'))return route.fulfill({json:{categories:[{id:photoCategory,title:'Website photos',kind:'photo',approved:true},{id:documentCategory,title:'Website documents',kind:'document',approved:true}],sources:[source]}});
   if(url.pathname.endsWith('/uploads')){
@@ -36,7 +38,7 @@ async function mockCms(page:Page,role:'admin'|'editor'='editor') {
   const data=[...files.values()].filter(file=>(!url.searchParams.get('kind') || file.kind===url.searchParams.get('kind')) && (!url.searchParams.get('q') || file.title.toLowerCase().includes(url.searchParams.get('q')!.toLowerCase())));
   return route.fulfill({json:{data,hasMore:false}});
  });
- await page.route('**/api/admin/content/**',async route=>{
+ await context.route('**/api/admin/content/**',async route=>{
   const request=route.request(),url=new URL(request.url()),body=request.method()==='POST'?request.postDataJSON():null;
   if(url.pathname.endsWith('/sources'))return route.fulfill({json:{data:[source]}});
   if(url.pathname.endsWith('/dashboard'))return route.fulfill({json:{counts:[],media:[],recent:[],activity:[]}});
@@ -58,18 +60,18 @@ async function mockCms(page:Page,role:'admin'|'editor'='editor') {
   if(action==='delete'){records.delete(id);return route.fulfill({status:201,json:{data:{id}}});}
   row.publication=action==='archive'?'archived':'draft';row.version++;return route.fulfill({status:201,json:{data:row}});
  });
- await page.route('**/api/public-content/**',route=>{
+ await context.route('**/api/public-content/**',route=>{
   const url=new URL(route.request().url()),kind=url.pathname.split('/')[3],page=Number(url.searchParams.get('page') || 1),limit=Number(url.searchParams.get('limit') || 20);
   const data=[...records.values()].filter(row=>row.kind===kind && row.publication==='published');
   return route.fulfill({json:{data,pagination:{page,limit,total:data.length,totalPages:data.length?1:0}}});
  });
- await page.route('**/api/media**',route=>{
+ await context.route('**/api/media**',route=>{
   const url=new URL(route.request().url()),id=url.pathname.split('/')[3];
   if(id)return files.get(id)?.publication==='published'?route.fulfill({contentType:'image/png',body:image}):route.fulfill({status:404,json:{}});
   const data=[...files.values()].filter(row=>row.publication==='published' && (!url.searchParams.get('kind') || row.kind===url.searchParams.get('kind'))).map(row=>({id:row.id,kind:row.kind,title:row.title,alt_text:row.alt_text,bytes:row.bytes,category:row.kind==='photo'?'Website photos':'Website documents',download_url:'/api/media/'+row.id+'/download'}));
   return route.fulfill({json:{data,hasMore:false}});
  });
- await page.route('**/api/news**',route=>{
+ await context.route('**/api/news**',route=>{
   const id=new URL(route.request().url()).pathname.split('/')[3],data=[...records.values()].filter(row=>['news','updates','advisories'].includes(row.kind) && row.publication==='published').map(row=>({id:row.id,title:row.title,content:row.body.content,summary:row.body.content.slice(0,280),category:row.kind==='updates'?'UPDATE':row.kind==='advisories'?'ADVISORY':'ARTICLE',date:row.published_at.slice(0,10),image_url:row.body.featuredAssetId?'/api/media/'+row.body.featuredAssetId+'/preview':null,file_url:null,author:null,status:'published'}));
   return route.fulfill({json:id?{data:data.find(row=>row.id===id)}:{data,pagination:{totalPages:1}}});
  });

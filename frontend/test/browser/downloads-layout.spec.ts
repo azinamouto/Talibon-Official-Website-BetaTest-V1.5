@@ -23,7 +23,7 @@ for(const width of [375,768,1280,1920]) test(`Downloadables layout, icon contras
   await expect(heading).toBeVisible();
   const cards=page.locator('[class*="_card_"]').filter({has:page.getByRole('link',{name:'Download File',exact:true})});
   await expect(cards).toHaveCount(11);
-  const gutter=width>=1024?32:width>=640?24:16;
+  const gutter=width<=768?16:24;
   const headerBottom=await page.locator('header').first().evaluate(el=>el.getBoundingClientRect().bottom);
   expect((await page.getByText('Resources',{exact:true}).boundingBox())!.y).toBeGreaterThan(headerBottom);
   expect(Math.round((await heading.boundingBox())!.x)).toBe(gutter);

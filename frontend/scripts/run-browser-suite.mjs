@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const suites = {
-  browser: { config: 'playwright.config.ts', minimum: 155, files: ['foundation.spec.ts', 'staff-login.spec.ts', 'staff-recovery-disabled.spec.ts', 'municipal-offices.spec.ts', 'media.spec.ts'] },
+  browser: { config: 'playwright.config.ts', minimum: 200, files: ['foundation.spec.ts', 'staff-login.spec.ts', 'staff-recovery-disabled.spec.ts', 'municipal-offices.spec.ts', 'media.spec.ts', 'connect-talibon.spec.ts', 'emergency-theme.spec.ts', 'five-section-refinements.spec.ts', 'three-ui-fixes.spec.ts', 'decorative-icons.spec.ts'] },
   admin: { config: 'playwright.admin.config.ts', minimum: 5, files: ['admin.spec.ts'] },
   contracts: { config: 'playwright.contract.config.ts', minimum: 10, files: ['about-contract.spec.ts', 'public-contract.spec.ts', 'search-contract.spec.ts'] },
   login: { config: 'playwright.staff.config.ts', minimum: 21, files: ['staff-login.spec.ts', 'foundation.spec.ts', 'staff-recovery-disabled.spec.ts', 'staff-recovery-enabled.spec.ts'] },

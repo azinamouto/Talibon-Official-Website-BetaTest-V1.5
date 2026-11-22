@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { expect, it, vi } from 'vitest';
 import BarangaySelector from '../../src/components/BarangaySelector';
@@ -11,8 +11,7 @@ vi.mock('../../src/data/barangayDirectory', async importOriginal => {
 });
 function setup(path = '/') {
   render(<MemoryRouter initialEntries={[path]}><BarangaySelector /></MemoryRouter>);
-  return { search: screen.getByRole('searchbox', { name: 'Find a barangay' }),
-    choices: screen.getByRole('group', { name: 'Barangays' }), filters: screen.getByRole('group', { name: 'Browse by location' }) };
+  return { choices: screen.getByRole('group', { name: 'Barangays' }), filters: screen.getByRole('group', { name: 'Browse by location' }) };
 }
 it('defaults to Poblacion with all original radios, correct type, no invented fields and existing routes', () => {
   const { choices } = setup();
@@ -50,18 +49,12 @@ it('filters radios, keeps full counts and retains a selected barangay outside th
   expect(within(choices).getAllByRole('radio')).toHaveLength(17);
   expect(screen.queryByText('Not in the current filter')).not.toBeInTheDocument();
 });
-it('searches without accents/case, selects a single match and resets empty results', async () => {
-  const { search, choices } = setup();
-  fireEvent.change(search, { target: { value: '  SANTO NINO ' } });
-  await waitFor(() => expect(screen.getByRole('complementary', { name: /Santo Ni\u00f1o/ })).toBeVisible());
-  expect(within(choices).getAllByRole('radio')).toHaveLength(1);
-  expect(within(choices).getByRole('radio')).toBeChecked();
-  fireEvent.change(search, { target: { value: 'unmatched-name-123' } });
-  expect(screen.getByText('No barangay matches your search. Try a different name or choose All.')).toBeVisible();
-  expect(within(choices).queryAllByRole('radio')).toHaveLength(0);
-  expect(screen.getByRole('complementary', { name: /Santo Ni\u00f1o/ })).toHaveTextContent('Not in the current filter');
-  fireEvent.click(screen.getByRole('button', { name: 'Reset search and filters' }));
-  expect(search).toHaveValue('');
+it('provides location filters without a search field and restores all barangays', () => {
+  const { choices, filters } = setup();
+  expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+  fireEvent.click(within(filters).getByRole('radio', { name: 'Island' }));
+  expect(within(choices).getAllByRole('radio')).toHaveLength(8);
+  fireEvent.click(within(filters).getByRole('radio', { name: 'All' }));
   expect(within(choices).getAllByRole('radio')).toHaveLength(25);
 });
 it.each([['/#barangay=busalian', 'Busalian'], ['/#barangay=not-valid', 'Poblacion'], ['/#barangay=%zz', 'Poblacion']])('reads valid selection hashes and ignores invalid ones: %s', (path, name) => {

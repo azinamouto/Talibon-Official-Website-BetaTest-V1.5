@@ -1,93 +1,87 @@
-import OfficeSlideshow from "./OfficeSlideshow";
 import solidTheme from "../styles/SolidTheme.module.css";
 import styles from "./MunicipalOffices.module.css";
-import { Building2, Briefcase, FileText, Calculator, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import agricultureLogo from "../assets/images/offices/agriculture.png";
+import treasuryLogo from "../assets/images/offices/treasury.png";
+import planningLogo from "../assets/images/offices/planning.png";
+import accountingLogo from "../assets/images/offices/accounting.png";
+import employmentLogo from "../assets/images/offices/employment.png";
+import marketLogo from "../assets/images/offices/market.png";
+
+const offices = [
+  {
+    title: "Office of the Municipal Agriculturist",
+    category: "Development Office",
+    description: "Supports farmers through agricultural programs, modernization, and food security projects.",
+    id: "agriculture",
+    logo: agricultureLogo,
+  },
+  {
+    title: "Municipal Treasury Office",
+    category: "Financial Office",
+    description: "Manages municipal financial resources, including revenue collection and disbursements.",
+    id: "treasury",
+    logo: treasuryLogo,
+  },
+  {
+    title: "Municipal Planning and Development Office",
+    category: "Planning Office",
+    description: "Formulates development plans and land-use policies for sustainable municipal growth.",
+    id: "planning",
+    logo: planningLogo,
+  },
+  {
+    title: "Municipal Accounting Office",
+    category: "Finance",
+    description: "Maintains accurate financial records and ensures accountability in public funds.",
+    id: "accounting",
+    logo: accountingLogo,
+  },
+  {
+    title: "Municipal Public Employment Service Office",
+    category: "Labor Office",
+    description: "Provides employment assistance, job matching, and training opportunities for residents.",
+    id: "employment",
+    logo: employmentLogo,
+  },
+  {
+    title: "Municipal Market Administration Office",
+    category: "Market Services",
+    description: "Supports the operation and administration of the municipal public market.",
+    id: "market",
+    logo: marketLogo,
+  },
+];
 
 export default function MunicipalOffices() {
-  const offices = [
-    {
-      title: "Office of the Municipal Mayor",
-      officer: "Hon. Michael I. Doria",
-      icon: Building2,
-      color: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400",
-      borderColor: "border-emerald-200 dark:border-emerald-800",
-      badgeTextColor: "text-emerald-800 dark:text-emerald-300",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
-      accentColor: "bg-emerald-600 dark:bg-emerald-500",
-      boxBg: "bg-white dark:bg-slate-900 border-emerald-200 dark:border-emerald-800"
-    },
-    {
-      title: "Municipal Planning & Development Coordinator",
-      officer: "Elmer B. Magalona",
-      icon: Briefcase,
-      color: "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400",
-      borderColor: "border-blue-200 dark:border-blue-800",
-      badgeTextColor: "text-blue-800 dark:text-blue-300",
-      iconColor: "text-blue-600 dark:text-blue-400",
-      accentColor: "bg-blue-600 dark:bg-blue-500",
-      boxBg: "bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-800"
-    },
-    {
-      title: "Office of the Municipal Local Civil Registrar",
-      officer: "Juliet D. Lumbo-an",
-      icon: FileText,
-      color: "bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400",
-      borderColor: "border-sky-200 dark:border-sky-800",
-      badgeTextColor: "text-sky-800 dark:text-sky-300",
-      iconColor: "text-sky-600 dark:text-sky-400",
-      accentColor: "bg-sky-600 dark:bg-sky-500",
-      boxBg: "bg-white dark:bg-slate-900 border-sky-200 dark:border-sky-800"
-    },
-    {
-      title: "Office of the Municipal Budget Officer",
-      officer: "Rogelia L. Cellan",
-      icon: Calculator,
-      color: "bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400",
-      borderColor: "border-purple-200 dark:border-purple-800",
-      badgeTextColor: "text-purple-800 dark:text-purple-300",
-      iconColor: "text-purple-600 dark:text-purple-400",
-      accentColor: "bg-purple-600 dark:bg-purple-500",
-      boxBg: "bg-white dark:bg-slate-900 border-purple-200 dark:border-purple-800"
-    }
-  ];
-
   return (
     <section id="offices" aria-labelledby="municipal-offices-heading" className={`${solidTheme.section} ${styles.section}`}>
       <div className={`site-container ${styles.layout}`}>
         <div className={styles.intro}>
           <span className={styles.label}>Abante Talibon!</span>
           <h2 id="municipal-offices-heading" className={styles.heading}>Municipal offices and departments</h2>
-          <p>Dedicated public servants committed to excellence and transparency in local governance.</p>
+          <p>Explore the offices serving Talibon and its communities.</p>
         </div>
-
-        <OfficeSlideshow>
-          {offices.map((office, idx) => (
+        <div className={styles.officeGrid}>
+          {offices.map(office => (
             <Link key={office.title} to="/executive/directory" data-office-card
-              aria-label={`${office.title} ${office.officer}`}
-              className={`${styles.card} ${idx === 0 ? styles.mayorCard : ''}`}>
-              <div className={styles.cardTop}>
-                <div className={styles.band}>
-                  <office.icon size={24} strokeWidth={1.75} aria-hidden="true" />
-                </div>
-                <span className={styles.pill}>{idx === 0 ? 'Municipal Mayor' : 'Department head'}</span>
-              </div>
-              <div className={styles.body}>
-                <h3 className={styles.title}>{office.title}</h3>
-                <p className={styles.name}>{office.officer}</p>
-                <div className={styles.bottom}>
-                  <span>View office</span>
-                  <span className={styles.arrow} aria-hidden="true"><ArrowRight size={20} aria-hidden="true" /></span>
+              aria-labelledby={`office-${office.id}`}
+              className={styles.departmentCard}>
+              <div className={styles.departmentHeader}>
+                <img src={office.logo} alt={`${office.title} logo`} width={112} height={112}
+                  loading="lazy" decoding="async" className={styles.officeLogo} />
+                <div className={styles.departmentIdentity}>
+                  <h3 id={`office-${office.id}`} className={styles.departmentTitle}>{office.title}</h3>
+                  <p className={styles.departmentCategory}>{office.category}</p>
                 </div>
               </div>
+              <p className={styles.departmentDescription}>{office.description}</p>
+              <p className={styles.departmentOfficer}>Official: <span>N/A</span></p>
             </Link>
           ))}
-        </OfficeSlideshow>
-
+        </div>
         <div className={styles.viewAll}>
-          <Link to="/executive/directory" className={styles.button}>
-            View all offices and departments <ArrowRight size={18} aria-hidden="true" />
-          </Link>
+          <Link to="/executive/directory" className={styles.button}>View all offices and departments</Link>
         </div>
       </div>
     </section>

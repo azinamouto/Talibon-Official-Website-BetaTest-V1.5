@@ -1,82 +1,48 @@
-import {test,expect} from '@playwright/test';
-import {mkdirSync} from 'node:fs';
-const shown='[aria-roledescription="slide"]:not([inert]) [data-office-card]';
-test.beforeEach(async({page,context})=>{
-  await context.route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());
-  await context.route('**/api/**',route=>route.fulfill({json:[]}));
-  await context.route('http://127.0.0.1:54321/**',route=>route.fulfill({json:[]}));
-});
-for(const width of [375,768,1280,1920]) test(`responsive slideshow and reduced motion at ${width}px`,async({page})=>{
-  await page.setViewportSize({width,height:1000});
-  await page.emulateMedia({reducedMotion:'reduce'});
+import { test, expect } from '@playwright/test';
+
+test.beforeEach(async ({ page, context }) => {
+  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await context.route('**/api/**', route => route.fulfill({ json: [] }));
   await page.goto('/');
-  const carousel=page.getByRole('region',{name:'Municipal offices slideshow'});
-  await carousel.scrollIntoViewIfNeeded();
-  const cards=carousel.locator(shown);
-  const columns=width>=1024?4:width>=640?2:1;
-  await expect(cards).toHaveCount(columns);
-  await expect(cards.first()).toContainText('Hon. Michael I. Doria');
-  await expect(carousel.getByRole('button',{name:'Play slideshow'})).toBeDisabled();
-  await expect(carousel.locator('[data-moving]')).toHaveAttribute('data-moving','false');
-  const rects=await cards.evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return {x:r.x,width:r.width,height:r.height};}));
-  expect(new Set(rects.map(r=>r.height)).size).toBe(1);
-  expect(Math.abs(rects[0].x-(width>=1024?32:width>=640?24:16))).toBeLessThan(1);
-  if(width<520) expect(rects[0].width/(width-32)).toBeCloseTo(.86,2);
-  else expect(Math.abs(rects.at(-1)!.x+rects.at(-1)!.width-(width-(width>=780?32:24)))).toBeLessThan(1);
-  const next=carousel.getByRole('button',{name:'Next office'});
-  await next.click();await expect(cards.first()).toContainText('Elmer B. Magalona');
-  await next.press('ArrowLeft');await expect(cards.first()).toContainText('Hon. Michael I. Doria');
-  await carousel.getByRole('button',{name:'Previous office'}).click();await expect(cards.first()).toContainText('Rogelia L. Cellan');
-  await next.click();await expect(cards.first()).toContainText('Hon. Michael I. Doria');
-  await carousel.getByRole('button',{name:'Start with office 3'}).focus();
-  await carousel.getByRole('button',{name:'Start with office 3'}).click();await expect(cards.first()).toContainText('Juliet D. Lumbo-an');
-  await expect(carousel.locator('[inert]')).not.toHaveCount(0);
-  await cards.first().focus();await page.keyboard.press('Tab');
-  if(columns>1) await expect(cards.nth(1)).toBeFocused();
-  else await expect(carousel.getByRole('button',{name:'Previous office'})).toBeFocused();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await carousel.getByRole('button',{name:'Start with office 1'}).focus();
-  await carousel.getByRole('button',{name:'Start with office 1'}).click();
-  mkdirSync('node_modules/.cache/office-slideshow',{recursive:true});
-  await page.locator('#offices').screenshot({path:`node_modules/.cache/office-slideshow/after-${width}.png`});
 });
 
-test('autoplay, pause/resume, hover, focus and drag keep the real office links',async({page})=>{
-  await page.setViewportSize({width:768,height:1000});
-  await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.clock.install({time:new Date('2026-11-06T00:00:00Z')});
-  await page.clock.pauseAt(new Date('2026-11-06T00:00:01Z'));
-  await page.goto('/');
-  const carousel=page.getByRole('region',{name:'Municipal offices slideshow'});
-  const cards=carousel.locator(shown);
-  await expect(cards.first()).toContainText('Hon. Michael I. Doria');
-  await page.clock.runFor(4500);
-  await expect(cards.first()).toContainText('Elmer B. Magalona');
-  await page.clock.runFor(500);
-  await carousel.scrollIntoViewIfNeeded();
-  await carousel.hover({position:{x:20,y:20}});
-  // Wait for React to commit hover pause before advancing the virtual clock.
-  await expect(carousel.locator('[aria-hidden="true"] > span')).toHaveCSS('animation-play-state','paused');
-  await page.clock.runFor(6000);await expect(cards.first()).toContainText('Elmer B. Magalona');
-  await page.mouse.move(0,0);
-  await page.clock.runFor(4500);await expect(cards.first()).toContainText('Juliet D. Lumbo-an');
-  await page.clock.runFor(500);
+test('office grid supports keyboard navigation through all six office links', async ({ page }) => {
+  const cards = page.locator('#offices [data-office-card]');
   await cards.first().focus();
-  await page.clock.runFor(6000);await expect(cards.first()).toContainText('Juliet D. Lumbo-an');
-  await carousel.getByRole('button',{name:'Pause slideshow'}).click();
-  await page.mouse.click(5,5);
-  await page.clock.runFor(6000);await expect(cards.first()).toContainText('Juliet D. Lumbo-an');
-  await carousel.getByRole('button',{name:'Play slideshow'}).click();await page.mouse.click(5,5);
-  await page.clock.runFor(4500);await expect(cards.first()).toContainText('Rogelia L. Cellan');
-  await page.clock.runFor(500);
-  const card=await cards.first().boundingBox();
-  await page.mouse.move(card!.x+200,card!.y+100);await page.mouse.down();
-  await page.mouse.move(card!.x+100,card!.y+100,{steps:5});await page.mouse.up();
-  await page.clock.runFor(500);await expect(cards.first()).toContainText('Hon. Michael I. Doria');
-  await expect(page).toHaveURL('/');
-  await page.emulateMedia({reducedMotion:'reduce'});
-  await expect(carousel.getByRole('button',{name:'Play slideshow'})).toBeDisabled();
-  await page.mouse.click(5,5);
-  await page.clock.runFor(6000);await expect(cards.first()).toContainText('Hon. Michael I. Doria');
-  await cards.first().click();await expect(page).toHaveURL('/executive/directory');
+  for (let i = 0; i < 6; i++) {
+    await expect(cards.nth(i)).toBeFocused();
+    await expect(cards.nth(i)).toHaveCSS('outline-width', '3px');
+    await page.keyboard.press('Tab');
+  }
+  await expect(page.getByRole('link', { name: 'View all offices and departments' })).toBeFocused();
+});
+
+test('office grid supports the existing dark theme', async ({ page }, info) => {
+  await page.evaluate(() => document.documentElement.classList.add('dark'));
+  const section = page.locator('#offices');
+  await section.scrollIntoViewIfNeeded();
+  const card = section.locator('[data-office-card]').first();
+  expect(await card.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe('rgb(255, 255, 255)');
+  await section.screenshot({ path: info.outputPath('offices-dark.png') });
+});
+
+test('office cards retain complete uncropped seals', async ({ page }) => {
+  const images = page.locator('#offices img');
+  await expect(images).toHaveCount(6);
+  for (const img of await images.all()) {
+    await expect(img).toHaveCSS('object-fit', 'contain');
+    await expect(img).toHaveAttribute('loading', 'lazy');
+    await expect(img).toHaveAttribute('alt', /Office.*logo|Agriculturist logo/);
+  }
+});
+
+test('all office names remain unconfirmed', async ({ page }) => {
+  await expect(page.locator('#offices [data-office-card]').getByText('N/A', { exact: true })).toHaveCount(6);
+  await expect(page.getByRole('region', { name: 'Municipal offices slideshow' })).toHaveCount(0);
+});
+
+test('office cards open the existing directory', async ({ page }) => {
+  const card = page.locator('#offices [data-office-card]').first();
+  await card.click();
+  await expect(page).toHaveURL('/executive/directory');
 });

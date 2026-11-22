@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./BarangaysView.module.css";
+import BarangayLogo from "../../components/BarangayLogo";
 
 interface Barangay {
   id: string;
@@ -73,6 +74,7 @@ export default function BarangaysView({ data }: BarangaysViewProps) {
       <div className={styles.grid}>
         {paginatedBarangays.map(brgy => (
           <article key={brgy.id} className={styles.card}>
+            <BarangayLogo name={brgy.name} className={styles.logo} />
             <h2>{brgy.name}</h2>
             <dl>
               <div><dt>Captain</dt><dd>{brgy.captain}</dd></div>

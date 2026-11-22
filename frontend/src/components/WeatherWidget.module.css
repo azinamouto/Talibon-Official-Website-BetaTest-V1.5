@@ -1,23 +1,33 @@
 .section {
   isolation: isolate;
   background-color: #05497f;
-  background-image: url("/images/talibon-weather-bg.svg");
+}
+
+/* Blur only the decorative photo so the weather text stays sharp. */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("/images/talibon-weather-waterfront.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: center 65%;
   background-repeat: no-repeat;
+  filter: blur(2.5px);
 }
 
 .overlay {
-  background: linear-gradient(90deg, rgba(4, 57, 99, .35), rgba(4, 57, 99, .8));
+  background: linear-gradient(90deg, rgba(4, 35, 61, .68), rgba(4, 35, 61, .82));
 }
 
 /* Keep text readable without changing the existing icon and tide-dot colors. */
-.section :where(p, span, h3) {
+.section :is(p, span, h3) {
   color: #fff;
 }
 
 @media (max-width: 767px) {
-  .section { background-position: left center; }
+  .section::before { background-position: 62% center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -25,7 +25,7 @@ for (const width of [360, 768, 1280, 1920]) for (const size of [0, 1, 2, 3, 6]) 
   mkdirSync(artifacts, { recursive: true });
   if (baseline) { await section.screenshot({ path: resolve(artifacts, `before-${width}.png`) }); return; }
     await expect(section.getByRole('heading', { level: 2 })).toHaveText('News and announcements');
-    await expect(section.locator('h2')).toHaveCSS('font-size', width < 640 ? '32px' : '48px');
+    await expect(section.locator('h2')).toHaveCSS('font-size', '20px');
     const cards = section.locator('[data-news-card]');
     await expect(cards).toHaveCount(size);
     const viewAll = section.getByRole('link', { name: 'View all news' });
@@ -42,13 +42,24 @@ for (const width of [360, 768, 1280, 1920]) for (const size of [0, 1, 2, 3, 6]) 
       await expect(cards.first()).toHaveCSS('box-shadow', 'rgba(15, 23, 42, 0.15) 0px 1px 3px 0px');
       await expect(cards.first()).toHaveAccessibleName(/Official announcement|A very long/);
       if (size >= 2) await expect(section.locator('img[src$="test-news-broken.jpg"]')).toHaveCount(0);
-      const boxes = await cards.evaluateAll(nodes => nodes.map(el => { const r = el.getBoundingClientRect(); return { x: r.x, width: r.width, height: r.height }; }));
-      if (size >= 3) expect(new Set(boxes.map(b => b.x)).size).toBe(width < 640 ? 1 : width < 1024 ? 2 : 3);
-      if (size === 2 && width >= 1024) expect(boxes[0].width).toBeGreaterThan(boxes[1].width);
-      if (size >= 3) boxes.forEach(box => expect(Math.abs(box.height - boxes[0].height)).toBeLessThan(1));
-      if (size >= 3 && width >= 1024) {
-        const tops = await cards.locator('h3').evaluateAll(nodes => nodes.slice(0, 3).map(node => node.getBoundingClientRect().top));
-        tops.forEach(top => expect(Math.abs(top - tops[0])).toBeLessThan(1));
+      const boxes = await cards.evaluateAll(nodes => nodes.map(el => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; }));
+      await expect(cards.first()).toHaveAttribute('data-news-featured', 'true');
+      await expect(cards.first().getByText('Latest', { exact: true })).toBeVisible();
+      if (size > 1) {
+        expect(boxes[1].y).toBeGreaterThanOrEqual(boxes[0].y + boxes[0].height);
+        if (width >= 640) expect(boxes[0].width).toBeGreaterThan(boxes[1].width);
+      }
+      if (size >= 3) {
+        const columns = width < 640 ? 1 : width < 1024 ? 2 : 3;
+        const row = boxes.slice(1, 1 + columns);
+        row.forEach(box => expect(Math.abs(box.height - row[0].height)).toBeLessThan(1));
+        if (width >= 640) expect(boxes[1].y).toBe(boxes[2].y);
+      }
+      if (width >= 640) {
+        const image = await cards.first().locator('[class*="imageFrame_"]').boundingBox();
+        const body = await cards.first().locator('[class*="body_"]').boundingBox();
+        expect(image!.x + image!.width).toBeLessThanOrEqual(body!.x + 1);
+        expect(Math.abs(image!.y - body!.y)).toBeLessThan(1);
       }
     }
     await viewAll.focus();

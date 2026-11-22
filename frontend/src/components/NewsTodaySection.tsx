@@ -31,7 +31,7 @@ export default function NewsTodaySection() {
     (!item.status || item.status === 'published') && !item.is_test &&
     !sampleTitles.has(item.title.trim().toLowerCase().replace(/\s+/g, ' ')));
   // The public endpoint supplies published records in date order. For the
-  // two-card presentation, explicitly place the newest record in the large card.
+  // two-record response, explicitly place the newest record in the featured card.
   const items = newsList.length === 2 ? [...newsList].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0)) : newsList;
   return <section id="news-today" aria-labelledby="news-announcements-heading" className={`${solidTheme.section} ${styles.section}`}>
     <div className="site-container">
@@ -46,16 +46,19 @@ export default function NewsTodaySection() {
       {resource.loading || resource.error ? <PublicState {...resource} /> : items.length === 0
         ? <p role="status" className={styles.empty}>No news yet. Check back soon.</p>
         : <div className={styles.grid} data-count={items.length} data-authors={items.some(item => providedAuthor(item.author))}>
-          {items.map(item => {
+          {items.map((item, index) => {
             const date = articleDate(item.date);
             const author = providedAuthor(item.author);
             const category = item.category?.trim();
-            return <Link key={item.id} to={`/news/view/${item.id}`} aria-labelledby={`news-headline-${item.id}`} className={styles.card} data-news-card>
+            return <Link key={item.id} to={`/news/view/${item.id}`} aria-labelledby={`news-headline-${item.id}`} className={styles.card} data-news-card data-news-featured={index === 0}>
               <NewsImage key={item.image_url || ''} src={item.image_url} title={item.title} />
               <div className={styles.body}>
                 <div className={styles.metadata}>
                   <div className={styles.meta}>
-                    {category && <span className={styles.category}>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</span>}
+                    <div className={styles.badges}>
+                      {category && <span className={styles.category}>{category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}</span>}
+                      {index === 0 && <span className={styles.latest}>Latest</span>}
+                    </div>
                     {date && <time dateTime={date.iso} className={styles.date}><Calendar size={16} aria-hidden="true" />{date.label}</time>}
                   </div>
                   {author && <p className={styles.author}>{author}</p>}

@@ -35,7 +35,7 @@ it('shows cached previews without a Meta embed and keeps office groups compact',
   expect(screen.getByRole('link', { name: /Read on Facebook:/ })).toHaveAttribute('href', post.url);
   expect(container.querySelector('article img')).toHaveAttribute('src', '/images/social/one.jpg');
   expect(container.querySelector('iframe')).toBeNull();
-  expect(screen.getByRole('button', { name: /More Talibon pages/ })).toHaveAttribute('aria-expanded', 'false');
+  expect(screen.getByRole('navigation', { name: 'More Talibon pages' })).toBeVisible();
   expect(screen.queryByRole('heading', { name: 'Public safety' })).not.toBeInTheDocument();
   expect(screen.getAllByRole('link', { name: /^Follow on Facebook/ })).toHaveLength(1);
 });
@@ -62,5 +62,5 @@ it('loads the Google map automatically and keeps directions and office details o
   expect(screen.queryByRole('button', { name: 'Close map' })).not.toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Get directions/ })).toHaveAttribute('href', expect.stringContaining('destination=Talibon%20Municipal%20Hall'));
   expect(screen.getByText('114.8 km from Tagbilaran')).toBeVisible();
-  expect(screen.getByText('Confirm current hours before your visit.')).toBeVisible();
+  expect(screen.getByText('Monday to Friday, 8:00 AM - 5:00 PM (except holidays)')).toBeVisible();
 });

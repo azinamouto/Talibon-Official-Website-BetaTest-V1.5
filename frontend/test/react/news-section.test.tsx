@@ -19,6 +19,8 @@ it.each([0, 1, 2, 3, 6])('keeps the existing public request and destinations wit
   if (count) await within(section).findByRole('link', { name: 'Official announcement 0' });
   else await within(section).findByText('No news yet. Check back soon.');
   expect(section.querySelectorAll('[data-news-card]')).toHaveLength(count);
+  expect(section.querySelectorAll('[data-news-featured="true"]')).toHaveLength(count ? 1 : 0);
+  if (count) expect(within(section).getByText('Latest', { exact: true })).toBeVisible();
   expect(within(section).getByRole('link', { name: 'View all news' })).toHaveAttribute('href', '/news');
   section.querySelectorAll('[data-news-card]').forEach((card, i) => expect(card).toHaveAttribute('href', `/news/view/official-${i}`));
 });

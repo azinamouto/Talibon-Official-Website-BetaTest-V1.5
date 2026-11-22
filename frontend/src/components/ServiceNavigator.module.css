@@ -1,0 +1,19 @@
+.section { padding-block: 24px 0; background: var(--talweb-card); }
+.error { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; background: var(--home-services-notice); color: var(--home-services-muted); }
+.error p { flex: 1; min-width: 0; margin: 0; font-size: 13px; line-height: 1.6; }
+.errorIcon { flex: none; color: var(--home-services-muted); }
+.error button { flex: none; }
+.skeletonGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.skeletonCard { display: flex; flex-direction: column; gap: 10px; padding: 20px; border-radius: 10px; background: var(--home-services-notice); }
+.skeletonCard span { display: block; height: 10px; border-radius: 4px; background: color-mix(in srgb, var(--talweb-deep) 10%, var(--talweb-card)); animation: pulse 1.6s ease-in-out infinite; }
+.skeletonCard .skeletonTitle { width: 55%; height: 16px; margin-bottom: 4px; }
+.skeletonLine { width: 100%; }
+.skeletonShort { width: 75%; }
+@keyframes pulse { 50% { background: color-mix(in srgb, var(--talweb-deep) 18%, var(--talweb-card)); } }
+@media (max-width: 639px) {
+  .skeletonGrid { grid-template-columns: minmax(0, 1fr); }
+  .error { flex-wrap: wrap; }
+  .error p { flex-basis: calc(100% - 30px); }
+  .error button { margin-left: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { .skeletonCard span { animation: none; } }

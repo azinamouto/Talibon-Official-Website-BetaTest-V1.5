@@ -6,43 +6,33 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const width of [360, 768, 1280, 1920]) {
-  test(`electronic services fits and supports keyboard navigation at ${width}px`, async ({ page }) => {
+  test(`contained electronic services notice at ${width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     const section = page.getByRole('region', { name: 'Electronic services', exact: true });
-    const primary = section.getByRole('link', { name: 'See how to get services today' });
-    const secondary = section.getByRole('link', { name: 'Electronic services information' });
     await section.scrollIntoViewIfNeeded();
-    const message = section.getByRole('heading', { name: 'Electronic services' }).locator('..');
-    const messageBox = await message.boundingBox();
-    expect(Math.abs(messageBox!.x + messageBox!.width / 2 - width / 2)).toBeLessThanOrEqual(2);
-    await expect(message).toHaveCSS('text-align', 'center');
-    await expect(message).toHaveCSS('opacity', '0.9');
-    await expect(primary).toHaveAttribute('href', '/transparency/charter');
-    await expect(secondary).toHaveAttribute('href', '/e-services');
-    await expect(section.getByRole('link')).toHaveCount(2);
-    await expect(section.getByText('Planned for residents')).toHaveCount(0);
-    expect(await section.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
-    for (const link of [primary, secondary]) {
-      const box = await link.boundingBox();
-      expect(box).not.toBeNull();
-      expect(box!.height).toBeGreaterThanOrEqual(48);
-      expect(box!.x).toBeGreaterThanOrEqual(0);
-      expect(box!.x + box!.width).toBeLessThanOrEqual(width);
-    }
-    await primary.focus();
-    await page.keyboard.press('Tab');
-    await expect(secondary).toBeFocused();
-    await expect(message).toHaveCSS('opacity', '1');
-    await expect(secondary).toHaveCSS('outline-width', '2px');
-    await expect(secondary).toHaveCSS('outline-offset', '2px');
-    await expect(secondary).toHaveCSS('outline-color', 'rgb(255, 255, 255)');
-    await expect(secondary).toHaveCSS('transition-duration', '0s');
-    await page.keyboard.press('Shift+Tab');
-    await expect(primary).toBeFocused();
-    await expect(primary).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-    await expect(primary).toHaveCSS('color', 'rgb(0, 89, 138)');
-    await section.screenshot({ path: `test-results/electronic-services-${width}.png` });
+    const link = section.getByRole('link', { name: 'See how to get services today' });
+    await expect(link).toHaveAttribute('href', '/transparency/charter');
+    await expect(section.getByRole('link')).toHaveCount(1);
+    await expect(section).toHaveText(/We are preparing online services for Talibon residents/);
+    await expect(section).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    const notice = section.locator('[class*="message_"]');
+    await expect(notice).toHaveCSS('opacity', '1');
+    await expect(notice).toHaveCSS('text-align', 'center');
+    await expect(section.getByRole('heading')).toHaveCSS('font-size', '20px');
+    await expect(section.getByRole('heading')).toHaveCSS('font-weight', '500');
+    await expect(section.getByRole('heading')).toHaveText('Coming soon');
+    const bounds = await notice.boundingBox();
+    expect(bounds!.width).toBeLessThanOrEqual(576);
+    expect(Math.abs(bounds!.x + bounds!.width / 2 - width / 2)).toBeLessThan(1);
+    const color = await notice.evaluate(el => getComputedStyle(el).backgroundColor);
+    expect(color).not.toBe('rgb(0, 89, 138)');
+    await link.focus();
+    await expect(link).toBeFocused();
+    await expect(link).toHaveCSS('outline-width', '2px');
+    await expect(link).toHaveCSS('outline-offset', '3px');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await section.screenshot({ path: info.outputPath(`notice-${width}.png`), style: 'header{visibility:hidden!important}' });
   });
 }

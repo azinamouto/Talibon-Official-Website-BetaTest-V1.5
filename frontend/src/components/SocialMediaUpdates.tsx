@@ -34,7 +34,9 @@ export default function SocialMediaUpdates() {
           <span className={styles.buttonLogo}><FacebookLogo /></span>Follow on Facebook
           <span className="sr-only"> (opens in a new tab)</span>
         </a>
-        {cache && cache.posts.length > 0 ? <>
+      </div>
+      <MoreTalibonPages />
+      {cache && cache.posts.length > 0 ? <>
           <div className={styles.posts}>
             {cache.posts.map(post => <article key={post.id} className={styles.post}>
               {post.image && <img src={`${import.meta.env.BASE_URL}${post.image}`} alt="" loading="lazy" width="80" height="80" className={styles.postImage} />}
@@ -51,8 +53,6 @@ export default function SocialMediaUpdates() {
         </> : <p role="status" className="sr-only">
           {state === "loading" ? "Loading recent updates?" : state === "error" ? "Post previews are temporarily unavailable. Visit the Information Office on Facebook for the latest updates." : "Post previews are not available yet. Visit the Information Office on Facebook for the latest updates."}
         </p>}
-      </div>
-      <MoreTalibonPages />
     </div>
   );
 }

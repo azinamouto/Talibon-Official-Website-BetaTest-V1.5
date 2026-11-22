@@ -1,7 +1,27 @@
-import {render,screen,within} from '@testing-library/react';
+import {fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {expect,it} from 'vitest';
 import BarangaysView from '../../src/pages/about/BarangaysView';
+import BarangayLogo from '../../src/components/BarangayLogo';
+
+it.each(['Zamora','Burgos','Suba','San Pedro','San Jose','San Isidro','San Carlos',
+  'San Agustin','Sag','Rizal','Poblacion','Nocnocan','Mahanay','Magsaysay',
+  'Calituban','Busalian','Balintawak','Bagacay'])('shows the supplied seal for %s', name=>{
+  render(<BarangaysView data={[{id:name,name}]}/>);
+  expect(screen.getByRole('img',{name:`Barangay ${name} official seal`})).toHaveAttribute('src',
+    expect.stringContaining(`${name.toLowerCase().replace(/ /g,'-')}.png`));
+});
+
+it('uses a fallback for missing or failed seals and loads the next selection',()=>{
+  const {rerender}=render(<BarangayLogo name="Cataban" fallback={<span>Photo placeholder</span>}/>);
+  expect(screen.getByText('Photo placeholder')).toBeVisible();
+  rerender(<BarangayLogo name="Zamora" fallback={<span>Photo placeholder</span>}/>);
+  fireEvent.error(screen.getByRole('img'));
+  expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  expect(screen.getByText('Photo placeholder')).toBeVisible();
+  rerender(<BarangayLogo name="Poblacion" fallback={<span>Photo placeholder</span>}/>);
+  expect(screen.getByRole('img',{name:'Barangay Poblacion official seal'})).toBeVisible();
+});
 
 it('paginates the supplied records and resets to page one after a search',async()=>{
   const user=userEvent.setup();

@@ -1,0 +1,21 @@
+.section {
+  composes: section from "../styles/SolidTheme.module.css";
+  --home-services-muted: #4a6a80;
+  --home-services-notice: #f3f8fb;
+  --home-services-heading-size: var(--site-section-heading);
+  --home-services-heading-weight: var(--site-heading-weight);
+}
+.container { width: 100%; max-width: none; margin-inline: 0; padding-inline: calc(var(--spacing) * 8); }
+.heading { margin: 0; color: var(--color-ink); font-family: var(--font-sans); font-size: var(--home-services-heading-size); font-weight: var(--home-services-heading-weight); line-height: 1.4; letter-spacing: normal; }
+.header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 24px; margin-bottom: 16px; }
+.textLink { display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 36px; color: var(--talweb-deep); font-size: 13px; font-weight: 500; line-height: 1.5; text-decoration: none; }
+.textLink:hover { text-decoration: underline; }
+.textLink svg { flex: none; }
+.ghost { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 7px 14px; border: .5px solid color-mix(in srgb, var(--talweb-deep) 35%, transparent); border-radius: 8px; background: transparent; color: var(--talweb-deep); font: inherit; font-size: 13px; font-weight: 500; line-height: 1.5; text-decoration: none; cursor: pointer; }
+.ghost:hover { background: color-mix(in srgb, var(--talweb-deep) 7%, transparent); }
+.textLink:focus-visible, .ghost:focus-visible { outline: 2px solid var(--talweb-deep); outline-offset: 3px; }
+@media (max-width: 779px) { .container { padding-inline: calc(var(--spacing) * 6); } }
+@media (max-width: 639px) { .header { flex-direction: column; align-items: flex-start; gap: 8px; } }
+@media (max-width: 519px) { .container { padding-inline: calc(var(--spacing) * 4); } }
+
+:global(.dark) .section { --talweb-card: var(--color-dark-surface); --talweb-background: var(--color-dark-bg); --talweb-deep: var(--color-blue-300); --color-ink: var(--color-dark-text); --home-services-muted: var(--color-dark-muted); --home-services-notice: var(--color-dark-surface); }

@@ -2,7 +2,6 @@ import Hero from "../components/Hero";
 import About from "../components/About";
 import Services from "../components/Services";
 import Tourism from "../components/Tourism";
-import QuickAccess from "../components/QuickAccess";
 import PopularServices from "../components/PopularServices";
 import MunicipalOffices from "../components/MunicipalOffices";
 import BarangaySelector from "../components/BarangaySelector";
@@ -21,7 +20,6 @@ export default function Home() {
     <main>
       <Hero />
       <WeatherWidget />
-      <QuickAccess />
       <NewsTodaySection />
       <LguEventsSection />
       <OrtsUpdatesSection />

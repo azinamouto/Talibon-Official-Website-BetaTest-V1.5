@@ -9,6 +9,7 @@
 .count { margin-bottom: 16px; font-size: 14px; color: var(--color-brand-muted); }
 .grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: stretch; }
 .card { min-width: 0; padding: 24px; background: var(--talweb-card); border: 1px solid var(--color-brand-border); border-radius: 16px; }
+.logo { display: block; width: 112px; height: 112px; max-width: 100%; margin: 0 0 16px; object-fit: contain; }
 .card h2 { margin: 0 0 12px; font-size: 20px; font-weight: 700; line-height: 1.35; color: var(--talweb-text); overflow-wrap: anywhere; }
 .card dl { display: grid; gap: 8px; font-size: 14px; line-height: 1.5; color: var(--color-brand-muted); }
 .card dl > div { display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 0 8px; }

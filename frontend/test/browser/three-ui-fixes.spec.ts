@@ -8,18 +8,26 @@ for (const width of [375, 768, 1280, 1920]) test(`three scoped UI fixes at ${wid
   await page.goto('/');
   const electronic = page.locator('#popular-services');
   await electronic.scrollIntoViewIfNeeded();
-  await expect(electronic).toHaveCSS('background-color', 'rgb(0, 89, 138)');
-  await expect(electronic.locator('h2')).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(electronic).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(electronic.getByRole('heading', { name: 'Coming soon' })).toBeVisible();
+  await expect(electronic.getByRole('link')).toHaveAttribute('href', '/transparency/charter');
   await electronic.screenshot({ path: `test-results/three-fixes-electronic-${width}.png` });
   const offices = page.locator('#offices');
   await offices.scrollIntoViewIfNeeded();
-  const boxes = await offices.locator('[aria-roledescription="slide"]:not([inert]) [data-office-card]').evaluateAll(cards => cards.map(card => { const r = card.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; }));
-  expect(new Set(boxes.map(b => b.x)).size).toBe(width >= 1024 ? 4 : width >= 640 ? 2 : 1);
-  expect(new Set(boxes.map(b => b.height)).size).toBe(1);
-  expect(boxes[0].x).toBeCloseTo(width >= 1024 ? 32 : width >= 640 ? 24 : 16, 0);
-  if (width >= 1024) {
-    expect(boxes[0].width).toBe(292);
-    expect(Math.round(boxes[3].x + boxes[3].width)).toBe(width - 32);
+  // The approved redesign uses six logo cards in a responsive grid, not a slideshow.
+  const officeCards = offices.locator('[data-office-card]');
+  await expect(officeCards).toHaveCount(6);
+  const boxes = await officeCards.evaluateAll(cards => cards.map(card => { const r = card.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; }));
+  const columns = width >= 1024 ? 3 : width >= 700 ? 2 : 1;
+  const gutter = width <= 768 ? 16 : 24;
+  expect(new Set(boxes.map(b => b.x)).size).toBe(columns);
+  expect(boxes[0].x).toBeCloseTo(gutter, 0);
+  expect(Math.round(boxes[columns - 1].x + boxes[columns - 1].width)).toBe(width - gutter);
+  expect(boxes[0].width).toBeCloseTo((width - 2 * gutter - (columns - 1) * 24) / columns, 1);
+  for (const card of await officeCards.all()) {
+    await expect(card.getByRole('img')).toHaveCount(1);
+    await expect(card.getByText('N/A', { exact: true })).toBeVisible();
+    await expect(card).toHaveAttribute('href', '/executive/directory');
   }
   await offices.screenshot({ path: `test-results/three-fixes-offices-${width}.png` });
   await page.goto('/executive/directory');

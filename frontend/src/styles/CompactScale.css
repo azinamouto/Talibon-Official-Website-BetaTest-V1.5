@@ -1,0 +1,24 @@
+/* Shared scale applies to content sections; the hero and branding keep their own hierarchy. */
+body { font-size: var(--site-body-size); line-height: var(--site-body-leading); }
+#root .site-container { padding-inline: var(--site-gutter); }
+#root main > section:not(#home) { padding-block: var(--site-section-space) !important; }
+#root main section:not(#home) :is(h2, .section-title) { font-size: var(--site-section-heading) !important; font-weight: var(--site-heading-weight) !important; line-height: 1.4 !important; letter-spacing: normal !important; }
+#root main section:not(#home):not(#weather) :is(h3, h4) { font-size: var(--site-card-heading) !important; font-weight: var(--site-heading-weight) !important; line-height: 1.5 !important; letter-spacing: normal !important; }
+#root main :is(.civic-card, .pro-card, .minimal-card, [data-office-card]) { padding: var(--site-card-padding); border-radius: var(--site-card-radius); }
+#root main section:not(#home):not(#emergency) [class*="card_"]:not([data-news-card]):not([data-more-pages]) { padding: var(--site-card-padding); border-radius: var(--site-card-radius); }
+#root main section:not(#home) :is([data-news-card], [class*="mapCard_"], [class*="details_"]) { border-radius: var(--site-card-radius); }
+#root #news-today [class*="body_"] { padding: var(--site-card-padding); }
+#root main section:not(#home) :is(button, a[class*="button_"], a[class*="Button_"], a[class*="action_"], a[class*="ghost_"], a[class*="textLink_"], a[class*="contact_"], a[class*="phone_"], a[class*="landline_"], .minimal-button-primary, .minimal-button-outline, .pro-button, .civic-button-primary) { min-height: var(--site-control-height); padding-block: 6px; border-radius: var(--site-control-radius); }
+#root #barangays :is([class*="tab_"], [class*="chip_"]) { min-height: var(--site-control-height); padding-block: 6px; border-radius: var(--site-control-radius); }
+#root #municipal-services, #root #popular-services { padding-block: var(--site-card-padding) 0 !important; }
+#root main section:not(#home) > .site-container > :is([class*="header_"], [class*="heading_"], [class*="intro_"]) { margin-bottom: var(--site-card-padding); }
+@media (max-width: 768px) {
+  /* Compact visual chips still retain a full touch target. */
+  #root main section:not(#home) :is(a, button, label:has(input[type="radio"])) { min-height: var(--site-control-height); }
+}
+
+#root #emergency h3 { font-size: var(--site-body-size) !important; }
+#root main section:not(#home) :is(p[class*="description_"], p[class*="introduction_"], p[class*="intro_"]) { font-size: var(--site-body-size); line-height: var(--site-body-leading); }
+
+#root #popular-services [class*="message_"] { padding: var(--site-card-padding); border-radius: var(--site-card-radius); }
+@media (max-width: 768px) { #root :is(button, input[type="submit"], a[role="button"]) { min-height: var(--site-control-height); } }

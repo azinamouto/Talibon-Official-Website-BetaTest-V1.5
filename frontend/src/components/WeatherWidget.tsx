@@ -23,7 +23,7 @@ export default function WeatherWidget() {
   const filterShadowStyle = { filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.8))" };
 
   return (
-    <section 
+    <section id="weather" aria-label="Current weather and tide forecast"
       className={`${solidTheme.photo} ${styles.section} relative w-full overflow-hidden bg-cover bg-center py-12 sm:py-16 lg:py-20 text-white z-20`}
     >
       {/* Separate scrim keeps all content and its original geometry untouched. */}
@@ -48,20 +48,20 @@ export default function WeatherWidget() {
               <div>
                 <div className="flex flex-wrap items-center gap-1.5 mb-1">
                   <span 
-                    className="text-xs font-extrabold text-sky-200 uppercase tracking-widest"
+                    className="text-sm font-extrabold text-sky-200 uppercase tracking-widest"
                     style={textShadowStyle}
                   >
                     LIVE WEATHER DATA
                   </span>
                   <span 
-                    className="text-xs text-sky-100/90 font-medium"
+                    className="text-sm text-sky-100/90 font-medium"
                     style={textShadowStyle}
                   >
                     • PAGASA Meteorological Stream
                   </span>
                 </div>
                 <span 
-                  className="text-xs font-black text-amber-300 uppercase tracking-[0.25em] mb-1 block"
+                  className="text-sm font-black text-amber-300 uppercase tracking-[0.25em] mb-1 block"
                   style={textShadowStyle}
                 >
                   Current Weather
@@ -94,7 +94,7 @@ export default function WeatherWidget() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 text-sky-200" style={textShadowStyle}>
                   <Wind size={15} className="text-amber-300" style={filterShadowStyle} />
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest">Wind</span>
+                  <span className="text-sm font-extrabold uppercase tracking-widest">Wind</span>
                 </div>
                 <p className="text-sm sm:text-base font-black text-white" style={textShadowStyle}>12 km/h NE</p>
               </div>
@@ -102,7 +102,7 @@ export default function WeatherWidget() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 text-sky-200" style={textShadowStyle}>
                   <CloudRain size={15} className="text-amber-300" style={filterShadowStyle} />
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest">Humidity</span>
+                  <span className="text-sm font-extrabold uppercase tracking-widest">Humidity</span>
                 </div>
                 <p className="text-sm sm:text-base font-black text-white" style={textShadowStyle}>78%</p>
               </div>
@@ -110,7 +110,7 @@ export default function WeatherWidget() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 text-sky-200" style={textShadowStyle}>
                   <Thermometer size={15} className="text-amber-300" style={filterShadowStyle} />
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest">Feels Like</span>
+                  <span className="text-sm font-extrabold uppercase tracking-widest">Feels Like</span>
                 </div>
                 <p className="text-sm sm:text-base font-black text-white" style={textShadowStyle}>32°C</p>
               </div>
@@ -118,7 +118,7 @@ export default function WeatherWidget() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 text-sky-200" style={textShadowStyle}>
                   <Navigation size={15} className="text-amber-300" style={filterShadowStyle} />
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest">Visibility</span>
+                  <span className="text-sm font-extrabold uppercase tracking-widest">Visibility</span>
                 </div>
                 <p className="text-sm sm:text-base font-black text-white" style={textShadowStyle}>10 km</p>
               </div>
@@ -131,7 +131,7 @@ export default function WeatherWidget() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <span 
-                    className="text-xs font-extrabold text-sky-200 uppercase tracking-[0.25em] mb-0.5 block"
+                    className="text-sm font-extrabold text-sky-200 uppercase tracking-[0.25em] mb-0.5 block"
                     style={textShadowStyle}
                   >
                     Tide Forecast
@@ -158,15 +158,15 @@ export default function WeatherWidget() {
                         className={`w-2 h-2 rounded-full ${tide.type === "High" ? "bg-amber-300" : "bg-sky-300"}`}
                         style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.6)" }} 
                       />
-                      <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white" style={textShadowStyle}>
+                      <span className="text-sm sm:text-sm font-bold uppercase tracking-wider text-white" style={textShadowStyle}>
                         {tide.time}
                       </span>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs sm:text-sm font-black text-white" style={textShadowStyle}>
+                      <p className="text-sm sm:text-sm font-black text-white" style={textShadowStyle}>
                         {tide.level}
                       </p>
-                      <p className="text-[9px] font-extrabold uppercase tracking-wider text-sky-200" style={textShadowStyle}>
+                      <p className="text-sm font-extrabold uppercase tracking-wider text-sky-200" style={textShadowStyle}>
                         {tide.type} Tide
                       </p>
                     </div>
@@ -176,7 +176,7 @@ export default function WeatherWidget() {
             </div>
 
             <div className="mt-5 pt-3.5 border-t border-white/25 flex justify-between items-center">
-              <span className="text-xs font-extrabold uppercase tracking-widest text-sky-200" style={textShadowStyle}>
+              <span className="text-sm font-extrabold uppercase tracking-widest text-sky-200" style={textShadowStyle}>
                 Local Time
               </span>
               <span className="text-sm sm:text-base font-black font-mono text-white" style={textShadowStyle}>

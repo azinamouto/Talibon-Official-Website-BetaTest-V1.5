@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./styles/tokens.css";
+@import "./styles/CompactScale.css";
 
 :root {
   --brand-bg: #F8FAFC;

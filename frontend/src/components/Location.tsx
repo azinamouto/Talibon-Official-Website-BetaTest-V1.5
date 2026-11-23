@@ -1,6 +1,7 @@
 import { ArrowRight, Clock3, ExternalLink, MapPin, Route, Scan } from "lucide-react";
 import { Link } from "react-router-dom";
 import styles from "./ConnectWithTalibon.module.css";
+import { SERVICES_DATA } from "../data/servicesData";
 
 const destination = "Talibon Municipal Hall, Poblacion, Talibon, Bohol, Philippines";
 const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(destination)}`;
@@ -26,8 +27,8 @@ export default function Location() {
         </address>
         <div className={styles.infoRow}>
           <span className={styles.rowIcon}><Clock3 size={22} aria-hidden="true" /></span>
-          <div><p className={styles.hoursTitle}>Office hours</p><p>Confirm current hours before your visit.</p>
-            <Link to="/executive/directory" className={styles.contact}>Contact the municipal offices</Link>
+          <div><p className={styles.hoursTitle}>Office hours</p><div className={styles.hoursLine}><p>{SERVICES_DATA["apply-permit"].officeHours}</p>
+            <Link to="/executive/directory" className={styles.contact}>Contact the municipal offices</Link></div>
           </div>
         </div>
         <div className={styles.facts}>
@@ -40,7 +41,7 @@ export default function Location() {
             Get directions<ArrowRight size={18} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span>
           </a>
         </div>
-        <p className={styles.mapCredit}><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Reference map: &#169; OpenStreetMap contributors<span className="sr-only"> (opens in a new tab)</span></a></p>
+        <p className={styles.mapCredit}>Map data &#169; Google</p>
       </div>
     </aside>
   );

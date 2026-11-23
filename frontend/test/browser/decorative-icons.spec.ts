@@ -17,15 +17,10 @@ for (const width of [375, 768, 1280, 1920]) test(`decorative icon motion is scop
     await expect(icon).toHaveCSS('transform','none');
     await expect(icon).toHaveCSS('will-change','auto');
   }
-  const geometry=()=>page.locator('#offices [aria-roledescription="slide"]:not([inert]) [data-office-card], #transparency').evaluateAll(sections=>sections.map(section=>[section,...section.querySelectorAll('*:not(svg):not(svg *)')].map(el=>{
+  const geometry=()=>page.locator('#offices [data-office-card], #transparency').evaluateAll(sections=>sections.map(section=>[section,...section.querySelectorAll('*:not(svg):not(svg *)')].map(el=>{
     const r=el.getBoundingClientRect();return {width:r.width,height:r.height,x:r.x,y:r.y};
   })));
-  // Keep autoplay paused while measuring the independent decorative animation.
-  await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.getByRole('button',{name:'Pause slideshow'}).click();
-  await page.mouse.move(0,0);
-  await page.getByRole('button',{name:'Play slideshow'}).blur();
-  await page.emulateMedia({reducedMotion:'reduce'});
+  // Office cards are now static; only transparency glyphs animate.
   const before=await geometry();
   await page.emulateMedia({ reducedMotion:'no-preference' });
   await expect(icons.first()).toHaveCSS('animation-name','talweb-icon-float');
@@ -44,12 +39,12 @@ for (const width of [375, 768, 1280, 1920]) test(`decorative icon motion is scop
     const r=el.getBoundingClientRect(),p=el.parentElement!.getBoundingClientRect();
     return r.top>=p.top && r.bottom<=p.bottom;
   }))).toBe(true);
-  const officeCard=page.locator('[aria-roledescription="slide"]:not([inert]) [data-office-card]').first();
+  const officeCard=page.locator('#offices [data-office-card]').first();
   await officeCard.hover();
-  await expect(officeCard.locator('svg').first()).toHaveCSS('animation-name','none');
+  await expect(officeCard.locator('img').first()).toHaveCSS('animation-name','none');
   await page.mouse.move(0,0);
   await officeCard.focus();
-  await expect(officeCard.locator('svg').first()).toHaveCSS('animation-name','none');
+  await expect(officeCard.locator('img').first()).toHaveCSS('animation-name','none');
   const documentLink=page.locator('#transparency a').first();
   await documentLink.focus();
   await expect(page.locator('#transparency .icon-float').first()).toHaveCSS('animation-play-state','paused');

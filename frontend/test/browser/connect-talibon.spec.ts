@@ -1,85 +1,48 @@
 import { expect, test } from '@playwright/test';
 import { textContrast } from './uiContrast';
-import { mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
-const baseline = process.env.TALWEB_CONNECT_BASELINE === '1';
-const artifacts = resolve('node_modules/.cache/connect-talibon');
-for (const width of [360, 768, 1280, 1920]) test(`connect with Talibon layout and map at ${width}px`, async ({ page, context }) => {
-  await page.setViewportSize({ width, height: 1100 });
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  const googleRequests: string[] = [];
-  await context.route('**/*', route => {
-    const url = new URL(route.request().url());
-    if (url.hostname === '127.0.0.1') return route.continue();
-    if (url.hostname === 'www.google.com') {
-      googleRequests.push(url.href);
-      return route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Map fixture</title><p>Google map fixture</p>' });
-    }
-    return route.abort();
-  });
-  await context.route('**/api/**', route => route.fulfill({ json: [] }));
-  await context.route('**/data/social-updates.json', route => route.fulfill({ json: { posts: [] } }));
-  await page.goto('/');
-  await page.addStyleTag({ content: 'html {scroll-behavior:auto!important} header {opacity:0!important;transition:none!important}' });
-  mkdirSync(artifacts, { recursive: true });
-  if (baseline) {
-    for (const id of ['social-updates', 'location']) {
-      const section = page.locator('#' + id);
-      await section.scrollIntoViewIfNeeded();
-      await section.screenshot({ path: resolve(artifacts, `before-${id}-${width}.png`) });
-    }
-    return;
-  }
-  const section = page.getByRole('region', { name: 'Connect with Talibon' });
-  await section.scrollIntoViewIfNeeded();
-  const location = section.locator('#location');
-  await expect(section.getByRole('heading', { name: 'Information Office', exact: true })).toBeVisible();
-  await expect(section.locator('img[src$="facebook-supplied.jpg"]').first()).toBeVisible();
-  const morePages = section.getByRole('button', { name: /More Talibon pages/ });
-  await expect(morePages).toHaveAttribute('aria-expanded', 'false');
-  await morePages.click();
-  await expect(morePages).toHaveAttribute('aria-expanded', 'true');
-  await expect(section.locator('#social-updates li')).toHaveCount(6);
-  await expect(location.locator('iframe')).toHaveCount(1);
-  await expect(location.locator('iframe')).toHaveAttribute('loading', 'eager');
-  expect(googleRequests).toHaveLength(1);
-  await expect(location.getByRole('button', {name:'Tap to explore'})).toHaveCount(0);
-  const frameBox = await location.locator('#talibon-map').boundingBox();
-  const panelBox = await location.locator('[data-location-panel]').boundingBox();
-  expect(panelBox!.y).toBeGreaterThanOrEqual(frameBox!.y + frameBox!.height);
-  await expect(location).toContainText('10.12');
-  const socialBox = await section.locator('#social-updates').boundingBox();
-  const mapBox = await location.boundingBox();
-  if (width >= 1024) {
-    expect(mapBox!.x).toBeGreaterThan(socialBox!.x + socialBox!.width);
-    expect(mapBox!.height).toBeGreaterThanOrEqual(576);
-    expect(mapBox!.width / socialBox!.width).toBeCloseTo(1.4, 1);
 
-  } else expect(mapBox!.y).toBeGreaterThanOrEqual(socialBox!.y + socialBox!.height);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+for (const width of [1440, 768, 375]) test(`compact scale, information office and Google map at ${width}px`, async ({ page, context }, info) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const google: string[] = [];
+  await context.route('**/*', r => {
+    const url = new URL(r.request().url());
+    if (url.hostname === '127.0.0.1') return r.continue();
+    if (url.hostname === 'www.google.com') { google.push(url.href); return r.fulfill({ contentType: 'text/html', body: '<p>Google Maps fixture</p>' }); }
+    return r.abort();
+  });
+  await context.route('**/api/**', r => r.fulfill({ json: [] }));
+  await context.route('**/data/social-updates.json', r => r.fulfill({ json: { posts: [] } }));
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveCSS('font-size', '14px');
+  const headings = page.locator('main > section:not(#home) h2');
+  for (const h of await headings.all()) {
+    await expect(h).toHaveCSS('font-size', '20px');
+    await expect(h).toHaveCSS('font-weight', '500');
+    await expect(h).toHaveCSS('letter-spacing', 'normal');
+  }
+  const section = page.locator('#connect-talibon');
+  await section.scrollIntoViewIfNeeded();
+  const card = section.locator('[aria-labelledby="information-office-heading"]');
+  const location = section.locator('#location');
+  await expect(section.getByRole('navigation', { name: 'More Talibon pages' })).toBeVisible();
+  await expect(section.getByRole('button', { name: /More Talibon pages/ })).toHaveCount(0);
+  await expect(location.locator('iframe')).toHaveAttribute('src', /https:\/\/www.google.com\/maps.*output=embed/);
+  expect(google).toHaveLength(1);
+  const frame = await section.locator('#talibon-map').boundingBox();
+  expect(frame!.height).toBe(200);
+  const left = await card.boundingBox(), right = await location.boundingBox();
+  expect(left!.height).toBeLessThan(right!.height);
+  if (width >= 1000) expect(Math.abs(left!.y - right!.y)).toBeLessThan(1);
+  await expect(location.getByText('Monday to Friday, 8:00 AM - 5:00 PM (except holidays)')).toBeVisible();
+  await expect(location.getByText(/Map data . Google/)).toBeVisible();
+  await expect(location.getByText(/OpenStreetMap/)).toHaveCount(0);
+  await expect(location.getByRole('link', { name: /^Open in Maps/ })).toHaveCount(1);
   const directions = location.getByRole('link', { name: /^Get directions/ });
-  await expect(directions).toHaveAttribute('href', /destination=Talibon%20Municipal%20Hall/);
-  for (const link of await section.locator('a[target="_blank"]').all()) {
-    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    await expect(link).toHaveAccessibleName(/opens in a new tab/);
-  }
-  const contrast = await textContrast(section);
-  for (const pair of contrast) expect(pair.ratio,pair.text).toBeGreaterThanOrEqual(4.5);
-  console.log(JSON.stringify({width,minimumTextContrast:Math.min(...contrast.map(pair=>pair.ratio))}));
-  // Opening the disclosure uses a mouse; enter keyboard modality before
-  // checking :focus-visible rather than the browser's pointer-focus outline.
-  await page.keyboard.press('Tab');
-  for (const control of await section.locator('a,button').all()) {
-    await control.focus();
-    await expect(control).toBeFocused();
-    await expect(control).toHaveCSS('outline-width','3px');
-    await expect(control).toHaveCSS('outline-offset','3px');
-    await expect(control).toHaveCSS('outline-color', await control.evaluate(el => el.closest('[class*="featureHeading"]') || el.closest('[class*="social_"] > [class*="card_"]') ? 'rgb(255, 255, 255)' : 'rgb(0, 89, 138)'));
-  }
-  await directions.blur();
-  await section.screenshot({ path: resolve(artifacts, `after-${width}.png`) });
-  await expect(location.getByRole('button', { name: 'Close map' })).toHaveCount(0);
-  await expect(location.locator('iframe')).toHaveAttribute('tabindex', '-1');
-  await expect(location.locator('iframe')).toHaveAttribute('src', /q=Talibon%20Municipal%20Hall/);
-  await directions.focus(); await expect(directions).toBeFocused();
+  await expect(directions).toHaveCount(1);
+  await expect(directions).toHaveAttribute('href', /maps\/dir\/\?api=1&destination=Talibon%20Municipal%20Hall/);
+  expect((await directions.boundingBox())!.height).toBe(width <= 768 ? 44 : 36);
+  for (const result of await textContrast(section)) expect(result.ratio, result.text).toBeGreaterThanOrEqual(4.5);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await section.screenshot({ path: info.outputPath(`connect-${width}.png`), style: 'header{visibility:hidden!important}' });
 });

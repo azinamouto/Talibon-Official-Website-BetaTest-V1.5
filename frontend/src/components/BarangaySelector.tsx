@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowRight, Camera, MapPin, Search, Waves } from 'lucide-react';
+import { ArrowRight, Camera, MapPin, Waves } from 'lucide-react';
 import { BARANGAY_REFERENCE, type BarangayReference } from '../data/barangayDirectory';
 import styles from './BarangaySelector.module.css';
+import BarangayLogo from './BarangayLogo';
+import shared from './HomeServices.module.css';
 
 // Optional fields use the existing full-directory field names. The homepage
 // reference currently contains only name/location; no additional feed is fetched.
@@ -31,13 +33,11 @@ const detailRows = (item: PickerBarangay) => [
 export default function BarangaySelector() {
   const route = useLocation();
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
   const [location, setLocation] = useState<LocationFilter>('All');
   const [selectedName, setSelectedName] = useState(() => (fromHash(route.hash) ?? defaultBarangay)?.name ?? '');
   const details = useRef<HTMLElement>(null);
-  const normalizedQuery = normalize(query);
-  const isFiltered = normalizedQuery.length > 0 || location !== 'All';
-  const matches = useMemo(() => alphabetical.filter(item => (location === 'All' || item.location === location) && normalize(item.name).includes(normalizedQuery)), [normalizedQuery, location]);
+  const isFiltered = location !== 'All';
+  const matches = alphabetical.filter(item => location === 'All' || item.location === location);
   const selected = records.find(item => item.name === selectedName) ?? defaultBarangay;
   const select = useCallback((item: PickerBarangay) => {
     setSelectedName(item.name);
@@ -47,9 +47,6 @@ export default function BarangaySelector() {
     const item = fromHash(route.hash);
     if (item) setSelectedName(item.name);
   }, [route.hash]);
-  useEffect(() => {
-    if (normalizedQuery && matches.length === 1 && matches[0].name !== selectedName) select(matches[0]);
-  }, [matches, normalizedQuery, selectedName, select]);
   const revealDetails = () => {
     if (window.innerWidth >= 900) return;
     requestAnimationFrame(() => {
@@ -63,7 +60,7 @@ export default function BarangaySelector() {
   const SelectedIcon = selected?.location === 'Island' ? Waves : MapPin;
   const townCenter = selected && normalize(selected.name) === 'poblacion';
 
-  return <section id="barangays" aria-labelledby="barangays-heading" className={styles.section}>
+  return <section id="barangays" aria-labelledby="barangays-heading" className={`${shared.section} ${styles.section}`}>
     <div className={`site-container ${styles.container}`}>
       <div className={styles.header}>
         <div>
@@ -71,16 +68,10 @@ export default function BarangaySelector() {
           <h2 id="barangays-heading" className={styles.title}>Barangays of Talibon</h2>
           <p className={styles.intro}>Pick a barangay to see its details.</p>
         </div>
-        <Link to="/about/barangays" className={styles.button}>View full directory <ArrowRight size={18} aria-hidden="true" /></Link>
+        <Link to="/about/barangays" className={`${shared.ghost} ${styles.directoryLink}`}>View full directory <ArrowRight size={16} aria-hidden="true" /></Link>
       </div>
       <div className={styles.picker}>
         <div className={styles.controls}>
-          <label className={styles.searchLabel}>
-            <span>Find a barangay</span>
-            <span className={styles.searchField}><Search size={18} aria-hidden="true" />
-              <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search barangays" aria-controls="barangay-options" />
-            </span>
-          </label>
           <fieldset className={styles.filters}>
             <legend className="sr-only">Browse by location</legend>
             <div className={styles.filterRow}>
@@ -94,6 +85,7 @@ export default function BarangaySelector() {
         {selected && <aside ref={details} className={styles.details} aria-labelledby="selected-barangay-label selected-barangay-heading" aria-live="polite" aria-atomic="true">
           <div className={styles.cardContent} key={selected.name}>
             <div className={styles.photo}>
+              <BarangayLogo name={selected.name} className={styles.seal} fallback={<>
               <div className={styles.art} data-area={selected.location} data-name={selected.name} aria-hidden="true">
                 <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" focusable="false">
                   <circle className={styles.sun} cx="92" cy="82" r="26" />
@@ -104,11 +96,14 @@ export default function BarangaySelector() {
                 </svg>
               </div>
               <span className={styles.placeholderLabel}><Camera size={13} aria-hidden="true" />Photo placeholder</span>
-              <span className={styles.location}><SelectedIcon size={16} aria-hidden="true" />{selected.location}{townCenter ? ' \u00b7 Town center' : ''}</span>
+              </>} />
             </div>
             <div className={styles.detailsBody}>
               <p id="selected-barangay-label" className={styles.selectedLabel}>Selected barangay</p>
-              <h3 id="selected-barangay-heading">{selected.name}</h3>
+              <div className={styles.nameRow}>
+                <h3 id="selected-barangay-heading">{selected.name}</h3>
+              <span className={styles.location}><SelectedIcon size={16} aria-hidden="true" />{selected.location}{townCenter ? ' \u00b7 Town center' : ''}</span>
+              </div>
               {!matches.some(item => item.name === selected.name) && <p className={styles.filterNote}>Not in the current filter</p>}
               {detailRows(selected).length > 0 && <dl className={styles.detailRows}>
                 {detailRows(selected).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
@@ -120,7 +115,7 @@ export default function BarangaySelector() {
         <fieldset id="barangay-options" className={styles.choices}>
           <legend className="sr-only">Barangays</legend>
           <p role="status" aria-live="polite" className={isFiltered ? styles.results : 'sr-only'}>{isFiltered ? `Showing ${matches.length} of ${records.length} barangays` : ''}</p>
-          {matches.length ? <div className={styles.chips}>
+          <div className={styles.chips}>
             {matches.map(item => {
               const Icon = item.location === 'Island' ? Waves : MapPin;
               return <label key={item.name} className={styles.control} onPointerUp={revealDetails}>
@@ -128,10 +123,7 @@ export default function BarangaySelector() {
                 <span className={styles.chip}><Icon size={16} aria-hidden="true" />{item.name}</span>
               </label>;
             })}
-          </div> : <div className={styles.empty}>
-            <p>No barangay matches your search. Try a different name or choose All.</p>
-            <button type="button" onClick={() => { setQuery(''); setLocation('All'); }}>Reset search and filters</button>
-          </div>}
+          </div>
         </fieldset>
       </div>
       <p className={styles.source}>Poblacion is counted under Mainland. Barangay names: <a href="https://psa.gov.ph/classification/psgc/barangays/0701243000" target="_blank" rel="noopener noreferrer">PSA reference<span className="sr-only"> (opens in a new tab)</span></a></p>

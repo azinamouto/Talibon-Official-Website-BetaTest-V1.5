@@ -1,33 +1,25 @@
 import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { beforeEach, afterEach, expect, it, vi } from 'vitest';
+import { expect, it } from 'vitest';
 import MunicipalOffices from '../../src/components/MunicipalOffices';
 
-beforeEach(() => {
-  vi.stubGlobal('ResizeObserver', class {observe(){} disconnect(){}});
-});
-afterEach(() => vi.unstubAllGlobals());
-
-it('preserves the four officials in order with one accessible directory link per card and correct elected role', () => {
+it('shows the six supplied office logos, descriptions and unconfirmed officials with directory links', () => {
   render(<MemoryRouter><MunicipalOffices /></MemoryRouter>);
   const section = screen.getByRole('region', { name: 'Municipal offices and departments' });
-  const pairs = [
-    ['Office of the Municipal Mayor', 'Hon. Michael I. Doria'],
-    ['Municipal Planning & Development Coordinator', 'Elmer B. Magalona'],
-    ['Office of the Municipal Local Civil Registrar', 'Juliet D. Lumbo-an'],
-    ['Office of the Municipal Budget Officer', 'Rogelia L. Cellan'],
+  const titles = [
+    'Office of the Municipal Agriculturist', 'Municipal Treasury Office',
+    'Municipal Planning and Development Office', 'Municipal Accounting Office',
+    'Municipal Public Employment Service Office', 'Municipal Market Administration Office',
   ];
-  const links = within(section).getAllByRole('link');
-  expect(links).toHaveLength(5);
-  pairs.forEach(([title, person], i) => {
-    expect(links[i]).toHaveAccessibleName(`${title} ${person}`);
-    expect(links[i]).toHaveAttribute('href', '/executive/directory');
-    expect(within(links[i]).getAllByRole('heading')).toHaveLength(1);
-    expect(links[i].querySelectorAll('a')).toHaveLength(0);
-    expect(links[i]).toHaveTextContent(i === 0 ? 'Municipal Mayor' : 'Department head');
+  const files = ['agriculture', 'treasury', 'planning', 'accounting', 'employment', 'market'];
+  expect(within(section).getAllByRole('link')).toHaveLength(7);
+  titles.forEach((title, i) => {
+    const card = within(section).getByRole('link', { name: title });
+    expect(card).toHaveAttribute('href', '/executive/directory');
+    expect(within(card).getByRole('heading', { name: title })).toBeVisible();
+    expect(within(card).getByText('N/A', { exact: true })).toBeVisible();
+    expect(within(card).getByRole('img', { name: `${title} logo` })).toHaveAttribute('src', expect.stringContaining(`${files[i]}.png`));
+    expect(card.querySelectorAll('p')).toHaveLength(3);
   });
-  expect(links[4]).toHaveAccessibleName('View all offices and departments');
-  expect(links[4]).toHaveAttribute('href', '/executive/directory');
-  section.querySelectorAll('svg').forEach(icon => expect(icon).toHaveAttribute('aria-hidden', 'true'));
-  expect(section).not.toHaveTextContent('TALIBON');
+  expect(within(section).getByRole('link', { name: 'View all offices and departments' })).toHaveAttribute('href', '/executive/directory');
 });

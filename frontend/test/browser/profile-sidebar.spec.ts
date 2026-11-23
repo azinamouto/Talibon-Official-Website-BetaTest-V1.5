@@ -64,7 +64,7 @@ for(const width of [375,768,1024,1280,1920]) test(`profile sidebar and unchanged
       await expect(links.first()).toHaveAttribute('aria-current','page');
       const p=await article.boundingBox(),s=await sidebar.boundingBox();
       if(width>=1024){expect(s!.width).toBe(320);expect(s!.x).toBeGreaterThan(p!.x+p!.width);}
-      else {expect(s!.y).toBeGreaterThan(p!.y+p!.height);expect(Math.round(s!.width)).toBe(width-(width>=640?48:32));}
+      else {expect(s!.y).toBeGreaterThan(p!.y+p!.height);expect(Math.round(s!.width)).toBe(width-(width<=768?32:48));}
       await links.first().focus();await expect(links.first()).toHaveCSS('outline-style','solid');
       if(width>=1024){await page.evaluate(()=>scrollTo(0,1000));const sticky=await sidebar.boundingBox();const headerBottom=await page.locator('header').first().evaluate(el=>el.getBoundingClientRect().bottom);expect(sticky!.y).toBeGreaterThanOrEqual(headerBottom);expect(sticky!.y).toBeLessThan(300);}
       await page.evaluate(()=>scrollTo(0,0));

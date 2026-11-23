@@ -22,7 +22,7 @@ for (const width of [360, 768, 1280, 1920]) test(`our story with the real photos
   await expect(portrait).toBeVisible();
   await expect.poll(() => portrait.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
   if (!baseline) {
-    await expect(section.getByRole('heading', { name: 'Heritage & Progress', level: 2 })).toHaveCSS('font-size', '24px');
+    await expect(section.getByRole('heading', { name: 'Heritage & Progress', level: 2 })).toHaveCSS('font-size', '20px');
     await expect(section.getByRole('link', { name: 'Explore History' })).toHaveAttribute('href', '/about/history');
     await expect(section.getByRole('link')).toHaveCount(1);
     const background = section.locator('img[alt=""]');

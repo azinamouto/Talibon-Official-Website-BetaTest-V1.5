@@ -32,10 +32,15 @@ for (const url of routes) test(`R2 entry point cannot submit, track or confirm: 
   expect(transactions).toEqual([]);
   expect(await page.evaluate(() => Object.keys(localStorage).filter(key => /request|submission|payment/i.test(key)))).toEqual([]);
 });
-for (const width of [375, 1280]) test(`anonymous navigation and placeholder fit at ${width}px`, async ({ page }) => {
+for (const width of [375, 1280]) test(`current services navigation and direct placeholder fit at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 850 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.locator('a[href="/e-services"]').filter({ visible: true }).first().click();
+  const notice = page.getByRole('region', { name: 'Electronic services', exact: true });
+  await expect(notice.getByRole('heading', { name: 'Coming soon' })).toBeVisible();
+  await notice.getByRole('link', { name: 'See how to get services today' }).click();
+  await expect(page).toHaveURL(/\/transparency\/charter$/);
+  // The shortcut was removed; old bookmarked e-services routes remain informational.
+  await page.goto('/e-services', { waitUntil: 'domcontentloaded' });
   await expect(page).toHaveURL(/\/e-services$/);
   await expect(page.getByRole('heading', { name: 'To Be Implemented', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

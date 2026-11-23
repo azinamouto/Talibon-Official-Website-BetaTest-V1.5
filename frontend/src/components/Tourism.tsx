@@ -17,14 +17,14 @@ export default function Tourism() {
       title: "Holy Trinity",
       category: "Historical Site",
       description: "A beautiful landmark of faith and history.",
-      image: "/images/holy_trinity.jpg",
+      image: "/images/holy_trinity.webp",
       href: "/tourism/spots"
     },
     {
       title: "Sandbars",
       category: "Nature & Beach",
       description: "Explore the pristine islands scattered across the bank.",
-      image: "/images/sandbars.jpg",
+      image: "/images/sandbars.webp",
       href: "/tourism/spots"
     },
   ];

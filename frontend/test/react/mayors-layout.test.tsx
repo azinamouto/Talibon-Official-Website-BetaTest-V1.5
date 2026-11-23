@@ -14,9 +14,10 @@ it('preserves every mayor, duplicate entry, era and commentary in source order',
     const region = within(eras[index]);
     expect(region.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(era.mayors.map(m => m.name));
     expect(region.getByRole('heading', { level: 2 })).toHaveTextContent(splitEraTitle(era.section).title);
+    const cards = region.getAllByRole('listitem');
     era.mayors.forEach((mayor, mayorIndex) => {
       const details = splitMayorTerm(mayor.term);
-      const card = within(region.getAllByRole('listitem')[mayorIndex]);
+      const card = within(cards[mayorIndex]);
       if(details.term) expect(card.getByText(`Term: ${details.term}`)).toBeVisible();
       if(details.note) expect(card.getByText(details.note)).toBeVisible();
     });

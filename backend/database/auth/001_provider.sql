@@ -13,7 +13,7 @@ create table "r2_auth_rate_limit" ("id" text not null primary key, "key" text no
 
 create index "r2_auth_session_userId_idx" on "r2_auth_session" ("userId");
 
-create index "r2_auth_account_userId_idx" on "r2_auth_account" ("userId"); 
+create index "r2_auth_account_userId_idx" on "r2_auth_account" ("userId");
 
 create index "r2_auth_verification_identifier_idx" on "r2_auth_verification" ("identifier");
 

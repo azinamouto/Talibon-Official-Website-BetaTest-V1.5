@@ -47,9 +47,9 @@ for (const width of [375, 768, 1280, 1440]) test(`five sections and protected he
     await expect(map).toContainText('10.12');
     const frame=await map.locator('#talibon-map').boundingBox(), details=await map.locator('[data-location-panel]').boundingBox();
     expect(details!.y).toBeGreaterThanOrEqual(frame!.y+frame!.height);
-    await expect(page.locator('#services')).toHaveCSS('background-color','rgb(0, 89, 138)');
+    await expect(page.locator('#services')).toHaveCSS('background-color','rgb(238, 244, 241)');
     await expect(page.locator('#services')).toHaveCSS('background-image','none');
-    expect(await page.locator('#services').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe(await page.locator('#transparency').evaluate(el=>getComputedStyle(el).backgroundColor));
+    await expect(page.locator('#transparency')).toHaveCSS('background-color', 'rgb(0, 89, 138)');
     await expect(page.locator('#services h3')).toHaveCount(6);
     await expect(page.getByText('MUNICIPAL SERVICES & REAL ESTATE', { exact: true }).locator('..').locator('svg')).toHaveCount(0);
     await expect(page.locator('#popular-services')).toHaveCSS('background-color','rgb(255, 255, 255)');
@@ -58,9 +58,13 @@ for (const width of [375, 768, 1280, 1440]) test(`five sections and protected he
     await expect(page.locator('#emergency')).toHaveCSS('background-image', 'none');
     await expect(page.locator('#emergency')).toHaveCSS('background-color', 'rgb(107, 18, 22)');
     await expect(page.locator('#emergency h2')).toHaveCSS('color', 'rgb(255, 255, 255)');
-    await expect(page.locator('#about h2')).toHaveCSS('font-size','20px');
+    await expect(page.locator('#about h2')).toHaveText('A message from the Mayor');
+    const mayorHeadingSize = await page.locator('#about h2').evaluate(el => parseFloat(getComputedStyle(el).fontSize));
+    expect(mayorHeadingSize).toBeGreaterThanOrEqual(30);
+    expect(mayorHeadingSize).toBeLessThanOrEqual(44);
     await expect(page.locator('#about [class*="mayorCard"]')).toHaveCount(0);
-    await expect(page.locator('#about img').last()).toHaveAttribute('src',/mayor-janette.webp$/);
+    await expect(page.locator('#about').getByRole('img', { name: 'Mayor Janette Aurestila-Garcia' })).toHaveAttribute('src',/mayor-janette.webp$/);
+    await expect(page.locator('#about').getByRole('img', { name: 'Municipal seal of Talibon' })).toHaveAttribute('src',/talibon-official-seal.png$/);
   }
   for(const id of ['about','services','emergency','location','popular-services']) {
     const section=page.locator('#'+id);

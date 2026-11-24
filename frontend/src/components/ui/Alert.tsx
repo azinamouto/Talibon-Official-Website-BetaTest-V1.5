@@ -9,3 +9,5 @@ export function Alert({ tone = 'info', className = '', children, ...props }: HTM
   return <div {...props} role={tone === 'error' ? 'alert' : 'status'}
     className={`rounded-control border p-4 text-base ${tones[tone]} ${className}`}>{children}</div>;
 }
+console.log ('Alert component loaded');
+console.log ('mo kaon nako');

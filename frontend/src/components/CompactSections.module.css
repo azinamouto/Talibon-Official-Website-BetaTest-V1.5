@@ -9,6 +9,14 @@
 .destinationCopy { display: grid; justify-items: start; gap: 16px; }
 .destinationTitle { display: grid; gap: 8px; }
 .tourismClosing { display: flex; justify-content: center; margin-top: 24px; }
+.sandbarWeather { min-width: 0; }
+@media (min-width: 1200px) {
+  .sandbarDestination { grid-template-columns: minmax(0, 1.5fr) minmax(0, .8fr) minmax(260px, .8fr); gap: 28px; }
+  .sandbarWeather { width: 100%; max-width: 360px; justify-self: end; }
+}
+@media (min-width: 640px) and (max-width: 1199px) {
+  .sandbarWeather { grid-column: 1 / -1; }
+}
 .emergencyHeader { text-align: center; margin-bottom: 24px; }
 .emergencyHeader h2 { margin-bottom: 12px; }
 .hotlineGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }

@@ -74,14 +74,22 @@ export default function BarangaysView({ data }: BarangaysViewProps) {
       <div className={styles.grid}>
         {paginatedBarangays.map(brgy => (
           <article key={brgy.id} className={styles.card}>
-            <BarangayLogo name={brgy.name} className={styles.logo} />
-            <h2>{brgy.name}</h2>
-            <dl>
-              <div><dt>Captain</dt><dd>{brgy.captain}</dd></div>
+            <div className={styles.cardHeader}>
+              <BarangayLogo name={brgy.name} className={styles.logo}
+                fallback={<span className={styles.logoFallback} aria-hidden="true">{brgy.name.charAt(0)}</span>} />
+              <div className={styles.identity}>
+                <h2>{brgy.name}</h2>
+                <p className={styles.category}>Barangay of Talibon</p>
+              </div>
+            </div>
+            <dl className={styles.details}>
               <div><dt>Office hours</dt><dd>{brgy.office_hours}</dd></div>
               {brgy.population > 0 && <div><dt>Population</dt><dd>{brgy.population.toLocaleString()}</dd></div>}
               {brgy.contact_number && <div><dt>Contact number</dt><dd>{brgy.contact_number}</dd></div>}
               {brgy.office_address && <div><dt>Office address</dt><dd>{brgy.office_address}</dd></div>}
+            </dl>
+            <dl className={styles.officer}>
+              <div><dt>Captain:</dt><dd>{brgy.captain}</dd></div>
             </dl>
           </article>
         ))}

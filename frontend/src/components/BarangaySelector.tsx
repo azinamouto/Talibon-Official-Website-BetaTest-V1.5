@@ -1,130 +1,71 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowRight, Camera, MapPin, Waves } from 'lucide-react';
+﻿import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BARANGAY_REFERENCE, type BarangayReference } from '../data/barangayDirectory';
 import styles from './BarangaySelector.module.css';
+import cardStyles from '../pages/about/BarangaysView.module.css';
 import BarangayLogo from './BarangayLogo';
-import shared from './HomeServices.module.css';
 
-// Optional fields use the existing full-directory field names. The homepage
-// reference currently contains only name/location; no additional feed is fetched.
 type PickerBarangay = BarangayReference & {
   captain_name?: string | null; captain?: string | null; contact_number?: string | null;
   office_address?: string | null; office_hours?: string | null;
 };
-const records: readonly PickerBarangay[] = BARANGAY_REFERENCE;
-const locations = [...new Set(records.map(item => item.location))];
-const filters = ['All', ...locations] as const;
-type LocationFilter = 'All' | BarangayReference['location'];
-const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-const slug = (value: string) => normalize(value).replace(/\s+/g, '-');
-const alphabetical = [...records].sort((a, b) => a.name.localeCompare(b.name, 'en'));
-const defaultBarangay = records.find(item => normalize(item.name) === 'poblacion') ?? alphabetical[0];
-function fromHash(hash: string) {
-  if (!hash.startsWith('#barangay=')) return undefined;
-  try { const value = decodeURIComponent(hash.slice('#barangay='.length)); return records.find(item => slug(item.name) === value); }
-  catch { return undefined; }
-}
-const detailRows = (item: PickerBarangay) => [
-  ['Punong Barangay', item.captain_name || item.captain], ['Contact', item.contact_number],
-  ['Office address', item.office_address], ['Office hours', item.office_hours],
-].filter((row): row is [string, string] => typeof row[1] === 'string' && row[1].trim().length > 0);
+const records: readonly PickerBarangay[] = [...BARANGAY_REFERENCE].sort((a, b) => a.name.localeCompare(b.name, 'en'));
+const filters = ['All', 'Mainland', 'Island'] as const;
+const itemsPerPage = 6;
 
 export default function BarangaySelector() {
-  const route = useLocation();
-  const navigate = useNavigate();
-  const [location, setLocation] = useState<LocationFilter>('All');
-  const [selectedName, setSelectedName] = useState(() => (fromHash(route.hash) ?? defaultBarangay)?.name ?? '');
-  const details = useRef<HTMLElement>(null);
-  const isFiltered = location !== 'All';
-  const matches = alphabetical.filter(item => location === 'All' || item.location === location);
-  const selected = records.find(item => item.name === selectedName) ?? defaultBarangay;
-  const select = useCallback((item: PickerBarangay) => {
-    setSelectedName(item.name);
-    navigate({ pathname: route.pathname, search: route.search, hash: `barangay=${encodeURIComponent(slug(item.name))}` }, { replace: true, preventScrollReset: true });
-  }, [navigate, route.pathname, route.search]);
-  useEffect(() => {
-    const item = fromHash(route.hash);
-    if (item) setSelectedName(item.name);
-  }, [route.hash]);
-  const revealDetails = () => {
-    if (window.innerWidth >= 900) return;
-    requestAnimationFrame(() => {
-      const card = details.current;
-      if (!card) return;
-      const bounds = card.getBoundingClientRect();
-      const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
-      if (bounds.top < headerBottom || bounds.bottom > window.innerHeight) card.scrollIntoView({ block: 'center', behavior: 'instant' });
-    });
-  };
-  const SelectedIcon = selected?.location === 'Island' ? Waves : MapPin;
-  const townCenter = selected && normalize(selected.name) === 'poblacion';
+  const [location, setLocation] = useState<typeof filters[number]>('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const matches = records.filter(item => location === 'All' || item.location === location);
+  const totalPages = Math.ceil(matches.length / itemsPerPage);
+  const page = Math.min(currentPage, Math.max(1, totalPages));
+  const visible = matches.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  return <section id="barangays" aria-labelledby="barangays-heading" className={`${shared.section} ${styles.section}`}>
-    <div className={`site-container ${styles.container}`}>
+  return <section id="barangays" aria-labelledby="barangays-heading" className={styles.section}>
+    <div className={styles.container}>
       <div className={styles.header}>
-        <div>
-          <p className={styles.eyebrow}>Community directory</p>
-          <h2 id="barangays-heading" className={styles.title}>Barangays of Talibon</h2>
-          <p className={styles.intro}>Pick a barangay to see its details.</p>
-        </div>
-        <Link to="/about/barangays" className={`${shared.ghost} ${styles.directoryLink}`}>View full directory <ArrowRight size={16} aria-hidden="true" /></Link>
+        <p className={styles.eyebrow}>Community directory</p>
+        <h2 id="barangays-heading" className={styles.title}>Barangays of Talibon</h2>
+        <p className={styles.intro}>Explore the barangays serving Talibon and its communities.</p>
       </div>
-      <div className={styles.picker}>
-        <div className={styles.controls}>
-          <fieldset className={styles.filters}>
-            <legend className="sr-only">Browse by location</legend>
-            <div className={styles.filterRow}>
-              {filters.map(filter => <label key={filter} className={styles.control}>
-                <input className={styles.radio} type="radio" name="barangay-location" value={filter} checked={location === filter} onChange={() => setLocation(filter)} aria-controls="barangay-options" />
-                <span className={styles.tab}>{filter}<span className={styles.count} aria-hidden="true">{filter === 'All' ? records.length : records.filter(item => item.location === filter).length}</span></span>
-              </label>)}
-            </div>
-          </fieldset>
+      <fieldset className={styles.filters}>
+        <legend className="sr-only">Browse by location</legend>
+        <div className={styles.filterRow}>
+          {filters.map(filter => <label key={filter} className={styles.control}>
+            <input className={styles.radio} type="radio" name="barangay-location" value={filter}
+              checked={location === filter} onChange={() => { setLocation(filter); setCurrentPage(1); }} aria-controls="barangay-cards" />
+            <span className={styles.tab}>{filter}<span className={styles.count} aria-hidden="true">{filter === 'All' ? records.length : records.filter(item => item.location === filter).length}</span></span>
+          </label>)}
         </div>
-        {selected && <aside ref={details} className={styles.details} aria-labelledby="selected-barangay-label selected-barangay-heading" aria-live="polite" aria-atomic="true">
-          <div className={styles.cardContent} key={selected.name}>
-            <div className={styles.photo}>
-              <BarangayLogo name={selected.name} className={styles.seal} fallback={<>
-              <div className={styles.art} data-area={selected.location} data-name={selected.name} aria-hidden="true">
-                <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" focusable="false">
-                  <circle className={styles.sun} cx="92" cy="82" r="26" />
-                  <path className={styles.hillBack} d="M0 230 C65 160 112 203 180 170 S307 125 400 192 V300 H0Z" />
-                  <path className={styles.hillFront} d="M0 263 C90 223 135 260 220 232 S325 194 400 239 V300 H0Z" />
-                  <path className={styles.waveBack} d="M0 186 Q50 158 100 186 T200 186 T300 186 T400 186 V300 H0Z" />
-                  <path className={styles.waveFront} d="M0 244 Q50 216 100 244 T200 244 T300 244 T400 244 V300 H0Z" />
-                </svg>
-              </div>
-              <span className={styles.placeholderLabel}><Camera size={13} aria-hidden="true" />Photo placeholder</span>
-              </>} />
-            </div>
-            <div className={styles.detailsBody}>
-              <p id="selected-barangay-label" className={styles.selectedLabel}>Selected barangay</p>
-              <div className={styles.nameRow}>
-                <h3 id="selected-barangay-heading">{selected.name}</h3>
-              <span className={styles.location}><SelectedIcon size={16} aria-hidden="true" />{selected.location}{townCenter ? ' \u00b7 Town center' : ''}</span>
-              </div>
-              {!matches.some(item => item.name === selected.name) && <p className={styles.filterNote}>Not in the current filter</p>}
-              {detailRows(selected).length > 0 && <dl className={styles.detailRows}>
-                {detailRows(selected).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
-              </dl>}
-              <Link to="/about/barangays" className={`${styles.button} ${styles.viewPage}`}>View barangay page <ArrowRight size={18} aria-hidden="true" /></Link>
+      </fieldset>
+      <p role="status" className={styles.results}>Showing {(page - 1) * itemsPerPage + 1}–{Math.min(page * itemsPerPage, matches.length)} of {matches.length} barangays</p>
+      <div id="barangay-cards" className={styles.grid}>
+        {visible.map(item => <article key={item.name} className={cardStyles.card}>
+          <div className={cardStyles.cardHeader}>
+            <BarangayLogo name={item.name} className={cardStyles.logo}
+              fallback={<span className={cardStyles.logoFallback} aria-hidden="true">{item.name.charAt(0)}</span>} />
+            <div className={cardStyles.identity}>
+              <h3 className={styles.cardTitle}>{item.name}</h3>
+              <p className={cardStyles.category}>{item.location}{item.name === 'Poblacion' ? ' · Town center' : ''}</p>
             </div>
           </div>
-        </aside>}
-        <fieldset id="barangay-options" className={styles.choices}>
-          <legend className="sr-only">Barangays</legend>
-          <p role="status" aria-live="polite" className={isFiltered ? styles.results : 'sr-only'}>{isFiltered ? `Showing ${matches.length} of ${records.length} barangays` : ''}</p>
-          <div className={styles.chips}>
-            {matches.map(item => {
-              const Icon = item.location === 'Island' ? Waves : MapPin;
-              return <label key={item.name} className={styles.control} onPointerUp={revealDetails}>
-                <input className={styles.radio} type="radio" name="barangay" value={item.name} checked={selected.name === item.name} onChange={() => select(item)} title={`${item.name}: ${item.location}`} />
-                <span className={styles.chip}><Icon size={16} aria-hidden="true" />{item.name}</span>
-              </label>;
-            })}
-          </div>
-        </fieldset>
+          <dl className={cardStyles.details}>
+            <div><dt>Office hours</dt><dd>{item.office_hours || 'Not specified'}</dd></div>
+            {item.contact_number && <div><dt>Contact number</dt><dd>{item.contact_number}</dd></div>}
+            {item.office_address && <div><dt>Office address</dt><dd>{item.office_address}</dd></div>}
+          </dl>
+          <dl className={cardStyles.officer}>
+            <div><dt>Captain:</dt><dd>{item.captain_name || item.captain || 'Not specified'}</dd></div>
+          </dl>
+        </article>)}
+      </div>
+      <div className={styles.footer}>
+        {totalPages > 1 && <nav className={styles.pagination} aria-label="Homepage barangay results pages">
+          <button type="button" disabled={page === 1} onClick={() => setCurrentPage(page - 1)}>Previous</button>
+          <span>Page {page} of {totalPages}</span>
+          <button type="button" disabled={page === totalPages} onClick={() => setCurrentPage(page + 1)}>Next</button>
+        </nav>}
+        <Link to="/about/barangays" className={styles.button}>View full directory</Link>
       </div>
       <p className={styles.source}>Poblacion is counted under Mainland. Barangay names: <a href="https://psa.gov.ph/classification/psgc/barangays/0701243000" target="_blank" rel="noopener noreferrer">PSA reference<span className="sr-only"> (opens in a new tab)</span></a></p>
     </div>

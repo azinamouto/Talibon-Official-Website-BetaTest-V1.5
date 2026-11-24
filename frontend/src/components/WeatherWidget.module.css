@@ -1,52 +1,27 @@
-.section {
-  isolation: isolate;
-  background-color: #05497f;
-}
-
-/* Blur only the decorative photo so the weather text stays sharp. */
-.section::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  z-index: -1;
-  pointer-events: none;
-  background-image: url("/images/talibon-weather-waterfront.jpg");
-  background-size: cover;
-  background-position: center 65%;
-  background-repeat: no-repeat;
-  filter: blur(2.5px);
-}
-
-.overlay {
-  background: linear-gradient(90deg, rgba(4, 35, 61, .68), rgba(4, 35, 61, .82));
-}
-
-/* Keep text readable without changing the existing icon and tide-dot colors. */
-.section :is(p, span, h3) {
-  color: #fff;
-}
-
-@media (max-width: 767px) {
-  .section::before { background-position: 62% center; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .section *, .section *::before, .section *::after {
-    animation: none;
-    transition: none;
-  }
-}
-
-/* Apply the page gutter once, matching the neighboring edited sections. */
-.section > :global(.site-container) {
+﻿.panel {
   width: 100%;
-  max-width: none;
-  margin-inline: 0;
-  padding-inline: calc(var(--spacing) * 8);
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--color-brand-border);
+  border-top: 3px solid var(--talweb-deep);
+  border-radius: 16px;
+  background: var(--talweb-card);
+  color: var(--talweb-text);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--talweb-deep) 6%, transparent);
 }
-@media (max-width: 779px) {
-  .section > :global(.site-container) { padding-inline: calc(var(--spacing) * 6); }
-}
-@media (max-width: 519px) {
-  .section > :global(.site-container) { padding-inline: calc(var(--spacing) * 4); }
+.heading { display: flex; align-items: center; gap: 12px; }
+.heading > svg { flex: none; color: var(--talweb-deep); }
+:global(#root) :global(#tourism) :global(#weather) .heading h4 { margin: 0; font-size: 18px !important; font-weight: 600 !important; line-height: 1.35 !important; }
+.intro { margin: 10px 0 20px; color: var(--talweb-muted); font-size: 14px; line-height: 1.6; }
+.conditions { display: grid; gap: 16px; }
+.conditions > div { display: flex; align-items: flex-start; gap: 10px; }
+.conditions svg { flex: none; margin-top: 2px; color: var(--talweb-deep); }
+.conditions p { display: grid; gap: 4px; margin: 0; font-size: 14px; line-height: 1.5; }
+.conditions strong { font-weight: 600; }
+.conditions span { color: var(--talweb-muted); }
+.link { display: inline-block; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--color-brand-border); color: var(--talweb-deep); font-size: 14px; font-weight: 600; line-height: 1.6; text-decoration: underline; text-underline-offset: 4px; }
+.link:hover { text-decoration-thickness: 2px; }
+.link:focus-visible { outline: 3px solid var(--talweb-deep); outline-offset: 4px; }
+@media (min-width: 640px) and (max-width: 1199px) {
+  .conditions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 }

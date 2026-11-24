@@ -62,15 +62,15 @@ test('Mayor reveals stay readable, finish promptly and do not replay', async ({ 
   await expect(section).toHaveAttribute('data-welcome-entered', 'true');
   expect(await section.locator('.mayor-lead').evaluate(el => Number(getComputedStyle(el).opacity))).toBeGreaterThanOrEqual(.65);
   const reveals = await section.evaluate(el => el.getAnimations({ subtree: true })
-    .filter(animation => animation.animationName !== 'mayor-coastal-drift')
+    .filter(animation => animation.timeline === document.timeline)
     .map(animation => { const timing = animation.effect!.getTiming(); return Number(timing.duration) + Number(timing.delay); }));
   expect(reveals.every(duration => duration <= 450)).toBe(true);
   await section.locator('.mayor-values').scrollIntoViewIfNeeded();
   await expect(section.locator('.mayor-values')).toHaveAttribute('data-values-entered', 'true');
   await expect.poll(() => section.evaluate(el => el.getAnimations({ subtree: true })
-    .filter(animation => animation.playState === 'running' && animation.animationName !== 'mayor-coastal-drift').length)).toBe(0);
+    .filter(animation => animation.playState === 'running' && animation.timeline === document.timeline).length)).toBe(0);
   await page.locator('#services').scrollIntoViewIfNeeded();
   await section.evaluate(el => el.scrollIntoView({ block: 'start', behavior: 'instant' }));
   expect(await section.evaluate(el => el.getAnimations({ subtree: true })
-    .filter(animation => animation.playState === 'running' && animation.animationName !== 'mayor-coastal-drift').length)).toBe(0);
+    .filter(animation => animation.playState === 'running' && animation.timeline === document.timeline).length)).toBe(0);
 });

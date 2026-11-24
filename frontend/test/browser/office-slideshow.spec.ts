@@ -14,7 +14,7 @@ test('office grid supports keyboard navigation through all six office links', as
     await expect(cards.nth(i)).toHaveCSS('outline-width', '3px');
     await page.keyboard.press('Tab');
   }
-  await expect(page.getByRole('link', { name: 'View all offices and departments' })).toBeFocused();
+  await expect(page.locator('#offices').getByRole('link', { name: 'View all offices and departments' })).toBeFocused();
 });
 
 test('office grid supports the existing dark theme', async ({ page }, info) => {

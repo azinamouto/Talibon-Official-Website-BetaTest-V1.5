@@ -10,10 +10,10 @@ function setup() {
   return { ...result, search: screen.getByRole('searchbox', { name: 'Search offices and services' }) };
 }
 
-it('keeps office destinations and previews in named cards with stretched action links', () => {
+it('keeps office destinations and previews in accessible directory rows', () => {
   setup();
-  const directory = screen.getByRole('region', { name: 'Browse offices by purpose' });
-  expect(within(directory).getByRole('heading', { name: 'Browse offices by purpose', level: 2 })).toBeVisible();
+  const directory = screen.getByRole('region', { name: 'Offices, grouped by what they handle' });
+  expect(within(directory).getByRole('heading', { name: 'Offices, grouped by what they handle', level: 2 })).toBeVisible();
   for (const office of charterGroups.flatMap(group => group.offices)) {
     const article = within(directory).getByRole('article', { name: office.name, hidden: true });
     const link = within(article).getByRole('link', { hidden: true });
@@ -53,12 +53,12 @@ it('keeps internal services quiet but reveals matching staff services', () => {
 
 it('labels verified PDF task destinations and searches for tasks without verified anchors', () => {
   const { search } = setup();
-  expect(screen.getByRole('link', { name: /Business permit PDF guide/ })).toHaveAttribute('href', `${charterPdf}#page=215`);
-  expect(screen.getByRole('link', { name: /Building permit PDF guide/ })).toHaveAttribute('href', `${charterPdf}#page=102`);
-  fireEvent.click(screen.getByRole('button', { name: 'Tax declaration Find the office' }));
+  expect(screen.getByRole('link', { name: /Apply for a business permit Open PDF guide/ })).toHaveAttribute('href', `${charterPdf}#page=215`);
+  expect(screen.getByRole('link', { name: /Apply for a building permit Open PDF guide/ })).toHaveAttribute('href', `${charterPdf}#page=102`);
+  fireEvent.click(screen.getByRole('button', { name: 'Declare property for tax Find the office' }));
   expect(search).toHaveValue('tax declaration');
   expect(screen.getByRole('heading', { name: 'Assessor’s Office' })).toBeVisible();
-  fireEvent.click(screen.getByRole('button', { name: 'Burial lot Find the office' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Find a burial lot Find the office' }));
   expect(screen.getByRole('link', { name: /Cemetery Office/ })).toHaveAttribute('href', '/executive/directory');
 });
 
@@ -86,7 +86,7 @@ it('provides an empty state and reset without invented service totals or edition
   expect(screen.getByRole('heading', { name: 'No offices found' })).toBeVisible();
   fireEvent.click(screen.getByRole('button', { name: 'Show all offices' }));
   expect(search).toHaveValue('');
-  expect(screen.getByRole('heading', { name: 'Citizen’s Charter' })).toBeVisible();
+  expect(screen.getByRole('heading', { name: 'What do you need to do today?' })).toBeVisible();
   expect(screen.queryByText(/\d+ SERVICES/)).toBeNull();
   expect(screen.getByRole('link', { name: /Download full charter/ })).toHaveAttribute('href', charterPdf);
 });

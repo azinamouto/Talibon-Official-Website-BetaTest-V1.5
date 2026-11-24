@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import compact from "./CompactSections.module.css";
+import WeatherWidget from "./WeatherWidget";
 
 export default function Tourism() {
   const destinations = [
@@ -50,7 +51,7 @@ export default function Tourism() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: idx * 0.1 }}
-              className={`${compact.destination} ${idx % 2 === 1 ? compact.reversed : ''}`}
+              className={`${compact.destination} ${idx % 2 === 1 ? compact.reversed : ''} ${spot.title === 'Sandbars' ? compact.sandbarDestination : ''}`}
             >
               <div className={`${compact.visual} relative group`}>
                 <div className={compact.destinationImage}>
@@ -84,6 +85,7 @@ export default function Tourism() {
                   Explore Destination <ArrowUpRight size={18} />
                 </Link>
               </div>
+              {spot.title === 'Sandbars' && <div className={compact.sandbarWeather}><WeatherWidget /></div>}
             </motion.div>
           ))}
         </div>

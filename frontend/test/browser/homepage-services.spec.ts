@@ -30,16 +30,17 @@ for (const width of [375, 1280]) test(`quiet homepage services, retry and headin
   await expect(all).not.toHaveText(/\?/);
   const directory = barangays.getByRole('link', { name: 'View full directory' });
   await expect(directory).toHaveAttribute('href', '/about/barangays');
-  await expect(directory).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(directory).toHaveCSS('background-color', 'rgb(0, 89, 138)');
   const h = await section.getByRole('heading').boundingBox(), l = await all.boundingBox();
-  const b = await barangays.getByRole('heading', { level: 2 }).boundingBox(), d = await directory.boundingBox();
+  const d = await directory.boundingBox();
   if (width >= 640) {
     expect(l!.x).toBeGreaterThan(h!.x + h!.width);
-    expect(d!.x).toBeGreaterThan(b!.x + b!.width);
   } else {
     expect(l!.y).toBeGreaterThanOrEqual(h!.y + h!.height);
-    expect(d!.y).toBeGreaterThanOrEqual(b!.y + b!.height);
   }
+  const barangayGrid = await barangays.locator('#barangay-cards').boundingBox();
+  expect(d!.y).toBeGreaterThanOrEqual(barangayGrid!.y + barangayGrid!.height);
+  expect(Math.round(d!.x + d!.width)).toBe(width - (width <= 768 ? 16 : 24));
   const contrast = await error.evaluate(el => {
     const ctx = document.createElement('canvas').getContext('2d')!;
     const rgb = (color: string, background = 'white') => {

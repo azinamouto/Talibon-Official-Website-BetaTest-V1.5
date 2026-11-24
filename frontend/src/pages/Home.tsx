@@ -9,7 +9,6 @@ import CitizensCharterSection from "../components/CitizensCharterSection";
 import TransparencyGovernance from "../components/TransparencyGovernance";
 import ConnectWithTalibon from "../components/ConnectWithTalibon";
 import EmergencyHotlines from "../components/EmergencyHotlines";
-import WeatherWidget from "../components/WeatherWidget";
 import ServiceNavigator from "../components/ServiceNavigator";
 import NewsTodaySection from "../components/NewsTodaySection";
 import LguEventsSection from "../components/LguEventsSection";
@@ -19,11 +18,10 @@ export default function Home() {
   return (
     <main>
       <Hero />
-      <WeatherWidget />
+      <About />
       <NewsTodaySection />
       <LguEventsSection />
       <OrtsUpdatesSection />
-      <About />
       <ServiceNavigator />
       <PopularServices />
       <BarangaySelector />

@@ -25,12 +25,17 @@ for (const width of [360, 768, 1280, 1920]) test(`interactive directory and comp
   }
   if (!baseline) {
     const directory = page.locator('#barangays');
-    const choices = directory.getByRole('group', { name: 'Barangays' });
-    await expect(choices.getByRole('radio')).toHaveCount(25);
-    const details = directory.getByRole('complementary');
-    await expect(details.getByRole('heading')).toHaveText('Poblacion');
-    await expect(details).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-
+    const cards = directory.getByRole('article');
+    await expect(cards).toHaveCount(6);
+    await expect(directory.getByRole('status')).toHaveText('Showing 1–6 of 25 barangays');
+    await expect(cards.first().getByRole('heading')).toHaveText('Bagacay');
+    await expect(cards.first()).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await directory.getByRole('button', { name: 'Next' }).click();
+    await expect(directory.getByRole('status')).toHaveText('Showing 7–12 of 25 barangays');
+    const filters = directory.getByRole('group', { name: 'Browse by location' });
+    await filters.getByRole('radio', { name: 'Island', exact: true }).locator('..').click();
+    await expect(directory.getByRole('status')).toHaveText('Showing 1–6 of 8 barangays');
+    await expect(cards.first().getByRole('heading')).toHaveText('Busalian');
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

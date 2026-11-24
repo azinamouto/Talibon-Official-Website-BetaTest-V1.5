@@ -15,11 +15,22 @@ for (const width of [1440, 768, 375]) test(`compact scale, information office an
   await context.route('**/data/social-updates.json', r => r.fulfill({ json: { posts: [] } }));
   await page.goto('/');
   await expect(page.locator('body')).toHaveCSS('font-size', '14px');
-  const headings = page.locator('main > section:not(#home) h2');
+  const headings = page.locator('main > section:not(#home):not(#about):not(#services):not(#charter) h2');
   for (const h of await headings.all()) {
     await expect(h).toHaveCSS('font-size', '20px');
     await expect(h).toHaveCSS('font-weight', '500');
     await expect(h).toHaveCSS('letter-spacing', 'normal');
+  }
+  // The approved editorial sections use their own larger responsive hierarchy.
+  for (const [selector, minimum, maximum] of [
+    ['#our-story-heading', 30, 44], ['#services-heading', 34, 60],
+    ['#charter-title', 34, 52], ['#office-directory-title', 30, 42],
+  ] as const) {
+    const heading = page.locator(selector);
+    const size = await heading.evaluate(el => parseFloat(getComputedStyle(el).fontSize));
+    expect(size).toBeGreaterThanOrEqual(minimum);
+    expect(size).toBeLessThanOrEqual(maximum);
+    await expect(heading).toHaveCSS('font-weight', '500');
   }
   const section = page.locator('#connect-talibon');
   await section.scrollIntoViewIfNeeded();

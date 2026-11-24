@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-for (const width of [1440, 768, 375]) test(`visible page chips and quiet barangay selection at ${width}px`, async ({ page, context }, info) => {
+for (const width of [1440, 768, 375]) test(`visible page links and barangay card filters at ${width}px`, async ({ page, context }, info) => {
   await page.setViewportSize({ width, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await context.route('**/*', r => new URL(r.request().url()).hostname === '127.0.0.1' ? r.continue() : r.abort());
@@ -19,17 +19,22 @@ for (const width of [1440, 768, 375]) test(`visible page chips and quiet baranga
   const section = page.locator('#barangays');
   await section.scrollIntoViewIfNeeded();
   const tab = section.getByRole('radio', { name: 'All', exact: true }).locator('..').locator('span').first();
-  const chip = section.getByRole('radio', { name: 'Poblacion', exact: true }).locator('..').locator('span').first();
-  const primary = section.getByRole('link', { name: 'View barangay page' });
+  const primary = section.getByRole('link', { name: 'View full directory' });
+  await expect(primary).toHaveAttribute('href', '/about/barangays');
   const solid = await primary.evaluate(el => getComputedStyle(el).backgroundColor);
   expect(await tab.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe(solid);
-  expect(await chip.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe(solid);
-  expect(await chip.locator('svg').evaluate(el => getComputedStyle(el).color)).toBe(await chip.evaluate(el => getComputedStyle(el).color));
-  const pill = section.locator('[class*="location_"]');
-  expect(await pill.evaluate(el => !!el.parentElement?.querySelector('#selected-barangay-heading'))).toBe(true);
-  expect(await pill.evaluate(el => getComputedStyle(el).position)).toBe('static');
-  await section.getByRole('radio', { name: 'Busalian', exact: true }).check({ force: true });
-  await expect(section.getByRole('heading', { name: 'Busalian', exact: true })).toBeVisible();
+  const cards = section.getByRole('article');
+  await expect(cards).toHaveCount(6);
+  await expect(cards.first()).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(cards.first().getByText('Mainland', { exact: true })).toHaveCSS('position', 'static');
+  const filters = section.getByRole('group', { name: 'Browse by location' });
+  await filters.getByRole('radio', { name: 'All', exact: true }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(filters.getByRole('radio', { name: 'Mainland', exact: true })).toBeChecked();
+  await page.keyboard.press('ArrowRight');
+  await expect(filters.getByRole('radio', { name: 'Island', exact: true })).toBeChecked();
+  await expect(cards.first().getByRole('heading')).toHaveText('Busalian');
+  await expect(section.getByRole('status')).toHaveText('Showing 1–6 of 8 barangays');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await section.screenshot({ path: info.outputPath(`barangays-${width}.png`), style: 'header{visibility:hidden!important}' });
 });

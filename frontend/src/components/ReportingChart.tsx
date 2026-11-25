@@ -4,6 +4,9 @@ import styles from './ReportingChart.module.css';
 export function validReportingChart(value:unknown):value is OfficialEntry[] {
   if(!Array.isArray(value) || !value.length || value.length>100)return false;
   if(value.some(row=>!row || typeof row.id!=='string' || typeof row.name!=='string' || typeof row.role!=='string'))return false;
+  if(value.some(row=>!row.id.trim() || !row.name.trim() || !row.role.trim() ||
+    (row.reportsTo !== undefined && row.reportsTo !== null && typeof row.reportsTo !== 'string') ||
+    ['office','photoAssetId','image_url'].some(key=>row[key] !== undefined && typeof row[key] !== 'string')))return false;
   const map=new Map(value.map(row=>[row.id,row]));if(map.size!==value.length)return false;
   for(const row of value){const seen=new Set([row.id]);let parent=row.reportsTo;while(parent){if(seen.has(parent) || !map.has(parent))return false;seen.add(parent);parent=map.get(parent).reportsTo;}}
   return true;

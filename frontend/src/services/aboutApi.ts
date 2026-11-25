@@ -2,7 +2,28 @@
 async function get<T>(path: string): Promise<T> {
   const response = await fetch(`/api/${path}`, { headers: { 'X-API-Version': '1' } });
   if (!response.ok) throw new Error(`Unable to load About content (${response.status}).`);
-  return response.json() as Promise<T>;
+  const value: unknown = await response.json();
+  const lists = ['about/mayors', 'about/departments', 'about/barangays'];
+  const record = (item: unknown): item is Record<string, unknown> => !!item && typeof item === 'object' && !Array.isArray(item);
+  let valid = lists.includes(path) ? Array.isArray(value) : record(value);
+  if (valid && Array.isArray(value)) {
+    valid = value.every(item => path === 'about/barangays' ? typeof item === 'string' : record(item));
+  } else if (valid && record(value)) {
+    if (path.startsWith('services?')) valid = Array.isArray(value.data) && value.data.every(record);
+    else {
+      const strings = ['title', 'content', 'description', 'url', 'imageUrl', 'logoUrl', 'author', 'lyrics'];
+      valid = strings.every(key => value[key] === undefined || typeof value[key] === 'string') &&
+        (value.timeline === undefined || (Array.isArray(value.timeline) && value.timeline.every(item =>
+          record(item) && ['year', 'title', 'description'].every(key => typeof item[key] === 'string')))) &&
+        ['lat', 'lng'].every(key => value[key] === undefined || (typeof value[key] === 'number' && Number.isFinite(value[key]))) &&
+        (value.images === undefined || (Array.isArray(value.images) && value.images.every(item => typeof item === 'string')));
+      if (Object.keys(value).length && ['about/profile', 'about/history', 'about/industry', 'about/demographics'].includes(path)) {
+        valid = valid && typeof value.content === 'string';
+      }
+    }
+  }
+  if (!valid) throw new Error('Invalid About content response.');
+  return value as T;
 }
 
 interface TextContent { title: string; content: string }

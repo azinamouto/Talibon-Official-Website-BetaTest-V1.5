@@ -31,6 +31,9 @@ function isOfficial(value: unknown): value is Official {
 function isOrganizationalChart(value: unknown): value is OrganizationalChart {
   if (!value || typeof value !== 'object') return false;
   const record = value as Record<string, unknown>;
+  if (record.attachments !== undefined && (!Array.isArray(record.attachments) || record.attachments.some(item =>
+    !item || !['photo', 'document'].includes(item.kind) ||
+    !['id', 'title', 'caption', 'alt_text', 'download_url', 'preview_url'].every(key => typeof item[key] === 'string')))) return false;
   if(record.nodes!==undefined)return validReportingChart(record.nodes);
   return isOfficial(record.mayor) &&
     Array.isArray(record.level2) && record.level2.every(isOfficial) &&
@@ -70,9 +73,12 @@ const OrganizationalChartPage: React.FC = () => {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
+    setData(null);
     executiveApi.getChart(controller.signal).then(result => {
       if (controller.signal.aborted) return;
-      if (isOrganizationalChart(result)) setData(result);
+      // The public endpoint returns {} when no chart has been published.
+      if (result && typeof result === 'object' && !Array.isArray(result) && Object.keys(result).length === 0) setData(null);
+      else if (isOrganizationalChart(result)) setData(result);
       else setError('The organizational chart response is invalid.');
     }).catch(() => {
       if (!controller.signal.aborted) setError('The organizational chart is temporarily unavailable.');
@@ -93,7 +99,7 @@ const OrganizationalChartPage: React.FC = () => {
   if (error) {
     return (
       <div className={`${sectionTheme.section} pb-20 px-4 max-w-7xl mx-auto min-h-screen bg-brand-bg pt-6`}>
-        <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl font-bold">
+        <div role="alert" className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl font-bold">
           {error}
         </div>
         <button className="mt-4 underline" onClick={() => setAttempt(value => value + 1)}>Retry</button>

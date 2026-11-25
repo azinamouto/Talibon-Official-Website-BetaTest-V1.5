@@ -17,8 +17,8 @@ export default function LocationView({ data }: LocationViewProps) {
     <div className="space-y-8">
       <div className="relative aspect-video bg-brand-surface rounded-3xl border-4 border-white shadow-xl overflow-hidden group z-0">
         <LocationMap 
-          lat={data.lat || 10.1517} 
-          lng={data.lng || 124.3333} 
+          lat={data.lat ?? 10.1517}
+          lng={data.lng ?? 124.3311}
           title="Talibon Bohol" 
           logoUrl={data.logoUrl} 
         />

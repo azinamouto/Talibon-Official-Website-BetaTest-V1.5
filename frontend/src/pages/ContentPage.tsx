@@ -39,7 +39,7 @@ const ContentPage: React.FC<ContentPageProps> = ({
     setLoading(true);
     setError(null);
     setData(null);
-    fetchData().then(response => {
+    Promise.resolve().then(fetchData).then(response => {
       if (active) setData(response);
     }).catch(() => {
       if (active) setError(ERROR_MESSAGES.LOAD_FAILED);
